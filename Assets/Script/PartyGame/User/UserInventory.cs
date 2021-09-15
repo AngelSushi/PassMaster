@@ -47,19 +47,14 @@ public class UserInventory : MonoBehaviour {
         bool[] objects = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasHourglass,inventory.hasStar,inventory.hasLightning,inventory.hasParachute,inventory.hasBomb};
 
         for(int i = 0;i<objects.Length;i++) {
-            Debug.Log("i: " + i);
-            if(objects[i] && !objList.Contains(i)) {
-                objList.Add(i);
-            }
+            if(objects[i] && !objList.Contains(i)) 
+                objList.Add(i);         
          }
 
-         Debug.Log("size: " + objList.Count);
 
         for(int i = 0;i<objList.Count;i++) {
           //  Debug.Log("index: " + i);
             Transform random = player.transform.GetChild(4).GetChild(Random.Range(0,player.transform.GetChild(4).childCount - 1));
-            Debug.Log("vector: " + random.position);
-            Debug.Log("contains?: " + drop.Contains(random.position));
             if(!drop.Contains(random.position) && !objectSpawn.Contains(gameController.GetPrefabObjects()[i].name)) {
 
                 GameObject obj = Instantiate(gameController.GetPrefabObjects()[i],player.transform.position,gameController.GetPrefabObjects()[i].transform.rotation);

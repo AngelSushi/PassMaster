@@ -48,6 +48,8 @@ public class UserUI : CoroutineSystem {
 
     private bool isInInventory;
 
+    public UserMovement movement;
+
     void Update() {
 
         if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD) {
@@ -69,29 +71,35 @@ public class UserUI : CoroutineSystem {
                     bombPos.SetActive(false);
             }
         }
-        else ManageHudState(false);
+        else 
+            ManageHudState(false);
 
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showTurnInfo && gameController.GetPart() == GameController.GamePart.PARTYGAME) ManagerHudTurnState(true);
-        else ManagerHudTurnState(false);
+        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showTurnInfo && gameController.GetPart() == GameController.GamePart.PARTYGAME) 
+            ManagerHudTurnState(true);
+        else 
+            ManagerHudTurnState(false);
 
         if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showActionButton) {
-           if(!gameController.freeze) ManageActionButtonState(true);
+            if(!gameController.freeze) 
+                ManageActionButtonState(true);
         }
         else ManageActionButtonState(false);
 
         if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showDirection) {
-            if(!gameController.freeze) ManageHudDirection(true);
+            if(!gameController.freeze) 
+                ManageHudDirection(true);
         }
-        else ManageHudDirection(false);
+        else 
+            ManageHudDirection(false);
 
         if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showChestHUD) {
-            if(!gameController.freeze) {
+            if(!gameController.freeze) 
                 ManageChestHUD(true);
-            }    
+              
         }
-        else {
+        else 
             ManageChestHUD(false);
-        }
+        
 
         if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showShop) {
             if(!gameController.freeze) 
@@ -111,7 +119,8 @@ public class UserUI : CoroutineSystem {
 
     public void OnRight(InputAction.CallbackContext e) {
         if(e.started && !cameraView && showHUD && !inventoryParent.activeSelf && !gameController.freeze) {
-            if(index < 2) index++;
+            if(index < 2) 
+                index++;
 
             switch(index) {
                 case 0:
@@ -138,30 +147,25 @@ public class UserUI : CoroutineSystem {
         if(e.started && !cameraView && !showHUD && showDirection && !gameController.freeze) {
             int max = -1;
 
-            if(hudParent.transform.GetChild(10).gameObject.activeSelf) {
+            if(hudParent.transform.GetChild(10).gameObject.activeSelf) 
                 max = 0;
-            }
-            if(hudParent.transform.GetChild(11).gameObject.activeSelf) {
+            if(hudParent.transform.GetChild(11).gameObject.activeSelf) 
                 max = 1;
-            }
-            if(hudParent.transform.GetChild(12).gameObject.activeSelf) {
+            if(hudParent.transform.GetChild(12).gameObject.activeSelf) 
                 max = 2;
-            }
             
             if(!hudParent.transform.GetChild(10).GetChild(1).gameObject.activeSelf && !hudParent.transform.GetChild(11).GetChild(1).gameObject.activeSelf && !hudParent.transform.GetChild(12).GetChild(1).gameObject.activeSelf) {
-                if(hudParent.transform.GetChild(10).gameObject.activeSelf) {
+                if(hudParent.transform.GetChild(10).gameObject.activeSelf) 
                     index = -1;
-                }
-
-                else if(hudParent.transform.GetChild(11).gameObject.activeSelf) {
+                else if(hudParent.transform.GetChild(11).gameObject.activeSelf) 
                     index = 0;
-                }
-                else if(hudParent.transform.GetChild(12).gameObject.activeSelf) {
+                else if(hudParent.transform.GetChild(12).gameObject.activeSelf) 
                     index = 1;        
-                }
+                
             }
 
-            if(index < max) index++;
+            if(index < max) 
+                index++;
 
             switch(index) {
                 case 0:
@@ -189,7 +193,8 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && showChestHUD && !gameController.freeze) {
-            if(index < 1) index++;
+            if(index < 1) 
+                index++;
 
             switch(index) {
                 case 0:
@@ -207,14 +212,13 @@ public class UserUI : CoroutineSystem {
         if(e.started && showShop && !gameController.freeze) {
             if(index < 6) {
                 index++;
-                GetComponent<UserAudio>().ButtonHover();
+                movement.audio.ButtonHover();
             }
-            if(nextShopId < 2) nextShopId++;
+            if(nextShopId < 2) 
+                nextShopId++;
 
-            for(int i = 0;i<3;i++) {
-                shopParent.transform.GetChild(i+2).GetChild(3).gameObject.SetActive(false);
-            }
-
+            for(int i = 0;i<3;i++) 
+                shopParent.transform.GetChild(i+2).GetChild(3).gameObject.SetActive(false); 
 
             shopParent.transform.GetChild(2 + nextShopId).GetChild(3).gameObject.SetActive(true);
 
@@ -241,7 +245,8 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && showShopHUD && !gameController.freeze) {
-            if(index < 1) index++;
+            if(index < 1) 
+                index++;
 
             switch(index) {
                 case 0:
@@ -256,7 +261,8 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && inventoryParent.activeSelf && isInInventory && !gameController.freeze) {
-            if(index < 7) index++;
+            if(index < 7) 
+                index++;
 
             Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
             
@@ -267,7 +273,8 @@ public class UserUI : CoroutineSystem {
 
     public void OnLeft(InputAction.CallbackContext e) {
         if(e.started && !cameraView && showHUD && !inventoryParent.activeSelf && !gameController.freeze) {
-            if(index > 0) index--;
+            if(index > 0) 
+                index--;
 
             switch(index) {
                 case 0:
@@ -298,7 +305,8 @@ public class UserUI : CoroutineSystem {
             else if(hudParent.transform.GetChild(11).gameObject.activeSelf) min = 1;
             else if(hudParent.transform.GetChild(12).gameObject.activeSelf) min = 2;
             
-            if(index > min) index--;
+            if(index > min) 
+                index--;
 
             switch(index) {
                 case 0:
@@ -323,7 +331,8 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && showChestHUD && !gameController.freeze) {
-            if(index > 0) index--;
+            if(index > 0) 
+                index--;
 
             switch(index) {
                 case 0:
@@ -340,12 +349,10 @@ public class UserUI : CoroutineSystem {
 
         if(e.started && showShop && !gameController.freeze) { 
 
-            for(int i = 0;i<3;i++) {
+            for(int i = 0;i<3;i++) 
                 shopParent.transform.GetChild(i+2).GetChild(3).gameObject.SetActive(false);
-            }
 
-            int begin = 2;
-            
+            int begin = 2; 
 
             if(index >= 2) {
                 for(int i = index;i>index - 3;i--) {
@@ -370,18 +377,23 @@ public class UserUI : CoroutineSystem {
             
             if(index > 0) {
                 index--;
-                GetComponent<UserAudio>().ButtonHover();
+                movement.audio.ButtonHover();
             }
-            if(nextShopId > 0) nextShopId--;
+            if(nextShopId > 0) 
+                nextShopId--;
             
-            if(index == 0) shopParent.transform.GetChild(2).GetChild(3).gameObject.SetActive(true);
-            else if(index >= 1 && index < 6) shopParent.transform.GetChild(3).GetChild(3).gameObject.SetActive(true);
-            else if(index == 6) shopParent.transform.GetChild(4).GetChild(3).gameObject.SetActive(true);
+            if(index == 0) 
+                shopParent.transform.GetChild(2).GetChild(3).gameObject.SetActive(true);
+            else if(index >= 1 && index < 6) 
+                shopParent.transform.GetChild(3).GetChild(3).gameObject.SetActive(true);
+            else if(index == 6) 
+                shopParent.transform.GetChild(4).GetChild(3).gameObject.SetActive(true);
 
         }
 
         if(e.started && showShopHUD && !gameController.freeze) {
-            if(index > 0) index--;
+            if(index > 0) 
+                index--;
 
             switch(index) {
                 case 0:
@@ -396,7 +408,8 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && inventoryParent.activeSelf && !gameController.freeze) {
-            if(index > 0) index--;
+            if(index > 0) 
+                index--;
 
             Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
             
@@ -424,20 +437,19 @@ public class UserUI : CoroutineSystem {
                 if(!alreadyBreak) {
                     ResetBombMat();
                     GameObject bomb = Instantiate(gameController.GetPrefabObjects()[2],new Vector3(x,camera.transform.position.y,z),gameController.GetPrefabObjects()[2].transform.rotation);
-                    GetComponent<UserAudio>().BombFall();
+                    movement.audio.BombFall();
                     bombPos.SetActive(false);
                     infoLabel.SetActive(false);
                 }
                 else 
-                    GetComponent<UserAudio>().BuyLoose();
+                    movement.audio.BuyLoose();
             }
             else 
-                GetComponent<UserAudio>().BuyLoose();
+                movement.audio.BuyLoose();
         }
 
         if(e.started && !inventoryParent.activeSelf &&  cameraView && useLightning && !gameController.freeze) {
             // Lightning
-
 
         }        
         if(e.started && showDirection && !gameController.freeze) {
@@ -464,19 +476,19 @@ public class UserUI : CoroutineSystem {
 
         if(e.started && showChestHUD && !gameController.freeze) {
             if(index == 0) {              
-                GetComponent<UserMovement>().isTurn = false;
+                movement.isTurn = false;
                 gameController.EndUserTurn();                
             }
             else if(index == 1) {
                 // Buy
-                int coins = GetComponent<UserInventory>().coins;
+                int coins = movement.inventory.coins;
 
                 if(coins >= 30) {
-                    StartCoroutine(GetComponent<UserMovement>().WaitMalus(30,false));
-                    GetComponent<UserMovement>().goToChest = true;
+                    StartCoroutine(movement.WaitMalus(30,false));
+                    movement.goToChest = true;
                 }
                 else {
-                    GetComponent<UserAudio>().BuyLoose();
+                    movement.audio.BuyLoose();
                     gameController.EndUserTurn();
                     // Afficher un texte également
                 }
@@ -487,25 +499,25 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && showShop && !gameController.freeze) {
-            int actualCoins = GetComponent<UserInventory>().coins;
+            int actualCoins = movement.inventory.coins;
             shopParent.transform.GetChild(5).gameObject.SetActive(true);
 
             if(actualCoins >= gameController.GetShopItems()[index].price) { // Assez d'argent
 
                 switch(index) {
                     case 0: // Dé double
-                        bool hasDoubleDice = GetComponent<UserInventory>().hasDoubleDice;
+                        bool hasDoubleDice = movement.inventory.hasDoubleDice;
 
                         if(!hasDoubleDice) { // Le joueur n'a pas encore l'objet
-                            GetComponent<UserInventory>().hasDoubleDice = true;
+                            movement.inventory.hasDoubleDice = true;
                             // Affichez l'ui
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
-                            StartCoroutine(GetComponent<UserMovement>().WaitMalus(gameController.GetShopItems()[index].price,false));
+                            StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else { // Le joueur a déjà cet objet
-                            GetComponent<UserAudio>().BuyLoose();
+                            movement.audio.BuyLoose();
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                             StartCoroutine(InfoLabelWaiting());
@@ -513,18 +525,18 @@ public class UserUI : CoroutineSystem {
                         break;
 
                     case 1: // Dé inverse
-                        bool hasReverseDice = GetComponent<UserInventory>().hasReverseDice;
+                        bool hasReverseDice = movement.inventory.hasReverseDice;
 
                         if(!hasReverseDice) {
-                            GetComponent<UserInventory>().hasReverseDice = true;
+                            movement.inventory.hasReverseDice = true;
                             //Affichez ui
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
-                            StartCoroutine(GetComponent<UserMovement>().WaitMalus(gameController.GetShopItems()[index].price,false));
+                            StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            GetComponent<UserAudio>().BuyLoose();
+                            movement.audio.BuyLoose();
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                             StartCoroutine(InfoLabelWaiting());
@@ -532,18 +544,18 @@ public class UserUI : CoroutineSystem {
                         break;
 
                     case 2: // Bombe
-                        bool hasBomb = GetComponent<UserInventory>().hasBomb;
+                        bool hasBomb = movement.inventory.hasBomb;
 
                         if(!hasBomb) {
-                            GetComponent<UserInventory>().hasBomb = true;
+                            movement.inventory.hasBomb = true;
                             // Affichez ui
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
-                            StartCoroutine(GetComponent<UserMovement>().WaitMalus(gameController.GetShopItems()[index].price,false));
+                            StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }   
                         else {
-                            GetComponent<UserAudio>().BuyLoose();
+                            movement.audio.BuyLoose();
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                             StartCoroutine(InfoLabelWaiting());
@@ -551,18 +563,18 @@ public class UserUI : CoroutineSystem {
                         break;
 
                     case 3: // Sablier
-                        bool hasHourglass = GetComponent<UserInventory>().hasHourglass;
+                        bool hasHourglass = movement.inventory.hasHourglass;
 
                         if(!hasHourglass) {
-                           GetComponent<UserInventory>().hasHourglass = true;
+                            movement.inventory.hasHourglass = true;
                             // Affichez ui
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
-                            StartCoroutine(GetComponent<UserMovement>().WaitMalus(gameController.GetShopItems()[index].price,false));
+                            StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            GetComponent<UserAudio>().BuyLoose();
+                            movement.audio.BuyLoose();
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                             StartCoroutine(InfoLabelWaiting());
@@ -570,18 +582,18 @@ public class UserUI : CoroutineSystem {
                         break;
 
                     case 4: // Eclair
-                        bool hasLightning = GetComponent<UserInventory>().hasLightning;
+                        bool hasLightning = movement.inventory.hasLightning;
 
                         if(!hasLightning) {
-                            GetComponent<UserInventory>().hasLightning = true;
+                            movement.inventory.hasLightning = true;
                             // Affichez ui
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
-                            StartCoroutine(GetComponent<UserMovement>().WaitMalus(gameController.GetShopItems()[index].price,false));
+                            StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            GetComponent<UserAudio>().BuyLoose();
+                            movement.audio.BuyLoose();
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                             StartCoroutine(InfoLabelWaiting());
@@ -589,18 +601,18 @@ public class UserUI : CoroutineSystem {
                         break;
 
                     case 5: // Etoile 
-                        bool hasStar = GetComponent<UserInventory>().hasStar;
+                        bool hasStar = movement.inventory.hasStar;
 
                         if(!hasStar) {
-                            GetComponent<UserInventory>().hasStar = true;
+                            movement.inventory.hasStar = true;
                             // Affichez ui
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
-                            StartCoroutine(GetComponent<UserMovement>().WaitMalus(gameController.GetShopItems()[index].price,false));
+                            StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            GetComponent<UserAudio>().BuyLoose();
+                            movement.audio.BuyLoose();
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                             StartCoroutine(InfoLabelWaiting());
@@ -608,18 +620,18 @@ public class UserUI : CoroutineSystem {
                         break;
 
                     case 6: // Parachute
-                        bool hasParachute = GetComponent<UserInventory>().hasParachute;
+                        bool hasParachute = movement.inventory.hasParachute;
 
                         if(!hasParachute) {
-                            GetComponent<UserInventory>().hasParachute = true;
+                            movement.inventory.hasParachute = true;
                            
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
-                            StartCoroutine(GetComponent<UserMovement>().WaitMalus(gameController.GetShopItems()[index].price,false));
+                            StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            GetComponent<UserAudio>().BuyLoose();
+                            movement.audio.BuyLoose();
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
                             shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                             StartCoroutine(InfoLabelWaiting());
@@ -629,7 +641,7 @@ public class UserUI : CoroutineSystem {
             }
             
             else { // Pas assez d'argent
-                GetComponent<UserAudio>().BuyLoose();
+                movement.audio.BuyLoose();
                 shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous n'avez pas assez d'argent";
                 shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
                 StartCoroutine(InfoLabelWaiting());
@@ -642,12 +654,12 @@ public class UserUI : CoroutineSystem {
 
             switch(index) {
                 case 0:
-                    GetComponent<UserMovement>().stop = false;
-                    if(GetComponent<UserMovement>().diceResult <= 0) gameController.EndUserTurn();
+                    movement.stop = false;
+                    if(movement.diceResult <= 0) gameController.EndUserTurn();
                     break;
 
                 case 1:
-                    GetComponent<UserMovement>().goToShop = true;
+                    movement.goToShop = true;
                     break;    
             }
 
@@ -664,9 +676,9 @@ public class UserUI : CoroutineSystem {
                 showHUD = false;
                 showActionButton = false;
                 infoLabel.SetActive(false);
-                if(GetComponent<UserMovement>().isPlayer) GetComponent<UserMovement>().isTurn = true;
+                if(movement.isPlayer) movement.isTurn = true;
                 GetComponent<NavMeshAgent>().enabled = true;
-                GetComponent<UserMovement>().waitDiceResult = true;
+                movement.waitDiceResult = true;
                 index = -1;
             }
 
@@ -845,9 +857,8 @@ public class UserUI : CoroutineSystem {
         StartCoroutine(InfoLabelWaiting());
     }
     public void OnMove(InputAction.CallbackContext e) {
-        if(cameraView && !gameController.freeze) {
+        if(cameraView && !gameController.freeze) 
             movement = e.ReadValue<Vector2>();
-        }
     }
 
     public void OnQuit(InputAction.CallbackContext e) {
@@ -883,17 +894,15 @@ public class UserUI : CoroutineSystem {
     }
 
     private void ApplyBombMat() {
-        for(int i = 0;i<islesParent.transform.GetChild(2).childCount;i++) {
+        for(int i = 0;i<islesParent.transform.GetChild(2).childCount;i++) 
             islesParent.transform.GetChild(2).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
-        }
-
-        for(int i = 0;i<islesParent.transform.GetChild(3).childCount;i++) {
+        
+        for(int i = 0;i<islesParent.transform.GetChild(3).childCount;i++) 
             islesParent.transform.GetChild(3).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
-        }
-
-        for(int i = 0;i<islesParent.transform.GetChild(4).childCount;i++) {
+        
+        for(int i = 0;i<islesParent.transform.GetChild(4).childCount;i++) 
             islesParent.transform.GetChild(4).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
-        }
+        
                             
         islesParent.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[1];
         islesParent.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[2];
@@ -901,9 +910,10 @@ public class UserUI : CoroutineSystem {
         Bridge bridge01 = islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>();
         Bridge bridge02 = islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>();
 
-        if(!bridge01.breakBridge) islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[3];
-        
-        else islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[4];
+        if(!bridge01.breakBridge) 
+            islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[3];
+        else 
+            islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[4];
 
         if(!bridge02.breakBridge) 
             islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[3];
@@ -914,17 +924,15 @@ public class UserUI : CoroutineSystem {
 
     private void ResetBombMat() {
 
-        for(int i = 0;i<islesParent.transform.GetChild(2).childCount;i++) {
-            islesParent.transform.GetChild(2).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];
-        }
+        for(int i = 0;i<islesParent.transform.GetChild(2).childCount;i++) 
+            islesParent.transform.GetChild(2).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];  
 
-        for(int i = 0;i<islesParent.transform.GetChild(3).childCount;i++) {
+        for(int i = 0;i<islesParent.transform.GetChild(3).childCount;i++) 
             islesParent.transform.GetChild(3).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];
-        }
-
-        for(int i = 0;i<islesParent.transform.GetChild(4).childCount;i++) {
+        
+        for(int i = 0;i<islesParent.transform.GetChild(4).childCount;i++) 
             islesParent.transform.GetChild(4).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[0];
-        }
+        
                             
         islesParent.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[2];
         islesParent.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[1];
@@ -941,14 +949,13 @@ public class UserUI : CoroutineSystem {
             index = -1;
 
         if(inventoryParent.activeSelf) {
-            UserInventory inventory = GetComponent<UserInventory>();
+            UserInventory inventory = movement.inventory;
 
             bool[] hasItems = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasBomb,inventory.hasHourglass,inventory.hasLightning,inventory.hasStar,inventory.hasParachute};
 
             for(int i = 0;i<hasItems.Length;i++) {
                 if(hasItems[i]) 
                     inventoryParent.transform.GetChild(1 + i).GetChild(0).gameObject.SetActive(true);
-                
                 else 
                     inventoryParent.transform.GetChild(1 + i).GetChild(0).gameObject.SetActive(false);
                 
@@ -983,20 +990,19 @@ public class UserUI : CoroutineSystem {
                 for(int j = actualPlayer;j<actualPlayer + 4;j++) {
                 
                     int playerIndex = j;
-                    if(j > 3) playerIndex -= 4;
+                    if(j > 3) 
+                        playerIndex -= 4;
                     
                     gameController.ChangeHUDSpritePlayer(hudParent,hudIndex,gameController.GetPlayers()[playerIndex].name);
 
                     int rank = -1;
                     int rankIndex = 0;
                     foreach(GameObject player in gameController.GetClassedPlayers().Keys) {
-                        if(player == gameController.GetPlayers()[playerIndex]) {
+                        if(player == gameController.GetPlayers()[playerIndex]) 
                             rank = rankIndex;
-                        }
 
                         rankIndex++;
                     }
-                    Debug.Log("rank: " + rank);
 
                     if(rank >= 0 && rank < gameController.GetClassedColors().Length && rank < gameController.GetClassedPlayers().Keys.Count) {
                       /*  int playerPoint = gameController.GetPlayerPoints(gameController.GetPlayers()[playerIndex]);
@@ -1011,7 +1017,6 @@ public class UserUI : CoroutineSystem {
                             } 
                         } */
 
-                        Debug.Log("index: " + (playerIndex + 1));
                             
                         hudParent.transform.GetChild(hudIndex).GetChild(4).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.GetClassedPlayers()).GetComponent<UserInventory>().coins + "";
                         hudParent.transform.GetChild(hudIndex).GetChild(6).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.GetClassedPlayers()).GetComponent<UserInventory>().cards + "";
@@ -1021,7 +1026,8 @@ public class UserUI : CoroutineSystem {
                     }
                     
                     hudIndex += 1;
-                    if(hudIndex == 4) hudIndex = 0;
+                    if(hudIndex == 4) 
+                        hudIndex = 0;
                 }
                 
             }
@@ -1033,9 +1039,8 @@ public class UserUI : CoroutineSystem {
         int playersIndex = 0;
 
         foreach(GameObject p in gameController.GetPlayersPoints().Keys) {
-            if(p != player && gameController.GetPlayersPoints()[p] == playerPoint) {
-                playersIndex++;
-            }
+            if(p != player && gameController.GetPlayersPoints()[p] == playerPoint) 
+                playersIndex++;        
         }
 
         return playersIndex;
@@ -1045,16 +1050,16 @@ public class UserUI : CoroutineSystem {
         for(int i = 0;i<3;i++) {
             hudParent.transform.GetChild(4 + i).gameObject.SetActive(active);
             hudParent.transform.GetChild(4 + i).GetChild(0).gameObject.SetActive(active);
-            if(!active) hudParent.transform.GetChild(4 + i).GetChild(1).gameObject.SetActive(active);
+            if(!active) 
+                hudParent.transform.GetChild(4 + i).GetChild(1).gameObject.SetActive(active);
         }
 
         
     }
 
     private void ManagerHudTurnState(bool active) {
-        for(int i = 0;i<2;i++) {
-            hudParent.transform.GetChild(7 + i).gameObject.SetActive(active);
-        }
+        for(int i = 0;i<2;i++) 
+            hudParent.transform.GetChild(7 + i).gameObject.SetActive(active);       
     }
 
     private void ManageHudDirection(bool active) {
@@ -1063,24 +1068,22 @@ public class UserUI : CoroutineSystem {
         if(direction != null) {
             if(direction.left) {
                 if(direction.nextStepLeft.name.Contains("front") || direction.nextStepLeft.name.Contains("interior")) {
-                    if(GetComponent<UserMovement>().dayController.dayPeriod == 0 || GetComponent<UserMovement>().dayController.dayPeriod == 1) {
+                    if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
                         hudParent.transform.GetChild(10).gameObject.SetActive(true);
-                    }
                 }
-                else {
-                    hudParent.transform.GetChild(10).gameObject.SetActive(true);
-                }
+                else 
+                    hudParent.transform.GetChild(10).gameObject.SetActive(true);        
             }
-            else hudParent.transform.GetChild(10).gameObject.SetActive(false);
+            else 
+                hudParent.transform.GetChild(10).gameObject.SetActive(false);
 
             if(direction.front) {
                 if(direction.nextStepFront.name.Contains("front") || direction.nextStepFront.name.Contains("interior")) {
                     if(islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge)
                         return;
 
-                    if(GetComponent<UserMovement>().dayController.dayPeriod == 0 || GetComponent<UserMovement>().dayController.dayPeriod == 1) {
-                        hudParent.transform.GetChild(11).gameObject.SetActive(true);
-                    }
+                    if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
+                        hudParent.transform.GetChild(11).gameObject.SetActive(true);                  
                 }
                 else {
                     if(islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
@@ -1089,16 +1092,16 @@ public class UserUI : CoroutineSystem {
                     hudParent.transform.GetChild(11).gameObject.SetActive(true);
                 }
             }
-            else hudParent.transform.GetChild(11).gameObject.SetActive(false);
+            else 
+                hudParent.transform.GetChild(11).gameObject.SetActive(false);
 
             if(direction.right) {
                 if(direction.nextStepRight.name.Contains("front") || direction.nextStepRight.name.Contains("interior")) {
                     if(islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
                         return;
 
-                    if(GetComponent<UserMovement>().dayController.dayPeriod == 0 || GetComponent<UserMovement>().dayController.dayPeriod == 1) {
-                        hudParent.transform.GetChild(12).gameObject.SetActive(true);
-                    }
+                    if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
+                        hudParent.transform.GetChild(12).gameObject.SetActive(true);           
                 }
                 else {
                     if(islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
@@ -1107,7 +1110,8 @@ public class UserUI : CoroutineSystem {
                     hudParent.transform.GetChild(12).gameObject.SetActive(true);
                 }
             }
-            else hudParent.transform.GetChild(12).gameObject.SetActive(false);
+            else 
+                hudParent.transform.GetChild(12).gameObject.SetActive(false);
         }
 
         if(!active) {
@@ -1132,9 +1136,12 @@ public class UserUI : CoroutineSystem {
     }
 
     public void RefreshDiceResult(int result,Color color) {
-        if(!diceResult.activeSelf) diceResult.SetActive(true);
+        if(!diceResult.activeSelf) 
+            diceResult.SetActive(true);
 
-        if(color == null) color = new Color(0f,0.35f,1f,1.0f);
+        if(color == null) 
+            color = new Color(0f,0.35f,1f,1.0f);
+
         diceResult.GetComponent<Text>().color = color;
         diceResult.GetComponent<Text>().text = result + "";
     }
@@ -1150,9 +1157,7 @@ public class UserUI : CoroutineSystem {
         coinIconReward.SetActive(true);
         coinIconReward.transform.position = new Vector3(959,315,0);
         coinIconReward.GetComponent<CoinsReward>().RunCoroutine();
-       // coinTextReward.SetActive(true);
-
-        
+       // coinTextReward.SetActive(true);  
 
         if(bonus) {
             coinTextReward.GetComponent<Text>().color = new Color(0f,0.35f,1f,1f);
@@ -1200,7 +1205,7 @@ public class UserUI : CoroutineSystem {
                             // Récupérer la step via le bombPos
 
                             lightning.transform.position = new Vector3(targetStep.transform.position.x,lightning.transform.position.y,targetStep.transform.position.z);
-                            GetComponent<UserAudio>().Lightning();
+                            movement.audio.Lightning();
 
                             foreach(ParticleSystem ps in lightningParticles) {
                                 ps.Play();
@@ -1230,30 +1235,26 @@ public class UserUI : CoroutineSystem {
 
             if(obj.transform.position.x >= 0 && obj.transform.position.z >= 0) {
                 if(bombPos.transform.position.x >= minX && bombPos.transform.position.x <= maxX) {
-                    if(bombPos.transform.position.z >= minZ && bombPos.transform.position.z <= maxZ) {
+                    if(bombPos.transform.position.z >= minZ && bombPos.transform.position.z <= maxZ) 
                         return obj;
-                    }
                 }
             }
             else if(obj.transform.position.x <= 0 && obj.transform.position.z >= 0) {
                 if(bombPos.transform.position.x <= maxX && bombPos.transform.position.x >= minX) {
-                    if(bombPos.transform.position.z >= minZ && bombPos.transform.position.z <= maxZ) {
+                    if(bombPos.transform.position.z >= minZ && bombPos.transform.position.z <= maxZ) 
                         return obj;
-                    }
                 }
             }
             else if(obj.transform.position.x >= 0 && obj.transform.position.z <= 0) {
                 if(bombPos.transform.position.x >= minX && bombPos.transform.position.x >= maxX) {
-                    if(bombPos.transform.position.z <= maxZ && bombPos.transform.position.z >= minZ) {
-                        return obj;
-                    }
+                    if(bombPos.transform.position.z <= maxZ && bombPos.transform.position.z >= minZ) 
+                        return obj;                
                 }
             }
             else {
                 if(bombPos.transform.position.x <= maxX && bombPos.transform.position.x >= minX) {
-                    if(bombPos.transform.position.z <= maxZ && bombPos.transform.position.z >= minZ) {
-                        return obj;
-                    }
+                    if(bombPos.transform.position.z <= maxZ && bombPos.transform.position.z >= minZ) 
+                        return obj;                   
                 }
             }
         }

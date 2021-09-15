@@ -9,6 +9,10 @@ public class UserMovement : MonoBehaviour {
 
     private NavMeshAgent agent;
 
+    public UserUI ui;
+    public UserInventory inventory;
+    public UserAudio audio;
+
     public GameObject isleOneParent;
     public GameObject isleTwoParent;
     public GameObject isleThreeParent;
@@ -136,7 +140,7 @@ public class UserMovement : MonoBehaviour {
                         isMooving = true;
                         GetComponent<CapsuleCollider>().enabled = false;
                         if(isPlayer) {
-                            if(!transform.gameObject.GetComponent<UserUI>().showHUD) {
+                            if(!ui.showHUD) {
                                 canJump = true;
                                 dice = Instantiate(gameController.prefabDice,new Vector3(transform.position.x,transform.position.y + 40,transform.position.z),gameController.prefabDice.transform.rotation);
                                 dice.GetComponent<DiceController>().lockDice = false;
@@ -148,7 +152,7 @@ public class UserMovement : MonoBehaviour {
                             }
                             else {
                                 if(GameObject.FindGameObjectsWithTag("Dice").Length > 0) 
-                                    transform.gameObject.GetComponent<UserUI>().showHUD = false;
+                                    ui.showHUD = false;
                             }
                         }
                         else { // Bot
@@ -187,7 +191,7 @@ public class UserMovement : MonoBehaviour {
                             stepPaths = new GameObject[beginResult]; 
                             hasCollideDice = true;
                             waitDiceResult = false;
-                            GetComponent<UserUI>().showHUD = false;
+                            ui.showHUD = false;
                             if(dice != null) 
                                 Destroy(dice);
                         }
@@ -211,8 +215,8 @@ public class UserMovement : MonoBehaviour {
                         }
                         else { // Le joueur a collide avec l'entité 
                             if(isPlayer) {
-                                if(!GetComponent<UserUI>().showShop && !hasShowShop && lastStep.tag == "Shop") {
-                                    GetComponent<UserUI>().showShop = true;
+                                if(!ui.showShop && !hasShowShop && lastStep.tag == "Shop") {
+                                    ui.showShop = true;
                                     hasShowShop = true;
                                 }
                             }
@@ -267,9 +271,12 @@ public class UserMovement : MonoBehaviour {
 
 
                 if(finishMovement) {
-                    if(actualStep.tag == "Bonus")  StartCoroutine(WaitBonus(true));
-                    if(actualStep.tag == "Malus") StartCoroutine(WaitMalus(true));
-                    GetComponent<UserUI>().ClearDiceResult();
+                    if(actualStep.tag == "Bonus")  
+                        StartCoroutine(WaitBonus(true));
+                    if(actualStep.tag == "Malus") 
+                        StartCoroutine(WaitMalus(true));
+
+                    ui.ClearDiceResult();
                     hasCheckPath = false;
                     finishMovement = false;
                 }
@@ -281,7 +288,7 @@ public class UserMovement : MonoBehaviour {
                     if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) {
                         if(isPlayer) {
                             if(!hasShowChestHUD) {
-                                GetComponent<UserUI>().showChestHUD = true;
+                                ui.showChestHUD = true;
                                 // Afficher l'hud
                                 hasShowChestHUD = true;
                             }
@@ -307,7 +314,7 @@ public class UserMovement : MonoBehaviour {
                             // le mettre a false quand on change d'user
                         }
                         else { // le bot
-                            if(GetComponent<UserInventory>().coins >= 30 && GetComponent<UserInventory>().cards < 6) {
+                            if(inventory.coins >= 30 && inventory.cards < 6) {
                                 if(canMooveToChest) {
                                     Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
                                     transform.position = Vector3.MoveTowards(transform.position,chestPosition,100 * Time.deltaTime);     
@@ -348,10 +355,10 @@ public class UserMovement : MonoBehaviour {
                     if(timer >= random) {
                         Jump();
                         hasJump = true;
-                        GetComponent<UserUI>().showHUD = false;
+                        ui.showHUD = false;
                     }
                     else 
-                        GetComponent<UserUI>().showHUD = true;          
+                        ui.showHUD = true;          
                 }           
             }
 
@@ -371,7 +378,7 @@ public class UserMovement : MonoBehaviour {
                 waitDiceResult = true;
 
                 if(drop) 
-                    GetComponent<UserInventory>().DropItem(transform.gameObject);
+                    inventory.DropItem(transform.gameObject);
 
                 if(returnToStep) {
                     
@@ -463,13 +470,16 @@ public class UserMovement : MonoBehaviour {
                 beginResult = diceResult;  
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;     
-                if(GetComponent<UserUI>() != null) {
-                    if(doubleDice) actualColor = new Color(0.32f,0.74f,0.08f,1.0f);
-                    if(reverseDice) actualColor = new Color(0.41f,0.13f,0.78f,1.0f);
-                    if(!doubleDice && !reverseDice) actualColor = new Color(0f,0.35f,1f,1.0f);
+                if(ui != null) {
+                    if(doubleDice) 
+                        actualColor = new Color(0.32f,0.74f,0.08f,1.0f);
+                    if(reverseDice) 
+                        actualColor = new Color(0.41f,0.13f,0.78f,1.0f);
+                    if(!doubleDice && !reverseDice) 
+                        actualColor = new Color(0f,0.35f,1f,1.0f);
                 }
 
-                GetComponent<UserUI>().RefreshDiceResult(diceResult, actualColor);
+                ui.RefreshDiceResult(diceResult, actualColor);
                 Destroy(hit.gameObject);
             }
 
@@ -524,7 +534,7 @@ public class UserMovement : MonoBehaviour {
 
                 }
 
-                if(hit.gameObject.tag == "Direction" && !gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && GetComponent<UserUI>().direction == null) {
+                if(hit.gameObject.tag == "Direction" && !gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) {
 
                     if(lastStep == ChooseParent(2).transform.GetChild(4).gameObject) { // Vient de la flèche de l'ile 2
                         hit.gameObject.GetComponent<Direction>().nextStepLeft = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
@@ -560,7 +570,7 @@ public class UserMovement : MonoBehaviour {
 
                         NavMeshPath chestPath = new NavMeshPath();
 
-                        if(GetComponent<UserInventory>().cards < 6) 
+                        if(inventory.cards < 6) 
                             agent.CalculatePath(gameController.GetActualStepChest().transform.position,chestPath);   
                         else 
                             agent.CalculatePath(ChooseParent(3).transform.GetChild(1).GetChild(2).position,chestPath);
@@ -645,7 +655,7 @@ public class UserMovement : MonoBehaviour {
                                 if(right) {
                                     // 
                                     if(hit.gameObject.name == "step_09") {
-                                        if(GetComponent<UserUI>().islesParent.transform.GetChild(2).GetChild(0).GetComponent<Bridge>().breakBridge) {
+                                        if(ui.islesParent.transform.GetChild(2).GetChild(0).GetComponent<Bridge>().breakBridge) {
                                             nextStep = gameController.GetPlayers()[gameController.GetActualPlayer()].gameObject.GetComponent<UserUI>().direction.nextStepFront.transform;
                                             return;
                                         }
@@ -685,8 +695,8 @@ public class UserMovement : MonoBehaviour {
                     GameObject actualParent = ChooseParent(isle);
                     ChooseNextStep(actualParent,hit.gameObject);
 
-                    if(GetComponent<UserUI>() != null) 
-                        GetComponent<UserUI>().RefreshDiceResult(diceResult,actualColor);
+                    if(ui != null) 
+                        ui.RefreshDiceResult(diceResult,actualColor);
 
                 }
 
@@ -729,7 +739,7 @@ public class UserMovement : MonoBehaviour {
             if(hit.gameObject.tag == "Direction") {
                 if(!isJumping) lastStepIsArrow = true;
                 if(bypassDirection) bypassDirection = false;
-                GetComponent<UserUI>().direction = null;
+                ui.direction = null;
             }
             else 
                 lastStepIsArrow = false;   
@@ -751,7 +761,7 @@ public class UserMovement : MonoBehaviour {
     #region Inputs Functions
 
     public void OnJump(InputAction.CallbackContext e) {
-        if(e.started && !isJumping && canJump && isPlayer && GetComponent<UserUI>() != null && !GetComponent<UserUI>().showHUD) 
+        if(e.started && !isJumping && canJump && isPlayer && ui != null && !ui.showHUD) 
             jump = true;        
     } 
 
@@ -808,8 +818,8 @@ public class UserMovement : MonoBehaviour {
         }
 
       //  if(obj.tag != "Direction" && nextStep != null) diceResult--;
-        if(GetComponent<UserUI>() != null) 
-            GetComponent<UserUI>().RefreshDiceResult(diceResult,actualColor);
+        if(ui != null) 
+            ui.RefreshDiceResult(diceResult,actualColor);
 
         finishMovement = (diceResult == 0);
     }
@@ -827,7 +837,7 @@ public class UserMovement : MonoBehaviour {
             Vector3 corner = path.corners[i];
             Vector3 nextCorner = path.corners[i+1];
 
-            GameObject[] directionSteps = {GetComponent<UserUI>().direction.nextStepLeft,GetComponent<UserUI>().direction.nextStepRight,GetComponent<UserUI>().direction.nextStepFront};
+            GameObject[] directionSteps = {ui.direction.nextStepLeft,ui.direction.nextStepRight,ui.direction.nextStepFront};
             // LE coffre n'est pas sur le path ca ne risque pas de marcher récupérer la step du coffre
 
             foreach(GameObject step in directionSteps) {
@@ -1159,7 +1169,6 @@ public class UserMovement : MonoBehaviour {
 
         if(random <= percentage) { // Utilise un item
             List<int> hasItems = new List<int>();
-            UserInventory inventory = GetComponent<UserInventory>();
             bool[] items = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasBomb,inventory.hasHourglass,inventory.hasLightning,inventory.hasStar,inventory.hasParachute};
 
             for(int i = 0;i<items.Length;i++) {
@@ -1173,13 +1182,13 @@ public class UserMovement : MonoBehaviour {
                     case 0: // Dé double
                         doubleDice = true;
                         inventory.hasDoubleDice = false;
-                        GetComponent<UserUI>().UseObject(transform.gameObject,"Dé double");
+                        ui.UseObject(transform.gameObject,"Dé double");
                         break;
 
                     case 1: // Dé inverse
                         reverseDice = true;
                         inventory.hasReverseDice = false;
-                        GetComponent<UserUI>().UseObject(transform.gameObject,"Dé inverse");
+                        ui.UseObject(transform.gameObject,"Dé inverse");
                         break;    
 
                     case 2: // Bomb
@@ -1189,7 +1198,7 @@ public class UserMovement : MonoBehaviour {
                         if(gameController.GetDayController().dayPeriod < 2) gameController.GetDayController().dayPeriod++;
                         else gameController.GetDayController().dayPeriod = 0;
                         inventory.hasHourglass = false;
-                        GetComponent<UserUI>().UseObject(transform.gameObject,"Sablier");
+                        ui.UseObject(transform.gameObject,"Sablier");
                         break;    
 
                     case 4: // Lightning
@@ -1198,7 +1207,7 @@ public class UserMovement : MonoBehaviour {
                     case 5: // Star
                         //GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();
                         //transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();  
-                        //GetComponent<UserAudio>().Invicibility();
+                        //audio.Invicibility();
                         //GetComponent<UserUI>().UseObject(transform.gameObject,"Invincibilité");
                         break;
 
@@ -1215,59 +1224,59 @@ public class UserMovement : MonoBehaviour {
     private bool ShopBot() {
         int item = Random.Range(0,gameController.GetShopItems().Count - 1);
 
-        if(GetComponent<UserInventory>().coins >= gameController.GetShopItems()[item].price) {
+        if(inventory.coins >= gameController.GetShopItems()[item].price) {
             switch(item) {
                 case 0: // Dé double
-                    if(!GetComponent<UserInventory>().hasDoubleDice) {
-                        GetComponent<UserInventory>().hasDoubleDice = true;
+                    if(!inventory.hasDoubleDice) {
+                        inventory.hasDoubleDice = true;
                         StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
                         return true;
                     }
                     break;
 
                 case 1: // Dé inverse
-                    if(!GetComponent<UserInventory>().hasReverseDice) {
-                        GetComponent<UserInventory>().hasReverseDice = true;
+                    if(!inventory.hasReverseDice) {
+                        inventory.hasReverseDice = true;
                         StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
                         return true;
                     }
                     break;
 
                 case 2:
-                    if(!GetComponent<UserInventory>().hasBomb) {
-                        GetComponent<UserInventory>().hasBomb = true;
+                    if(!inventory.hasBomb) {
+                        inventory.hasBomb = true;
                         StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
                         return true;
                     }
                 break;
 
                 case 3:
-                    if(!GetComponent<UserInventory>().hasHourglass) {
-                        GetComponent<UserInventory>().hasHourglass = true;
+                    if(!inventory.hasHourglass) {
+                        inventory.hasHourglass = true;
                         StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
                         return true;
                     }
                 break;
 
                 case 4:
-                    if(!GetComponent<UserInventory>().hasLightning) {
-                        GetComponent<UserInventory>().hasLightning = true;
+                    if(!inventory.hasLightning) {
+                        inventory.hasLightning = true;
                         StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
                         return true;
                     }
                     break;
 
                 case 5:
-                    if(!GetComponent<UserInventory>().hasStar) {
-                        GetComponent<UserInventory>().hasStar = true;
+                    if(!inventory.hasStar) {
+                        inventory.hasStar = true;
                         StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
                         return true;
                     }
                     break;
 
                 case 6:
-                    if(!GetComponent<UserInventory>().hasParachute) {
-                        GetComponent<UserInventory>().hasParachute = true;
+                    if(!inventory.hasParachute) {
+                        inventory.hasParachute = true;
                         StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
                         return true;
                     }
@@ -1290,10 +1299,10 @@ public class UserMovement : MonoBehaviour {
     private IEnumerator WaitBonus(bool stepReward) {
         yield return new WaitForSeconds(0.5f);
 
-        GetComponent<UserInventory>().CoinGain(3);
-        GetComponent<UserAudio>().CoinsGain();
-        GetComponent<UserUI>().DisplayReward(true,3,stepReward);
-        GetComponent<UserUI>().ClearDiceResult();
+        inventory.CoinGain(3);
+        audio.CoinsGain();
+        ui.DisplayReward(true,3,stepReward);
+        ui.ClearDiceResult();
         gameController.ActualizePlayerClassement();
 
         random = -1;
@@ -1303,10 +1312,10 @@ public class UserMovement : MonoBehaviour {
     public IEnumerator WaitBonus(bool stepReward,int amount) {
         yield return new WaitForSeconds(0.5f);
 
-        GetComponent<UserInventory>().CoinGain(amount);
-        GetComponent<UserAudio>().CoinsGain();
-        GetComponent<UserUI>().DisplayReward(true,3,stepReward);
-        GetComponent<UserUI>().ClearDiceResult();
+        inventory.CoinGain(amount);
+        audio.CoinsGain();
+        ui.DisplayReward(true,3,stepReward);
+        ui.ClearDiceResult();
         gameController.ActualizePlayerClassement();
 
         random = -1;
@@ -1316,15 +1325,15 @@ public class UserMovement : MonoBehaviour {
     private IEnumerator WaitMalus(bool stepReward) {
         yield return new WaitForSeconds(0.5f);
         
-        if(GetComponent<UserInventory>().coins > 0) {
-            GetComponent<UserAudio>().CoinsLoose();
-            GetComponent<UserInventory>().CoinLoose(3);
-            GetComponent<UserUI>().DisplayReward(false,3,stepReward);
+        if(inventory.coins > 0) {
+            audio.CoinsLoose();
+            inventory.CoinLoose(3);
+            ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
         } 
         else finishTurn = true;  
 
-        GetComponent<UserUI>().ClearDiceResult();   
+        ui.ClearDiceResult();   
 
         random = -1;
         timer = 0f;
@@ -1332,9 +1341,9 @@ public class UserMovement : MonoBehaviour {
 
     public IEnumerator WaitMalus(int malusCoins,bool stepReward) {
         yield return new WaitForSeconds(0.2f);
-        GetComponent<UserAudio>().CoinsLoose();
-        GetComponent<UserInventory>().CoinLoose(malusCoins);
-        GetComponent<UserUI>().DisplayReward(false,malusCoins,stepReward);
+        audio.CoinsLoose();
+        inventory.CoinLoose(malusCoins);
+        ui.DisplayReward(false,malusCoins,stepReward);
         gameController.ActualizePlayerClassement();
          
     }
@@ -1349,7 +1358,7 @@ public class UserMovement : MonoBehaviour {
         yield return new WaitForSeconds(0.05f);
         
         stop = true;
-        GetComponent<UserUI>().showShopHUD = true;                    
+        ui.showShopHUD = true;                    
         hasShowShopHUD = true;
 
     }
@@ -1369,7 +1378,7 @@ public class UserMovement : MonoBehaviour {
             percentage = 85;
 
 
-       /* if(random >= 0 && random <= percentage && GetComponent<UserInventory>().coins >= 10)  // Lance le shop
+       /* if(random >= 0 && random <= percentage && inventory.coins >= 10)  // Lance le shop
             goToShop = true;
         else { */
             stop = false;
@@ -1382,10 +1391,10 @@ public class UserMovement : MonoBehaviour {
     public IEnumerator WaitChest() {
         agent.enabled = false;
         
-        if(GetComponent<UserInventory>().cards + 1 == 6) 
-            GetComponent<UserAudio>().FindSecretCode();
+        if(inventory.cards + 1 == 6) 
+            audio.FindSecretCode();
         else 
-            GetComponent<UserAudio>().CardGain();
+            audio.CardGain();
 
         if(!isPlayer) StartCoroutine(WaitMalus(30,false));
         yield return new WaitForSeconds(1f);
@@ -1405,26 +1414,26 @@ public class UserMovement : MonoBehaviour {
                 indexes.Add(i); 
             }
 
-            if(GetComponent<UserInventory>().secretCode[i] == -1) {
+            if(inventory.secretCode[i] == -1) {
                 finishCode = false;
             }
         }
 
         foreach(int index in indexes) {
-            if(GetComponent<UserInventory>().secretCode[index] != -1) {
-                GetComponent<UserInventory>().secretCode[index] = targetCode;
+            if(inventory.secretCode[index] != -1) {
+                inventory.secretCode[index] = targetCode;
                 break;
             }
         }
         
-        GetComponent<UserInventory>().AddCards(1);
+        inventory.AddCards(1);
 
         Dialog currentDialog = gameController.dialog.GetDialogByName("FindNewCode");
 
 
         if(!finishCode) {
             currentDialog.Content[0] = currentDialog.Content[0].Replace("%n","" + targetCode);
-            currentDialog.Content[0] = currentDialog.Content[0].Replace("%b","" + (6 - GetComponent<UserInventory>().cards));
+            currentDialog.Content[0] = currentDialog.Content[0].Replace("%b","" + (6 - inventory.cards));
         }
 
         else {
