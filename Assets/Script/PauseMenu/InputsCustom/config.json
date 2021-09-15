@@ -1,0 +1,484 @@
+{
+	"PC": [
+		{
+			"input": "F1",
+			"overridePath": "<Keyboard>/f1"
+		},
+		
+		{
+			"input": "F2",
+			"overridePath": "<Keyboard>/f2"
+		},
+		
+		{
+			"input": "F3",
+			"overridePath": "<Keyboard>/f3"
+		},
+		
+		{
+			"input": "F4",
+			"overridePath": "<Keyboard>/f4"
+		},
+		
+		{
+			"input": "F5",
+			"overridePath": "<Keyboard>/f5"
+		},
+		
+		{
+			"input": "F6",
+			"overridePath": "<Keyboard>/f6"
+		},
+		
+		{
+			"input": "F7",
+			"overridePath": "<Keyboard>/f7"
+		},
+		
+		{
+			"input": "F8",
+			"overridePath": "<Keyboard>/f8"
+		},
+		
+		{
+			"input": "F9",
+			"overridePath": "<Keyboard>/f9"
+		},
+		
+		{
+			"input": "F10",
+			"overridePath": "<Keyboard>/f10"
+		},
+		
+		{
+			"input": "F11",
+			"overridePath": "<Keyboard>/f11"
+		},
+		
+		{
+			"input": "F12",
+			"overridePath": "<Keyboard>/f12"
+		},
+		
+		{
+			"input": "BackQuote",
+			"overridePath": "<Keyboard>/backquote"
+		},
+		
+		{
+			"input": "1",
+			"overridePath": "<Keyboard>/1"
+		},
+		
+		{
+			"input": "2",
+			"overridePath": "<Keyboard>/2"
+		},
+		
+		{
+			"input": "3",
+			"overridePath": "<Keyboard>/3"
+		},
+		
+		{
+			"input": "4",
+			"overridePath": "<Keyboard>/4"
+		},
+		
+		{
+			"input": "5",
+			"overridePath": "<Keyboard>/5"
+		},
+		
+		{
+			"input": "6",
+			"overridePath": "<Keyboard>/6"
+		},
+		
+		{
+			"input": "7",
+			"overridePath": "<Keyboard>/7"
+		},
+		
+		{
+			"input": "8",
+			"overridePath": "<Keyboard>/8"
+		},
+		
+		{
+			"input": "9",
+			"overridePath": "<Keyboard>/9"
+		},
+		
+		{
+			"input": "0",
+			"overridePath": "<Keyboard>/0"
+		},
+		
+		{
+			"input": "Minus",
+			"overridePath": "<Keyboard>/minus"
+		},
+		
+		{
+			"input": "Equals",
+			"overridePath": "<Keyboard>/equals"
+		},
+		
+		{
+			"input": "Delete",
+			"overridePath": "<Keyboard>/backspace"
+		},
+		
+		{
+			"input": "Tab",
+			"overridePath": "<Keyboard>/tab"
+		},
+		
+		{
+			"input": "A",
+			"overridePath": "<Keyboard>/q"
+		},
+		
+		{
+			"input": "Z",
+			"overridePath": "<Keyboard>/w"
+		},
+		
+		{
+			"input": "E",
+			"overridePath": "<Keyboard>/e"
+		},
+		
+		{
+			"input": "R",
+			"overridePath": "<Keyboard>/r"
+		},
+		
+		{
+			"input": "T",
+			"overridePath": "<Keyboard>/t"
+		},
+		
+		{
+			"input": "Y",
+			"overridePath": "<Keyboard>/y"
+		},
+		
+		{
+			"input": "U",
+			"overridePath": "<Keyboard>/u"
+		},
+		
+		{
+			"input": "I",
+			"overridePath": "<Keyboard>/i"
+		},
+		
+		{
+			"input": "O",
+			"overridePath": "<Keyboard>/o"
+		},
+		
+		{
+			"input": "P",
+			"overridePath": "<Keyboard>/p"
+		},
+		
+		{
+			"input": "LeftBracket",
+			"overridePath": "<Keyboard>/leftBracket"
+		},
+		
+		{
+			"input": "RightBracket",
+			"overridePath": "<Keyboard>/rightBracket"
+		},
+		
+		{
+			"input": "Return",
+			"overridePath": "<Keyboard>/enter"
+		},
+		
+		{
+			"input": "CapsLock",
+			"overridePath": "<Keyboard>/capsLock"
+		},
+		
+		{
+			"input": "Q",
+			"overridePath": "<Keyboard>/a"
+		},
+		
+		{
+			"input": "S",
+			"overridePath": "<Keyboard>/s"
+		},
+		
+		{
+			"input": "D",
+			"overridePath": "<Keyboard>/d"
+		},
+		
+		{
+			"input": "F",
+			"overridePath": "<Keyboard>/f"
+		},
+		
+		{
+			"input": "G",
+			"overridePath": "<Keyboard>/g"
+		},
+		
+		{
+			"input": "H",
+			"overridePath": "<Keyboard>/h"
+		},
+		
+		{
+			"input": "J",
+			"overridePath": "<Keyboard>/J"
+		},
+		
+		{
+			"input": "K",
+			"overridePath": "<Keyboard>/K"
+		},
+		
+		{
+			"input": "L",
+			"overridePath": "<Keyboard>/L"
+		},
+		
+		{
+			"input": "M",
+			"overridePath": "<Keyboard>/semicolon"
+		},
+		
+		{
+			"input": "Quote",
+			"overridePath": "<Keyboard>/QUOTE"
+		},
+		
+		{
+			"input": "Backslash",
+			"overridePath": "<Keyboard>/backslash"
+		},
+		
+		{
+			"input": "Leftshift",
+			"overridePath": "<Keyboard>/leftShift"
+		},
+		
+		{
+			"input": "Less",
+			"overridePath": "<Keyboard>/OEM1"
+		},
+		
+		{
+			"input": "W",
+			"overridePath": "<Keyboard>/z"
+		},
+		
+		{
+			"input": "X",
+			"overridePath": "<Keyboard>/x"
+		},
+		
+		{
+			"input": "C",
+			"overridePath": "<Keyboard>/c"
+		},
+		
+		{
+			"input": "B",
+			"overridePath": "<Keyboard>/b"
+		},
+		
+		{
+			"input": "N",
+			"overridePath": "<Keyboard>/n"
+		},
+		
+		{
+			"input": "Comma",
+			"overridePath": "<Keyboard>/comma"
+		},
+		
+		{
+			"input": "Period",
+			"overridePath": "<Keyboard>/period"
+		},
+		
+		{
+			"input": "Slash",
+			"overridePath": "<Keyboard>/slash"
+		},
+		
+		{
+			"input": "RightShift",
+			"overridePath": "<Keyboard>/shift"
+		},
+		
+		{
+			"input": "LeftControl",
+			"overridePath": "<Keyboard>/leftCtrl"
+		},
+		
+		{
+			"input": "LeftWindows",
+			"overridePath": "<Keyboard>/leftMeta"
+		},
+		
+		{
+			"input": "Space",
+			"overridePath": "<Keyboard>/space"
+		},
+		
+		{
+			"input": "RightAlt",
+			"overridePath": "<Keyboard>/rightAlt"
+		},
+		
+		{
+			"input": "RightWindows",
+			"overridePath": "<Keyboard>/rightMeta"
+		},
+		
+		{
+			"input": "RightControl",
+			"overridePath": "<Keyboard>/rightControl"
+		},
+		
+		{
+			"input": "UpArrow",
+			"overridePath": "<Keyboard>/upArrow"
+		},
+		
+		{
+			"input": "DownArrow",
+			"overridePath": "<Keyboard>/downArrow"
+		},
+		
+		{
+			"input": "LeftArrow",
+			"overridePath": "<Keyboard>/leftArrow"
+		},
+		
+		{
+			"input": "RightArrow",
+			"overridePath": "<Keyboard>/rightArrow"
+		},
+		
+		{
+			"input": "NumLock",
+			"overridePath": "<Keyboard>/numLock"
+		},
+		
+		{
+			"input": "KeypadDivide",
+			"overridePath": "<Keyboard>/numpadDivide"
+		},
+		
+		{
+			"input": "KeypadMultiply",
+			"overridePath": "<Keyboard>/numpadMiltiply"
+		},
+		
+		{
+			"input": "KeypadMinus",
+			"overridePath": "<Keyboard>/numpadMinus"
+		},
+		
+		{
+			"input": "Keypad1",
+			"overridePath": "<Keyboard>/numpad1"
+		},
+		
+		{
+			"input": "Keypad2",
+			"overridePath": "<Keyboard>/numpad2"
+		},
+		
+		{
+			"input": "Keypad3",
+			"overridePath": "<Keyboard>/numpad3"
+		},
+		
+		{
+			"input": "Keypad4",
+			"overridePath": "<Keyboard>/numpad4"
+		},
+		
+		{
+			"input": "Keypad5",
+			"overridePath": "<Keyboard>/numpad5"
+		},
+		
+		{
+			"input": "Keypad6",
+			"overridePath": "<Keyboard>/numpad6"
+		},
+		
+		{
+			"input": "Keypad7",
+			"overridePath": "<Keyboard>/numpad7"
+		},
+		
+		{
+			"input": "Keypad8",
+			"overridePath": "<Keyboard>/numpad8"
+		},
+		
+		{
+			"input": "Keypad9",
+			"overridePath": "<Keyboard>/numpad9"
+		},
+		
+		{
+			"input": "Keypad0",
+			"overridePath": "<Keyboard>/numpad0"
+		},
+		
+		{
+			"input": "KeypadPlus",
+			"overridePath": "<Keyboard>/numpadPlus"
+		},
+		
+		{
+			"input": "KeypadEnter",
+			"overridePath": "<Keyboard>/numpadEnter"
+		},
+		
+		{
+			"input": "KeypadPeriod",
+			"overridePath": "<Keyboard>/numpadPlus"
+		},
+		
+		{
+			"input": "LeftClick",
+			"overridePath": "<Keyboard>/leftButton"
+		},
+		
+		{
+			"input": "RightClick",
+			"overridePath": "<Keyboard>/rightButton"
+		},
+		
+		{
+			"input": "MiddleClick",
+			"overridePath": "<Keyboard>/middleButton"
+		},
+		
+		{
+			"input": "Mouse4",
+			"overridePath": "<Keyboard>/forwardButton"
+		},
+		
+		{
+			"input": "Mouse5",
+			"overridePath": "<Keyboard>/backButton"
+		}
+		
+	]
+}
