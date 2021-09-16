@@ -46,11 +46,9 @@ public class PlayerController : MonoBehaviour {
 
         gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
 
-        if(gameController.GetPart() == GameController.GamePart.TUTORIAL) {
+        if(gameController.GetPart() == GameController.GamePart.TUTORIAL) 
             tutorialController = GameObject.Find("tutorial").GetComponent<TutorialController>();
-        }
-
-        
+ 
     }
 
     void Update(){
@@ -63,9 +61,8 @@ public class PlayerController : MonoBehaviour {
 
                 time += Time.deltaTime;
 
-                if(time >= random) {
-                    BotJump();
-                }
+                if(time >= random) 
+                    BotJump();      
            }
         }
     }
@@ -122,21 +119,18 @@ public class PlayerController : MonoBehaviour {
                     count++;
                 }
 
-                else {
+                else 
                     verticalVelocity -= gravity * Time.deltaTime * 3f;
-                }
             }
             moveVector = Vector3.zero;
 
-           if(isMooving) {
-               moveVector.x = movement.y * speed ;
-            }
+           if(isMooving) 
+               moveVector.x = movement.y * speed ;   
 
             moveVector.y = verticalVelocity * jumpSpeed;
 
-            if(isMooving) {
-                moveVector.z = movement.x * speed * -1;
-            }
+            if(isMooving) 
+                moveVector.z = movement.x * speed * -1;   
 
             controller.Move(moveVector * Time.deltaTime);
                 
@@ -147,8 +141,10 @@ public class PlayerController : MonoBehaviour {
     public void OnMove(InputAction.CallbackContext e) {
           movement = e.ReadValue<Vector2>();
 
-        if(e.started)  isMooving = true;
-        if(e.canceled)  isMooving = false;
+        if(e.started)  
+            isMooving = true;
+        if(e.canceled)  
+            isMooving = false;
     }
 
     public void OnSprint(InputAction.CallbackContext e) {
@@ -185,15 +181,15 @@ public class PlayerController : MonoBehaviour {
 
 
             if(gameController.GetActualPlayer() < 4) {
-                gameController.DisplayDiceResult(gameController.GetActualPlayer(),result);
+                //gameController.DisplayDiceResult(gameController.GetActualPlayer(),result);
 
                 gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<PlayerController>().canJump = false;
 
-                gameController.AddResult(result + 1,gameController.GetActualPlayer());
+//                gameController.AddResult(result + 1,gameController.GetActualPlayer());
                 
-                if(gameController.GetActualPlayer() == 3) {
+                /* if(gameController.GetActualPlayer() == 3) {
                     gameController.SortPlayers();
-                }
+                } */
 
                 gameController.SetActualPlayer(gameController.GetActualPlayer() + 1);
 

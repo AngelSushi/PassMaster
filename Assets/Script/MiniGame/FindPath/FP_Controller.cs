@@ -6,7 +6,7 @@ using UnityEngine.AI;
 using System.Linq;
 using UnityEngine.SceneManagement;
 
-public class FP_Controller : CoroutineSystem {
+public class FP_Controller : MiniGame {
     #region SegmentClass
 
     public class Segment {
@@ -35,26 +35,18 @@ public class FP_Controller : CoroutineSystem {
     public Material pathMaterial;
     public Material normalMat;
     public Text endText;
-    public Text timer;
     public AudioSource win;
     public GameController gameController;
     public bool isTraining;
     public bool hasGenPath;
-    public bool finish;
 
     private int lastDirection;    
     private int segmentCount;
-    private float gameTime = 90;
     private GameObject beginSegment = null;
     private Dictionary<int,Segment> allSegments = new Dictionary<int,Segment>();
     private bool hasCheckedLeft;
     private bool hasAddStep;
     private bool hasPlayedSFX;
-
-
-    public bool begin;
-    public Text beginText;
-    private float beginTimer = 4f;
 
     public bool runSinceMenu;
 
@@ -78,47 +70,6 @@ public class FP_Controller : CoroutineSystem {
     }
 
     void Update() {
-
-        if(finish) {
-            Finish(winPlayer);
-        }
-        else {
-            if(hasGenPath && !begin) {
-                gameTime -= Time.deltaTime;
-
-                float minutes = Mathf.FloorToInt(gameTime / 60);
-                float seconds = Mathf.FloorToInt(gameTime % 60);
-
-                if(gameTime > 0) {
-                    if(seconds >= 10)
-                        timer.text = minutes + ":" + seconds;
-                    else 
-                        timer.text = minutes + ":0" + seconds;
-
-                    if(gameTime <= 10)
-                        timer.gameObject.GetComponent<Outline>().enabled = true;
-                }
-                else {
-                    winPlayer = null;
-                    finish = true;
-                }
-            }
-        }
-
-        if(begin) {
-            beginTimer -= Time.deltaTime;
-            float seconds = Mathf.FloorToInt(beginTimer % 60);
-            
-            if(seconds > 0)
-                beginText.text = "" + seconds;
-            else
-                beginText.text = "GO";
-
-            if(beginTimer < 0) {
-                beginText.text = "";
-                begin = false;
-            }
-        }
 
         if(!hasGenPath) {
             if(!ContainsWithTag()) {
@@ -184,6 +135,10 @@ public class FP_Controller : CoroutineSystem {
             }
         }
 
+    }
+
+    public override void OnFinish() {
+        Finish(winPlayer);
     }
 
     #endregion

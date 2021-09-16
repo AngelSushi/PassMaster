@@ -31,7 +31,7 @@ public class UserUI : CoroutineSystem {
     private int nextShopId = -1;
     public bool cameraView;
     public GameObject camera;
-    private Vector2 movement;
+    private Vector2 vecMove;
     private float cameraSpeed = 200f;
 
     private Text infoText;
@@ -57,8 +57,8 @@ public class UserUI : CoroutineSystem {
                 ManageHudState(true);
 
                 if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().cameraView) {
-                    float directionX = movement.x * cameraSpeed * Time.deltaTime;
-                    float directionY = movement.y * cameraSpeed * Time.deltaTime;
+                    float directionX = vecMove.x * cameraSpeed * Time.deltaTime;
+                    float directionY = vecMove.y * cameraSpeed * Time.deltaTime;
 
                     camera.transform.Translate(directionX,directionY,0);
 
@@ -858,7 +858,7 @@ public class UserUI : CoroutineSystem {
     }
     public void OnMove(InputAction.CallbackContext e) {
         if(cameraView && !gameController.freeze) 
-            movement = e.ReadValue<Vector2>();
+            vecMove = e.ReadValue<Vector2>();
     }
 
     public void OnQuit(InputAction.CallbackContext e) {

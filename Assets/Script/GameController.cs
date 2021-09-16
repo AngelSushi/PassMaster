@@ -127,15 +127,15 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(GetPlayers()[2],3);
         classedPlayers.Add(GetPlayers()[3],4);
 
-        if(GetComponent<DialogController>() != null) GetComponent<DialogController>().dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
+        if(GetComponent<DialogController>() != null) 
+            GetComponent<DialogController>().dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
         
         dialog = GetComponent<DialogController>();
         ChangeStepName();
 
         if(GetPart() == GamePart.DIALOG_START_ALPHA) {
-            for(int i = 0;i<players.Length;i++) {
+            for(int i = 0;i<players.Length;i++) 
                 players[i].SetActive(false);
-            }
 
             actualPlayer = 0;
             players[0].SetActive(true);
@@ -158,9 +158,8 @@ public class GameController : CoroutineSystem {
         }
 
         if(GetPart() == GamePart.DIALOG_TUTORIAL) {
-            for(int i = 0;i<players.Length;i++) {
-                players[i].SetActive(false);
-            }
+            for(int i = 0;i<players.Length;i++) 
+                players[i].SetActive(false);      
 
             actualPlayer = 0;
             players[0].SetActive(true);
@@ -171,10 +170,7 @@ public class GameController : CoroutineSystem {
             
             mainCamera.transform.position = new Vector3(GetPlayers()[0].transform.position.x,5747.6f,GetPlayers()[0].transform.position.z);
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
-            Debug.Log("rotation: " + mainCamera.transform.rotation);
-            Debug.Log("camera: " + mainCamera);
 
-            
             Dialog currentDialog = dialog.GetDialogByName("AskTextTutorial");
             dialog.currentDialog = currentDialog;
             dialog.isInDialog = true;
@@ -220,9 +216,8 @@ public class GameController : CoroutineSystem {
             return;
         }
 
-        if(GetPart() == GamePart.PARTYGAME && !hasGenChest && GetComponent<DialogController>() != null && !GetComponent<DialogController>().isInDialog) {
+        if(GetPart() == GamePart.PARTYGAME && !hasGenChest && GetComponent<DialogController>() != null && !GetComponent<DialogController>().isInDialog) 
             GenerateChest();
-        }
 
         if(moveToBridge) {
 
@@ -235,7 +230,6 @@ public class GameController : CoroutineSystem {
                         Destroy(GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(2).gameObject);
                         if(GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.childCount >= 5) {
                             GameObject bridge = GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(5).gameObject;
-                            Debug.Log("bridge: " + bridge);
                             if(!bridge.activeSelf) {
                                 bridge.SetActive(true);
                                 bridge.transform.SetSiblingIndex(2);
@@ -247,7 +241,6 @@ public class GameController : CoroutineSystem {
                         
                         if(GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.childCount >= 6) {
                             GameObject bridge = GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(6).gameObject;
-                            Debug.Log("bridge: " + bridge);
                             if(!bridge.activeSelf) {
                                 bridge.SetActive(true);
                                 bridge.transform.SetSiblingIndex(3);
@@ -385,9 +378,8 @@ public class GameController : CoroutineSystem {
 
     public int GetLastChest() {
         for(int i = 0;i<chestParent.transform.childCount;i++) {
-            if(chestParent.transform.GetChild(i).gameObject.activeSelf) {
-                return i;
-            }
+            if(chestParent.transform.GetChild(i).gameObject.activeSelf) 
+                return i; 
         }
 
         return -1;
@@ -504,9 +496,8 @@ public class GameController : CoroutineSystem {
         Step[] steps = GameObject.FindObjectsOfType<Step>();
 
         foreach(Step step in steps) {
-            if(step.chest == currentChest) {
-                return step.gameObject;
-            }
+            if(step.chest == currentChest) 
+                return step.gameObject;    
         }
 
         return null;
@@ -544,9 +535,8 @@ public class GameController : CoroutineSystem {
         points.Reverse();
 
         
-        for(int i = 0;i<points.Count;i++) {
-            GetKeyByValue(points[i],playerPoint,classedPlayers);
-        }   
+        for(int i = 0;i<points.Count;i++) 
+            GetKeyByValue(points[i],playerPoint,classedPlayers);   
 
 
         // Regardez les numéros de chaque joueur. Celui qui aura le plus de code sera premier
@@ -603,23 +593,31 @@ public class GameController : CoroutineSystem {
 
         GetPlayers()[0].SetActive(true);
 
-        if(changePos) GetPlayers()[0].transform.position = GetPosBegin()[0];
+        if(changePos)
+            GetPlayers()[0].transform.position = GetPosBegin()[0];
         GetPlayers()[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
-        if(GetPlayers()[0].transform.GetChild(1).gameObject.activeSelf) GetPlayers()[0].transform.GetChild(1).gameObject.SetActive(false);  
+        if(GetPlayers()[0].transform.GetChild(1).gameObject.activeSelf) 
+            GetPlayers()[0].transform.GetChild(1).gameObject.SetActive(false);  
 
-        if(!playersInStack.Contains(GetPlayers()[1])) GetPlayers()[1].SetActive(true);
+        if(!playersInStack.Contains(GetPlayers()[1])) 
+            GetPlayers()[1].SetActive(true);
         GetPlayers()[1].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-        if(changePos) GetPlayers()[1].transform.position =GetPosBegin()[1];
+        if(changePos) 
+            GetPlayers()[1].transform.position =GetPosBegin()[1];
         GetPlayers()[1].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
 
-         if(!playersInStack.Contains(GetPlayers()[2])) GetPlayers()[2].SetActive(true);
+        if(!playersInStack.Contains(GetPlayers()[2])) 
+            GetPlayers()[2].SetActive(true);
         GetPlayers()[2].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-       if(changePos) GetPlayers()[2].transform.position = GetPosBegin()[2];
+        if(changePos) 
+            GetPlayers()[2].transform.position = GetPosBegin()[2];
         GetPlayers()[2].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
 
-         if(!playersInStack.Contains(GetPlayers()[3])) GetPlayers()[3].SetActive(true);
+        if(!playersInStack.Contains(GetPlayers()[3])) 
+            GetPlayers()[3].SetActive(true);
         GetPlayers()[3].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-        if(changePos) GetPlayers()[3].transform.position = GetPosBegin()[3];  
+        if(changePos) 
+            GetPlayers()[3].transform.position = GetPosBegin()[3];  
         GetPlayers()[3].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
 
         
@@ -647,10 +645,8 @@ public class GameController : CoroutineSystem {
             getMainCamera().SetActive(true);
             getMainCamera().GetComponent<Camera>().enabled = true;
         }
-        else {
-            // Turn
-            ManageCameraPosition();
-        }
+        else // Turn
+            ManageCameraPosition();       
 
         light.transform.rotation = Quaternion.Euler(39.997f,-74.92f,-0.283f);
     }
@@ -670,19 +666,18 @@ public class GameController : CoroutineSystem {
                 ActualPlayersInStep(GetPlayers()[actualPlayer].GetComponent<UserMovement>().actualStep,GetPlayers()[actualPlayer]);
             }
 
-            if(turn == 1) players[actualPlayer].transform.position = posBegin[0];
+            if(turn == 1) 
+                players[actualPlayer].transform.position = posBegin[0];
+
             players[actualPlayer].GetComponent<UserMovement>().waitDiceResult = true;
             players[actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
             players[actualPlayer].SetActive(true);
 
-            if(turn > 1) {
-                // ManageCameraPosition
-                ManageCameraPosition();
-            }
+            if(turn > 1) 
+                ManageCameraPosition();    
 
         }
-        else { // Le tour est fini
-            // Lancement d'un mini jeux
+        else { // Le tour est fini. Lancement d'un mini jeux
             SetPart(GamePart.CHOOSE_MINIGAME);
             actualPlayer = 0;
             
@@ -845,44 +840,6 @@ public class GameController : CoroutineSystem {
         }
     }
 
-// Choix de l'ordre des joueurs
-    public void DisplayDiceResult(int index,int result) {
-       if(index <= 3) {
-
-           diceResultText[index].text = "" + result;
-       }
-    }
-    public void AddResult(int result,int player) {
-        results.Add(player,result);
-    }
-
-    public void SortPlayers() {
-        
-        // TRIER LES NUMEROS DU PLUS HAUT AU PLUS BAS
-        
-        List<int> diceResults = new List<int>();
-
-        foreach(int result in results.Values) {
-            diceResults.Add(result);
-        }
-
-        diceResults.Sort();
-        diceResults.Reverse();
-
-        for(int i = 0;i<diceResults.Count;i++) {
-
-            
-        }
-
-       //dialog.isInDialog = true;
-        //dialog.currentDialog = dialog.GetDialogByName("EndTextAlpha");
-        //StartCoroutine(dialog.ShowText(dialog.currentDialog.Content[0],dialog.currentDialog.Content.Length));
-
-        // RECUPERER DANS LE DICTIONNAIRE LINDEX DU JOUEUR QUI A FAIT LE NUMERO DICERESULTS[i]
-        
-
-    }
-
     private void ChangeStepName() {
         GameObject isleOneBeach = stepParent.transform.GetChild(0).GetChild(0).gameObject;
 
@@ -898,27 +855,24 @@ public class GameController : CoroutineSystem {
 
         GameObject isleTwo = stepParent.transform.GetChild(1).gameObject;
 
-        for(int i = 0;i<isleTwo.transform.childCount;i++) {
+        for(int i = 0;i<isleTwo.transform.childCount;i++) 
             isleTwo.transform.GetChild(i).gameObject.name = "step_00" + i;
-        }
 
         GameObject isleThreeFront = stepParent.transform.GetChild(2).GetChild(1).gameObject;
 
-        for(int i = 0;i<isleThreeFront.transform.childCount;i++){
-            isleThreeFront.transform.GetChild(i).gameObject.name = "step_front_00" + i;
-        }
+        for(int i = 0;i<isleThreeFront.transform.childCount;i++)
+            isleThreeFront.transform.GetChild(i).gameObject.name = "step_front_00" + i;       
 
         GameObject isleThreeLeft = stepParent.transform.GetChild(2).GetChild(2).gameObject;
 
-        for(int i = 0;i<isleThreeLeft.transform.childCount;i++) {
-            isleThreeLeft.transform.GetChild(i).gameObject.name = "step_left_00" + i;
-        }
+        for(int i = 0;i<isleThreeLeft.transform.childCount;i++) 
+            isleThreeLeft.transform.GetChild(i).gameObject.name = "step_left_00" + i;        
 
         GameObject isleThreeRight = stepParent.transform.GetChild(2).GetChild(3).gameObject;
 
-        for(int i = 0;i<isleThreeRight.transform.childCount;i++) {
+        for(int i = 0;i<isleThreeRight.transform.childCount;i++) 
             isleThreeRight.transform.GetChild(i).gameObject.name = "step_right_00" + i;
-        }
+        
     }
 
     public void ChangeStateScene(string sceneName,bool state) {
@@ -932,14 +886,14 @@ public class GameController : CoroutineSystem {
         }
     }
 
-    public List<MiniGame> minigames = new List<MiniGame>();
+    public List<MiniGameData> minigames = new List<MiniGameData>();
     public GameObject render;
     public float maxTimer;
     public float timer;
     public int index;
     public float step;
     private float speed = 0.08f;
-    public MiniGame actualMiniGame;
+    public MiniGameData actualMiniGame;
 
     #region MiniGame Selector
 
@@ -961,9 +915,8 @@ public class GameController : CoroutineSystem {
                 render.transform.parent.GetChild(2).GetChild(1).gameObject.GetComponent<Text>().text = minigames[index].minigameDesc;
                 index++;
 
-                if(maxTimer - timer <= 2) {
-                    speed += 0.1f;
-                }
+                if(maxTimer - timer <= 2) 
+                    speed += 0.1f;      
 
                 if(index >= 3)
                     index = 0;
@@ -997,7 +950,7 @@ public class GameController : CoroutineSystem {
 
     }
 
-    private MiniGame ConvertMiniGameWithName(string name) {
+    private MiniGameData ConvertMiniGameWithName(string name) {
         switch(name) {
             case "FindPath":
                 return minigames[0];
@@ -1056,12 +1009,8 @@ public class GameController : CoroutineSystem {
                 hasClassementShow = true;
             }
 
-            Debug.Log("winners: " + winners);
-            Debug.Log("count: " + winners.Count);
-
             if(winners != null && winners.Count > 0) { // Un joueur a gagné 
-                RunDelayed(1.5f,() => {
-                    Debug.Log("displayReward: " + displayReward);   
+                RunDelayed(1.5f,() => { 
                     if(!displayReward) {
                         foreach(GameObject winner in winners) {
 
@@ -1108,7 +1057,6 @@ public class GameController : CoroutineSystem {
 
                     
                     if(classementPanels != null && classementPanels[ConvertPlayerIndex(winners[0])].transform.parent.GetChild(5).gameObject.GetComponent<CoinsReward>().hasFinishAnimation) {
-                        Debug.Log("enterActualizing");
                         RunDelayed(1f,() => {
                             
                             ActualizePlayerClassement();
