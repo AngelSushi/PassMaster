@@ -34,8 +34,6 @@ public class UserUI : CoroutineSystem {
     private Vector2 vecMove;
     private float cameraSpeed = 200f;
 
-    private Text infoText;
-
     public GameObject bombPos;
 
     public bool useBomb;
@@ -50,71 +48,29 @@ public class UserUI : CoroutineSystem {
 
     public UserMovement movement;
 
-    void Update() {
+// Check que quand c'est pas le tour d'un joueur tt soit désactiver
 
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD) {
-            if(!gameController.freeze) {
-                ManageHudState(true);
+    void Update() {  
+        if(!gameController.freeze) {
+            ManageHudState(showHUD);
+            ManageCameraPosition();
+            ManagerHudTurnState(showTurnInfo && gameController.GetPart() == GameController.GamePart.PARTYGAME);
+            ManageActionButtonState(showActionButton);
+            ManageHudDirection(showDirection);
+            ManageChestHUD(showChestHUD);
+            ManageShop(showShop);
+            ManageShopHUD(showShopHUD);  
+        } 
+    }
 
-                if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().cameraView) {
-                    float directionX = vecMove.x * cameraSpeed * Time.deltaTime;
-                    float directionY = vecMove.y * cameraSpeed * Time.deltaTime;
+    private void ManageCameraPosition() {
 
-                    camera.transform.Translate(directionX,directionY,0);
+        float directionX = cameraView ? vecMove.x * cameraSpeed * Time.deltaTime : 0;
+        float directionY = cameraView ? vecMove.y * cameraSpeed * Time.deltaTime : 0;
 
-                    if(useBomb || useLightning) {
-                        bombPos.SetActive(true);
-                        bombPos.transform.position = new Vector3(camera.transform.position.x,bombPos.transform.position.y,camera.transform.position.z);
-                    }
-                }
-                else
-                    bombPos.SetActive(false);
-            }
-        }
-        else 
-            ManageHudState(false);
-
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showTurnInfo && gameController.GetPart() == GameController.GamePart.PARTYGAME) 
-            ManagerHudTurnState(true);
-        else 
-            ManagerHudTurnState(false);
-
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showActionButton) {
-            if(!gameController.freeze) 
-                ManageActionButtonState(true);
-        }
-        else ManageActionButtonState(false);
-
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showDirection) {
-            if(!gameController.freeze) 
-                ManageHudDirection(true);
-        }
-        else 
-            ManageHudDirection(false);
-
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showChestHUD) {
-            if(!gameController.freeze) 
-                ManageChestHUD(true);
-              
-        }
-        else 
-            ManageChestHUD(false);
-        
-
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showShop) {
-            if(!gameController.freeze) 
-                ManageShop(true);
-        }
-        else 
-            ManageShop(false);
-
-
-        if(gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showShopHUD && !gameController.freeze) 
-            ManageShopHUD(true);
-        else
-            ManageShopHUD(false);   
-
-
+        camera.transform.Translate(directionX,directionY,0);
+        bombPos.SetActive(useBomb || useLightning); 
+        bombPos.transform.position = new Vector3(camera.transform.position.x,bombPos.transform.position.y,camera.transform.position.z);
     }
 
     public void OnRight(InputAction.CallbackContext e) {
@@ -454,22 +410,22 @@ public class UserUI : CoroutineSystem {
         }        
         if(e.started && showDirection && !gameController.freeze) {
             if(hudParent.transform.GetChild(10).GetChild(1).gameObject.activeSelf) {
-                gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().left = true;
+                movement.left = true;
                 hudParent.transform.GetChild(10).GetChild(0).gameObject.SetActive(true);
                 hudParent.transform.GetChild(10).GetChild(1).gameObject.SetActive(false); 
             }
             else if(hudParent.transform.GetChild(11).GetChild(1).gameObject.activeSelf) {
-                gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().front = true;
+                gmovement.front = true;
                 hudParent.transform.GetChild(11).GetChild(0).gameObject.SetActive(true);
                 hudParent.transform.GetChild(11).GetChild(1).gameObject.SetActive(false);
             }
             else if(hudParent.transform.GetChild(12).GetChild(1).gameObject.activeSelf) {
-                gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().right = true;
+                movement.right = true;
                 hudParent.transform.GetChild(12).GetChild(0).gameObject.SetActive(true);
                 hudParent.transform.GetChild(12).GetChild(1).gameObject.SetActive(false);
             }
 
-            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().reverseCount = direction.reverseCount;
+            movement.reverseCount = direction.reverseCount;
             showDirection = false;
             index = -1;
         }
@@ -676,7 +632,9 @@ public class UserUI : CoroutineSystem {
                 showHUD = false;
                 showActionButton = false;
                 infoLabel.SetActive(false);
-                if(movement.isPlayer) movement.isTurn = true;
+                if(movement.isPlayer) 
+                    movement.isTurn = true;
+
                 GetComponent<NavMeshAgent>().enabled = true;
                 movement.waitDiceResult = true;
                 index = -1;
@@ -689,12 +647,7 @@ public class UserUI : CoroutineSystem {
                 camera.transform.position = new Vector3(transform.position.x,5747.6f,transform.position.z);
                 camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
-                infoLabel.transform.position = new Vector2(971,164);
-                infoLabel.GetComponent<Text>().color = new Color(1.0f,1.0f,1.0f);
-                infoLabel.GetComponent<Text>().text = "Appuyez sur ECHAP pour quitter le mode";
-                infoLabel.GetComponent<AlphaController>().manageAlpha = true;
-                infoLabel.SetActive(true);
-                infoText =  infoLabel.GetComponent<Text>();
+                DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur ECHAP pour quitter le mode");
             }
 
             return;
@@ -707,29 +660,25 @@ public class UserUI : CoroutineSystem {
 
                     switch(index) {
                         case 0: // Double Dice
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().doubleDice = true;
+                            movement.doubleDice = true;
                             ManageInventory(false);
                             isInInventory = false;
-
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showActionButton = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().isTurn = true;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().waitDiceResult = true;
-
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserInventory>().hasDoubleDice = false;
+                            showHUD = false;
+                            showActionButton = false;
+                            movement.isTurn = true;
+                            movement.waitDiceResult = true;
+                            movement.inventory.hasDoubleDice = false;
                             break;
 
                         case 1: // Reverse Dice
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().reverseDice = true;
+                            movement.reverseDice = true;
                             ManageInventory(false);
                             isInInventory = false;
-
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showActionButton = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().isTurn = true;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().waitDiceResult = true;
-
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserInventory>().hasReverseDice = false;
+                            showHUD = false;
+                            showActionButton = false;
+                            movement.isTurn = true;
+                            movement.waitDiceResult = true;
+                            movement.hasReverseDice = false;
                             break;
 
                         case 2: // Bomb
@@ -741,19 +690,12 @@ public class UserUI : CoroutineSystem {
                             camera.transform.position = new Vector3(transform.position.x,5747.6f,transform.position.z);
                             camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
-                            infoLabel.transform.position = new Vector2(971,164);
-                            infoLabel.GetComponent<Text>().color = new Color(1.0f,1.0f,1.0f);
-                            infoLabel.GetComponent<Text>().text = "Appuyez sur ECHAP pour quitter le mode";
-                            infoLabel.GetComponent<AlphaController>().manageAlpha = true;
-                            infoLabel.SetActive(true);
-                            infoText =  infoLabel.GetComponent<Text>();
-                            ManageInventory(false);
-
-                            // Changez le mat des iles et du bridge
-
+                            DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f), "Appuyez sur ECHAP pour quitter le mode");
+                            
+                            ManageInventory(false);// Changez le mat des iles et du bridge
                             ApplyBombMat();
+                            movement.inventory.hasBomb = false;
 
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserInventory>().hasBomb = false;
                             break;
                         case 3: //Hourglass
                             if(gameController.GetDayController().dayPeriod < 2) gameController.GetDayController().dayPeriod++;
@@ -762,13 +704,13 @@ public class UserUI : CoroutineSystem {
                             ManageInventory(false);
                             isInInventory = false;
 
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showActionButton = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().isTurn = true;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().waitDiceResult = true;
+                            showHUD = false;
+                            showActionButton = false;
+                            movement.isTurn = true;
+                            movement.waitDiceResult = true;
 
                             // Camera animation on voit le dayPeriod d'avant ecran noir puis le nouveau dayPeriod
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserInventory>().hasHourglass = false;
+                            movement.inventory.hasHourglass = false;
 
                             break;
                         case 4: // Lightning
@@ -777,31 +719,26 @@ public class UserUI : CoroutineSystem {
                             camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
 
                             camera.transform.position = new Vector3(transform.position.x,5747.6f,transform.position.z);
-                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
+                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f);           
+                            DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f), "Appuyez sur ECHAP pour quitter le mode");
 
-                            infoLabel.transform.position = new Vector2(971,164);
-                            infoLabel.GetComponent<Text>().color = new Color(1.0f,1.0f,1.0f);
-                            infoLabel.GetComponent<Text>().text = "Appuyez sur ECHAP pour quitter le mode";
-                            infoLabel.GetComponent<AlphaController>().manageAlpha = true;
-                            infoLabel.SetActive(true);
-                            infoText =  infoLabel.GetComponent<Text>();
                             ManageInventory(false);
                             isInInventory = false;
 
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserInventory>().hasLightning = false;
+                            movement.inventory.hasLightning = false;
                             break;
 
                         case 5: // Star
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserAudio>().Invicibility();
+                            transform.gameObject.GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();
+                            transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();
+                            movement.audio.Invicibility();
 
                             ManageInventory(false);
 
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showActionButton = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().isTurn = true;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().waitDiceResult = true;
+                            showHUD = false;
+                            showActionButton = false;
+                            movement.isTurn = true;
+                            movement.waitDiceResult = true;
 
                             gameController.getMainCamera().transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
                             gameController.getMainCamera().transform.rotation = Quaternion.Euler(0,275.83f,0f);
@@ -809,29 +746,24 @@ public class UserUI : CoroutineSystem {
                             gameController.getMainCamera().GetComponent<Camera>().enabled = true;
                             isInInventory = false;
 
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserInventory>().hasStar = false;
+                            movement.inventory.hasStar = false;
                             break;    
 
                         case 6: // Parachute
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<NavMeshAgent>().enabled = false;
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserMovement>().isParachuting = true;
+                            movement.agent.enabled = false;
+                            movement.isParachuting = true;
                             ManageInventory(false); 
                             showHUD = false;
                             showActionButton = false;
                             isInInventory = false;
 
-                            gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserInventory>().hasParachute = false;
+                            movement.inventory.hasParachute = false;
                             break;
                     }
                 }
                 else { // Le joueur n'a pas l'objet
                     if(index >= 0 && inventoryParent.activeSelf) {
-                        infoLabel.GetComponent<Text>().text = "Vous ne possédez pas cet objet";
-                        infoLabel.transform.position = new Vector2(971,297);
-                        infoLabel.GetComponent<Text>().color = new Color(1.0f,0.0f,0.0f);
-                        infoText =  infoLabel.GetComponent<Text>();
-                        infoLabel.GetComponent<AlphaController>().manageAlpha = false;
-                        infoLabel.SetActive(true);
+                        DisplayInfoText(new Vector2(971,297),new Color(1.0f,0.0f,0.0f), "Vous ne possédez pas cet objet");
                         isInInventory = false;
                         StartCoroutine(InfoLabelWaiting());
                     }
@@ -848,12 +780,7 @@ public class UserUI : CoroutineSystem {
     }
 
     public void UseObject(GameObject player,string objet) {
-        infoLabel.GetComponent<Text>().text = player.name + "vient d'utiliser l'objet " + objet;
-        infoLabel.transform.position = new Vector2(971,297);
-        infoLabel.GetComponent<Text>().color = new Color(0f,0.53f,0.03f);
-        infoText =  infoLabel.GetComponent<Text>();
-        infoLabel.GetComponent<AlphaController>().manageAlpha = false;
-        infoLabel.SetActive(true);
+        DisplayInfoText(new Vector2(971,297),new Color(0f,0.53f,0.03f),player.name + "vient d'utiliser l'objet " + objet);
         StartCoroutine(InfoLabelWaiting());
     }
     public void OnMove(InputAction.CallbackContext e) {
@@ -875,9 +802,9 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && gameController.GetPlayers()[0].GetComponent<UserUI>().showShop && !gameController.freeze) {
-            gameController.GetPlayers()[0].GetComponent<UserUI>().showShop = false;
+            showShop = false;
             // Lui faire revenir sur la step
-            gameController.GetPlayers()[0].GetComponent<UserMovement>().returnToStep = true;
+            movement.returnToStep = true;
             index = -1;
         }
 
@@ -888,7 +815,7 @@ public class UserUI : CoroutineSystem {
         if(showShop && !gameController.freeze) {
             showShop = false;
             // Lui faire rentrer sur la step
-            gameController.GetPlayers()[0].GetComponent<UserMovement>().returnToStep = true;
+            movement.returnToStep = true;
             index = -1;
         }
     }
@@ -1260,5 +1187,13 @@ public class UserUI : CoroutineSystem {
         }
 
         return null;
+    }
+
+    private void DisplayInfoText(Vector2 pos,Color color,string text) {
+        infoLabel.transform.position = pos;
+        infoLabel.GetComponent<Text>().color = color;
+        infoLabel.GetComponent<Text>().text = text;
+        infoLabel.GetComponent<AlphaController>().manageAlpha = true;
+        infoLabel.SetActive(true);
     }
 }
