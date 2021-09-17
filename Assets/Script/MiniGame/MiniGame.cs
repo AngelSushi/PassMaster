@@ -2,16 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public abstract class MiniGame : CoroutineSystem {
 
     public bool finish,begin;
-    private float beginTimer = 4f;
-
-    public Text beginText,timer;
-    private string lastBeginText,lastTimeText;
-    public AudioSource startSound,timerSound,timeSound;
+    public bool isTraining;
+    public bool runSinceMenu;
     public float gameTime;
+    public List<GameObject> winners = new List<GameObject>();
+    public Text beginText,timer;
+    public Text endText;
+    public AudioSource startSound,timerSound,timeSound;
+    public AudioSource mainAudio;
+    public AudioSource win;
+    public GameObject[] classementPanels;
+    public GameObject confetti;
+
+    private bool hasPlayedSFX;
+    private float beginTimer = 4f;
+    private string lastBeginText,lastTimeText;
+    private GameController gameController;
+
+    void Start() {
+        
+        gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
+    }
 
     void Update() {
         if(!finish) {
@@ -20,8 +36,34 @@ public abstract class MiniGame : CoroutineSystem {
             else 
                 MiniGameTimer();     
         }
-        else
+        else {
             OnFinish();
+
+            mainAudio.Stop();
+
+            if(!hasPlayedSFX) {
+                win.Play();
+                hasPlayedSFX = true;
+                endText.gameObject.SetActive(true);
+                confetti.SetActive(true);
+                confetti.transform.position = winners[0].transform.position;
+                confetti.GetComponent<ParticleSystem>().enableEmission = true;
+                confetti.GetComponent<ParticleSystem>().Play();
+            }
+
+
+            if(isTraining) {
+                SceneManager.LoadScene("MiniGameLabel",LoadSceneMode.Additive);
+                SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name); // Attention avec plusieurs scenes ouvertes
+            }
+            else if(runSinceMenu) {
+                SceneManager.LoadScene("MainMenu",LoadSceneMode.Single);
+                SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
+            }
+            else 
+                gameController.EndMiniGame(classementPanels,winners,endText.gameObject); 
+ 
+        }
     }
 
     private void BeginTimer() {

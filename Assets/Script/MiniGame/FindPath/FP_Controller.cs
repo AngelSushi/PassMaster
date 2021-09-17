@@ -22,11 +22,9 @@ public class FP_Controller : MiniGame {
     public List<GameObject> steps = new List<GameObject>();
     public List<GameObject> path = new List<GameObject>();
     public List<GameObject> clearPath = new List<GameObject>();
-    public GameObject[] classementPanels;
     public GameObject[] spawnPoints;
     public GameObject[] players;
     public GameObject decor;
-    public GameObject confettis;
     public GameObject winPlayer;
     public GameObject surface;
     public GameObject mainCamera;
@@ -34,10 +32,7 @@ public class FP_Controller : MiniGame {
     public int direction = 0;
     public Material pathMaterial;
     public Material normalMat;
-    public Text endText;
-    public AudioSource win;
     public GameController gameController;
-    public bool isTraining;
     public bool hasGenPath;
 
     private int lastDirection;    
@@ -46,9 +41,6 @@ public class FP_Controller : MiniGame {
     private Dictionary<int,Segment> allSegments = new Dictionary<int,Segment>();
     private bool hasCheckedLeft;
     private bool hasAddStep;
-    private bool hasPlayedSFX;
-
-    public bool runSinceMenu;
 
     #endregion
 
@@ -138,54 +130,24 @@ public class FP_Controller : MiniGame {
     }
 
     public override void OnFinish() {
-        Finish(winPlayer);
-    }
-
-    #endregion
-
-    #region Custom Functions
-    
-    private void Finish(GameObject player) {
         
         if(!gameController.gameObject.activeSelf) 
             gameController.gameObject.SetActive(true);
 
        // winPlayer = player = gameController.GetPlayers()[0];
-        List<GameObject> winners = new List<GameObject>();
 
-        if(player != null) {
-            if(!hasPlayedSFX) {
-                win.Play();
-                hasPlayedSFX = true;
-                endText.gameObject.SetActive(true);
-                confettis.SetActive(true);
-                confettis.transform.position = player.transform.position;
-                confettis.GetComponent<ParticleSystem>().enableEmission = true;
-                confettis.GetComponent<ParticleSystem>().Play();
-                winners.Add(player);
-
-            }
-
-
-            if(player.name != "User") {
-                Vector3 playerPosition = new Vector3(player.transform.position.x,mainCamera.transform.position.y,player.transform.position.z);
+        if(winPlayer != null) { // Ne va pas fonctionner attention a refaire
+            if(winPlayer.name != "User") {
+                Vector3 playerPosition = new Vector3(winPlayer.transform.position.x,mainCamera.transform.position.y,winPlayer.transform.position.z);
                 mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,playerPosition,200 * Time.deltaTime);
             }
         }
 
-        if(isTraining) {
-            SceneManager.LoadScene("MiniGameLabel",LoadSceneMode.Additive);
-            SceneManager.UnloadSceneAsync("FindPath");
-        }
-        else if(runSinceMenu) {
-            SceneManager.LoadScene("MainMenu",LoadSceneMode.Single);
-            SceneManager.UnloadSceneAsync("FindPath");
-        }
-        else 
-            gameController.EndMiniGame(classementPanels,winners,endText.gameObject);  
     }
 
+    #endregion
 
+    #region Custom Functions
 
     private void GeneratePath(int sLength,int dir) {     
 

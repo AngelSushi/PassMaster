@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class KBController : MiniGame {
 
     public Dictionary<GameObject,int> playersPoint = new Dictionary<GameObject,int>();
-    public bool isTraining;
     public GameObject[] stopwatch = new GameObject[4];
     public Sprite[] destroySprite = new Sprite[48];
 
@@ -16,15 +15,8 @@ public class KBController : MiniGame {
     public GameObject[] players;
     public Transform areaDeath;
 
-    private bool hasPlayedSFX;
-    public AudioSource win;
-    public GameObject endText;
     public GameObject confetti;
     public GameObject mainCamera;
-    public GameObject[] classementPanels;
-
-
-    public AudioSource mainAudio;
 
     public GameObject[] pointsText = new GameObject[4];
     public GameObject[] walls = new GameObject[4];
@@ -33,9 +25,8 @@ public class KBController : MiniGame {
 
     public GameObject portal;
 
-    public bool runSinceMenu;
-
     public Material skybox;
+
     void Start() {
         playersPoint.Add(players[0],0);
         playersPoint.Add(players[1],0);
@@ -54,53 +45,23 @@ public class KBController : MiniGame {
     }
 
     public override void OnFinish() {
-        if(isTraining) {
-                SceneManager.LoadScene("MiniGameLabel",LoadSceneMode.Additive);
-                SceneManager.UnloadSceneAsync("KeyBall");
-            }
-            else if(runSinceMenu) {
-                SceneManager.LoadScene("MainMenu",LoadSceneMode.Single);
-                SceneManager.UnloadSceneAsync("KeyBall");
-            }
-            else {
+        List<int> points = new List<int>();
 
-                List<int> points = new List<int>();
+        foreach(int point in playersPoint.Values) 
+            points.Add(point);
+                
+        points.Sort();
+        int winnerPoint = points[points.Count - 1];        
 
-                foreach(int point in playersPoint.Values) {
-                    points.Add(point);
-                }
+        foreach(GameObject player in playersPoint.Keys) {
+            if(playersPoint[player] == winnerPoint)
+                this.winners.Add(player);
+        }
 
-                points.Sort();
-                int winnerPoint = points[points.Count - 1];
-
-                mainAudio.Stop();
-
-                List<GameObject> winners = new List<GameObject>();
-
-                foreach(GameObject player in playersPoint.Keys) {
-                    if(playersPoint[player] == winnerPoint)
-                        winners.Add(player);
-                }
-
-                if(!hasPlayedSFX) {
-                    win.Play();
-                    hasPlayedSFX = true;
-                    endText.gameObject.SetActive(true);
-                    confetti.SetActive(true);
-                    confetti.transform.position = winners[0].transform.position;
-                    confetti.GetComponent<ParticleSystem>().enableEmission = true;
-                    confetti.GetComponent<ParticleSystem>().Play();
-                }  
-
-            //    winners[0].GetComponent<KB_PlayerMovement>().isJumping = true;  
-
-                if(winners.Count == 1 && winners[0].name != "User") {
-                    Vector3 playerPosition = new Vector3(winners[0].transform.position.x - 15,mainCamera.transform.position.y,winners[0].transform.position.z);
-                    mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,playerPosition,200 * Time.deltaTime);
-                }
-
-                GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().EndMiniGame(classementPanels,winners,endText.gameObject);
-            }
+        if(winners.Count == 1 && winners[0].name != "User") {
+            Vector3 playerPosition = new Vector3(winners[0].transform.position.x - 15,mainCamera.transform.position.y,winners[0].transform.position.z);
+            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,playerPosition,200 * Time.deltaTime);
+        }       
     }
 
     public void AddPoint(GameObject player,int point) {

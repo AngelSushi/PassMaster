@@ -13,25 +13,14 @@ public class ArcheryController : MiniGame {
     public GameObject[] players;
     public GameObject hudParentScore;
     public GameObject[] splashsPainting;
-    public bool isTraining;
-    
-    public GameObject[] classementPanels;
-    public Text endText;
-
-    public GameObject confetti;
-    public AudioSource win;
-    private bool hasPlayedSFX;
 
     public GameObject mainCamera;
 
     private GameObject bottom;
     private GameObject top;
-    public bool runSinceMenu;
 
 
     void Start() {
-        //GameController.difficulty = 2;
-
         InstantiateTarget();
 
         foreach(GameObject player in players) {
@@ -44,64 +33,35 @@ public class ArcheryController : MiniGame {
 
     void Update() {}
 
-    public override void OnFinish() {
-        if(isTraining) {
-            SceneManager.LoadScene("MiniGameLabel",LoadSceneMode.Additive);
-            SceneManager.UnloadSceneAsync("Archery");
+    public override void OnFinish() {             
+        GameObject[] objects = SceneManager.GetSceneByName("Archery").GetRootGameObjects();
+
+        foreach(GameObject obj in objects) {
+            if(obj.name.Contains("Clone"))
+                Destroy(obj);
         }
-        else if(runSinceMenu) {
-            SceneManager.LoadScene("MainMenu",LoadSceneMode.Single);
-            SceneManager.UnloadSceneAsync("Archery");
-        }
-        else {
-            // Récupérer celui qui a le plus de points 
-            // Si il y en a plusieurs --> plusieurs récompenses 
+
+        List<int> points = new List<int>();
+
+        foreach(int point in playersPoint.Values) 
+            points.Add(point);
                     
-            GameObject[] objects = SceneManager.GetSceneByName("Archery").GetRootGameObjects();
+        points.Sort();
+        int winnerPoint = points[points.Count - 1];
 
-            foreach(GameObject obj in objects) {
-                if(obj.name.Contains("Clone"))
-                    Destroy(obj);
-            }
 
-            //GameObject player = players[0];
-
-            List<int> points = new List<int>();
-
-            foreach(int point in playersPoint.Values) 
-                points.Add(point);
-                    
-            points.Sort();
-            int winnerPoint = points[points.Count - 1];
-
-            List<GameObject> winners = new List<GameObject>();
-
-            foreach(GameObject player in playersPoint.Keys) {
-                if(playersPoint[player] == winnerPoint)
-                    winners.Add(player);
-            }
-
-            if(!hasPlayedSFX) {
-                win.Play();
-                hasPlayedSFX = true;
-                endText.gameObject.SetActive(true);
-                confetti.SetActive(true);
-                confetti.transform.position = winners[0].transform.position;
-                confetti.GetComponent<ParticleSystem>().enableEmission = true;
-                confetti.GetComponent<ParticleSystem>().Play();
-            }
-
-            if(winners[0].name != "User") {
-                Vector3 playerPosition = new Vector3(winners[0].transform.position.x,mainCamera.transform.position.y,winners[0].transform.position.z);
-                mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,playerPosition,200 * Time.deltaTime);
-            }
-
-            Destroy(top);
-            Destroy(bottom);
-
-            GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().EndMiniGame(classementPanels,winners,endText.gameObject);
-
+        foreach(GameObject player in playersPoint.Keys) {
+            if(playersPoint[player] == winnerPoint)
+                this.winners.Add(player);
         }
+
+        if(winners[0].name != "User") {
+            Vector3 playerPosition = new Vector3(winners[0].transform.position.x,mainCamera.transform.position.y,winners[0].transform.position.z);
+            mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,playerPosition,200 * Time.deltaTime);
+        }
+
+        Destroy(top);
+        Destroy(bottom);
             
     }
 
