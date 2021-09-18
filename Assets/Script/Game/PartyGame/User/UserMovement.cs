@@ -130,9 +130,9 @@ public class UserMovement : MonoBehaviour {
                                 canJump = true;
                                 dice = Instantiate(gameController.prefabDice,new Vector3(transform.position.x,transform.position.y + 40,transform.position.z),gameController.prefabDice.transform.rotation);
                                 dice.GetComponent<DiceController>().lockDice = false;
-                                if(!doubleDice && !reverseDice) dice.GetComponent<MeshRenderer>().material = gameController.GetDiceMaterials()[0];
-                                if(doubleDice) dice.GetComponent<MeshRenderer>().material = gameController.GetDiceMaterials()[1];
-                                if(reverseDice) dice.GetComponent<MeshRenderer>().material = gameController.GetDiceMaterials()[2];
+                                if(!doubleDice && !reverseDice) dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[0];
+                                if(doubleDice) dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[1];
+                                if(reverseDice) dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[2];
                                 hasGenDice = true;
                                 stack = false;
                             }
@@ -150,11 +150,11 @@ public class UserMovement : MonoBehaviour {
                             dice.GetComponent<DiceController>().lockDice = false;
 
                             if(!doubleDice && !reverseDice) 
-                                dice.GetComponent<MeshRenderer>().material = gameController.GetDiceMaterials()[0];
+                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[0];
                             if(doubleDice) 
-                                dice.GetComponent<MeshRenderer>().material = gameController.GetDiceMaterials()[1];
+                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[1];
                             if(reverseDice) 
-                                dice.GetComponent<MeshRenderer>().material = gameController.GetDiceMaterials()[2];
+                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[2];
 
                             hasGenDice = true;
                             stack = false;
@@ -215,11 +215,11 @@ public class UserMovement : MonoBehaviour {
 
                                     int percentage = -1;
 
-                                    if(gameController.GetDifficulty() == 0)
+                                    if(GameController.difficulty == 0)
                                         percentage = 30;
-                                    else if(gameController.GetDifficulty() == 1) // Medium
+                                    else if(GameController.difficulty == 1) // Medium
                                         percentage = 60;
-                                    else if(gameController.GetDifficulty() == 2) // Hard
+                                    else if(GameController.difficulty == 2) // Hard
                                         percentage = 85;
 
                                     if(random >= 0 && random <= percentage) {
@@ -684,10 +684,10 @@ public class UserMovement : MonoBehaviour {
             if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Step_End") 
                 lastStep = hit.gameObject;
 
-            foreach(GameObject step in gameController.GetPlayerConflict().Values) {
+            foreach(GameObject step in gameController.playerConflict.Values) {
                 if(hit.gameObject == step) {
                     // On fait revenir le bot sur sa case
-                    GameObject user = gameController.GetKeyByValue(step,gameController.GetPlayerConflict());
+                    GameObject user = gameController.GetKeyByValue(step,gameController.playerConflict);
 
                     user.GetComponent<UserMovement>().point = user.transform.position;
                     user.GetComponent<UserMovement>().returnStepBack = true;
@@ -702,7 +702,7 @@ public class UserMovement : MonoBehaviour {
                         else user.GetComponent<UserMovement>().point.z += 20;
                     }
 
-                    gameController.GetPlayerConflict().Remove(user); // Error
+                    gameController.playerConflict.Remove(user); // Error
                 }
             }
 
@@ -886,7 +886,7 @@ public class UserMovement : MonoBehaviour {
     private void StepBackMovement(GameObject[] steps) {
         if(stepPaths != null) {
             foreach(GameObject step in stepPaths) {
-                foreach(GameObject user in gameController.GetPlayers()) {
+                foreach(GameObject user in gameController.players) {
                     if(step != null && user.GetComponent<UserMovement>().actualStep == step) {
                         if(nextStep.gameObject == step) {
                             GameObject lastStep = steps[beginResult - 1];
@@ -905,7 +905,7 @@ public class UserMovement : MonoBehaviour {
                                         else user.GetComponent<UserMovement>().point.z -= 20;
                                     }
 
-                                    gameController.GetPlayerConflict().Add(user,step);
+                                    gameController.playerConflict.Add(user,step);
 
 
                                 }
@@ -1086,7 +1086,7 @@ public class UserMovement : MonoBehaviour {
                 steps.Add(child);
         }
 
-        if(gameController.GetDayController().dayPeriod != 2) {
+        if(gameController.dayController.dayPeriod != 2) {
 
             foreach(Transform child in isleTwo.transform) {
                 if(child.gameObject.tag != "Direction") 
@@ -1104,7 +1104,7 @@ public class UserMovement : MonoBehaviour {
                 steps.Add(child);
         }
 
-        if(gameController.GetDayController().dayPeriod != 2) {
+        if(gameController.dayController.dayPeriod != 2) {
             foreach(Transform child in isleThreeFront.transform) {
                 if(child.gameObject.tag != "Direction") 
                     steps.Add(child);
@@ -1168,8 +1168,11 @@ public class UserMovement : MonoBehaviour {
                         break;
 
                     case 3: // Hourglass
-                        if(gameController.GetDayController().dayPeriod < 2) gameController.GetDayController().dayPeriod++;
-                        else gameController.GetDayController().dayPeriod = 0;
+                        if(gameController.dayController.dayPeriod < 2) 
+                            gameController.dayController.dayPeriod++;
+                        else 
+                            gameController.dayController.dayPeriod = 0;
+
                         inventory.hasHourglass = false;
                         ui.UseObject(transform.gameObject,"Sablier");
                         break;    
@@ -1195,14 +1198,14 @@ public class UserMovement : MonoBehaviour {
     }
 
     private bool ShopBot() {
-        int item = Random.Range(0,gameController.GetShopItems().Count - 1);
+        int item = Random.Range(0,gameController.shopItems.Count - 1);
 
-        if(inventory.coins >= gameController.GetShopItems()[item].price) {
+        if(inventory.coins >= gameController.shopItems[item].price) {
             switch(item) {
                 case 0: // Dé double
                     if(!inventory.hasDoubleDice) {
                         inventory.hasDoubleDice = true;
-                        StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
+                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
                         return true;
                     }
                     break;
@@ -1210,7 +1213,7 @@ public class UserMovement : MonoBehaviour {
                 case 1: // Dé inverse
                     if(!inventory.hasReverseDice) {
                         inventory.hasReverseDice = true;
-                        StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
+                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
                         return true;
                     }
                     break;
@@ -1218,7 +1221,7 @@ public class UserMovement : MonoBehaviour {
                 case 2:
                     if(!inventory.hasBomb) {
                         inventory.hasBomb = true;
-                        StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
+                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
                         return true;
                     }
                 break;
@@ -1226,7 +1229,7 @@ public class UserMovement : MonoBehaviour {
                 case 3:
                     if(!inventory.hasHourglass) {
                         inventory.hasHourglass = true;
-                        StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
+                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
                         return true;
                     }
                 break;
@@ -1234,7 +1237,7 @@ public class UserMovement : MonoBehaviour {
                 case 4:
                     if(!inventory.hasLightning) {
                         inventory.hasLightning = true;
-                        StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
+                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
                         return true;
                     }
                     break;
@@ -1242,7 +1245,7 @@ public class UserMovement : MonoBehaviour {
                 case 5:
                     if(!inventory.hasStar) {
                         inventory.hasStar = true;
-                        StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
+                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
                         return true;
                     }
                     break;
@@ -1250,7 +1253,7 @@ public class UserMovement : MonoBehaviour {
                 case 6:
                     if(!inventory.hasParachute) {
                         inventory.hasParachute = true;
-                        StartCoroutine(WaitMalus(gameController.GetShopItems()[item].price,false));
+                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
                         return true;
                     }
                     break;
@@ -1343,11 +1346,11 @@ public class UserMovement : MonoBehaviour {
         int random = /*Random.Range(0,100) */ 28;
         int percentage = -1;
 
-        if(gameController.GetDifficulty() == 0)
+        if(GameController.difficulty == 0)
             percentage = 30;
-        else if(gameController.GetDifficulty() == 1) // Medium
+        else if(GameController.difficulty == 1) // Medium
             percentage = 60;
-        else if(gameController.GetDifficulty() == 2) // Hard
+        else if(GameController.difficulty == 2) // Hard
             percentage = 85;
 
 
@@ -1374,7 +1377,7 @@ public class UserMovement : MonoBehaviour {
 
         yield return new WaitForSeconds(1f);      
 
-        int[] secretCode = gameController.GetSecretCode();
+        int[] secretCode = gameController.secretCode;
         int random = Random.Range(0,secretCode.Length - 1);
 
         int targetCode = secretCode[random];

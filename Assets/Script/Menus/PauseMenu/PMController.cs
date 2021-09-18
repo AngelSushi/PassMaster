@@ -98,7 +98,7 @@ public class PMController : CoroutineSystem {
                             menuSelect.Play();
                         }
                         if(index == 3) { 
-                            if(controller.GetPart() == GameController.GamePart.MINIGAME) {
+                            if(controller.part == GameController.GamePart.MINIGAME) {
 
                             }
                             else { 

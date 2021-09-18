@@ -37,8 +37,9 @@ public class GameController : CoroutineSystem {
     
 
 
-    private int actualPlayer;
+    public int actualPlayer;
     public GameObject[] players = new GameObject[4];
+
     public Dictionary<GameObject,int> classedPlayers = new Dictionary<GameObject,int>();
     private GameObject[] dices = new GameObject[4];
 
@@ -53,7 +54,7 @@ public class GameController : CoroutineSystem {
 
 // Chest Manage
     public GameObject chestParent;
-    public GameObject currentChest;
+    public GameObject actualChest;
 
     public Vector3[] posBegin = new Vector3[4];
 
@@ -67,7 +68,7 @@ public class GameController : CoroutineSystem {
     public int turn;
 
 
-    public int[] secretCode = new int[6];
+    public int[] secretCode;
 
     public bool hasGenChest;
     private bool checkLastChest;
@@ -79,8 +80,6 @@ public class GameController : CoroutineSystem {
     public List<ShopItem> shopItems;
 
     public List<Material> diceMaterials;
-    public List<Material> bombIsleMat;
-    public List<Material> isleMat;
     public List<GameObject> prefabObjects = new List<GameObject>();
 
     public Shader invicibilityShader;
@@ -93,15 +92,8 @@ public class GameController : CoroutineSystem {
 
     public int nightIndex;
 
-    public int bridgeRemainingTurn = -1;
-    public int bridgeRemainingTurn01 = -1;
-
-    private bool moveToBridge;
-    private Vector3 bridgePos;
-    private int bridgeIndex = -1;
-
     private  List<int> points = new List<int>();
-    private Dictionary<GameObject,int> playerPoint = new Dictionary<GameObject,int>();
+    public Dictionary<GameObject,int> playerPoint = new Dictionary<GameObject,int>();
     private bool begin = true;
 
     private GamePart lastPart;
@@ -112,13 +104,15 @@ public class GameController : CoroutineSystem {
     private bool isFirstChest = true;
 
     public MiniGameController mgController;
+
+
     void Start() {
         GameController.difficulty = 2;
 
-        classedPlayers.Add(GetPlayers()[0],1);
-        classedPlayers.Add(GetPlayers()[1],2);
-        classedPlayers.Add(GetPlayers()[2],3);
-        classedPlayers.Add(GetPlayers()[3],4);
+        classedPlayers.Add(players[0],1);
+        classedPlayers.Add(players[1],2);
+        classedPlayers.Add(players[2],3);
+        classedPlayers.Add(players[3],4);
 
         if(GetComponent<DialogController>() != null) 
             GetComponent<DialogController>().dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
@@ -126,7 +120,7 @@ public class GameController : CoroutineSystem {
         dialog = GetComponent<DialogController>();
         ChangeStepName();
 
-        if(GetPart() == GamePart.DIALOG_START_ALPHA) {
+        if(part == GamePart.DIALOG_START_ALPHA) {
             for(int i = 0;i<players.Length;i++) 
                 players[i].SetActive(false);
 
@@ -137,7 +131,7 @@ public class GameController : CoroutineSystem {
             stepParent.SetActive(false);
           //  mainCamera.transform.rotation = Quaternion.Euler(-36.941f,358.267f,0f);
             
-            mainCamera.transform.position = new Vector3(GetPlayers()[0].transform.position.x,5747.6f,GetPlayers()[0].transform.position.z);
+            mainCamera.transform.position = new Vector3(players[0].transform.position.x,5747.6f,players[0].transform.position.z);
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
             
@@ -150,7 +144,7 @@ public class GameController : CoroutineSystem {
 
         }
 
-        if(GetPart() == GamePart.DIALOG_TUTORIAL) {
+        if(part == GamePart.DIALOG_TUTORIAL) {
             for(int i = 0;i<players.Length;i++) 
                 players[i].SetActive(false);      
 
@@ -161,7 +155,7 @@ public class GameController : CoroutineSystem {
             stepParent.SetActive(false);
           //  mainCamera.transform.rotation = Quaternion.Euler(-36.941f,358.267f,0f);
             
-            mainCamera.transform.position = new Vector3(GetPlayers()[0].transform.position.x,5747.6f,GetPlayers()[0].transform.position.z);
+            mainCamera.transform.position = new Vector3(players[0].transform.position.x,5747.6f,players[0].transform.position.z);
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
             Dialog currentDialog = dialog.GetDialogByName("AskTextTutorial");
@@ -172,8 +166,8 @@ public class GameController : CoroutineSystem {
 
         }
 
-        if(GetPart() == GamePart.PARTYGAME) { // Faire en sorte que ca soit appelé 
-            mainCamera.transform.position = new Vector3(GetPlayers()[0].transform.position.x,5747.6f,GetPlayers()[0].transform.position.z);
+        if(part == GamePart.PARTYGAME) { // Faire en sorte que ca soit appelé 
+            mainCamera.transform.position = new Vector3(players[0].transform.position.x,5747.6f,players[0].transform.position.z);
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
             RandomSecretCode();
@@ -201,59 +195,23 @@ public class GameController : CoroutineSystem {
             }
         }
 
-        if(GetPart() != lastPart) 
+        if(part != lastPart) 
             ChangePart();
 
-        if(GetPart() == GamePart.CHOOSE_MINIGAME) {
+        if(part == GamePart.CHOOSE_MINIGAME) {
             mgController.RandomMiniGame();
             return;
         }
 
-        if(GetPart() == GamePart.PARTYGAME && !hasGenChest && GetComponent<DialogController>() != null && !GetComponent<DialogController>().isInDialog) 
+        if(part == GamePart.PARTYGAME && !hasGenChest && GetComponent<DialogController>() != null && !GetComponent<DialogController>().isInDialog) 
             GenerateChest();
 
-        if(moveToBridge) {
-
-            getMainCamera().transform.position = Vector3.MoveTowards(getMainCamera().transform.position,bridgePos,150 * Time.deltaTime);
-            getMainCamera().transform.rotation = Quaternion.Euler(90,275.83f,0f);
-
-            if(getMainCamera().transform.position == bridgePos) {
-                RunDelayed(1f,() => {
-                 /*   if(bridgeIndex == 0) {
-                        Destroy(GetPlayers()[0].GetComponent<UserUI>().isleParts[2].gameObject);
-                        if(GetPlayers()[0].GetComponent<UserUI>().isleParts[0].parent.childCount >= 5) {
-                          //  GameObject bridge = GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(5).gameObject;
-                            if(!bridge.activeSelf) {
-                                bridge.SetActive(true);
-                                bridge.transform.SetSiblingIndex(2);
-                            }
-                        }
-                    }
-                    else if(bridgeIndex == 1) {
-                      //  Destroy(GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(3).gameObject);
-                        
-                      //  if(GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.childCount >= 6) {
-                        //    GameObject bridge = GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(6).gameObject;
-                            if(!bridge.activeSelf) {
-                                bridge.SetActive(true);
-                                bridge.transform.SetSiblingIndex(3);
-                            }
-                        }
-                    }
-                    */
-                    bridgeIndex = -1;
-                    moveToBridge = false;
-                    BeginTurn(false,true);
-                });
-            }
-        }
-
-        lastPart = GetPart();
+        lastPart = part;
     }
 
     private void ChangePart() {
-        if(GetPart() == GamePart.PARTYGAME && begin) { // Faire en sorte que ca soit appelé 
-            mainCamera.transform.position = new Vector3(GetPlayers()[0].transform.position.x,5747.6f,GetPlayers()[0].transform.position.z);
+        if(part == GamePart.PARTYGAME && begin) { // Faire en sorte que ca soit appelé 
+            mainCamera.transform.position = new Vector3(players[0].transform.position.x,5747.6f,players[0].transform.position.z);
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
             RandomSecretCode();
@@ -272,7 +230,7 @@ public class GameController : CoroutineSystem {
     }
 
     public void ManageTurn() {
-        GetPlayers()[GetActualPlayer()].GetComponent<UserUI>().ChangeTurnValue(turn,nightIndex);
+        players[actualPlayer].GetComponent<UserUI>().ChangeTurnValue(turn,nightIndex);
 
         switch(difficulty) {
             case 0: // Facile
@@ -312,7 +270,7 @@ public class GameController : CoroutineSystem {
     }
 
     private void GenerateChest() {
-        currentChest = null;
+        actualChest = null;
         freeze = true;
 
         if(randomIndex == -1) {
@@ -341,9 +299,9 @@ public class GameController : CoroutineSystem {
         mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,cameraPosition,150 * Time.deltaTime);
         
         if(mainCamera.transform.position == cameraPosition) {
-            GetPlayers()[actualPlayer].GetComponent<UserAudio>().SpawnChest();
+            players[actualPlayer].GetComponent<UserAudio>().SpawnChest();
             chest.SetActive(true);
-            currentChest = chest;
+            actualChest = chest;
             hasGenChest = true;
             
             if(!hasBeginGame) {
@@ -353,14 +311,14 @@ public class GameController : CoroutineSystem {
                 randomIndex = -1;
             }
             else {
-                GetPlayers()[GetActualPlayer()].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
-                GetPlayers()[GetActualPlayer()].GetComponent<UserMovement>().isTurn = false;
-                GetPlayers()[GetActualPlayer()].GetComponent<UserMovement>().returnToStep = true;
+                players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
+                players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
+                players[actualPlayer].GetComponent<UserMovement>().returnToStep = true;
                 
-                getMainCamera().transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                getMainCamera().transform.rotation = Quaternion.Euler(0,275.83f,0f);
-                getMainCamera().SetActive(true);
-                getMainCamera().GetComponent<Camera>().enabled = true;
+                mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
+                mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+                mainCamera.SetActive(true);
+                mainCamera.GetComponent<Camera>().enabled = true;
 
                 EndUserTurn();
 
@@ -385,120 +343,19 @@ public class GameController : CoroutineSystem {
         }
     }
 
-    public List<GameObject> GetAllSteps() {
-        return allSteps;
-    }
-
-    public int[] GetSecretCode() {
-        return secretCode;
-    }
-
-    public GameObject[] GetPlayers(){
-        return players;
-    }
-    
-    public Vector3[] GetPosBegin() {
-        return posBegin;
-    }
-
-    public Dictionary<GameObject,int> GetPlayersPoints(){
-        return playerPoint;
-    }
-
-    public List<int> GetPoints() {
-        return points;
-    }
-
-    public Color[] GetClassedColors() {
-        return classedColors;
-    }
-
-    public GameObject[] GetDices(){
-        return dices;
-    }
-    
-    public List<Material> GetDiceMaterials() {
-        return diceMaterials;
-    }
-    
-    public List<Material> GetBombIsleMat() {
-        return bombIsleMat;
-    }
-
-    public List<Material> GetIsleMat() {
-        return isleMat;
-    }
-
-    public int GetDifficulty(){
-        return difficulty;
-    }
-
-    public List<GameObject> GetPrefabObjects() {
-        return prefabObjects;
-    }
-
-    public GamePart GetPart() {
-        return part;
-    }
-
-    public void SetPart(GamePart gPart) {
-        this.part = gPart;
-    }
-
-    public int GetActualPlayer() {
-        return actualPlayer;
-    }
-
-    public Dictionary<GameObject,int> GetClassedPlayers() {
-        return classedPlayers;
-    }
-
-    public int GetTurn() {
-        return turn;
-    }
-
-    public DayController GetDayController() {
-        return dayController;
-    }
-
-    public GameObject getMainCamera() {
-        return mainCamera;
-    }
-
     public int GetPlayerPoints(GameObject player) {
         return player.GetComponent<UserInventory>().cards * 100000 + player.GetComponent<UserInventory>().coins;
-    }
-
-
-    public void SetActualPlayer(int nextPlayer) {
-        actualPlayer = nextPlayer;
-    }
-
-    public Shader GetInvicibilityShader(){
-        return invicibilityShader;
-    }
-
-    public List<ShopItem> GetShopItems() {
-        return shopItems;
-    }
-
-    public GameObject GetActualChest() {
-        return currentChest;
     }
 
     public GameObject GetActualStepChest() {
         Step[] steps = GameObject.FindObjectsOfType<Step>();
 
         foreach(Step step in steps) {
-            if(step.chest == currentChest) 
+            if(step.chest == actualChest) 
                 return step.gameObject;    
         }
 
         return null;
-    }
-
-    public Dictionary<GameObject,GameObject> GetPlayerConflict() {
-        return playerConflict;
     }
 
     public int FindPlayerClassement(GameObject player) {
@@ -515,7 +372,7 @@ public class GameController : CoroutineSystem {
         classedPlayers.Clear();
         playerPoint.Clear();
 
-        foreach(GameObject player in GetPlayers()) {
+        foreach(GameObject player in players) {
             UserInventory inv = player.GetComponent<UserInventory>();
 
             int point = inv.cards * 100000 + inv.coins;
@@ -531,113 +388,81 @@ public class GameController : CoroutineSystem {
         
         for(int i = 0;i<points.Count;i++) 
             GetKeyByValue(points[i],playerPoint,classedPlayers);   
-
-
-        // Regardez les numéros de chaque joueur. Celui qui aura le plus de code sera premier
-        // Si il y a deux personnes avec le même nombre de carte, regardez les pièces
-        // Si ils ont le même nombre de pièce est de carte --> égalité
     }
 
     public void BeginTurn(bool changePos,bool repair) {
-        if(bridgeRemainingTurn > 0) {
-            bridgeRemainingTurn--;
-            if(bridgeRemainingTurn == 0) {
-                bridgeRemainingTurn = -1;
-                moveToBridge = true;
-              //  bridgePos = GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(2).position;
-              //  bridgePos = new Vector3(bridgePos.x,5747,bridgePos.z);
-                getMainCamera().transform.position = new Vector3(getMainCamera().transform.position.x,5747,getMainCamera().transform.position.z);
-                bridgeIndex = 0;
-            }
-        }
 
-        if(bridgeRemainingTurn01 > 0) {
-            bridgeRemainingTurn01--;
-            if(bridgeRemainingTurn01 == 0) {
-                bridgeRemainingTurn01 = -1;
-                moveToBridge = true;
-             //   bridgePos = GetPlayers()[0].GetComponent<UserUI>().islesParent.transform.GetChild(3).position;
-             //   bridgePos = new Vector3(bridgePos.x,5747,bridgePos.z);
-                getMainCamera().transform.position = new Vector3(getMainCamera().transform.position.x,5747,getMainCamera().transform.position.z);
-                bridgeIndex = 1;
-            }
-        }
-
-        SetActualPlayer(0);
+        actualPlayer = 0;
         if(turn > 1 && !repair && !hasChangeState) {
             ChangeStateScene("Main",true);
             SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
             hasChangeState = true;
         }
 
-        SetPart(GameController.GamePart.PARTYGAME);
+        part = GameController.GamePart.PARTYGAME;
 
         for(int i = 0;i<4;i++) {
-            GetPlayers()[i].SetActive(false);
-            Destroy(GetPlayers()[i].GetComponent<PlayerController>());
+            players[i].SetActive(false);
         }
-
-        if(moveToBridge) 
-            return;
 
         List<GameObject> playersInStack = GetPlayersInStack();
         GetComponent<DialogController>().enabled = false;
 
         stepParent.SetActive(true);
 
-        GetPlayers()[0].SetActive(true);
+        players[0].SetActive(true);
 
         if(changePos)
-            GetPlayers()[0].transform.position = GetPosBegin()[0];
-        GetPlayers()[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
-        if(GetPlayers()[0].transform.GetChild(1).gameObject.activeSelf) 
-            GetPlayers()[0].transform.GetChild(1).gameObject.SetActive(false);  
+            players[0].transform.position = posBegin[0];
+        players[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
+        if(players[0].transform.GetChild(1).gameObject.activeSelf) 
+            players[0].transform.GetChild(1).gameObject.SetActive(false);  
 
-        if(!playersInStack.Contains(GetPlayers()[1])) 
-            GetPlayers()[1].SetActive(true);
-        GetPlayers()[1].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+        if(!playersInStack.Contains(players[1])) 
+            players[1].SetActive(true);
+        players[1].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
         if(changePos) 
-            GetPlayers()[1].transform.position =GetPosBegin()[1];
-        GetPlayers()[1].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
+            players[1].transform.position =posBegin[1];
+        players[1].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
 
-        if(!playersInStack.Contains(GetPlayers()[2])) 
-            GetPlayers()[2].SetActive(true);
-        GetPlayers()[2].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+        if(!playersInStack.Contains(players[2])) 
+            players[2].SetActive(true);
+        players[2].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
         if(changePos) 
-            GetPlayers()[2].transform.position = GetPosBegin()[2];
-        GetPlayers()[2].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
+            players[2].transform.position = posBegin[2];
+        players[2].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
 
-        if(!playersInStack.Contains(GetPlayers()[3])) 
-            GetPlayers()[3].SetActive(true);
-        GetPlayers()[3].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+        if(!playersInStack.Contains(players[3])) 
+            players[3].SetActive(true);
+        players[3].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
         if(changePos) 
-            GetPlayers()[3].transform.position = GetPosBegin()[3];  
-        GetPlayers()[3].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
+            players[3].transform.position = posBegin[3];  
+        players[3].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
 
         
-        GetPlayers()[0].GetComponent<UserMovement>().isTurn = true;
+        players[0].GetComponent<UserMovement>().isTurn = true;
 
-        if(! GetPlayers()[0].activeSelf) {
-            GetPlayers()[0].SetActive(true);
-            GetPlayers()[0].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(GetPlayers()[0]);
-            ActualPlayersInStep(GetPlayers()[0].GetComponent<UserMovement>().actualStep,GetPlayers()[0]);
+        if(! players[0].activeSelf) {
+            players[0].SetActive(true);
+            players[0].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[0]);
+            ActualPlayersInStep(players[0].GetComponent<UserMovement>().actualStep,players[0]);
         }
 
-        GetPlayers()[0].GetComponent<UserMovement>().enabled = true;
-        GetPlayers()[0].GetComponent<UserUI>().enabled = true;
-        GetPlayers()[0].GetComponent<UserAudio>().enabled = true;
-        GetPlayers()[0].GetComponent<UserInventory>().enabled = true;
-        if(GetPlayers()[0].GetComponent<UserMovement>().isPlayer) GetPlayers()[0].GetComponent<UserUI>().showHUD = true;
-        GetPlayers()[0].GetComponent<UserUI>().showTurnInfo = true;
-        if(GetPlayers()[0].GetComponent<UserMovement>().isPlayer) GetPlayers()[0].GetComponent<UserUI>().showHUD = true;
-        GetPlayers()[0].GetComponent<UserUI>().showActionButton = true;
+        players[0].GetComponent<UserMovement>().enabled = true;
+        players[0].GetComponent<UserUI>().enabled = true;
+        players[0].GetComponent<UserAudio>().enabled = true;
+        players[0].GetComponent<UserInventory>().enabled = true;
+        if(players[0].GetComponent<UserMovement>().isPlayer) players[0].GetComponent<UserUI>().showHUD = true;
+        players[0].GetComponent<UserUI>().showTurnInfo = true;
+        if(players[0].GetComponent<UserMovement>().isPlayer) players[0].GetComponent<UserUI>().showHUD = true;
+        players[0].GetComponent<UserUI>().showActionButton = true;
 
 
         if(turn == 1) {
-            getMainCamera().transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-            getMainCamera().transform.rotation = Quaternion.Euler(0,275.83f,0f);
-            getMainCamera().SetActive(true);
-            getMainCamera().GetComponent<Camera>().enabled = true;
+            mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
+            mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+            mainCamera.SetActive(true);
+            mainCamera.GetComponent<Camera>().enabled = true;
         }
         else // Turn
             ManageCameraPosition();       
@@ -651,13 +476,13 @@ public class GameController : CoroutineSystem {
         players[actualPlayer].GetComponent<UserMovement>().hasGenDice = false;
         
         if(actualPlayer < 3) {
-            SetActualPlayer(actualPlayer + 1);
+            actualPlayer++;
             players[actualPlayer].GetComponent<UserMovement>().isTurn = true;
 
-            if(! GetPlayers()[actualPlayer].activeSelf) {
-                GetPlayers()[actualPlayer].SetActive(true);
-                GetPlayers()[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(GetPlayers()[actualPlayer]);
-                ActualPlayersInStep(GetPlayers()[actualPlayer].GetComponent<UserMovement>().actualStep,GetPlayers()[actualPlayer]);
+            if(! players[actualPlayer].activeSelf) {
+                players[actualPlayer].SetActive(true);
+                players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[actualPlayer]);
+                ActualPlayersInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep,players[actualPlayer]);
             }
 
             if(turn == 1) 
@@ -672,7 +497,7 @@ public class GameController : CoroutineSystem {
 
         }
         else { // Le tour est fini. Lancement d'un mini jeux
-            SetPart(GamePart.CHOOSE_MINIGAME);
+            part = GamePart.CHOOSE_MINIGAME;
             actualPlayer = 0;
             
             ActualizePlayerClassement();
@@ -680,9 +505,8 @@ public class GameController : CoroutineSystem {
     }
 
     private void ManageCameraPosition() {
-       // getMainCamera().transform.position = new Vector3(players[actualPlayer].transform.position.x,getMainCamera().transform.position.y,getMainCamera().transform.position.z - 50);
-        getMainCamera().transform.position = GetPlayers()[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camPosition;
-        getMainCamera().transform.rotation = GetPlayers()[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camRotation;
+        mainCamera.transform.position = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camPosition;
+        mainCamera.transform.rotation = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camRotation;
     }
 
     private List<GameObject> GetPlayersInStack() {
@@ -724,26 +548,6 @@ public class GameController : CoroutineSystem {
         }
 
         return null;
-    }
-
-    public void WaitToBreak() {
-        StartCoroutine(WaitBridge());
-    }
-
-    private IEnumerator WaitBridge() {
-        yield return new WaitForSeconds(1.0f);
-
-        GetPlayers()[GetActualPlayer()].GetComponent<UserUI>().useBomb = false;
-        GetPlayers()[GetActualPlayer()].GetComponent<UserUI>().cameraView = false;
-        GetPlayers()[GetActualPlayer()].GetComponent<UserUI>().showHUD = false;
-        GetPlayers()[GetActualPlayer()].GetComponent<UserUI>().showActionButton = false;
-        GetPlayers()[GetActualPlayer()].GetComponent<UserMovement>().isTurn = true;
-        GetPlayers()[GetActualPlayer()].GetComponent<UserMovement>().waitDiceResult = true;
-
-        getMainCamera().transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-        getMainCamera().transform.rotation = Quaternion.Euler(0,275.83f,0f);
-        getMainCamera().SetActive(true);
-        getMainCamera().GetComponent<Camera>().enabled = true;
     }
 
     public void ActualPlayersInStep(GameObject step,GameObject user) {

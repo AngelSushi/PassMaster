@@ -12,7 +12,7 @@ public class CameraMovement : MonoBehaviour {
 
     void Update() {
         
-        if(controller.GetPart() != GameController.GamePart.PARTYGAME) {
+        if(controller.part != GameController.GamePart.PARTYGAME) {
             if(zoomBox) {
                 transform.position = Vector3.MoveTowards(transform.position,new Vector3(1663,5880,-19244),13500 * Time.deltaTime); 
             }

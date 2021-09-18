@@ -55,9 +55,9 @@ public class UserInventory : MonoBehaviour {
         for(int i = 0;i<objList.Count;i++) {
           //  Debug.Log("index: " + i);
             Transform random = player.transform.GetChild(4).GetChild(Random.Range(0,player.transform.GetChild(4).childCount - 1));
-            if(!drop.Contains(random.position) && !objectSpawn.Contains(gameController.GetPrefabObjects()[i].name)) {
+            if(!drop.Contains(random.position) && !objectSpawn.Contains(gameController.prefabObjects[i].name)) {
 
-                GameObject obj = Instantiate(gameController.GetPrefabObjects()[i],player.transform.position,gameController.GetPrefabObjects()[i].transform.rotation);
+                GameObject obj = Instantiate(gameController.prefabObjects[i],player.transform.position,gameController.prefabObjects[i].transform.rotation);
                 PathFollower follower = obj.AddComponent<PathFollower>() as PathFollower;
 
                 follower.pathCreator =  random.GetChild(0).GetComponent<PathCreator>();

@@ -64,9 +64,9 @@ public class DialogController : MonoBehaviour {
                 if(answer > 0) { // LE JOUEUR A UN CHOIX A FAIRE
                     switch(answer) {
                         case 1:
-                            if(gController.GetPart() == GameController.GamePart.DIALOG_TUTORIAL) {
+                            if(gController.part  == GameController.GamePart.DIALOG_TUTORIAL) {
                                 // LANCER LE TUTORIAL
-                                gController.SetPart(GameController.GamePart.TUTORIAL);
+                                gController.part = GameController.GamePart.TUTORIAL;
 
                                 EndDialog();
 
@@ -85,17 +85,14 @@ public class DialogController : MonoBehaviour {
 
                             break;
                         case 2:
-                            if(gController.GetPart() == GameController.GamePart.DIALOG_TUTORIAL) {
+                            if(gController.part == GameController.GamePart.DIALOG_TUTORIAL) {
                                 // SKIP LE TUTO
-                                gController.getMainCamera().transform.position = new Vector3(gController.GetPlayers()[0].transform.position.x,5747.6f,gController.GetPlayers()[0].transform.position.z);
-                                gController.getMainCamera().transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
+                                gController.mainCamera.transform.position = new Vector3(gController.players[0].transform.position.x,5747.6f,gController.players[0].transform.position.z);
+                                gController.mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
                                 // SEND DIRECTEMENT A LORDRE DE PASSAGE
 
-                                ChooseOrder();
                             }
 
-                            if(gController.GetPart() == GameController.GamePart.TUTORIAL)
-                                ChooseOrder(); 
                             if(currentDialog.Name == "QuitGame") 
                                 EndDialog();
 
@@ -110,29 +107,26 @@ public class DialogController : MonoBehaviour {
 
                         EndDialog();
 
-                        if(gController.GetPart() == GameController.GamePart.DIALOG_START_ALPHA) {
-                            gController.SetPart(GameController.GamePart.DIALOG_TUTORIAL);
+                        if(gController.part  == GameController.GamePart.DIALOG_START_ALPHA) {
+                            gController.part = GameController.GamePart.DIALOG_TUTORIAL;
                             isInDialog = true;
 
                             currentDialog = GetDialogByName("AskTextTutorial");
                             StartCoroutine(ShowText(currentDialog.Content[0],currentDialog.Content.Length));
-                        }
-
-                        if(gController.GetPart() == GameController.GamePart.TUTORIAL && currentDialog.Name == "StartTextTutorial") 
-                            GameObject.Find("tutorial").GetComponent<TutorialController>().StartTutorial();                
+                        }    
 
                         if(currentDialog.Name == "EndMoveTutorial") {
                             
-                            gController.getMainCamera().SetActive(false);
-                            gController.GetPlayers()[0].transform.GetChild(1).gameObject.SetActive(true);
+                            gController.mainCamera.SetActive(false);
+                            gController.players[0].transform.GetChild(1).gameObject.SetActive(true);
 
-                            gController.getMainCamera().GetComponent<CameraMovement>().zoomBox = false;
+                            gController.mainCamera.GetComponent<CameraMovement>().zoomBox = false;
                         }
 
                         if(currentDialog.Name == "FindAllSecretCode" || currentDialog.Name == "FindNewCode") {
-                            gController.GetPlayers()[gController.GetActualPlayer()].transform.GetChild(1).gameObject.SetActive(false);
-                            gController.getMainCamera().transform.position = new Vector3(gController.GetPlayers()[gController.GetActualPlayer()].transform.position.x,5747.6f,gController.GetPlayers()[gController.GetActualPlayer()].transform.position.z);
-                            gController.getMainCamera().transform.rotation = Quaternion.Euler(90f,265.791f,0f);
+                            gController.players[gController.actualPlayer].transform.GetChild(1).gameObject.SetActive(false);
+                            gController.mainCamera.transform.position = new Vector3(gController.players[gController.actualPlayer].transform.position.x,5747.6f,gController.players[gController.actualPlayer].transform.position.z);
+                            gController.mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f);
                             gController.hasGenChest = false;
 
                         }
@@ -247,37 +241,6 @@ public class DialogController : MonoBehaviour {
         return null;  
     }
 
-    private void ChooseOrder() {
-        EndDialog();
-        
-        gController.GetPlayers()[0].transform.position = new Vector3(-1060.2f,5206.2f,-15821.3f);
-
-        for(int i = 0;i<4;i++) {
-            Vector3 position = gController.GetPlayers()[i].transform.position;
-            GameObject dice = Instantiate(gController.prefabDice,new Vector3(position.x,position.y + 40,position.z),gController.prefabDice.transform.rotation);
-            gController.GetDices()[i] = dice;
-            gController.GetPlayers()[i].SetActive(true);
-        }
-
-        gController.GetPlayers()[0].transform.GetChild(1).gameObject.SetActive(false);
-        gController.SetPart(GameController.GamePart.CHOOSE_ORDER);
-
-        gController.GetDices()[0].GetComponent<DiceController>().lockDice = false;
-        gController.GetPlayers()[0].GetComponent<PlayerController>().canJump = true;
-        gController.getMainCamera().SetActive(true);
-        gController.getMainCamera().transform.rotation = Quaternion.Euler(0f,358.267f,0f);
-
-        
-
-
-// COODS POUR LANCER LE TOUR
-        
-    //    gController.getMainCamera().transform.position = new Vector3(gController.GetPlayers()[0].transform.position.x,5747.6f,gController.GetPlayers()[0].transform.position.z);
-    //    gController.getMainCamera().transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
-    //    gController.BeginTurn(true,false);
-
-
-    }
 }
 
 
