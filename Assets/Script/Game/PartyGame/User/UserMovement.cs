@@ -8,99 +8,94 @@ using UnityEngine.UI;
 public class UserMovement : MonoBehaviour {
 
     public NavMeshAgent agent;
-
-    public UserUI ui;
-    public UserInventory inventory;
-    public UserAudio audio;
-
-    public GameObject isleOneParent;
-    public GameObject isleTwoParent;
-    public GameObject isleThreeParent;
-
-    public bool isTurn;
-    public bool hasGenDice;
-
-    public int diceResult;
-    private int isle;
-    public GameObject actualStep;
-    public GameObject beginStep;
-    public bool canJump;
-    public bool isJumping;
-    private bool jump;
-
-    private GameController gameController;
-    public DayController dayController;
-    public Transform nextStep;
-
-    public float jumpSpeed;
-    private float verticalVelocity = 0;
-    
-    private float gravity = 300.0f;
-    private float jumpHeight = 175f;
-    private CharacterController controller;
     public bool waitDiceResult;
     public bool isPlayer;
     public bool finishMovement;
     public bool finishTurn;
-
-    private int random = -1;
-    private float timer;
-
-    public bool stepBack;
-    private Vector3 point;
-    private bool hasCheckPath;
-    public GameObject[] stepPaths;
-    public bool stack;
-    public int beginResult;
-
     public bool left;
     public bool front;
     public bool right;
     public bool stop;
     public bool lastStepIsArrow;
-
-    public bool reverseCount;
-
-    private bool hasShowChestHUD;
-    public bool goToChest;
-    private bool canMooveToChest = true;
     public bool waitChest;
     public bool returnToStep;
+    public bool goToChest;
+    public bool returnStepBack;
+    public bool goToShop;
+    public bool canMooveToShop = true;
+    public bool reverseCount;
+    public bool doubleDice;
+    public bool reverseDice;    
+    public bool hasBotBuyItem;
+    public bool drop;
+    public bool reverse;
+    public GameObject lastStep;
+    public UserUI ui;
+    public UserInventory inventory;
+    public UserAudio audio;
+    public bool isMooving;
+    public GameObject giveUI;
+    public GameObject changeUI;
+    public GameObject isleOneParent;
+    public GameObject isleTwoParent;
+    public GameObject isleThreeParent;
+    public bool isTurn;
+    public bool hasGenDice;
+    public int diceResult;
+    public GameObject actualStep;
+    public GameObject beginStep;
+    public bool canJump;
+    public bool isJumping;
+    public DayController dayController;
+    public Transform nextStep;
+    public float jumpSpeed;
+    public bool stack;
+    public int beginResult;
+    public GameObject[] stepPaths;
+    public bool stepBack;
+
+    private int isle;
+    private bool jump;
+
+    private GameController gameController;
+
+    private float verticalVelocity = 0;
+    
+    private float gravity = 300.0f;
+    private float jumpHeight = 175f;
+    private CharacterController controller;
+
+    private int random = -1;
+    private float timer;
+
+    private Vector3 point;
+    private bool hasCheckPath;
+
+
+    private bool hasShowChestHUD;
+    private bool canMooveToChest = true;
+
 
     private bool hasCollideDice;
     private GameObject dice;
     private bool hasJump;
-    public bool returnStepBack;
-    public bool goToShop;
-    public bool canMooveToShop = true;
     private bool hasShowShopHUD;
     private bool hasShowShop;
 
     // Object
-    public bool doubleDice;
-    public bool reverseDice;
+    
+
     private Color actualColor;
 
     public bool isParachuting;
 
     private Vector3 parachuteMovement;
 
-    public bool hasBotBuyItem;
     private bool hasBuyItem;
-
-
-    public bool drop;
-    public bool reverse;
-
-    public GameObject lastStep;
 
     private bool bypassDirection;
 
     private bool isInShopCoroutine;
-    public bool isMooving;
-
-    public GameObject giveUI;
-    public GameObject changeUI;
 
 
     private void Start() {
@@ -112,19 +107,10 @@ public class UserMovement : MonoBehaviour {
 
     }
 
-    // Gérer lorsque le joueur passe sur une case ou ya déjà un mec --> Faire reculer le mec puis le faire revenir
-    // Gérer lorsque le joueur s'arrete sur la même case qu'un autre joueur
-
-
-    // 2 aligner et le stepback ne marche pas
-    // Quand il finit son stepback il faudrait remove la valeur de point
-
     private void Update() {
 
         if(!gameController.freeze) {
             if(isTurn) {
-               // stack = false;
-            //  agent.enabled = true;
                 transform.gameObject.GetComponent<CharacterController>().enabled  = true;
                 stepBack = false;
                 point = Vector3.zero;
@@ -266,7 +252,6 @@ public class UserMovement : MonoBehaviour {
                             return;
                         }
 
-                    //returnToStep = false;
                 }
 
 
@@ -283,13 +268,11 @@ public class UserMovement : MonoBehaviour {
 
                 if(finishTurn) { // Mettre tout dans gameController pour une meilleur gestion et plus propre
                     nextStep = null;
-                  //  isTurn = false;
 
                     if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) {
                         if(isPlayer) {
                             if(!hasShowChestHUD) {
                                 ui.showChestHUD = true;
-                                // Afficher l'hud
                                 hasShowChestHUD = true;
                             }
 
@@ -298,8 +281,7 @@ public class UserMovement : MonoBehaviour {
 
                                 if(canMooveToChest) {
                                     Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,100 * Time.deltaTime);     
-                                    // Rotate le joueur vers le coffre            
+                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,100 * Time.deltaTime);               
                                 }
                                 else { // Le joueur collide avec le coffre
 
@@ -311,14 +293,12 @@ public class UserMovement : MonoBehaviour {
 
                                 }
                             }                      
-                            // le mettre a false quand on change d'user
                         }
                         else { // le bot
                             if(inventory.coins >= 30 && inventory.cards < 6) {
                                 if(canMooveToChest) {
                                     Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,100 * Time.deltaTime);     
-                                    // Rotate le joueur vers le coffre            
+                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,100 * Time.deltaTime);               
                                 }
                                 else { // Le joueur collide avec le coffre
 
@@ -459,7 +439,7 @@ public class UserMovement : MonoBehaviour {
 
     private void OnTriggerEnter(Collider hit) {
         if(isTurn) {
-            if(hit.gameObject.tag == "Dice" && !gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD) {
+            if(hit.gameObject.tag == "Dice" && !ui.showHUD) {
                 if(diceResult == 0 || diceResult == -1) {
                     diceResult = hit.gameObject.GetComponent<DiceController>().index;
                     if(diceResult == 0) diceResult = 6;
@@ -534,35 +514,36 @@ public class UserMovement : MonoBehaviour {
 
                 }
 
-                if(hit.gameObject.tag == "Direction" && !gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) {
-
+                if(hit.gameObject.tag == "Direction" && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) {
+                    
+                    Direction direction = hit.gameObject.GetComponent<Direction>();
                     if(lastStep == ChooseParent(2).transform.GetChild(4).gameObject) { // Vient de la flèche de l'ile 2
-                        hit.gameObject.GetComponent<Direction>().nextStepLeft = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepRight = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepFront = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
+                        direction.nextStepLeft = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
+                        direction.nextStepRight = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
+                        direction.nextStepFront = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
                     }
 
                     else if(lastStep == ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject) { // Vient de la gauche
-                        hit.gameObject.GetComponent<Direction>().nextStepLeft = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepFront = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepRight = ChooseParent(2).transform.GetChild(4).gameObject;
+                        direction.nextStepLeft = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
+                        direction.nextStepFront = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
+                        direction.nextStepRight = ChooseParent(2).transform.GetChild(4).gameObject;
                     }
 
                     else if(lastStep == ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject) {// Vient de la droite
-                        hit.gameObject.GetComponent<Direction>().nextStepRight = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepFront = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepLeft = ChooseParent(2).transform.GetChild(4).gameObject;
+                        direction.nextStepRight = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
+                        direction.nextStepFront = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
+                        direction.nextStepLeft = ChooseParent(2).transform.GetChild(4).gameObject;
                     }
 
                     else if(lastStep == ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject) {// Vient de la grotte
-                        hit.gameObject.GetComponent<Direction>().nextStepFront = ChooseParent(2).transform.GetChild(4).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepRight = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
-                        hit.gameObject.GetComponent<Direction>().nextStepLeft = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
+                        direction.nextStepFront = ChooseParent(2).transform.GetChild(4).gameObject;
+                        direction.nextStepRight = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
+                        direction.nextStepLeft = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
                     }
 
-                    gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().direction = hit.gameObject.GetComponent<Direction>();
+                    ui.direction = direction;
                     if(isPlayer) 
-                        gameController.GetPlayers()[gameController.GetActualPlayer()].GetComponent<UserUI>().showDirection = true;
+                        ui.showDirection = true;
                     
                     else {
                         // Il faut générer un path du bot au coffre et vérifier quelle step appartient au path et ensuite c comme ca qu'on définit
@@ -577,11 +558,11 @@ public class UserMovement : MonoBehaviour {
 
                         GameObject pathStep = CheckStepPath(chestPath);
 
-                        if(pathStep == hit.gameObject.GetComponent<Direction>().nextStepLeft) 
+                        if(pathStep == direction.nextStepLeft) 
                             left = true;
-                        else if(pathStep == hit.gameObject.GetComponent<Direction>().nextStepRight)
+                        else if(pathStep == direction.nextStepRight)
                             right = true;
-                        else if(pathStep == hit.gameObject.GetComponent<Direction>().nextStepFront)
+                        else if(pathStep == direction.nextStepFront)
                             front = true;  
  
                     }
@@ -640,8 +621,8 @@ public class UserMovement : MonoBehaviour {
                     
                 }
 
-                if(hit.gameObject.tag == "Direction" && isPlayer && !bypassDirection) {
-                        if(!gameController.GetPlayers()[gameController.GetActualPlayer()].gameObject.GetComponent<UserMovement>().lastStepIsArrow) {
+                if(hit.gameObject.tag == "Direction" && isPlayer && !bypassDirection && isTurn) {
+                        if(!lastStepIsArrow) {
                             if(!left && !right && !front) {
                                 stop = true;
                                 return;
@@ -649,22 +630,11 @@ public class UserMovement : MonoBehaviour {
 
                             else {
                                 if(left) 
-                                    nextStep = gameController.GetPlayers()[gameController.GetActualPlayer()].gameObject.GetComponent<UserUI>().direction.nextStepLeft.transform;
+                                    nextStep = ui.direction.nextStepLeft.transform;
                                 if(front)
-                                    nextStep = gameController.GetPlayers()[gameController.GetActualPlayer()].gameObject.GetComponent<UserUI>().direction.nextStepFront.transform;
-                                if(right) {
-                                    // 
-                                    if(hit.gameObject.name == "step_09") {
-                                        if(ui.islesParent.transform.GetChild(2).GetChild(0).GetComponent<Bridge>().breakBridge) {
-                                            nextStep = gameController.GetPlayers()[gameController.GetActualPlayer()].gameObject.GetComponent<UserUI>().direction.nextStepFront.transform;
-                                            return;
-                                        }
-                                    }
-
-                                    nextStep = gameController.GetPlayers()[gameController.GetActualPlayer()].gameObject.GetComponent<UserUI>().direction.nextStepRight.transform;
-                                }
-
-
+                                    nextStep = ui.direction.nextStepFront.transform;
+                                if(right) 
+                                    nextStep = ui.direction.nextStepRight.transform;
                             }
 
                             stop = false;
@@ -874,11 +844,14 @@ public class UserMovement : MonoBehaviour {
                 if((int)transform.position.y < 5200) { // Le joueur/bot est sur la plage de la première île
                     if(!hasCheckPath && stepPaths != null) {
                         int stepIndex = FindIndexInParent(actualParent.transform.GetChild(0).gameObject,beginStep);
-                        if(stepIndex == -1) stepIndex = 0;
+                        if(stepIndex == -1) 
+                            stepIndex = 0;
 
                         for(int i = 0;i<beginResult;i++) {
-                            if(stepIndex + i + 1 < actualParent.transform.GetChild(0).childCount) stepPaths[i] = actualParent.transform.GetChild(0).GetChild(stepIndex + i + 1).gameObject;
-                            else stepPaths[i] = actualParent.transform.GetChild(0).GetChild(stepIndex + i + 1 - actualParent.transform.GetChild(0).childCount).gameObject;
+                            if(stepIndex + i + 1 < actualParent.transform.GetChild(0).childCount) 
+                                stepPaths[i] = actualParent.transform.GetChild(0).GetChild(stepIndex + i + 1).gameObject;
+                            else 
+                                stepPaths[i] = actualParent.transform.GetChild(0).GetChild(stepIndex + i + 1 - actualParent.transform.GetChild(0).childCount).gameObject;
                             // Il faut caper le résultat a zéro
                         }
 
@@ -1396,10 +1369,10 @@ public class UserMovement : MonoBehaviour {
         else 
             audio.CardGain();
 
-        if(!isPlayer) StartCoroutine(WaitMalus(30,false));
-        yield return new WaitForSeconds(1f);
+        if(!isPlayer) 
+            StartCoroutine(WaitMalus(30,false));
 
-        
+        yield return new WaitForSeconds(1f);      
 
         int[] secretCode = gameController.GetSecretCode();
         int random = Random.Range(0,secretCode.Length - 1);
@@ -1410,13 +1383,11 @@ public class UserMovement : MonoBehaviour {
         List<int> indexes = new List<int>();
 
         for(int i = 0;i<secretCode.Length;i++) {
-            if(secretCode[i] == targetCode) {
+            if(secretCode[i] == targetCode) 
                 indexes.Add(i); 
-            }
-
-            if(inventory.secretCode[i] == -1) {
+            if(inventory.secretCode[i] == -1) 
                 finishCode = false;
-            }
+            
         }
 
         foreach(int index in indexes) {
@@ -1436,17 +1407,14 @@ public class UserMovement : MonoBehaviour {
             currentDialog.Content[0] = currentDialog.Content[0].Replace("%b","" + (6 - inventory.cards));
         }
 
-        else {
-            currentDialog = gameController.dialog.GetDialogByName("FindAllSecretCode");
-        }
+        else 
+            currentDialog = gameController.dialog.GetDialogByName("FindAllSecretCode");   
 
         gameController.dialog.currentDialog = currentDialog;
         gameController.dialog.isInDialog = true;
         gameController.dialog.finish = false;
         StartCoroutine(gameController.dialog.ShowText(currentDialog.Content[0],currentDialog.Content.Length));
 
-        // Affichage de la carte sur l'hud
-        // Affichage du dialogue
     }
 
     private IEnumerator WaitTimeToReturn() {

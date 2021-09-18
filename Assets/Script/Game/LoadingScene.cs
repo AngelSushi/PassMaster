@@ -31,12 +31,11 @@ public class LoadingScene : MonoBehaviour {
             yield return null;
         }
 
-        Debug.Log("isDone");
         GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().ChangeStateScene("Main",false);
-        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().timer = 0;
-        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().index = 0;
-        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().maxTimer = 0;
-        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().step = 0;
+        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().mgController.timer = 0;
+        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().mgController.index = 0;
+        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().mgController.maxTimer = 0;
+        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().mgController.step = 0;
         bs.SetActive(false);
     }
 }

@@ -14,9 +14,9 @@ public class FontController : MonoBehaviour {
         StartCoroutine(WaitEndFrame());
 
         GameController gController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
-        transform.parent.GetChild(3).GetChild(0).GetChild(4).GetChild(0).gameObject.GetComponent<Text>().text = gController.actualMiniGame.minigameName;
-        transform.parent.GetChild(3).GetChild(0).GetChild(6).gameObject.GetComponent<Text>().text = gController.actualMiniGame.minigameDesc;
-        transform.parent.GetChild(3).GetChild(0).GetChild(7).gameObject.GetComponent<Text>().text = gController.actualMiniGame.controls; 
+        transform.parent.GetChild(3).GetChild(0).GetChild(4).GetChild(0).gameObject.GetComponent<Text>().text = gController.mgController.actualMiniGame.minigameName;
+        transform.parent.GetChild(3).GetChild(0).GetChild(6).gameObject.GetComponent<Text>().text = gController.mgController.actualMiniGame.minigameDesc;
+        transform.parent.GetChild(3).GetChild(0).GetChild(7).gameObject.GetComponent<Text>().text = gController.mgController.actualMiniGame.controls; 
         transform.parent.GetChild(3).GetChild(0).GetChild(7).gameObject.GetComponent<Text>().fontStyle = FontStyle.Bold;
     }
 

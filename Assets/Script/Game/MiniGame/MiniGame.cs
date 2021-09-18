@@ -61,7 +61,7 @@ public abstract class MiniGame : CoroutineSystem {
                 SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
             }
             else 
-                gameController.EndMiniGame(classementPanels,winners,endText.gameObject); 
+                gameController.mgController.EndMiniGame(classementPanels,winners,endText.gameObject); 
  
         }
     }
