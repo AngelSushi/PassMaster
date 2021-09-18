@@ -820,22 +820,23 @@ public class GameController : CoroutineSystem {
         step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(8.940888f,9.624872f,8.940888f);
     }
 
-    public void ChangeHUDSpritePlayer(GameObject hudParent,int index,String name) {
+    public void ChangeHUDSpritePlayer(Transform[] panels,int index,String name) {
+        // A check si on peut pas tt concaténer en 1 ligne
         switch(name) {
             case "User":
-                hudParent.transform.GetChild(index).GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
+                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
                 break;
 
             case "Bot_001":
-                hudParent.transform.GetChild(index).GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[1];
+                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[1];
                 break;
 
             case "Bot_002":
-                hudParent.transform.GetChild(index).GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[2];
+                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[2];
                 break;
 
             case "Bot_003":
-                hudParent.transform.GetChild(index).GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
+                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
                 break;            
         }
     }

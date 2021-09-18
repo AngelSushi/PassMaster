@@ -7,16 +7,6 @@ using UnityEngine.AI;
 
 public class UserUI : CoroutineSystem {
 
-    public GameObject hudParent;
-    public GameObject shopParent;
-    public GameObject inventoryParent;
-    public GameObject islesParent;
-    public GameObject infoLabel;
-    public GameObject diceResult;
-    public GameObject coinIconReward;
-    public GameObject coinTextReward;
-    public GameController gameController;
-
     public bool showHUD;
     public bool showTurnInfo;
     public bool showActionButton;
@@ -24,29 +14,38 @@ public class UserUI : CoroutineSystem {
     public bool showChestHUD;
     public bool showShopHUD;
     public bool showShop;
-
-    public Direction direction;
-
-    public int index = -1;
-    private int nextShopId = -1;
     public bool cameraView;
-    public GameObject camera;
-    private Vector2 vecMove;
-    private float cameraSpeed = 200f;
-
-    public GameObject bombPos;
-
     public bool useBomb;
     public bool useLightning;
-
-    public Animation bsAnimation;
-
+    public GameObject islesParent;
+    public GameObject infoLabel;
+    public GameObject diceResult;
+    public GameObject coinIconReward;
+    public GameObject bombPos;
+    public GameObject camera;
     public GameObject lightning;
+    public Transform[] directions; // les parents des directions
+    public Transform[] items; // les items du shoop
+    public Transform[] actions; // buttons d'actions sur le menu principale du jeu
+    public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
+    public Transform[] inventoryItems;
+    public Transform chestHUD;
+    public Transform shopHUD;
+    public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
     public ParticleSystem[] lightningParticles;
+    public Text coinTextReward;
+    public Text itemDescription; // texte de la description d'un iutem dans le shop
+    public Text turnText,nightText; // texte pour afficher les tours et la nuit
+    public Text shopText;
+    public Direction direction;
+    public GameController gameController;
+    public UserMovement movement;
 
     private bool isInInventory;
-
-    public UserMovement movement;
+    private int nextShopId = -1;
+    private int index = -1;
+    private float cameraSpeed = 200f;
+    private Vector2 vecMove;
 
 // Check que quand c'est pas le tour d'un joueur tt soit désactiver
 
@@ -74,28 +73,28 @@ public class UserUI : CoroutineSystem {
     }
 
     public void OnRight(InputAction.CallbackContext e) {
-        if(e.started && !cameraView && showHUD && !inventoryParent.activeSelf && !gameController.freeze) {
+        if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index < 2) 
                 index++;
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(4).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(4).GetChild(1).gameObject.SetActive(true);
+                    actions[0].GetChild(0).gameObject.SetActive(false);
+                    actions[0].GetChild(1).gameObject.SetActive(true);
                     break;
                 case 1:
-                    hudParent.transform.GetChild(4).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(4).GetChild(1).gameObject.SetActive(false);
+                    actions[0].GetChild(0).gameObject.SetActive(true);
+                    actions[0].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(5).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(5).GetChild(1).gameObject.SetActive(true);
+                    actions[1].GetChild(0).gameObject.SetActive(false);
+                    actions[1].GetChild(1).gameObject.SetActive(true);
                     break;
                 case 2:
-                    hudParent.transform.GetChild(5).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(5).GetChild(1).gameObject.SetActive(false);
+                    actions[1].GetChild(0).gameObject.SetActive(true);
+                    actions[1].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(6).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(6).GetChild(1).gameObject.SetActive(true);
+                    actions[2].GetChild(0).gameObject.SetActive(false);
+                    actions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
         }
@@ -103,19 +102,19 @@ public class UserUI : CoroutineSystem {
         if(e.started && !cameraView && !showHUD && showDirection && !gameController.freeze) {
             int max = -1;
 
-            if(hudParent.transform.GetChild(10).gameObject.activeSelf) 
+            if(directions[0].gameObject.activeSelf) 
                 max = 0;
-            if(hudParent.transform.GetChild(11).gameObject.activeSelf) 
+            if(directions[1].gameObject.activeSelf) 
                 max = 1;
-            if(hudParent.transform.GetChild(12).gameObject.activeSelf) 
+            if(directions[2].gameObject.activeSelf) 
                 max = 2;
             
-            if(!hudParent.transform.GetChild(10).GetChild(1).gameObject.activeSelf && !hudParent.transform.GetChild(11).GetChild(1).gameObject.activeSelf && !hudParent.transform.GetChild(12).GetChild(1).gameObject.activeSelf) {
-                if(hudParent.transform.GetChild(10).gameObject.activeSelf) 
+            if(!directions[0].GetChild(1).gameObject.activeSelf && !directions[1].GetChild(1).gameObject.activeSelf && !directions[2].GetChild(1).gameObject.activeSelf) {
+                if(directions[0].gameObject.activeSelf) 
                     index = -1;
-                else if(hudParent.transform.GetChild(11).gameObject.activeSelf) 
+                else if(directions[1].gameObject.activeSelf) 
                     index = 0;
-                else if(hudParent.transform.GetChild(12).gameObject.activeSelf) 
+                else if(directions[2].gameObject.activeSelf) 
                     index = 1;        
                 
             }
@@ -125,25 +124,25 @@ public class UserUI : CoroutineSystem {
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(10).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(10).GetChild(1).gameObject.SetActive(true);
+                    directions[0].GetChild(0).gameObject.SetActive(false);
+                    directions[0].GetChild(1).gameObject.SetActive(true);
                     break;
 
                 case 1:
                     
-                    hudParent.transform.GetChild(10).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(10).GetChild(1).gameObject.SetActive(false);
+                    directions[0].GetChild(0).gameObject.SetActive(true);
+                    directions[0].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(11).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(11).GetChild(1).gameObject.SetActive(true);
+                    directions[1].GetChild(0).gameObject.SetActive(false);
+                    directions[1].GetChild(1).gameObject.SetActive(true);
                     break;
 
                 case 2:
-                    hudParent.transform.GetChild(11).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(11).GetChild(1).gameObject.SetActive(false);
+                    directions[1].GetChild(0).gameObject.SetActive(true);
+                    directions[1].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(12).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(12).GetChild(1).gameObject.SetActive(true);
+                    directions[2].GetChild(0).gameObject.SetActive(false);
+                    directions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
         }
@@ -154,13 +153,12 @@ public class UserUI : CoroutineSystem {
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(13).GetChild(1).gameObject.SetActive(true);
+                    chestHUD.GetChild(1).gameObject.SetActive(true);
                     break;
 
                 case 1:
-                    hudParent.transform.GetChild(13).GetChild(1).gameObject.SetActive(false);
-
-                    hudParent.transform.GetChild(13).GetChild(2).gameObject.SetActive(true);
+                    chestHUD.GetChild(1).gameObject.SetActive(false);
+                    chestHUD.GetChild(2).gameObject.SetActive(true);
                     break;    
             }
         }
@@ -174,15 +172,15 @@ public class UserUI : CoroutineSystem {
                 nextShopId++;
 
             for(int i = 0;i<3;i++) 
-                shopParent.transform.GetChild(i+2).GetChild(3).gameObject.SetActive(false); 
+                items[i].GetChild(3).gameObject.SetActive(false); 
 
-            shopParent.transform.GetChild(2 + nextShopId).GetChild(3).gameObject.SetActive(true);
+            items[nextShopId].GetChild(3).gameObject.SetActive(true);
 
             if(index <= 2) {
-                shopParent.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[index].description;
-                shopParent.transform.GetChild(2 + nextShopId).GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[index].price;
-                shopParent.transform.GetChild(2 + nextShopId).GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[index].name;
-                shopParent.transform.GetChild(2 + nextShopId).GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.GetShopItems()[index].dimension;
+                itemDescription.text = gameController.GetShopItems()[index].description;
+                items[nextShopId].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[index].price;
+                items[nextShopId].GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[index].name;
+                items[nextShopId].GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.GetShopItems()[index].dimension;
 
             }
 
@@ -190,10 +188,10 @@ public class UserUI : CoroutineSystem {
                 int begin = 2;
 
                 for(int i = index;i>index - 3;i--) {
-                    shopParent.transform.GetChild(2 + begin).GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.GetShopItems()[i].img;
-                    shopParent.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[i].description;
-                    shopParent.transform.GetChild(2 + begin).GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[i].price;
-                    shopParent.transform.GetChild(2 + begin).GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[i].name;
+                    items[begin].GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.GetShopItems()[i].img;
+                    itemDescription.text = gameController.GetShopItems()[i].description;
+                    items[begin].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[i].price;
+                    items[begin].GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[i].name;
                     begin--;
                 }
             }
@@ -206,50 +204,50 @@ public class UserUI : CoroutineSystem {
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(15).GetChild(1).gameObject.SetActive(true);
+                    shopHUD.GetChild(1).gameObject.SetActive(true);
                     break;
 
                 case 1:
-                    hudParent.transform.GetChild(15).GetChild(1).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(15).GetChild(2).gameObject.SetActive(true);
+                    shopHUD.GetChild(1).gameObject.SetActive(false);
+                    shopHUD.GetChild(2).gameObject.SetActive(true);
                     break;    
             }
         }
 
-        if(e.started && inventoryParent.activeSelf && isInInventory && !gameController.freeze) {
+        if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
             if(index < 7) 
                 index++;
 
             Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
             
-            inventoryParent.transform.GetChild(9).gameObject.SetActive(true);
-            inventoryParent.transform.GetChild(9).localPosition = hoverPos[index];       
+            hoverInventoryItem.gameObject.SetActive(true);
+            hoverInventoryItem.localPosition = hoverPos[index];       
         }
     }
 
     public void OnLeft(InputAction.CallbackContext e) {
-        if(e.started && !cameraView && showHUD && !inventoryParent.activeSelf && !gameController.freeze) {
+        if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index > 0) 
                 index--;
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(5).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(5).GetChild(1).gameObject.SetActive(false);
+                    actions[1].GetChild(0).gameObject.SetActive(true);
+                    actions[1].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(4).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(4).GetChild(1).gameObject.SetActive(true);
+                    actions[0].GetChild(0).gameObject.SetActive(false);
+                    actions[0].GetChild(1).gameObject.SetActive(true);
                     break;
                 case 1:
-                    hudParent.transform.GetChild(6).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(6).GetChild(1).gameObject.SetActive(false);
+                    actions[2].GetChild(0).gameObject.SetActive(true);
+                    actions[2].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(5).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(5).GetChild(1).gameObject.SetActive(true);
+                    actions[1].GetChild(0).gameObject.SetActive(false);
+                    actions[1].GetChild(1).gameObject.SetActive(true);
                     break;
                 case 2:
-                    hudParent.transform.GetChild(6).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(6).GetChild(1).gameObject.SetActive(true);
+                    actions[2].GetChild(0).gameObject.SetActive(false);
+                    actions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
         }
@@ -257,31 +255,34 @@ public class UserUI : CoroutineSystem {
         if(e.started && !cameraView && !showHUD && showDirection && !gameController.freeze) {
             int min = -1;
 
-            if(hudParent.transform.GetChild(10).gameObject.activeSelf) min = 0;
-            else if(hudParent.transform.GetChild(11).gameObject.activeSelf) min = 1;
-            else if(hudParent.transform.GetChild(12).gameObject.activeSelf) min = 2;
+            if(directions[0].gameObject.activeSelf) 
+                min = 0;
+            else if(directions[1].gameObject.activeSelf) 
+                min = 1;
+            else if(directions[2].gameObject.activeSelf) 
+                min = 2;
             
             if(index > min) 
                 index--;
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(11).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(11).GetChild(1).gameObject.SetActive(false);
+                    directions[1].GetChild(0).gameObject.SetActive(true);
+                    directions[1].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(10).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(10).GetChild(1).gameObject.SetActive(true);
+                    directions[0].GetChild(0).gameObject.SetActive(false);
+                    directions[0].GetChild(1).gameObject.SetActive(true);
                     break;
                 case 1:
-                    hudParent.transform.GetChild(12).GetChild(0).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(12).GetChild(1).gameObject.SetActive(false);
+                    directions[2].GetChild(0).gameObject.SetActive(true);
+                    directions[2].GetChild(1).gameObject.SetActive(false);
 
-                    hudParent.transform.GetChild(11).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(11).GetChild(1).gameObject.SetActive(true);
+                    directions[1].GetChild(0).gameObject.SetActive(false);
+                    directions[1].GetChild(1).gameObject.SetActive(true);
                     break;
                 case 2:
-                    hudParent.transform.GetChild(12).GetChild(0).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(12).GetChild(1).gameObject.SetActive(true);
+                    directions[2].GetChild(0).gameObject.SetActive(false);
+                    directions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
         }
@@ -292,13 +293,13 @@ public class UserUI : CoroutineSystem {
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(13).GetChild(1).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(13).GetChild(2).gameObject.SetActive(false);
+                    chestHUD.GetChild(1).gameObject.SetActive(true);
+                    chestHUD.GetChild(2).gameObject.SetActive(false);
                     break;
 
                 case 1:
-                    hudParent.transform.GetChild(13).GetChild(1).gameObject.SetActive(false);
-                    hudParent.transform.GetChild(13).GetChild(2).gameObject.SetActive(true);
+                    chestHUD.GetChild(1).gameObject.SetActive(false);
+                    chestHUD.GetChild(2).gameObject.SetActive(true);
                     break;    
             }
         }
@@ -306,17 +307,17 @@ public class UserUI : CoroutineSystem {
         if(e.started && showShop && !gameController.freeze) { 
 
             for(int i = 0;i<3;i++) 
-                shopParent.transform.GetChild(i+2).GetChild(3).gameObject.SetActive(false);
+                items[2+i].GetChild(3).gameObject.SetActive(false);
 
             int begin = 2; 
 
             if(index >= 2) {
                 for(int i = index;i>index - 3;i--) {
                         
-                    shopParent.transform.GetChild(2 + begin).GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[i].name;
-                    shopParent.transform.GetChild(2 + begin).GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.GetShopItems()[i].img;
-                    shopParent.transform.GetChild(2 + nextShopId).GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[i].price;
-                    shopParent.transform.GetChild(2 + nextShopId).GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.GetShopItems()[index].dimension;
+                    items[begin].GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[i].name;
+                    items[begin].GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.GetShopItems()[i].img;
+                    items[nextShopId].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[i].price;
+                    items[nextShopId].GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.GetShopItems()[index].dimension;
                     begin--;
                         
                 }
@@ -324,10 +325,10 @@ public class UserUI : CoroutineSystem {
             else if(index == 1 || index == 0){
                     
                 for(int i = 0;i<3;i++) {
-                    shopParent.transform.GetChild(2+i).GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.GetShopItems()[i].img;
-                    shopParent.transform.GetChild(2 + i).GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[i].name;
-                    shopParent.transform.GetChild(2 + i).GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[i].price;
-                    shopParent.transform.GetChild(2 + nextShopId).GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.GetShopItems()[index].dimension; 
+                    items[i].GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.GetShopItems()[i].img;
+                    items[i].GetChild(2).gameObject.GetComponent<Text>().text = gameController.GetShopItems()[i].name;
+                    items[i].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.GetShopItems()[i].price;
+                    items[nextShopId].GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.GetShopItems()[index].dimension; 
                 }
             }
             
@@ -339,11 +340,11 @@ public class UserUI : CoroutineSystem {
                 nextShopId--;
             
             if(index == 0) 
-                shopParent.transform.GetChild(2).GetChild(3).gameObject.SetActive(true);
+                items[0].GetChild(3).gameObject.SetActive(true);
             else if(index >= 1 && index < 6) 
-                shopParent.transform.GetChild(3).GetChild(3).gameObject.SetActive(true);
+                items[1].GetChild(3).gameObject.SetActive(true);
             else if(index == 6) 
-                shopParent.transform.GetChild(4).GetChild(3).gameObject.SetActive(true);
+                items[2].GetChild(3).gameObject.SetActive(true);
 
         }
 
@@ -353,29 +354,29 @@ public class UserUI : CoroutineSystem {
 
             switch(index) {
                 case 0:
-                    hudParent.transform.GetChild(15).GetChild(1).gameObject.SetActive(true);
-                    hudParent.transform.GetChild(15).GetChild(2).gameObject.SetActive(false);
+                    shopHUD.GetChild(1).gameObject.SetActive(true);
+                    shopHUD.GetChild(2).gameObject.SetActive(false);
                     break;
 
                 case 1: 
-                    hudParent.transform.GetChild(15).GetChild(2).gameObject.SetActive(true);
+                    shopHUD.GetChild(2).gameObject.SetActive(true);
                     break;    
             }
         }
 
-        if(e.started && inventoryParent.activeSelf && !gameController.freeze) {
+        if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index > 0) 
                 index--;
 
             Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
             
-            inventoryParent.transform.GetChild(9).gameObject.SetActive(true);
-            inventoryParent.transform.GetChild(9).localPosition = hoverPos[index];
+            hoverInventoryItem.gameObject.SetActive(true);
+            hoverInventoryItem.localPosition = hoverPos[index];
         }
     }
 
     public void OnInteract(InputAction.CallbackContext e) {
-        if(e.started && !inventoryParent.activeSelf &&  cameraView && useBomb && !gameController.freeze) {
+        if(e.started && !hoverInventoryItem.transform.parent.gameObject.activeSelf &&  cameraView && useBomb && !gameController.freeze) {
             // Bombe
             
             float x = bombPos.transform.position.x;
@@ -404,25 +405,25 @@ public class UserUI : CoroutineSystem {
                 movement.audio.BuyLoose();
         }
 
-        if(e.started && !inventoryParent.activeSelf &&  cameraView && useLightning && !gameController.freeze) {
+        if(e.started && !hoverInventoryItem.transform.parent.gameObject.activeSelf &&  cameraView && useLightning && !gameController.freeze) {
             // Lightning
 
         }        
         if(e.started && showDirection && !gameController.freeze) {
-            if(hudParent.transform.GetChild(10).GetChild(1).gameObject.activeSelf) {
+            if(directions[0].GetChild(1).gameObject.activeSelf) {
                 movement.left = true;
-                hudParent.transform.GetChild(10).GetChild(0).gameObject.SetActive(true);
-                hudParent.transform.GetChild(10).GetChild(1).gameObject.SetActive(false); 
+                directions[0].GetChild(0).gameObject.SetActive(true);
+                directions[0].GetChild(1).gameObject.SetActive(false); 
             }
-            else if(hudParent.transform.GetChild(11).GetChild(1).gameObject.activeSelf) {
-                gmovement.front = true;
-                hudParent.transform.GetChild(11).GetChild(0).gameObject.SetActive(true);
-                hudParent.transform.GetChild(11).GetChild(1).gameObject.SetActive(false);
+            else if(directions[1].GetChild(1).gameObject.activeSelf) {
+                movement.front = true;
+                directions[1].GetChild(0).gameObject.SetActive(true);
+                directions[1].GetChild(1).gameObject.SetActive(false);
             }
-            else if(hudParent.transform.GetChild(12).GetChild(1).gameObject.activeSelf) {
+            else if(directions[2].GetChild(1).gameObject.activeSelf) {
                 movement.right = true;
-                hudParent.transform.GetChild(12).GetChild(0).gameObject.SetActive(true);
-                hudParent.transform.GetChild(12).GetChild(1).gameObject.SetActive(false);
+                directions[2].GetChild(0).gameObject.SetActive(true);
+                directions[2].GetChild(1).gameObject.SetActive(false);
             }
 
             movement.reverseCount = direction.reverseCount;
@@ -456,7 +457,7 @@ public class UserUI : CoroutineSystem {
 
         if(e.started && showShop && !gameController.freeze) {
             int actualCoins = movement.inventory.coins;
-            shopParent.transform.GetChild(5).gameObject.SetActive(true);
+            shopText.gameObject.SetActive(true);
 
             if(actualCoins >= gameController.GetShopItems()[index].price) { // Assez d'argent
 
@@ -466,16 +467,13 @@ public class UserUI : CoroutineSystem {
 
                         if(!hasDoubleDice) { // Le joueur n'a pas encore l'objet
                             movement.inventory.hasDoubleDice = true;
-                            // Affichez l'ui
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
+                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else { // Le joueur a déjà cet objet
                             movement.audio.BuyLoose();
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
@@ -485,16 +483,13 @@ public class UserUI : CoroutineSystem {
 
                         if(!hasReverseDice) {
                             movement.inventory.hasReverseDice = true;
-                            //Affichez ui
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
+                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
                             movement.audio.BuyLoose();
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
@@ -504,16 +499,13 @@ public class UserUI : CoroutineSystem {
 
                         if(!hasBomb) {
                             movement.inventory.hasBomb = true;
-                            // Affichez ui
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
+                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }   
                         else {
                             movement.audio.BuyLoose();
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                            DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
@@ -523,16 +515,13 @@ public class UserUI : CoroutineSystem {
 
                         if(!hasHourglass) {
                             movement.inventory.hasHourglass = true;
-                            // Affichez ui
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
+                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
                             movement.audio.BuyLoose();
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                            DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
@@ -542,16 +531,13 @@ public class UserUI : CoroutineSystem {
 
                         if(!hasLightning) {
                             movement.inventory.hasLightning = true;
-                            // Affichez ui
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
+                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
                             movement.audio.BuyLoose();
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                            DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
@@ -561,16 +547,13 @@ public class UserUI : CoroutineSystem {
 
                         if(!hasStar) {
                             movement.inventory.hasStar = true;
-                            // Affichez ui
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
+                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
                             movement.audio.BuyLoose();
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
@@ -579,17 +562,14 @@ public class UserUI : CoroutineSystem {
                         bool hasParachute = movement.inventory.hasParachute;
 
                         if(!hasParachute) {
-                            movement.inventory.hasParachute = true;
-                           
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Achat effectué avec succès";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(0,1.0f,0.12f,1.0f);
+                            movement.inventory.hasParachute = true;                        
+                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.GetShopItems()[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
                             movement.audio.BuyLoose();
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous possédez déjà cet objet";
-                            shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
@@ -598,12 +578,9 @@ public class UserUI : CoroutineSystem {
             
             else { // Pas assez d'argent
                 movement.audio.BuyLoose();
-                shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().text = "Vous n'avez pas assez d'argent";
-                shopParent.transform.GetChild(5).gameObject.GetComponent<Text>().color = new Color(1.0f,0f,0f,1.0f);
+                DisplayShopText("Vous n'avez pas assez d'argent",new Color(1.0f,0f,0f,1.0f));
                 StartCoroutine(InfoLabelWaiting());
-            }
-
-            
+            }          
         }
 
         if(e.started && showShopHUD && !gameController.freeze) {
@@ -611,7 +588,8 @@ public class UserUI : CoroutineSystem {
             switch(index) {
                 case 0:
                     movement.stop = false;
-                    if(movement.diceResult <= 0) gameController.EndUserTurn();
+                    if(movement.diceResult <= 0) 
+                        gameController.EndUserTurn();
                     break;
 
                 case 1:
@@ -653,10 +631,10 @@ public class UserUI : CoroutineSystem {
             return;
         }
 
-        if(e.started && inventoryParent.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
+        if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
             if(index <= 6 && index > -1) {
         
-                if(inventoryParent.transform.childCount > (1+index) && inventoryParent.transform.GetChild(1 + index).childCount > 0 && inventoryParent.transform.GetChild(1 + index).GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
+                if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
 
                     switch(index) {
                         case 0: // Double Dice
@@ -678,7 +656,7 @@ public class UserUI : CoroutineSystem {
                             showActionButton = false;
                             movement.isTurn = true;
                             movement.waitDiceResult = true;
-                            movement.hasReverseDice = false;
+                            movement.inventory.hasReverseDice = false;
                             break;
 
                         case 2: // Bomb
@@ -698,8 +676,11 @@ public class UserUI : CoroutineSystem {
 
                             break;
                         case 3: //Hourglass
-                            if(gameController.GetDayController().dayPeriod < 2) gameController.GetDayController().dayPeriod++;
-                            else gameController.GetDayController().dayPeriod = 0;
+                            if(gameController.GetDayController().dayPeriod < 2) 
+                                gameController.GetDayController().dayPeriod++;
+                            else 
+                                gameController.GetDayController().dayPeriod = 0;
+
                             // BLack screeen animation
                             ManageInventory(false);
                             isInInventory = false;
@@ -762,7 +743,7 @@ public class UserUI : CoroutineSystem {
                     }
                 }
                 else { // Le joueur n'a pas l'objet
-                    if(index >= 0 && inventoryParent.activeSelf) {
+                    if(index >= 0 && hoverInventoryItem.transform.parent.gameObject.activeSelf) {
                         DisplayInfoText(new Vector2(971,297),new Color(1.0f,0.0f,0.0f), "Vous ne possédez pas cet objet");
                         isInInventory = false;
                         StartCoroutine(InfoLabelWaiting());
@@ -803,18 +784,14 @@ public class UserUI : CoroutineSystem {
 
         if(e.started && gameController.GetPlayers()[0].GetComponent<UserUI>().showShop && !gameController.freeze) {
             showShop = false;
-            // Lui faire revenir sur la step
             movement.returnToStep = true;
             index = -1;
         }
-
-        //index = -1;
     }
 
     public void OnClickButton() {
         if(showShop && !gameController.freeze) {
             showShop = false;
-            // Lui faire rentrer sur la step
             movement.returnToStep = true;
             index = -1;
         }
@@ -864,37 +841,35 @@ public class UserUI : CoroutineSystem {
         islesParent.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[2];
         islesParent.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[1];
         
-      //  islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];
-      //  islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];
     }
 
 
     private void ManageInventory(bool active) {
-        inventoryParent.SetActive(active);
+        hoverInventoryItem.transform.parent.gameObject.SetActive(active);
 
         if(active)
             index = -1;
 
-        if(inventoryParent.activeSelf) {
+        if(hoverInventoryItem.transform.parent.gameObject.activeSelf) {
             UserInventory inventory = movement.inventory;
 
             bool[] hasItems = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasBomb,inventory.hasHourglass,inventory.hasLightning,inventory.hasStar,inventory.hasParachute};
 
             for(int i = 0;i<hasItems.Length;i++) {
                 if(hasItems[i]) 
-                    inventoryParent.transform.GetChild(1 + i).GetChild(0).gameObject.SetActive(true);
+                    inventoryItems[i].GetChild(0).gameObject.SetActive(true);
                 else 
-                    inventoryParent.transform.GetChild(1 + i).GetChild(0).gameObject.SetActive(false);
+                    inventoryItems[i].GetChild(0).gameObject.SetActive(false);
                 
             }
 
-            inventoryParent.transform.GetChild(9).gameObject.SetActive(false);
+            hoverInventoryItem.gameObject.SetActive(false);
         }
     }
 
     private void ManageShopHUD(bool active) {
-        hudParent.transform.GetChild(15).gameObject.SetActive(active);
-        hudParent.transform.GetChild(15).GetChild(0).gameObject.SetActive(active);
+        shopHUD.gameObject.SetActive(active);
+        shopHUD.GetChild(0).gameObject.SetActive(active);
     }
 
     private void ManageHudState(bool active) {
@@ -903,16 +878,7 @@ public class UserUI : CoroutineSystem {
             int hudIndex = 0;
 
             for(int i = 0;i<4;i++) {
-                hudParent.transform.GetChild(i).gameObject.SetActive(active);
-
-              /*  
-
-                hudParent.transform.GetChild(i).GetChild(4).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(i,gameController.GetClassedPlayers()).GetComponent<UserInventory>().coins + "";
-                hudParent.transform.GetChild(i).GetChild(6).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(i,gameController.GetClassedPlayers()).GetComponent<UserInventory>().cards + "";
-                hudParent.transform.GetChild(i).GetChild(2).gameObject.GetComponent<Text>().text = rank + 1 + "";
-                hudParent.transform.GetChild(i).GetChild(2).gameObject.GetComponent<Text>().color = gameController.GetClassedColors()[rank];
-                    
-*/
+                playersPanels[i].gameObject.SetActive(active);
 
                 for(int j = actualPlayer;j<actualPlayer + 4;j++) {
                 
@@ -920,7 +886,7 @@ public class UserUI : CoroutineSystem {
                     if(j > 3) 
                         playerIndex -= 4;
                     
-                    gameController.ChangeHUDSpritePlayer(hudParent,hudIndex,gameController.GetPlayers()[playerIndex].name);
+                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,gameController.GetPlayers()[playerIndex].name);
 
                     int rank = -1;
                     int rankIndex = 0;
@@ -931,32 +897,17 @@ public class UserUI : CoroutineSystem {
                         rankIndex++;
                     }
 
-                    if(rank >= 0 && rank < gameController.GetClassedColors().Length && rank < gameController.GetClassedPlayers().Keys.Count) {
-                      /*  int playerPoint = gameController.GetPlayerPoints(gameController.GetPlayers()[playerIndex]);
-                        int samePoint = HasSamePoint(gameController.GetPlayers()[playerIndex]);
-
-                        if(samePoint > 0) {
-                            foreach(GameObject player in gameController.GetClassedPlayers().Keys) {
-                                if(gameController.GetPlayerPoints(player) == playerPoint) {
-                                    rank = gameController.FindPlayerClassement(player);
-                                    break;
-                                }
-                            } 
-                        } */
-
-                            
-                        hudParent.transform.GetChild(hudIndex).GetChild(4).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.GetClassedPlayers()).GetComponent<UserInventory>().coins + "";
-                        hudParent.transform.GetChild(hudIndex).GetChild(6).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.GetClassedPlayers()).GetComponent<UserInventory>().cards + "";
-                        hudParent.transform.GetChild(hudIndex).GetChild(2).gameObject.GetComponent<Text>().text = rank + 1 + "";
-                        hudParent.transform.GetChild(hudIndex).GetChild(2).gameObject.GetComponent<Text>().color = gameController.GetClassedColors()[rank];
-                    
+                    if(rank >= 0 && rank < gameController.GetClassedColors().Length && rank < gameController.GetClassedPlayers().Keys.Count) {                        
+                        playersPanels[i].GetChild(4).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.GetClassedPlayers()).GetComponent<UserInventory>().coins + "";
+                        playersPanels[i].GetChild(6).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.GetClassedPlayers()).GetComponent<UserInventory>().cards + "";
+                        playersPanels[i].GetChild(2).gameObject.GetComponent<Text>().text = rank + 1 + "";
+                        playersPanels[i].gameObject.GetComponent<Text>().color = gameController.GetClassedColors()[rank];   
                     }
                     
                     hudIndex += 1;
                     if(hudIndex == 4) 
                         hudIndex = 0;
-                }
-                
+                }            
             }
         }
     }
@@ -975,18 +926,18 @@ public class UserUI : CoroutineSystem {
 
     private void ManageActionButtonState(bool active) {
         for(int i = 0;i<3;i++) {
-            hudParent.transform.GetChild(4 + i).gameObject.SetActive(active);
-            hudParent.transform.GetChild(4 + i).GetChild(0).gameObject.SetActive(active);
+            actions[i].gameObject.SetActive(active);
+            actions[i].GetChild(0).gameObject.SetActive(active);
             if(!active) 
-                hudParent.transform.GetChild(4 + i).GetChild(1).gameObject.SetActive(active);
+                actions[i].GetChild(1).gameObject.SetActive(active);
         }
 
         
     }
 
     private void ManagerHudTurnState(bool active) {
-        for(int i = 0;i<2;i++) 
-            hudParent.transform.GetChild(7 + i).gameObject.SetActive(active);       
+        turnText.gameObject.SetActive(false);
+        nightText.gameObject.SetActive(false);     
     }
 
     private void ManageHudDirection(bool active) {
@@ -996,13 +947,13 @@ public class UserUI : CoroutineSystem {
             if(direction.left) {
                 if(direction.nextStepLeft.name.Contains("front") || direction.nextStepLeft.name.Contains("interior")) {
                     if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
-                        hudParent.transform.GetChild(10).gameObject.SetActive(true);
+                        directions[0].gameObject.SetActive(true);
                 }
                 else 
-                    hudParent.transform.GetChild(10).gameObject.SetActive(true);        
+                    directions[0].gameObject.SetActive(true);        
             }
             else 
-                hudParent.transform.GetChild(10).gameObject.SetActive(false);
+                directions[0].gameObject.SetActive(false);
 
             if(direction.front) {
                 if(direction.nextStepFront.name.Contains("front") || direction.nextStepFront.name.Contains("interior")) {
@@ -1010,17 +961,17 @@ public class UserUI : CoroutineSystem {
                         return;
 
                     if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
-                        hudParent.transform.GetChild(11).gameObject.SetActive(true);                  
+                        directions[1].gameObject.SetActive(true);                  
                 }
                 else {
                     if(islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
                         return;
 
-                    hudParent.transform.GetChild(11).gameObject.SetActive(true);
+                    directions[1].gameObject.SetActive(true);
                 }
             }
             else 
-                hudParent.transform.GetChild(11).gameObject.SetActive(false);
+                directions[1].gameObject.SetActive(false);
 
             if(direction.right) {
                 if(direction.nextStepRight.name.Contains("front") || direction.nextStepRight.name.Contains("interior")) {
@@ -1028,38 +979,38 @@ public class UserUI : CoroutineSystem {
                         return;
 
                     if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
-                        hudParent.transform.GetChild(12).gameObject.SetActive(true);           
+                        directions[2].gameObject.SetActive(true);           
                 }
                 else {
                     if(islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
                         return;
 
-                    hudParent.transform.GetChild(12).gameObject.SetActive(true);
+                    directions[2].gameObject.SetActive(true);
                 }
             }
             else 
-                hudParent.transform.GetChild(12).gameObject.SetActive(false);
+                directions[2].gameObject.SetActive(false);
         }
 
         if(!active) {
-            hudParent.transform.GetChild(10).gameObject.SetActive(false);
-            hudParent.transform.GetChild(11).gameObject.SetActive(false);
-            hudParent.transform.GetChild(12).gameObject.SetActive(false);
+            directions[0].gameObject.SetActive(false);
+            directions[1].gameObject.SetActive(false);
+            directions[2].gameObject.SetActive(false);
         }
     }
 
     private void ManageChestHUD(bool active) {
-        hudParent.transform.GetChild(13).gameObject.SetActive(active);
+        chestHUD.gameObject.SetActive(active);
     }
 
     private void ManageShop(bool active) {
-        shopParent.SetActive(active);
+        shopText.gameObject.transform.parent.gameObject.SetActive(active);
     }
 
     private IEnumerator InfoLabelWaiting() {
         yield return new WaitForSeconds(2f);
         infoLabel.SetActive(false);
-        shopParent.transform.GetChild(5).gameObject.SetActive(false);
+        shopText.gameObject.SetActive(false);
     }
 
     public void RefreshDiceResult(int result,Color color) {
@@ -1087,12 +1038,12 @@ public class UserUI : CoroutineSystem {
        // coinTextReward.SetActive(true);  
 
         if(bonus) {
-            coinTextReward.GetComponent<Text>().color = new Color(0f,0.35f,1f,1f);
-            coinTextReward.GetComponent<Text>().text = "+" + coins;
+            coinTextReward.color = new Color(0f,0.35f,1f,1f);
+            coinTextReward.text = "+" + coins;
         }
         else {
-            coinTextReward.GetComponent<Text>().color = new Color(1.0f,0f,0f,1f);
-            coinTextReward.GetComponent<Text>().text = "-" + coins;
+            coinTextReward.color = new Color(1.0f,0f,0f,1f);
+            coinTextReward.text = "-" + coins;
         }
     }
 
@@ -1104,52 +1055,9 @@ public class UserUI : CoroutineSystem {
         return coinIconReward.activeSelf;
     }
 
-
-    private void BlackScreenAnimation(int dayPeriod) {
-        
-        camera.transform.rotation = Quaternion.Euler(-31.101f,camera.transform.rotation.y,camera.transform.rotation.z); // la rotation doit se faire progressivement
-        int lastDayPeriod = gameController.GetDayController().dayPeriod;
-
-        GameObject targetStep;
-
-        RunDelayed(1f, () => { 
-            bsAnimation.Play();
-
-            RunDelayed(3.5f,() => {
-                gameController.GetDayController().dayPeriod = dayPeriod;
-
-                RunDelayed(1f,() => {
-                    bsAnimation.Play();
-
-                    RunDelayed(3.5f,() => {
-                        // Position camera devant 
-                        targetStep = GetStepByCoords();
-
-                        camera.transform.position = targetStep.GetComponent<Step>().camPosition;
-                        camera.transform.rotation = targetStep.GetComponent<Step>().camRotation;
-                         
-                        RunDelayed(1f, () => {
-                            // Récupérer la step via le bombPos
-
-                            lightning.transform.position = new Vector3(targetStep.transform.position.x,lightning.transform.position.y,targetStep.transform.position.z);
-                            movement.audio.Lightning();
-
-                            foreach(ParticleSystem ps in lightningParticles) {
-                                ps.Play();
-                            }
-                        });
-                    });
-                });
-            });
-            
-        });
-
-
-    }
-
     public void ChangeTurnValue(int turn,int night) {
-        hudParent.transform.GetChild(7).gameObject.GetComponent<Text>().text = "Tour: " + turn;
-        hudParent.transform.GetChild(8).gameObject.GetComponent<Text>().text = "Nuit dans " + night + " tour(s)";
+        turnText.text = "Tour: " + turn;
+        nightText.text = "Nuit dans " + night + " tour(s)";
     }
 
     private GameObject GetStepByCoords() {
@@ -1195,5 +1103,10 @@ public class UserUI : CoroutineSystem {
         infoLabel.GetComponent<Text>().text = text;
         infoLabel.GetComponent<AlphaController>().manageAlpha = true;
         infoLabel.SetActive(true);
+    }
+
+    private void DisplayShopText(string text,Color color) {
+        shopText.gameObject.GetComponent<Text>().text = text;
+        shopText.gameObject.GetComponent<Text>().color = color;
     }
 }

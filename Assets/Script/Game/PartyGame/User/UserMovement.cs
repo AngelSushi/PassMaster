@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class UserMovement : MonoBehaviour {
 
-    private NavMeshAgent agent;
+    public NavMeshAgent agent;
 
     public UserUI ui;
     public UserInventory inventory;
