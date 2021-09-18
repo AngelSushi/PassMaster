@@ -40,7 +40,7 @@ public class KBController : MiniGame {
 
     }
 
-    void Update() {
+    public override void Update() {
         RenderSettings.skybox = skybox;
     }
 

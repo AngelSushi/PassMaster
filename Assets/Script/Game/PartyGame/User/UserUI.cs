@@ -17,7 +17,6 @@ public class UserUI : CoroutineSystem {
     public bool cameraView;
     public bool useBomb;
     public bool useLightning;
-    public GameObject islesParent;
     public GameObject infoLabel;
     public GameObject diceResult;
     public GameObject coinIconReward;
@@ -29,6 +28,7 @@ public class UserUI : CoroutineSystem {
     public Transform[] actions; // buttons d'actions sur le menu principale du jeu
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
+    public Transform[] isleParts;
     public Transform chestHUD;
     public Transform shopHUD;
     public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
@@ -387,9 +387,9 @@ public class UserUI : CoroutineSystem {
             if((x >= -830.37f && z >= -15509.91f && x <= -810.06f && z <= -15372.94f) || (x <= -998.031f && z <= -15285.96f && x >= -1133.05f && z >= -15304.83f)) {
                 bool alreadyBreak = false;
                 if(x >= -830.37f && z >= -15509.91f && x <= -810.06f && z <= -15372.94f)
-                    alreadyBreak = islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge;
+                    alreadyBreak = isleParts[2].GetChild(0).gameObject.GetComponent<Bridge>().breakBridge;
                 else if(x <= -998.031f && z <= -15285.96f && x >= -1133.05f && z >= -15304.83f)
-                    alreadyBreak = islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge;
+                    alreadyBreak = isleParts[3].GetChild(0).gameObject.GetComponent<Bridge>().breakBridge;
 
                 if(!alreadyBreak) {
                     ResetBombMat();
@@ -798,48 +798,48 @@ public class UserUI : CoroutineSystem {
     }
 
     private void ApplyBombMat() {
-        for(int i = 0;i<islesParent.transform.GetChild(2).childCount;i++) 
-            islesParent.transform.GetChild(2).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
+        for(int i = 0;i<isleParts[2].childCount;i++) 
+            isleParts[2].GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
         
-        for(int i = 0;i<islesParent.transform.GetChild(3).childCount;i++) 
-            islesParent.transform.GetChild(3).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
+        for(int i = 0;i<isleParts[3].childCount;i++) 
+            isleParts[3].GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
         
-        for(int i = 0;i<islesParent.transform.GetChild(4).childCount;i++) 
-            islesParent.transform.GetChild(4).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
+        for(int i = 0;i<isleParts[4].childCount;i++) 
+            isleParts[4].GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[0];
         
                             
-        islesParent.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[1];
-        islesParent.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[2];
+        isleParts[0].gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[1];
+        isleParts[1].gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[2];
 
-        Bridge bridge01 = islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>();
-        Bridge bridge02 = islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>();
+        Bridge bridge01 = isleParts[2].GetChild(0).gameObject.GetComponent<Bridge>();
+        Bridge bridge02 = isleParts[3].GetChild(0).gameObject.GetComponent<Bridge>();
 
         if(!bridge01.breakBridge) 
-            islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[3];
+            isleParts[2].GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[3];
         else 
-            islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[4];
+            isleParts[2].GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[4];
 
         if(!bridge02.breakBridge) 
-            islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[3];
+            isleParts[3].GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[3];
         else
-            islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[4];
+            isleParts[3].GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetBombIsleMat()[4];
         
     }
 
     private void ResetBombMat() {
 
-        for(int i = 0;i<islesParent.transform.GetChild(2).childCount;i++) 
-            islesParent.transform.GetChild(2).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];  
+        for(int i = 0;i<isleParts[2].childCount;i++) 
+            isleParts[2].GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];  
 
-        for(int i = 0;i<islesParent.transform.GetChild(3).childCount;i++) 
-            islesParent.transform.GetChild(3).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];
+        for(int i = 0;i<isleParts[3].childCount;i++) 
+            isleParts[3].GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[3];
         
-        for(int i = 0;i<islesParent.transform.GetChild(4).childCount;i++) 
-            islesParent.transform.GetChild(4).GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[0];
+        for(int i = 0;i<isleParts[4].childCount;i++) 
+            isleParts[4].GetChild(i).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[0];
         
                             
-        islesParent.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[2];
-        islesParent.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[1];
+        isleParts[0].gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[2];
+        isleParts[1].gameObject.GetComponent<MeshRenderer>().material = gameController.GetIsleMat()[1];
         
     }
 
@@ -957,14 +957,14 @@ public class UserUI : CoroutineSystem {
 
             if(direction.front) {
                 if(direction.nextStepFront.name.Contains("front") || direction.nextStepFront.name.Contains("interior")) {
-                    if(islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge)
+                    if(isleParts[3].GetChild(0).gameObject.GetComponent<Bridge>().breakBridge)
                         return;
 
                     if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
                         directions[1].gameObject.SetActive(true);                  
                 }
                 else {
-                    if(islesParent.transform.GetChild(3).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
+                    if(isleParts[3].GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
                         return;
 
                     directions[1].gameObject.SetActive(true);
@@ -975,14 +975,14 @@ public class UserUI : CoroutineSystem {
 
             if(direction.right) {
                 if(direction.nextStepRight.name.Contains("front") || direction.nextStepRight.name.Contains("interior")) {
-                    if(islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
+                    if(isleParts[2].GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
                         return;
 
                     if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
                         directions[2].gameObject.SetActive(true);           
                 }
                 else {
-                    if(islesParent.transform.GetChild(2).GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
+                    if(isleParts[2].GetChild(0).gameObject.GetComponent<Bridge>().breakBridge) 
                         return;
 
                     directions[2].gameObject.SetActive(true);

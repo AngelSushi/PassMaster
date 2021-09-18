@@ -5,7 +5,7 @@ using UnityEngine;
 public class CoroutineSystem : MonoBehaviour {
 
 
-    void Update() {}
+    public virtual void Update() {}
 
 
     protected IEnumerator DelayedCoroutine(float delay, System.Action a) {

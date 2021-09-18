@@ -29,7 +29,7 @@ public abstract class MiniGame : CoroutineSystem {
         gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
     }
 
-    void Update() {
+    public override void Update() {
         if(!finish) {
             if(begin) 
                 BeginTimer();            
