@@ -71,10 +71,8 @@ public class UserMovement : MonoBehaviour {
     private Vector3 point;
     private bool hasCheckPath;
 
-
     private bool hasShowChestHUD;
     private bool canMooveToChest = true;
-
 
     private bool hasCollideDice;
     private GameObject dice;
@@ -84,7 +82,6 @@ public class UserMovement : MonoBehaviour {
 
     // Object
     
-
     private Color actualColor;
 
     public bool isParachuting;
@@ -463,7 +460,7 @@ public class UserMovement : MonoBehaviour {
                 Destroy(hit.gameObject);
             }
 
-            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Step_End") {
+            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
 
                 if(hit.gameObject.transform.parent.name == "beach" || hit.gameObject.transform.parent.name == "interior") isle = 1;
                 if(hit.gameObject.transform.parent.name == "isle_02") isle = 2;
@@ -491,10 +488,9 @@ public class UserMovement : MonoBehaviour {
                 else {
                     if(actualStep != hit.gameObject) {
                         actualStep = hit.gameObject;
-                        if(diceResult > 0) {
-                            GameObject actualParent = ChooseParent(isle);
-                            ChooseNextStep(actualParent,hit.gameObject);
-                        }
+                        if(diceResult > 0) 
+                            ChooseNextStep(hit.gameObject);
+                        
 
                     }
                 }
@@ -517,6 +513,8 @@ public class UserMovement : MonoBehaviour {
                 if(hit.gameObject.tag == "Direction" && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) {
                     
                     Direction direction = hit.gameObject.GetComponent<Direction>();
+
+                    // La direction de la 3e ile ou les directions change 
                     if(lastStep == ChooseParent(2).transform.GetChild(4).gameObject) { // Vient de la flèche de l'ile 2
                         direction.nextStepLeft = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
                         direction.nextStepRight = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
@@ -575,7 +573,7 @@ public class UserMovement : MonoBehaviour {
                         isInShopCoroutine = false;
                 }
 
-                if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Step_End") {
+                if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
                     if(stop) 
                         stop = false;
                 }
@@ -592,7 +590,7 @@ public class UserMovement : MonoBehaviour {
 
     private void OnTriggerStay(Collider hit) {
         if(isTurn) {
-            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Step_End") {
+            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
                if(transform.gameObject.activeSelf) {
                    if(hit.gameObject.GetComponent<Step>() != null && hit.gameObject.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
                        hit.gameObject.GetComponent<Step>().playerInStep.Remove(transform.gameObject);
@@ -662,8 +660,7 @@ public class UserMovement : MonoBehaviour {
                 }
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
-                    GameObject actualParent = ChooseParent(isle);
-                    ChooseNextStep(actualParent,hit.gameObject);
+                    ChooseNextStep(hit.gameObject);
 
                     if(ui != null) 
                         ui.RefreshDiceResult(diceResult,actualColor);
@@ -681,8 +678,7 @@ public class UserMovement : MonoBehaviour {
     private void OnTriggerExit(Collider hit) {
         if(isTurn) {
 
-            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Step_End") 
-                lastStep = hit.gameObject;
+            
 
             foreach(GameObject step in gameController.playerConflict.Values) {
                 if(hit.gameObject == step) {
@@ -707,24 +703,30 @@ public class UserMovement : MonoBehaviour {
             }
 
             if(hit.gameObject.tag == "Direction") {
-                if(!isJumping) lastStepIsArrow = true;
-                if(bypassDirection) bypassDirection = false;
+                if(!isJumping) 
+                    lastStepIsArrow = true;
+                if(bypassDirection) 
+                    bypassDirection = false;
+
+                hasCheckPath = false;
                 ui.direction = null;
             }
             else 
                 lastStepIsArrow = false;   
 
-            if(hit.gameObject.tag == "Step_End") {
-                GameObject actualParent = ChooseParent(isle);
-                ChooseNextStep(actualParent,hit.gameObject);
-            }
+            if(hit.gameObject.tag == "Step_End") 
+                ChooseNextStep(hit.gameObject); 
 
-            if(hit.gameObject.tag == "Bonus_End"  && lastStep == ChooseParent(1).transform.GetChild(1).GetChild(1).gameObject) 
-                nextStep = ChooseParent(1).transform.GetChild(0).GetChild(1);                    
+            if((hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End") && GameObject.ReferenceEquals(lastStep.transform.parent.gameObject,actualStep.transform.parent.gameObject)) 
+                nextStep = actualStep.GetComponent<Direction>().nextStepFront.transform;                    
 
             left = false;
             front = false;
             right = false;
+
+            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") 
+                lastStep = hit.gameObject;
+
         }
     }
 
@@ -760,38 +762,81 @@ public class UserMovement : MonoBehaviour {
 
     #region Customs Functions
 
-    private void ChooseNextStep(GameObject actualParent,GameObject obj) {
-        if(obj.tag != "Direction" && nextStep != null) diceResult--;
+    private void ChooseNextStep(GameObject obj) {
+        if(obj.tag != "Direction" && nextStep != null) 
+            diceResult--;
 
-        if(actualParent == isleOneParent) { // Le joueur/bot est sur la première île
+        GetNextStep();
 
-            if((int)transform.position.y <= 5200) // Le joueur/bot est sur la plage de la première île
-                GetNextStep(0,actualParent);
-            else  // Le joueur/bot est en dehors de la plage de la première île
-                GetNextStep(1,actualParent);
-            
-        }
-
-        if(actualParent == isleTwoParent)
-            GetNextStep(actualParent);
-                            
-        if(actualParent == isleThreeParent) {
-            if((int)transform.position.y <= 5200) { // Le joueur/bot est sur la plage de la troisième ile A MODIFIER
-                if((int)transform.position.z == -15271) 
-                    GetNextStep(3,actualParent);
-                else 
-                    GetNextStep(2,actualParent);
-                                    
-            }
-            else // Le joueur/bot est en dehors de la plage de la troisième île
-                GetNextStep(1,actualParent);
-        }
-
-      //  if(obj.tag != "Direction" && nextStep != null) diceResult--;
         if(ui != null) 
             ui.RefreshDiceResult(diceResult,actualColor);
 
         finishMovement = (diceResult == 0);
+    }
+
+    private void CheckPath() {
+        if(!hasCheckPath && stepPaths != null) { 
+            Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
+            int stepIndex = actualStep != null ? FindIndexInParent(stepParent.gameObject,actualStep) : FindIndexInParent(stepParent.gameObject,beginStep);
+            int result = actualStep != null ? diceResult : beginResult;
+
+            if(stepIndex == -1) 
+                stepIndex = 0;
+
+            for(int i = 0;i<result;i++) {
+                if(stepIndex + i + 1 < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
+                    stepPaths[i] = stepParent.GetChild(stepIndex + i + 1).gameObject;
+                else // Le calcul du prochain index de la prochaine step est supérieur au nombre de step max, on retire donc le nombre de step max au calcul
+                    stepPaths[i] = stepParent.GetChild(stepIndex + i + 1 - stepParent.childCount).gameObject;
+            }
+            hasCheckPath = true;
+        }
+
+        StepBackMovement(stepPaths);
+    }
+
+    private void GetNextStep() {
+        GameObject actualParent = actualStep.transform.parent.gameObject;
+        int stepIndex = FindIndexInParent(actualParent,actualStep);
+
+        if(!reverseDice) { // Si le joueur n'utilise pas le dé inverse
+            if(stepIndex + 1 < actualParent.transform.childCount) 
+                nextStep = actualParent.transform.GetChild(stepIndex + 1);
+            else 
+                nextStep = actualParent.transform.GetChild(0);
+        } 
+        else { // Le joueur utilise le dé inverse
+            if(stepIndex - 1 > 0) 
+                nextStep = actualParent.transform.GetChild(stepIndex - 1);          
+            else 
+                nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);    
+        }                 
+    }
+
+    private GameObject ChooseParent(int isleIndex) {
+        switch(isleIndex) {
+            case 1:
+                return isleOneParent;
+                break;
+            case 2:
+                return isleTwoParent;
+                break;
+            case 3:
+                return isleThreeParent;
+                break;
+        }
+
+        return null;
+
+    }
+
+    private int FindIndexInParent(GameObject parent,GameObject targetStep) {
+        for(int i = 0;i<parent.transform.childCount;i++){
+            if(parent.transform.GetChild(i).gameObject == targetStep) 
+                return i;    
+        }
+
+        return -1;
     }
 
     private GameObject CheckStepPath(NavMeshPath path) {
@@ -830,60 +875,12 @@ public class UserMovement : MonoBehaviour {
                         
                     }
                 }
-            }
-
-            
+            }         
         }
         return null;
     }
 
-    private void CheckPath() {
-        GameObject actualParent = ChooseParent(isle);
-
-            if(actualParent == isleOneParent) { // Le joueur/bot est sur la première île
-                if((int)transform.position.y < 5200) { // Le joueur/bot est sur la plage de la première île
-                    if(!hasCheckPath && stepPaths != null) {
-                        int stepIndex = FindIndexInParent(actualParent.transform.GetChild(0).gameObject,beginStep);
-                        if(stepIndex == -1) 
-                            stepIndex = 0;
-
-                        for(int i = 0;i<beginResult;i++) {
-                            if(stepIndex + i + 1 < actualParent.transform.GetChild(0).childCount) 
-                                stepPaths[i] = actualParent.transform.GetChild(0).GetChild(stepIndex + i + 1).gameObject;
-                            else 
-                                stepPaths[i] = actualParent.transform.GetChild(0).GetChild(stepIndex + i + 1 - actualParent.transform.GetChild(0).childCount).gameObject;
-                            // Il faut caper le résultat a zéro
-                        }
-
-                        hasCheckPath = true;
-                   }
-
-                    StepBackMovement(stepPaths);
-                    
-                }
-
-                else { // Le joueur/bot est en dehors de la plage de la première île
-                }
-            }
-
-            if(actualParent == isleTwoParent) {
-
-            }
-                    
-            if(actualParent == isleThreeParent) {
-              /*  if((int)transform.position.y == 5197) { // Le joueur/bot est sur la plage de la troisième ile A MODIFIER
-                    // if((int)transform.position.z == -15271) 
-                    // else 
-                            
-                }
-                else { // Le joueur/bot est en dehors de la plage de la troisième île
-                            
-                } */
-            }
- 
-    }
-
-    private void StepBackMovement(GameObject[] steps) {
+    private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
         if(stepPaths != null) {
             foreach(GameObject step in stepPaths) {
                 foreach(GameObject user in gameController.players) {
@@ -906,12 +903,9 @@ public class UserMovement : MonoBehaviour {
                                     }
 
                                     gameController.playerConflict.Add(user,step);
-
-
                                 }
                             }
                             else { // Il va y avoir plusieurs joueurs sur la même case
-
                                 user.GetComponent<UserMovement>().stack = true;
                                 stack = true;
                             }
@@ -920,85 +914,6 @@ public class UserMovement : MonoBehaviour {
                 }
             }
         }
-    }
-    
-
-    private void GetNextStep(int child,GameObject actualParent) {
-
-        int stepIndex = FindIndexInParent(actualParent.transform.GetChild(child).gameObject,actualStep);
-
-        if(stepIndex == -1) 
-            stepIndex = 0; 
-
-        if(reverseCount) {
-            if(stepIndex - 1 <= actualParent.transform.GetChild(child).childCount) 
-                nextStep = actualParent.transform.GetChild(child).GetChild(stepIndex - 1);
-            else 
-                nextStep = actualParent.transform.GetChild(child).GetChild(0);    
-        }  
-        else {
-            if(!reverseDice && !reverse) {
-                if(stepIndex + 1 < actualParent.transform.GetChild(child).childCount) 
-                    nextStep = actualParent.transform.GetChild(child).GetChild(stepIndex + 1);
-                else 
-                    nextStep = actualParent.transform.GetChild(child).GetChild(0);  
-            }
-            else {
-                if(stepIndex - 1 > 0) 
-                    nextStep = actualParent.transform.GetChild(child).GetChild(stepIndex - 1);
-                else 
-                    nextStep = actualParent.transform.GetChild(child).GetChild(actualParent.transform.GetChild(child).childCount - 1);
-            }
-        }              
-        
-
-
-
-    }
-
-    private void GetNextStep(GameObject actualParent) {
-        int stepIndex = FindIndexInParent(actualParent,actualStep);
-
-        if(!reverseDice) {
-            if(stepIndex + 1 < actualParent.transform.childCount) 
-                nextStep = actualParent.transform.GetChild(stepIndex + 1);
-            else 
-                nextStep = actualParent.transform.GetChild(0);
-        } 
-
-        else {
-            if(stepIndex - 1 > 0) 
-                nextStep = actualParent.transform.GetChild(stepIndex - 1);          
-            else 
-                nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);    
-        }                 
-    }
-
-    private GameObject ChooseParent(int isleIndex) {
-        switch(isleIndex) {
-            case 1:
-                return isleOneParent;
-                break;
-            case 2:
-                return isleTwoParent;
-                break;
-            case 3:
-                return isleThreeParent;
-                break;
-        }
-
-        return null;
-
-    }
-
-    private int FindIndexInParent(GameObject parent,GameObject targetStep) {
-
-        for(int i = 0;i<parent.transform.childCount;i++){
-            if(parent.transform.GetChild(i).gameObject == targetStep) 
-                return i;    
-        }
-
-        return -1;
     }
 
     private void Jump() {

@@ -27,7 +27,6 @@ public class UserUI : CoroutineSystem {
     public Transform[] actions; // buttons d'actions sur le menu principale du jeu
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
-    public Transform[] isleParts;
     public Transform chestHUD;
     public Transform shopHUD;
     public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire

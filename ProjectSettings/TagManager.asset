@@ -102,6 +102,7 @@ TagManager:
   - IngredientBox
   - PanBox
   - PlateBox
+  - Malus_End
   layers:
   - Default
   - TransparentFX
