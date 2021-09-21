@@ -6,6 +6,7 @@ public class Step : MonoBehaviour {
     public bool xAxis;
     public bool zAxis;
     public bool positive;
+    public StepType type;
     public List<GameObject> playerInStep = new List<GameObject>();
     public GameObject stack;
     public GameObject chest;
@@ -13,4 +14,5 @@ public class Step : MonoBehaviour {
 
     public Vector3 camPosition;
     public Quaternion camRotation;
+
 }

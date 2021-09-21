@@ -11,5 +11,6 @@ public class Direction : MonoBehaviour {
     public GameObject nextStepLeft;
     public GameObject nextStepFront;
     public GameObject nextStepRight;
+    public GameObject nextStepBack;
     public bool reverseCount;
 }

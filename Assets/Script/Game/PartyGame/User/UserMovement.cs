@@ -127,9 +127,10 @@ public class UserMovement : MonoBehaviour {
                                 canJump = true;
                                 dice = Instantiate(gameController.prefabDice,new Vector3(transform.position.x,transform.position.y + 40,transform.position.z),gameController.prefabDice.transform.rotation);
                                 dice.GetComponent<DiceController>().lockDice = false;
-                                if(!doubleDice && !reverseDice) dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[0];
-                                if(doubleDice) dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[1];
-                                if(reverseDice) dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[2];
+                                
+                                int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
+                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
+
                                 hasGenDice = true;
                                 stack = false;
                             }
@@ -198,7 +199,7 @@ public class UserMovement : MonoBehaviour {
                         }
                         else { // Le joueur a collide avec l'entité 
                             if(isPlayer) {
-                                if(!ui.showShop && !hasShowShop && lastStep.tag == "Shop") {
+                                if(!ui.showShop && !hasShowShop && lastStep.GetComponent<Step>().type  == StepType.SHOP) {
                                     ui.showShop = true;
                                     hasShowShop = true;
                                 }
@@ -253,9 +254,10 @@ public class UserMovement : MonoBehaviour {
 
 
                 if(finishMovement) {
-                    if(actualStep.tag == "Bonus")  
+                    StepType type = actualStep.GetComponent<Step>().type;
+                    if(type == StepType.BONUS)  
                         StartCoroutine(WaitBonus(true));
-                    if(actualStep.tag == "Malus") 
+                    if(type == StepType.MALUS) 
                         StartCoroutine(WaitMalus(true));
 
                     ui.ClearDiceResult();
@@ -383,7 +385,7 @@ public class UserMovement : MonoBehaviour {
 
                 if(stack) { // Pb jaune vert interchangé
                     transform.gameObject.SetActive(false);
-                    if(actualStep.tag != "Direction" && !actualStep.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
+                    if(actualStep.GetComponent<Step>().type != StepType.FIX_DIRECTION && !actualStep.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
                         actualStep.GetComponent<Step>().playerInStep.Add(transform.gameObject);
                         gameController.ActualPlayersInStep(actualStep,transform.gameObject);
                     }
@@ -460,14 +462,11 @@ public class UserMovement : MonoBehaviour {
                 Destroy(hit.gameObject);
             }
 
-            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
+            StepType type = hit.gameObject.GetComponent<Step>().type;
 
-                if(hit.gameObject.transform.parent.name == "beach" || hit.gameObject.transform.parent.name == "interior") isle = 1;
-                if(hit.gameObject.transform.parent.name == "isle_02") isle = 2;
-                if(hit.gameObject.transform.parent.name == "isle_03" || hit.gameObject.transform.parent.name == "front" || hit.gameObject.transform.parent.name == "right" || hit.gameObject.transform.parent.name == "left") 
-                    isle = 3;
+            if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
 
-                if(hit.gameObject.tag != "Shop") {
+                if(type != StepType.SHOP) {
                     if(hasShowShopHUD) 
                         hasShowShopHUD = false;
                     if(hasShowShop) 
@@ -498,62 +497,31 @@ public class UserMovement : MonoBehaviour {
                 if(diceResult < 0 && nextStep != null) 
                     finishMovement = true;
 
-                if(hit.gameObject.name == "arrow_directional" && lastStepIsArrow) {
-                    nextStep = ChooseParent(isle).transform.GetChild(2).GetChild(0);
-                    return;
-                }
-
-                if(hit.gameObject.tag == "Bonus_End" && reverseCount) {
+                if(type == StepType.BONUS_END && reverseCount) {
                     reverseCount = false;
-                    nextStep = ChooseParent(1).transform.GetChild(0).GetChild(1);
+                    nextStep = hit.gameObject.GetComponent<Direction>().nextStepFront.transform;
                     bypassDirection = true;
-
                 }
 
-                if(hit.gameObject.tag == "Direction" && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) {
+                if(type == StepType.DIRECTION && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) {
                     
+                    // Ca entre que sur la fleche de direction a 4 côté 
                     Direction direction = hit.gameObject.GetComponent<Direction>();
 
-                    // La direction de la 3e ile ou les directions change 
-                    if(lastStep == ChooseParent(2).transform.GetChild(4).gameObject) { // Vient de la flèche de l'ile 2
-                        direction.nextStepLeft = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
-                        direction.nextStepRight = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
-                        direction.nextStepFront = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
-                    }
-
-                    else if(lastStep == ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject) { // Vient de la gauche
-                        direction.nextStepLeft = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
-                        direction.nextStepFront = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
-                        direction.nextStepRight = ChooseParent(2).transform.GetChild(4).gameObject;
-                    }
-
-                    else if(lastStep == ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject) {// Vient de la droite
-                        direction.nextStepRight = ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject;
-                        direction.nextStepFront = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
-                        direction.nextStepLeft = ChooseParent(2).transform.GetChild(4).gameObject;
-                    }
-
-                    else if(lastStep == ChooseParent(3).transform.GetChild(1).GetChild(0).gameObject) {// Vient de la grotte
-                        direction.nextStepFront = ChooseParent(2).transform.GetChild(4).gameObject;
-                        direction.nextStepRight = ChooseParent(3).transform.GetChild(2).GetChild(0).gameObject;
-                        direction.nextStepLeft = ChooseParent(3).transform.GetChild(3).GetChild(0).gameObject;
-                    }
+                    // On peut passer par les coordonnées au moment ou il arrive sur la direction de 4 ca boucle sans prendre en compte le y et ca trouve le plus proche selon l'axe x ou z 
+                    List<GameObject> directions = new List<GameObject>(){direction.nextStepRight,direction.nextStepFront,direction.nextStepLeft,direction.nextStepBack};
 
                     ui.direction = direction;
                     if(isPlayer) 
                         ui.showDirection = true;
                     
                     else {
-                        // Il faut générer un path du bot au coffre et vérifier quelle step appartient au path et ensuite c comme ca qu'on définit
-                        //  Si il a 6 chiffres lui faire aller vers la fin du jeu
-
+// A REVOIR
                         NavMeshPath chestPath = new NavMeshPath();
 
                         if(inventory.cards < 6) 
                             agent.CalculatePath(gameController.GetActualStepChest().transform.position,chestPath);   
-                        else 
-                            agent.CalculatePath(ChooseParent(3).transform.GetChild(1).GetChild(2).position,chestPath);
-
+                       
                         GameObject pathStep = CheckStepPath(chestPath);
 
                         if(pathStep == direction.nextStepLeft) 
@@ -568,18 +536,14 @@ public class UserMovement : MonoBehaviour {
                         reverse = false;
                 }
 
-                if(hit.gameObject.tag != "Shop") {
+                if(type != StepType.SHOP) {
                     if(isInShopCoroutine) 
                         isInShopCoroutine = false;
                 }
 
-                if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
-                    if(stop) 
-                        stop = false;
-                }
-
+                if(stop) 
+                    stop = false;
                 
-
             }
 
         }
@@ -590,7 +554,9 @@ public class UserMovement : MonoBehaviour {
 
     private void OnTriggerStay(Collider hit) {
         if(isTurn) {
-            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
+            StepType type = hit.gameObject.GetComponent<Step>().type;
+
+            if(type == StepType.BONUS || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
                if(transform.gameObject.activeSelf) {
                    if(hit.gameObject.GetComponent<Step>() != null && hit.gameObject.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
                        hit.gameObject.GetComponent<Step>().playerInStep.Remove(transform.gameObject);
@@ -677,9 +643,6 @@ public class UserMovement : MonoBehaviour {
 
     private void OnTriggerExit(Collider hit) {
         if(isTurn) {
-
-            
-
             foreach(GameObject step in gameController.playerConflict.Values) {
                 if(hit.gameObject == step) {
                     // On fait revenir le bot sur sa case
