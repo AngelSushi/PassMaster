@@ -8,9 +8,9 @@ public class Direction : MonoBehaviour {
     public bool front;
     public bool right;
 
+    public StepType type;
     public GameObject nextStepLeft;
     public GameObject nextStepFront;
     public GameObject nextStepRight;
-    public GameObject nextStepBack;
     public bool reverseCount;
 }

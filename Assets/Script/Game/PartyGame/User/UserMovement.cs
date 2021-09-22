@@ -94,7 +94,6 @@ public class UserMovement : MonoBehaviour {
 
     private bool isInShopCoroutine;
 
-
     private void Start() {
         agent = GetComponent<NavMeshAgent>();
         controller = GetComponent<CharacterController>();
@@ -437,6 +436,9 @@ public class UserMovement : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider hit) {
+        
+        StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
+
         if(isTurn) {
             if(hit.gameObject.tag == "Dice" && !ui.showHUD) {
                 if(diceResult == 0 || diceResult == -1) {
@@ -462,9 +464,10 @@ public class UserMovement : MonoBehaviour {
                 Destroy(hit.gameObject);
             }
 
-            StepType type = hit.gameObject.GetComponent<Step>().type;
+            if(type == null) 
+                return;
 
-            if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
+            if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
 
                 if(type != StepType.SHOP) {
                     if(hasShowShopHUD) 
@@ -489,8 +492,6 @@ public class UserMovement : MonoBehaviour {
                         actualStep = hit.gameObject;
                         if(diceResult > 0) 
                             ChooseNextStep(hit.gameObject);
-                        
-
                     }
                 }
 
@@ -503,15 +504,17 @@ public class UserMovement : MonoBehaviour {
                     bypassDirection = true;
                 }
 
-                if(type == StepType.DIRECTION && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) {
-                    
-                    // Ca entre que sur la fleche de direction a 4 côté 
+                if(type == StepType.FLEX_DIRECTION && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) { // Le joueur collisionne avec la flèche a 4 côtés
                     Direction direction = hit.gameObject.GetComponent<Direction>();
 
-                    // On peut passer par les coordonnées au moment ou il arrive sur la direction de 4 ca boucle sans prendre en compte le y et ca trouve le plus proche selon l'axe x ou z 
-                    List<GameObject> directions = new List<GameObject>(){direction.nextStepRight,direction.nextStepFront,direction.nextStepLeft,direction.nextStepBack};
+                    FlexDirection flexDirection = lastStep.GetComponent<FlexDirection>();
+
+                    direction.nextStepFront = flexDirection.frontDirection;
+                    direction.nextStepLeft = flexDirection.leftDirection;
+                    direction.nextStepRight = flexDirection.rightDirection;
 
                     ui.direction = direction;
+                    
                     if(isPlayer) 
                         ui.showDirection = true;
                     
@@ -554,7 +557,7 @@ public class UserMovement : MonoBehaviour {
 
     private void OnTriggerStay(Collider hit) {
         if(isTurn) {
-            StepType type = hit.gameObject.GetComponent<Step>().type;
+            StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
 
             if(type == StepType.BONUS || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
                if(transform.gameObject.activeSelf) {
