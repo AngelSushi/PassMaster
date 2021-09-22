@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class UserMovement : MonoBehaviour {
+public class UserMovement : CoroutineSystem {
 
     public NavMeshAgent agent;
     public bool waitDiceResult;
@@ -36,9 +36,6 @@ public class UserMovement : MonoBehaviour {
     public bool isMooving;
     public GameObject giveUI;
     public GameObject changeUI;
-    public GameObject isleOneParent;
-    public GameObject isleTwoParent;
-    public GameObject isleThreeParent;
     public bool isTurn;
     public bool hasGenDice;
     public int diceResult;
@@ -491,7 +488,7 @@ public class UserMovement : MonoBehaviour {
                     if(actualStep != hit.gameObject) {
                         actualStep = hit.gameObject;
                         if(diceResult > 0) 
-                            ChooseNextStep(hit.gameObject);
+                            ChooseNextStep(type);
                     }
                 }
 
@@ -514,10 +511,9 @@ public class UserMovement : MonoBehaviour {
                     direction.nextStepRight = flexDirection.rightDirection;
 
                     ui.direction = direction;
-                    
+
                     if(isPlayer) 
-                        ui.showDirection = true;
-                    
+                        ui.showDirection = true;           
                     else {
 // A REVOIR
                         NavMeshPath chestPath = new NavMeshPath();
@@ -559,7 +555,7 @@ public class UserMovement : MonoBehaviour {
         if(isTurn) {
             StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
 
-            if(type == StepType.BONUS || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") {
+            if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
                if(transform.gameObject.activeSelf) {
                    if(hit.gameObject.GetComponent<Step>() != null && hit.gameObject.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
                        hit.gameObject.GetComponent<Step>().playerInStep.Remove(transform.gameObject);
@@ -569,26 +565,17 @@ public class UserMovement : MonoBehaviour {
                    
                }
     // A modifier avec un rundelayed
-                if(hit.gameObject.tag == "Step_End") {
-                   
-                    StartCoroutine(Wait());
-
-                    IEnumerator Wait(){
-                        yield return new WaitForSeconds(0.1f);
+                if(type == StepType.STEP_END) {
+                    RunDelayed(0.1f,() => {
                         if(diceResult > 0) {
-                            if(hit.gameObject.name != "step_red (4)") 
+                            if(diceResult == 1) {} // Go to grotte
+                            else 
                                 reverse = true;
-                            else {
-                                if(diceResult == 1) {} // Go to grotte
-                                else 
-                                    reverse = true;
-                            }
                         }
-                    }
-                    
+                    });              
                 }
 
-                if(hit.gameObject.tag == "Direction" && isPlayer && !bypassDirection && isTurn) {
+                if(type == StepType.FIX_DIRECTION && isPlayer && !bypassDirection && isTurn) {
                         if(!lastStepIsArrow) {
                             if(!left && !right && !front) {
                                 stop = true;
@@ -611,11 +598,11 @@ public class UserMovement : MonoBehaviour {
                             stop = false;
                 }
 
-                if(hit.gameObject.tag == "Shop" && returnToStep) 
+                if(type == StepType.SHOP && returnToStep) 
                     StartCoroutine(WaitToReturnStep());
                 
 
-                if(hit.gameObject.tag == "Shop"  && beginStep != hit.gameObject && !hasShowShopHUD) {
+                if(type == StepType.SHOP  && beginStep != hit.gameObject && !hasShowShopHUD) {
                     // Au lieu de la fonction faire une coroutine qui attends genre 1 demi seconde et après faire le reste
                     
                     if(isPlayer) 
@@ -629,7 +616,7 @@ public class UserMovement : MonoBehaviour {
                 }
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
-                    ChooseNextStep(hit.gameObject);
+                    ChooseNextStep(type);
 
                     if(ui != null) 
                         ui.RefreshDiceResult(diceResult,actualColor);
@@ -646,6 +633,8 @@ public class UserMovement : MonoBehaviour {
 
     private void OnTriggerExit(Collider hit) {
         if(isTurn) {
+            StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
+
             foreach(GameObject step in gameController.playerConflict.Values) {
                 if(hit.gameObject == step) {
                     // On fait revenir le bot sur sa case
@@ -668,7 +657,7 @@ public class UserMovement : MonoBehaviour {
                 }
             }
 
-            if(hit.gameObject.tag == "Direction") {
+            if(type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION) {
                 if(!isJumping) 
                     lastStepIsArrow = true;
                 if(bypassDirection) 
@@ -680,17 +669,17 @@ public class UserMovement : MonoBehaviour {
             else 
                 lastStepIsArrow = false;   
 
-            if(hit.gameObject.tag == "Step_End") 
-                ChooseNextStep(hit.gameObject); 
+            if(type == StepType.STEP_END) 
+                ChooseNextStep(type); 
 
-            if((hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End") && GameObject.ReferenceEquals(lastStep.transform.parent.gameObject,actualStep.transform.parent.gameObject)) 
+            if((type == StepType.BONUS_END || type == StepType.MALUS_END) && GameObject.ReferenceEquals(lastStep.transform.parent.gameObject,actualStep.transform.parent.gameObject)) 
                 nextStep = actualStep.GetComponent<Direction>().nextStepFront.transform;                    
 
             left = false;
             front = false;
             right = false;
 
-            if(hit.gameObject.tag == "Bonus" || hit.gameObject.tag == "Malus" || hit.gameObject.tag == "Shop" || hit.gameObject.tag == "Direction" || hit.gameObject.tag == "Bonus_End" || hit.gameObject.tag == "Malus_End" || hit.gameObject.tag == "Step_End") 
+            if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION || type == StepType.BONUS_END  || type == StepType.MALUS_END || type == StepType.STEP_END) 
                 lastStep = hit.gameObject;
 
         }
@@ -728,8 +717,8 @@ public class UserMovement : MonoBehaviour {
 
     #region Customs Functions
 
-    private void ChooseNextStep(GameObject obj) {
-        if(obj.tag != "Direction" && nextStep != null) 
+    private void ChooseNextStep(StepType type) {
+        if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && nextStep != null) 
             diceResult--;
 
         GetNextStep();
@@ -777,23 +766,6 @@ public class UserMovement : MonoBehaviour {
             else 
                 nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);    
         }                 
-    }
-
-    private GameObject ChooseParent(int isleIndex) {
-        switch(isleIndex) {
-            case 1:
-                return isleOneParent;
-                break;
-            case 2:
-                return isleTwoParent;
-                break;
-            case 3:
-                return isleThreeParent;
-                break;
-        }
-
-        return null;
-
     }
 
     private int FindIndexInParent(GameObject parent,GameObject targetStep) {
@@ -951,55 +923,16 @@ public class UserMovement : MonoBehaviour {
     }
 
     private GameObject GetNearStep() {
-        List<Transform> steps = new List<Transform>();
-
-        // Init
-
-        GameObject isleOneBeach = gameController.stepParent.transform.GetChild(0).GetChild(0).gameObject;
-        GameObject isleOneInterior = gameController.stepParent.transform.GetChild(0).GetChild(1).gameObject;
-        GameObject isleTwo = gameController.stepParent.transform.GetChild(1).gameObject;
-        GameObject isleThreeLeft = gameController.stepParent.transform.GetChild(2).GetChild(2).gameObject;
-        GameObject isleThreeRight = gameController.stepParent.transform.GetChild(2).GetChild(3).gameObject;
-        GameObject isleThreeFront = gameController.stepParent.transform.GetChild(2).GetChild(1).gameObject;
-
-        foreach(Transform child in isleOneBeach.transform) {
-            if(child.gameObject.tag != "Direction") 
-                steps.Add(child);
-        }
-
-        if(gameController.dayController.dayPeriod != 2) {
-
-            foreach(Transform child in isleTwo.transform) {
-                if(child.gameObject.tag != "Direction") 
-                    steps.Add(child);
-            }
-        }
-
-        foreach(Transform child in isleThreeLeft.transform) {
-            if(child.gameObject.tag != "Direction") 
-                steps.Add(child);
-        }
-
-        foreach(Transform child in isleThreeRight.transform) {
-            if(child.gameObject.tag != "Direction") 
-                steps.Add(child);
-        }
-
-        if(gameController.dayController.dayPeriod != 2) {
-            foreach(Transform child in isleThreeFront.transform) {
-                if(child.gameObject.tag != "Direction") 
-                    steps.Add(child);
-            }
-        }
-
+        List<GameObject> steps = gameController.allSteps;
+       
         Transform nearestStep = null;
         float miniumDistance = Mathf.Infinity;
         Vector3 currentPos = transform.position;
 
-        foreach (Transform stepTrans in steps) {
-            float distance = Vector3.Distance(stepTrans.position, currentPos);
+        foreach (GameObject stepTrans in steps) {
+            float distance = Vector3.Distance(stepTrans.transform.position, currentPos);
             if (distance < miniumDistance) {
-                nearestStep = stepTrans;
+                nearestStep = stepTrans.transform;
                 miniumDistance = distance;
             }
         }
