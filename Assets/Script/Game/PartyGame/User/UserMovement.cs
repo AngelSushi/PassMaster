@@ -121,7 +121,9 @@ public class UserMovement : CoroutineSystem {
                         if(isPlayer) {
                             if(!ui.showHUD) {
                                 canJump = true;
-                                dice = Instantiate(gameController.prefabDice,new Vector3(transform.position.x,transform.position.y + 40,transform.position.z),gameController.prefabDice.transform.rotation);
+                                dice = gameController.dice;
+                                dice.SetActive(true);
+                                dice.transform.position = new Vector3(transform.position.x,transform.position.y + 40,transform.position.z);
                                 dice.GetComponent<DiceController>().lockDice = false;
                                 
                                 int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
@@ -140,7 +142,9 @@ public class UserMovement : CoroutineSystem {
 
                             UseItemBot();
 
-                            dice = Instantiate(gameController.prefabDice,new Vector3(transform.position.x,transform.position.y + 40,transform.position.z),gameController.prefabDice.transform.rotation);
+                            dice = gameController.dice;
+                            dice.SetActive(true);
+                            dice.transform.position = new Vector3(transform.position.x,transform.position.y + 40,transform.position.z);
                             dice.GetComponent<DiceController>().lockDice = false;
 
                             if(!doubleDice && !reverseDice) 
@@ -173,7 +177,7 @@ public class UserMovement : CoroutineSystem {
                             waitDiceResult = false;
                             ui.showHUD = false;
                             if(dice != null) 
-                                Destroy(dice);
+                               dice.SetActive(false);
                         }
 
                         agent.enabled = true;
@@ -433,10 +437,8 @@ public class UserMovement : CoroutineSystem {
     }
 
     private void OnTriggerEnter(Collider hit) {
-        
-        StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
-
         if(isTurn) {
+            StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
             if(hit.gameObject.tag == "Dice" && !ui.showHUD) {
                 if(diceResult == 0 || diceResult == -1) {
                     diceResult = hit.gameObject.GetComponent<DiceController>().index;
@@ -458,7 +460,7 @@ public class UserMovement : CoroutineSystem {
                 }
 
                 ui.RefreshDiceResult(diceResult, actualColor);
-                Destroy(hit.gameObject);
+                hit.gameObject.SetActive(false);
             }
 
             if(type == null) 

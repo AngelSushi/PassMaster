@@ -21,13 +21,15 @@ public class DiceController : MonoBehaviour {
     private int seconds = 0;
     private int wait = 25;
 
-    public bool lockDice;
+    public bool lockDice,lastLockDice = true;
 
-    void Start() {
+    void Update() {
         
-        if(!lockDice) {
+        if(!lockDice && lastLockDice) {
             StartCoroutine(RotateDice());
         }
+
+        lastLockDice = lockDice;
           
     }
 

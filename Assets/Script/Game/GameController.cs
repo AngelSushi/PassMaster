@@ -25,7 +25,7 @@ public class GameController : CoroutineSystem {
     }
 
     public DayController dayController;
-    public GameObject prefabDice; 
+    public GameObject dice; 
     public GameObject prefabInStep;
     public DialogController dialog;
     public GameObject stepParent;
@@ -41,7 +41,6 @@ public class GameController : CoroutineSystem {
     public GameObject[] players = new GameObject[4];
 
     public Dictionary<GameObject,int> classedPlayers = new Dictionary<GameObject,int>();
-    private GameObject[] dices = new GameObject[4];
 
     private SortedDictionary<int,int> results = new SortedDictionary<int,int>();
     
@@ -424,6 +423,8 @@ public class GameController : CoroutineSystem {
         if(changePos) 
             players[1].transform.position =posBegin[1];
         players[1].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
+
+        Debug.Log("tuuuuurn");
 
         if(!playersInStack.Contains(players[2])) 
             players[2].SetActive(true);
