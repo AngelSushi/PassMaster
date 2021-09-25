@@ -38,6 +38,7 @@ public class UserUI : CoroutineSystem {
     public Direction direction;
     public GameController gameController;
     public UserMovement movement;
+    public Sprite userSprite;
 
     private bool isInInventory;
     private int nextShopId = -1;

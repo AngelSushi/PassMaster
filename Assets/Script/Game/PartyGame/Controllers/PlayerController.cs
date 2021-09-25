@@ -29,6 +29,9 @@ public class PlayerController : CoroutineSystem { // Controller des joueurs lors
 
     public void OnTriggerEnter(Collider collision) {
         if(collision.gameObject.tag == "Dice") {
+            if(collision.gameObject.GetComponent<DiceController>().index == 0)
+                collision.gameObject.GetComponent<DiceController>().index = 6;
+
             orderController.ChangeUser();
         }
     }

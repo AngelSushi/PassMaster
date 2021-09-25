@@ -128,7 +128,6 @@ public class GameController : CoroutineSystem {
             players[0].transform.position = new Vector3(-1259f,5206f,-15801f);
             GetComponent<DialogController>().isInDialog = true;
             stepParent.SetActive(false);
-          //  mainCamera.transform.rotation = Quaternion.Euler(-36.941f,358.267f,0f);
             
             mainCamera.transform.position = new Vector3(players[0].transform.position.x,5747.6f,players[0].transform.position.z);
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
@@ -597,6 +596,7 @@ public class GameController : CoroutineSystem {
     }
 
     public void ChangeStackSpritePlayer(GameObject step,int index,String name) {
+        // A REFAIRE SANS LE NOM
         switch(name) {
             case "User":
                 step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[0];
@@ -620,7 +620,7 @@ public class GameController : CoroutineSystem {
     }
 
     public void ChangeHUDSpritePlayer(Transform[] panels,int index,String name) {
-        // A check si on peut pas tt concaténer en 1 ligne
+        // A check si on peut pas tt concaténer en 1 ligne . A REFAIRE SANS LE NOM
         switch(name) {
             case "User":
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
@@ -639,6 +639,18 @@ public class GameController : CoroutineSystem {
                 break;            
         }
     }
+
+    public Sprite GetSpriteByUser(int user) {
+        return smallSprites[user];
+    }
+
+    public void SortUserSprite() {
+        for(int i = 0;i<players.Length;i++) {
+            if(players[i].GetComponent<UserUI>().userSprite != smallSprites[i])
+                smallSprites[i] = players[i].GetComponent<UserUI>().userSprite;
+        }
+    }
+
 
     private void ChangeStepName() {
         GameObject isleOneBeach = stepParent.transform.GetChild(0).GetChild(0).gameObject;

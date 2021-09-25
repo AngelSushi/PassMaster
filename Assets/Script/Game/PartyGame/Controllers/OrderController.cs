@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
-public class OrderController : MonoBehaviour {
+public class OrderController : CoroutineSystem {
     
     private GameObject[] players;
     public Vector3[] playerPos;
@@ -17,12 +17,15 @@ public class OrderController : MonoBehaviour {
     public int orderPlayer;
 
     private Dictionary<int,int> playersResult = new Dictionary<int,int>();
+
+    public GameObject[] orderPanels;
     
     void Start() {
         players = controller.players;
 
-        if(begin)
+      /*  if(begin)
             BeginOrder();
+    */
     }
 
     public void BeginOrder() {
@@ -86,6 +89,37 @@ public class OrderController : MonoBehaviour {
 
         controller.players = playersOrder.ToArray();
 
+        controller.SortUserSprite();
+
+        RunAnim();
+
+    }
+
+    private void RunAnim() {
+        RunDelayed(0.2f,() => {
+            for(int i = 0;i<orderPanels.Length;i++) {
+                Image icon = orderPanels[i].transform.GetChild(0).gameObject.GetComponent<Image>();
+                Text text = orderPanels[i].transform.GetChild(1).gameObject.GetComponent<Text>();
+                
+                icon.sprite = controller.smallSprites[i];
+                text.text = controller.players[i].name;         
+            }
+
+            orderPanels[0].transform.parent.gameObject.SetActive(true);
+            
+            RunDelayed(0.75f,() => {
+                orderPanels[0].SetActive(true);
+                RunDelayed(1.2f,() => {
+                    orderPanels[1].SetActive(true);
+                    RunDelayed(1.2f,() => {
+                        orderPanels[2].SetActive(true);
+                        RunDelayed(1.2f,() =>  {
+                            orderPanels[3].SetActive(true);
+                        });
+                    });
+                });
+            });
+        });
     }
 
     public int GetKeyByValue(int value) {
