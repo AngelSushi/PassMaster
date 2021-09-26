@@ -284,7 +284,7 @@ public class MiniGameController : CoroutineSystem {
                                 playerPositionToGo.Clear();
                                 classedPlayer.Clear();
                                 gameController.part = GameController.GamePart.PARTYGAME;
-                                gameController.BeginTurn(false,false);
+                                gameController.BeginTurn(false);
                             });
                         });
                     }
@@ -313,7 +313,7 @@ public class MiniGameController : CoroutineSystem {
                             playerPositionToGo.Clear();
                             classedPlayer.Clear();
                             gameController.part = GameController.GamePart.PARTYGAME;
-                            gameController.BeginTurn(false,false);
+                            gameController.BeginTurn(false);
 
                         });
                     }
@@ -344,7 +344,7 @@ public class MiniGameController : CoroutineSystem {
                     playerPositionToGo.Clear();
                     classedPlayer.Clear();
                     gameController.part = GameController.GamePart.PARTYGAME;
-                    gameController.BeginTurn(false,false);
+                    gameController.BeginTurn(false);
 
                 });
             }

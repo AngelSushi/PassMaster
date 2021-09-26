@@ -32,6 +32,7 @@ public class OrderController : CoroutineSystem {
         begin = true;
 
         Camera.main.gameObject.transform.position = cameraPos;
+        Camera.main.gameObject.transform.rotation = Quaternion.Euler(0,0,0);
 
         for(int i = 0;i<players.Length;i++) 
             players[i].transform.position = playerPos[i]; 
@@ -115,11 +116,26 @@ public class OrderController : CoroutineSystem {
                         orderPanels[2].SetActive(true);
                         RunDelayed(1.2f,() =>  {
                             orderPanels[3].SetActive(true);
+                            RunDelayed(1.5f,() => {
+                                FinishAnim();
+                            });
                         });
                     });
                 });
             });
         });
+    }
+
+    private void FinishAnim() {
+        controller.part = GameController.GamePart.PARTYGAME;
+
+        foreach(GameObject panel in orderPanels) 
+            panel.SetActive(false);
+
+        orderPanels[0].transform.parent.gameObject.SetActive(false);
+
+        foreach(Text text  in diceResult) 
+            text.text = "";
     }
 
     public int GetKeyByValue(int value) {

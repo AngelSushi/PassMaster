@@ -60,7 +60,6 @@ public class UserMovement : CoroutineSystem {
     
     private float gravity = 300.0f;
     private float jumpHeight = 175f;
-    private CharacterController controller;
 
     private int random = -1;
     private float timer;
@@ -77,6 +76,7 @@ public class UserMovement : CoroutineSystem {
     private bool hasShowShopHUD;
     private bool hasShowShop;
 
+    public Rigidbody rb;
     // Object
     
     private Color actualColor;
@@ -93,7 +93,6 @@ public class UserMovement : CoroutineSystem {
 
     private void Start() {
         agent = GetComponent<NavMeshAgent>();
-        controller = GetComponent<CharacterController>();
 
         gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
         dayController = GameObject.FindGameObjectsWithTag("Day")[0].GetComponent<DayController>();
@@ -104,15 +103,8 @@ public class UserMovement : CoroutineSystem {
 
         if(!gameController.freeze) {
             if(isTurn) {
-                transform.gameObject.GetComponent<CharacterController>().enabled  = true;
                 stepBack = false;
                 point = Vector3.zero;
-
-                if(isParachuting) {
-                    transform.GetChild(3).gameObject.SetActive(true);
-                    Parachute();
-                    return;
-                }
 
                 if(!hasGenDice) {
                     if(waitDiceResult) {
@@ -343,7 +335,6 @@ public class UserMovement : CoroutineSystem {
 
             else {
                 agent.enabled = false;
-                transform.gameObject.GetComponent<CharacterController>().enabled  = false;
                 left = false;
                 front = false;
                 isMooving = false;
@@ -857,71 +848,7 @@ public class UserMovement : CoroutineSystem {
     }
 
     private void Jump() {
-        Vector3 moveVector = Vector3.zero;
-
-        if(controller.isGrounded) {
-
-            verticalVelocity = -gravity * Time.deltaTime * 3f;
-
-            if(canJump && !isJumping) {
-                verticalVelocity = jumpHeight;
-                isJumping = true;
-            }          
-        }
-
-        else {
-
-           if(canJump && !isJumping) {
-                verticalVelocity = jumpHeight;
-                isJumping = true;
-            } 
-
-            verticalVelocity -= gravity * Time.deltaTime * 3f;
-        }
-
-        moveVector.y = verticalVelocity * jumpSpeed;
-
-        controller.Move(moveVector * Time.deltaTime);      
-    }
-
-     public void Parachute() {
-        agent.enabled = false;
-        Vector3 moveVector = Vector3.zero;
-
-        if(controller.isGrounded) {
-
-            verticalVelocity = -gravity * Time.deltaTime * 3f;
-
-            if(canJump && !isJumping) {
-                verticalVelocity = 700;
-                isJumping = true;
-            }          
-        }
-
-        else {
-
-           if(canJump && !isJumping) {
-                verticalVelocity = 700;
-                isJumping = true;
-            } 
-
-            verticalVelocity -= gravity * Time.deltaTime * 3f;
-        }
-
-        if(verticalVelocity < 0) {
-            jumpSpeed = 0.01f;
-            transform.GetChild(2).gameObject.SetActive(true);
-
-            float directionX = parachuteMovement.x * 10000 * Time.deltaTime;
-            float directionY = parachuteMovement.y * 10000 * Time.deltaTime;
-
-            moveVector.x = directionX;
-            moveVector.z = directionY;
-        }
-
-        moveVector.y = verticalVelocity * jumpSpeed;
-
-        controller.Move(moveVector * Time.deltaTime);      
+        rb.AddForce(jumpSpeed * Vector3.up,ForceMode.Impulse);    
     }
 
     private GameObject GetNearStep() {

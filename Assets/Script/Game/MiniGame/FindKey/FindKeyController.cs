@@ -75,7 +75,7 @@ public class FindKeyController : MonoBehaviour {
     void Update() {
 
         if(finish) {
-            gameController.BeginTurn(false,false);
+            gameController.BeginTurn(false);
             finish = false;
         }
     }

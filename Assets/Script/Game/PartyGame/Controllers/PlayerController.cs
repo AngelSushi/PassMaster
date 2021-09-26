@@ -12,7 +12,7 @@ public class PlayerController : CoroutineSystem { // Controller des joueurs lors
 
     void Update() {
 
-        if(!isPlayer && mustJump) {
+        if(!isPlayer && mustJump && orderController.begin) {
             mustJump = false;
             float timer = Random.Range(2f,4f);
 
@@ -23,12 +23,12 @@ public class PlayerController : CoroutineSystem { // Controller des joueurs lors
     }
 
     public void OnJump(InputAction.CallbackContext e) {
-        if(e.started) 
+        if(e.started && orderController.begin) 
             rb.AddForce(Vector3.up * jumpSpeed,ForceMode.Impulse);            
     } 
 
     public void OnTriggerEnter(Collider collision) {
-        if(collision.gameObject.tag == "Dice") {
+        if(collision.gameObject.tag == "Dice" && orderController.begin) {
             if(collision.gameObject.GetComponent<DiceController>().index == 0)
                 collision.gameObject.GetComponent<DiceController>().index = 6;
 

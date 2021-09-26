@@ -43,7 +43,7 @@ public class UserUI : CoroutineSystem {
     private bool isInInventory;
     private int nextShopId = -1;
     private int index = -1;
-    private float cameraSpeed = 200f;
+    private float cameraSpeed = 90f;
     private Vector2 vecMove;
 
 // Check que quand c'est pas le tour d'un joueur tt soit désactiver
@@ -595,7 +595,7 @@ public class UserUI : CoroutineSystem {
                 cameraView = true;
                 camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
 
-                camera.transform.position = new Vector3(transform.position.x,5747.6f,transform.position.z);
+                camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
                 camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
                 DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur ECHAP pour quitter le mode");
@@ -660,7 +660,7 @@ public class UserUI : CoroutineSystem {
                             useLightning = true;
                             camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
 
-                            camera.transform.position = new Vector3(transform.position.x,5747.6f,transform.position.z);
+                            camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
                             camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f);           
                             DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f), "Appuyez sur ECHAP pour quitter le mode");
 
@@ -733,8 +733,8 @@ public class UserUI : CoroutineSystem {
     public void OnQuit(InputAction.CallbackContext e) {
         if(e.started && cameraView && !gameController.freeze) {
             cameraView = false;
-            camera.transform.position = new Vector3(-465.9f,5224f,-15847.6f);
-            camera.transform.rotation = Quaternion.Euler(0f,265.791f,0f);
+            camera.transform.position = new Vector3(-804f,5213f,-15807f);
+            camera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
             infoLabel.SetActive(false);
             index = 2;
             
@@ -812,7 +812,7 @@ public class UserUI : CoroutineSystem {
                         playersPanels[i].GetChild(4).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.classedPlayers).GetComponent<UserInventory>().coins + "";
                         playersPanels[i].GetChild(6).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.classedPlayers).GetComponent<UserInventory>().cards + "";
                         playersPanels[i].GetChild(2).gameObject.GetComponent<Text>().text = rank + 1 + "";
-                        playersPanels[i].gameObject.GetComponent<Text>().color = gameController.classedColors[rank];   
+                        playersPanels[i].GetChild(2).gameObject.GetComponent<Text>().color = gameController.classedColors[rank];   
                     }
                     
                     hudIndex += 1;
@@ -890,9 +890,8 @@ public class UserUI : CoroutineSystem {
         }
 
         if(!active) {
-            directions[0].gameObject.SetActive(false);
-            directions[1].gameObject.SetActive(false);
-            directions[2].gameObject.SetActive(false);
+            foreach(Transform direction in directions)
+                direction.gameObject.SetActive(false);
         }
     }
 
