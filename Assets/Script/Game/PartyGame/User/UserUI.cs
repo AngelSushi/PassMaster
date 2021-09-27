@@ -737,7 +737,7 @@ public class UserUI : CoroutineSystem {
             camera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
             infoLabel.SetActive(false);
             index = 2;
-            
+            return;
         }
 
         if(e.started && showShop && !gameController.freeze) {

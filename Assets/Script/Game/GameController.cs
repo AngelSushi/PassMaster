@@ -395,6 +395,10 @@ public class GameController : CoroutineSystem {
             if(turn == 1) 
                 players[actualPlayer].transform.position = posBegin[0];
 
+            players[actualPlayer].GetComponent<UserMovement>().enabled = true;
+            players[actualPlayer].GetComponent<UserUI>().enabled = true;
+            players[actualPlayer].GetComponent<UserAudio>().enabled = true;
+            players[actualPlayer].GetComponent<UserInventory>().enabled = true;
             players[actualPlayer].GetComponent<UserMovement>().waitDiceResult = true;
             players[actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
             players[actualPlayer].SetActive(true);

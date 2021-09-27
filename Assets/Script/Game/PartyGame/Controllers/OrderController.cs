@@ -118,6 +118,7 @@ public class OrderController : CoroutineSystem {
                             orderPanels[3].SetActive(true);
                             RunDelayed(1.5f,() => {
                                 FinishAnim();
+                                begin = false;
                             });
                         });
                     });

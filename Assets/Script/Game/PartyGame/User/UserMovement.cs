@@ -56,11 +56,6 @@ public class UserMovement : CoroutineSystem {
 
     private GameController gameController;
 
-    private float verticalVelocity = 0;
-    
-    private float gravity = 300.0f;
-    private float jumpHeight = 175f;
-
     private int random = -1;
     private float timer;
 
@@ -92,11 +87,8 @@ public class UserMovement : CoroutineSystem {
     private bool isInShopCoroutine;
 
     private void Start() {
-        agent = GetComponent<NavMeshAgent>();
-
         gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
         dayController = GameObject.FindGameObjectsWithTag("Day")[0].GetComponent<DayController>();
-
     }
 
     private void Update() {
@@ -109,15 +101,16 @@ public class UserMovement : CoroutineSystem {
                 if(!hasGenDice) {
                     if(waitDiceResult) {
                         isMooving = true;
-                        GetComponent<CapsuleCollider>().enabled = false;
                         if(isPlayer) {
                             if(!ui.showHUD) {
                                 canJump = true;
                                 dice = gameController.dice;
                                 dice.SetActive(true);
-                                dice.transform.position = new Vector3(transform.position.x,transform.position.y + 40,transform.position.z);
+                                agent.enabled = false;
+                                dice.transform.position = new Vector3(transform.position.x,transform.position.y + 15,transform.position.z);
                                 dice.GetComponent<DiceController>().lockDice = false;
-                                
+                                dice.GetComponent<DiceController>().lastLockDice = true;
+
                                 int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
                                 dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
 
@@ -132,24 +125,19 @@ public class UserMovement : CoroutineSystem {
                         else { // Bot
                             canJump = true;
 
-                            UseItemBot();
-
                             dice = gameController.dice;
                             dice.SetActive(true);
-                            dice.transform.position = new Vector3(transform.position.x,transform.position.y + 40,transform.position.z);
+                            agent.enabled = false;
+                            dice.transform.position = new Vector3(transform.position.x,transform.position.y + 15,transform.position.z);
                             dice.GetComponent<DiceController>().lockDice = false;
+                            dice.GetComponent<DiceController>().lastLockDice = true;
 
-                            if(!doubleDice && !reverseDice) 
-                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[0];
-                            if(doubleDice) 
-                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[1];
-                            if(reverseDice) 
-                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[2];
+                            int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
+                            dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
 
                             hasGenDice = true;
                             stack = false;
                         }
-                        
                     }
                 }
                 else {
@@ -172,13 +160,14 @@ public class UserMovement : CoroutineSystem {
                                dice.SetActive(false);
                         }
 
-                        agent.enabled = true;
-                        GetComponent<CapsuleCollider>().enabled = true;
+                        //agent.enabled = true;
                         NavMeshPath path = new NavMeshPath();
                         agent.CalculatePath(nextStep.position,path);
                         ShowPath(Color.magenta,path);
                         CheckPath();
                         agent.SetPath(path);
+
+                        Debug.Log("moove: " + transform.gameObject);
                     }
 
                     if(stop && goToShop) {
@@ -313,10 +302,7 @@ public class UserMovement : CoroutineSystem {
                         gameController.EndUserTurn();
                     
                     return;
-                }
-
-                if(jump && isPlayer) 
-                    Jump();               
+                }             
 
                 if(!isPlayer && waitDiceResult) {
                     if(random == -1) random = Random.Range(1,5);           
@@ -429,15 +415,18 @@ public class UserMovement : CoroutineSystem {
 
     private void OnTriggerEnter(Collider hit) {
         if(isTurn) {
-            StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
+            
             if(hit.gameObject.tag == "Dice" && !ui.showHUD) {
                 if(diceResult == 0 || diceResult == -1) {
                     diceResult = hit.gameObject.GetComponent<DiceController>().index;
                     if(diceResult == 0) diceResult = 6;
 
                     if(doubleDice) diceResult *= 2;
-                }
 
+                    
+                }
+                
+                agent.enabled = true;
                 beginResult = diceResult;  
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;     
@@ -452,7 +441,11 @@ public class UserMovement : CoroutineSystem {
 
                 ui.RefreshDiceResult(diceResult, actualColor);
                 hit.gameObject.SetActive(false);
+
+                return;
             }
+
+            StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
 
             if(type == null) 
                 return;
@@ -537,11 +530,7 @@ public class UserMovement : CoroutineSystem {
                     stop = false;
                 
             }
-
         }
-
-        
-
     }
 
     private void OnTriggerStay(Collider hit) {
@@ -681,8 +670,8 @@ public class UserMovement : CoroutineSystem {
     #region Inputs Functions
 
     public void OnJump(InputAction.CallbackContext e) {
-        if(e.started && !isJumping && canJump && isPlayer && ui != null && !ui.showHUD) 
-            jump = true;        
+        if(e.started) 
+            Jump();       
     } 
 
     public void OnMove(InputAction.CallbackContext e) {

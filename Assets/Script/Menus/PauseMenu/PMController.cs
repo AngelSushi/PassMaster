@@ -39,7 +39,7 @@ public class PMController : CoroutineSystem {
 
     #endregion
 
-    #region Input Functions
+    #region Input Functions 
     public void OnOpen(InputAction.CallbackContext e) {      
         if(e.started ) {
             if(!isMenuOpen) {
