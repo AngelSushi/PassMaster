@@ -301,9 +301,8 @@ public class GameController : CoroutineSystem {
         playerPoint.Clear();
 
         foreach(GameObject player in players) {
-            UserInventory inv = player.GetComponent<UserInventory>();
 
-            int point = inv.cards * 100000 + inv.coins;
+            int point = GetPlayerPoints(player);
             if(!playerPoint.Keys.Contains(player))
                 playerPoint.Add(player,point);
         }

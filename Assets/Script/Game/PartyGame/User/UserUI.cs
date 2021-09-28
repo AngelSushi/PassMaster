@@ -802,17 +802,18 @@ public class UserUI : CoroutineSystem {
                     int rank = -1;
                     int rankIndex = 0;
                     foreach(GameObject player in gameController.classedPlayers.Keys) {
-                        if(player == gameController.players[playerIndex]) 
+                        if(GameObject.ReferenceEquals(player,gameController.players[playerIndex])) 
                             rank = rankIndex;
 
                         rankIndex++;
                     }
 
-                    if(rank >= 0 && rank < gameController.classedColors.Length && rank < gameController.classedPlayers.Keys.Count) {                        
-                        playersPanels[i].GetChild(4).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.classedPlayers).GetComponent<UserInventory>().coins + "";
-                        playersPanels[i].GetChild(6).gameObject.GetComponent<Text>().text = gameController.GetKeyByValue(playerIndex,gameController.classedPlayers).GetComponent<UserInventory>().cards + "";
-                        playersPanels[i].GetChild(2).gameObject.GetComponent<Text>().text = rank + 1 + "";
-                        playersPanels[i].GetChild(2).gameObject.GetComponent<Text>().color = gameController.classedColors[rank];   
+                    if(rank >= 0 && rank < gameController.classedColors.Length && rank < gameController.classedPlayers.Keys.Count) { 
+                        playersPanels[playerIndex].GetChild(4).gameObject.GetComponent<Text>().text = gameController.players[playerIndex].GetComponent<UserInventory>().coins + "";
+                        playersPanels[playerIndex].GetChild(6).gameObject.GetComponent<Text>().text = gameController.players[playerIndex].GetComponent<UserInventory>().cards + "";
+                        playersPanels[playerIndex].GetChild(2).gameObject.GetComponent<Text>().text = rank + 1 + "";
+                        playersPanels[playerIndex].GetChild(2).gameObject.GetComponent<Text>().color = gameController.classedColors[rank];   
+                        playersPanels[playerIndex].GetChild(1).gameObject.GetComponent<Text>().text = gameController.players[playerIndex].name;
                     }
                     
                     hudIndex += 1;

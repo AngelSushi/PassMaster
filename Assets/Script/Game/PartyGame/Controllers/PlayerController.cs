@@ -27,7 +27,7 @@ public class PlayerController : CoroutineSystem { // Controller des joueurs lors
             rb.AddForce(Vector3.up * jumpSpeed,ForceMode.Impulse);            
     } 
 
-    public void OnTriggerEnter(Collider collision) {
+    public void OnCollisionEnter(Collision collision) {
         if(collision.gameObject.tag == "Dice" && orderController.begin) {
             if(collision.gameObject.GetComponent<DiceController>().index == 0)
                 collision.gameObject.GetComponent<DiceController>().index = 6;

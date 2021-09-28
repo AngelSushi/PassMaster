@@ -107,9 +107,10 @@ public class UserMovement : CoroutineSystem {
                                 dice = gameController.dice;
                                 dice.SetActive(true);
                                 agent.enabled = false;
-                                dice.transform.position = new Vector3(transform.position.x,transform.position.y + 15,transform.position.z);
+                                dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
                                 dice.GetComponent<DiceController>().lockDice = false;
                                 dice.GetComponent<DiceController>().lastLockDice = true;
+                                dice.GetComponent<MeshRenderer>().enabled = true;
 
                                 int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
                                 dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
@@ -128,9 +129,10 @@ public class UserMovement : CoroutineSystem {
                             dice = gameController.dice;
                             dice.SetActive(true);
                             agent.enabled = false;
-                            dice.transform.position = new Vector3(transform.position.x,transform.position.y + 15,transform.position.z);
+                            dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
                             dice.GetComponent<DiceController>().lockDice = false;
                             dice.GetComponent<DiceController>().lastLockDice = true;
+                            dice.GetComponent<MeshRenderer>().enabled = true;
 
                             int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
                             dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
@@ -141,14 +143,17 @@ public class UserMovement : CoroutineSystem {
                     }
                 }
                 else {
-
                     if(stop) 
                         agent.enabled = false;
 
                     if(nextStep != null && !jump && !stop) {
-                        transform.GetChild(1).gameObject.transform.localPosition = new Vector3(-0.07f,2.41f,-3.83f);
-                        transform.GetChild(1).gameObject.transform.localRotation = Quaternion.Euler(17.839f,0f,0f);
-                        transform.GetChild(1).gameObject.SetActive(true);
+                        if(!transform.GetChild(1).gameObject.activeSelf) {
+                            RunDelayed(0.2f,() => {
+                                transform.GetChild(1).gameObject.transform.localPosition = new Vector3(-0.07f,2.41f,-3.83f);
+                                transform.GetChild(1).gameObject.transform.localRotation = Quaternion.Euler(17.839f,0f,0f);
+                                transform.GetChild(1).gameObject.SetActive(true);
+                            });
+                        }
 
                         if(!hasCollideDice) {
                             beginResult = diceResult;
@@ -166,8 +171,6 @@ public class UserMovement : CoroutineSystem {
                         ShowPath(Color.magenta,path);
                         CheckPath();
                         agent.SetPath(path);
-
-                        Debug.Log("moove: " + transform.gameObject);
                     }
 
                     if(stop && goToShop) {
@@ -176,7 +179,7 @@ public class UserMovement : CoroutineSystem {
                         if(canMooveToShop) {
                             Vector3 shopPosition = actualStep.GetComponent<Step>().shop.transform.position;
                             shopPosition.y = transform.position.y;
-                            transform.position = Vector3.MoveTowards(transform.position,shopPosition,100 * Time.deltaTime);
+                            transform.position = Vector3.MoveTowards(transform.position,shopPosition,agent.speed * Time.deltaTime);
                         }
                         else { // Le joueur a collide avec l'entité 
                             if(isPlayer) {
@@ -216,21 +219,19 @@ public class UserMovement : CoroutineSystem {
                                     returnToStep = true;
                                 }
 
-                                hasShowShop = true;
-                                    
+                                hasShowShop = true;                                   
                             }
                         }
                     }
                 }
 
                 if(returnToStep) {
-                        Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
+                    Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
 
-                        if(transform.position != returnStep && actualStep != null) {
-                            transform.position = Vector3.MoveTowards(transform.position,returnStep,100 * Time.deltaTime);
-                            return;
-                        }
-
+                    if(transform.position != returnStep && actualStep != null) {
+                        transform.position = Vector3.MoveTowards(transform.position,returnStep,40 * Time.deltaTime);
+                        return;
+                    }
                 }
 
 
@@ -261,7 +262,7 @@ public class UserMovement : CoroutineSystem {
 
                                 if(canMooveToChest) {
                                     Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,100 * Time.deltaTime);               
+                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,agent.speed * Time.deltaTime);               
                                 }
                                 else { // Le joueur collide avec le coffre
 
@@ -278,7 +279,7 @@ public class UserMovement : CoroutineSystem {
                             if(inventory.coins >= 30 && inventory.cards < 6) {
                                 if(canMooveToChest) {
                                     Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,100 * Time.deltaTime);               
+                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,agent.speed * Time.deltaTime);               
                                 }
                                 else { // Le joueur collide avec le coffre
 
@@ -305,11 +306,12 @@ public class UserMovement : CoroutineSystem {
                 }             
 
                 if(!isPlayer && waitDiceResult) {
-                    if(random == -1) random = Random.Range(1,5);           
+                    if(random == -1) 
+                        random = Random.Range(1,5);           
 
                     timer += Time.deltaTime;
 
-                    if(timer >= random) {
+                    if(timer >= random && !hasJump) {
                         Jump();
                         hasJump = true;
                         ui.showHUD = false;
@@ -332,6 +334,7 @@ public class UserMovement : CoroutineSystem {
                 waitChest = false;
                 hasCollideDice = false;
                 waitDiceResult = true;
+                hasJump = false;
 
                 if(drop) 
                     inventory.DropItem(transform.gameObject);
@@ -341,7 +344,7 @@ public class UserMovement : CoroutineSystem {
                     Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
 
                     if(transform.position != returnStep && actualStep != null) {
-                        transform.position = Vector3.MoveTowards(transform.position,returnStep,100 * Time.deltaTime);
+                        transform.position = Vector3.MoveTowards(transform.position,returnStep,agent.speed * Time.deltaTime);
                         return;
                     }
 
@@ -354,7 +357,7 @@ public class UserMovement : CoroutineSystem {
 
                 if(stepBack) {
                     agent.enabled = false;
-                    transform.position = Vector3.MoveTowards(transform.position,point,100 * Time.deltaTime);
+                    transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
                 }
                 else 
                     point = Vector3.zero;
@@ -384,46 +387,15 @@ public class UserMovement : CoroutineSystem {
                 if(!isPlayer)
                      hasBuyItem = ShopBot();
             }
-       } 
-    }
-    private void OnControllerColliderHit(ControllerColliderHit hit) {
-        if(hit.gameObject.tag == "Sol" || hit.gameObject.tag == "Water" || hit.gameObject.tag == "Bridge" || hit.gameObject.tag == "palm") {
-            if(isJumping) {
-                isJumping = false;
 
-                if(isParachuting) 
-                    isParachuting = false;
-
-                if(transform.GetChild(2).gameObject.activeSelf) 
-                    transform.GetChild(2).gameObject.SetActive(false);
-                
-                jump = false;
-                waitDiceResult = false;
-
-                // Black Screen animation
-
-                GameObject nearestStep = GetNearStep();
-                if(transform.GetChild(3).gameObject.activeSelf) transform.GetChild(3).gameObject.SetActive(false);
-                transform.position = nearestStep.transform.position;
-                actualStep = nearestStep;
-
-                // Récupérer la step la plus proche
-                // actualStep a mettre 
-            }
-        }    
-    }
-
-    private void OnTriggerEnter(Collider hit) {
-        if(isTurn) {
-            
-            if(hit.gameObject.tag == "Dice" && !ui.showHUD) {
+            if(hit.gameObject.tag == "Dice") {
                 if(diceResult == 0 || diceResult == -1) {
                     diceResult = hit.gameObject.GetComponent<DiceController>().index;
-                    if(diceResult == 0) diceResult = 6;
 
-                    if(doubleDice) diceResult *= 2;
-
-                    
+                    if(diceResult == 0) 
+                        diceResult = 6;
+                    if(doubleDice) 
+                        diceResult *= 2;           
                 }
                 
                 agent.enabled = true;
@@ -440,11 +412,17 @@ public class UserMovement : CoroutineSystem {
                 }
 
                 ui.RefreshDiceResult(diceResult, actualColor);
-                hit.gameObject.SetActive(false);
-
-                return;
+                GameObject hitObj = hit.gameObject;
+                hitObj.GetComponent<MeshRenderer>().enabled = false;
+               
+               RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
             }
 
+       } 
+    }
+
+    private void OnTriggerEnter(Collider hit) {
+        if(isTurn) {
             StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
 
             if(type == null) 
@@ -471,7 +449,7 @@ public class UserMovement : CoroutineSystem {
                     beginStep = hit.gameObject;
                 }
                 else {
-                    if(actualStep != hit.gameObject) {
+                    if(actualStep != hit.gameObject && diceResult > 0) {
                         actualStep = hit.gameObject;
                         if(diceResult > 0) 
                             ChooseNextStep(type);
@@ -703,6 +681,7 @@ public class UserMovement : CoroutineSystem {
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && nextStep != null) 
             diceResult--;
 
+        Debug.Log("2");
         GetNextStep();
 
         if(ui != null) 
