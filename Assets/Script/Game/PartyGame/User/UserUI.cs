@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.AI;
 
-public class UserUI : CoroutineSystem {
+public class UserUI : User {
 
     public bool showHUD;
     public bool showTurnInfo;
@@ -36,8 +36,6 @@ public class UserUI : CoroutineSystem {
     public Text turnText,nightText; // texte pour afficher les tours et la nuit
     public Text shopText;
     public Direction direction;
-    public GameController gameController;
-    public UserMovement movement;
     public Sprite userSprite;
 
     private bool isInInventory;
@@ -60,6 +58,10 @@ public class UserUI : CoroutineSystem {
             ManageShopHUD(showShopHUD);  
         } 
     }
+
+    
+    public override void OnBeginTurn() {}
+    public override void OnFinishTurn() {}
 
     private void ManageCameraPosition() {
 
@@ -163,7 +165,7 @@ public class UserUI : CoroutineSystem {
         if(e.started && showShop && !gameController.freeze) {
             if(index < 6) {
                 index++;
-                movement.audio.ButtonHover();
+                audio.ButtonHover();
             }
             if(nextShopId < 2) 
                 nextShopId++;
@@ -331,7 +333,7 @@ public class UserUI : CoroutineSystem {
             
             if(index > 0) {
                 index--;
-                movement.audio.ButtonHover();
+                audio.ButtonHover();
             }
             if(nextShopId > 0) 
                 nextShopId--;
@@ -406,19 +408,19 @@ public class UserUI : CoroutineSystem {
 
         if(e.started && showChestHUD && !gameController.freeze) {
             if(index == 0) {              
-                movement.isTurn = false;
+                isTurn = false;
                 gameController.EndUserTurn();                
             }
             else if(index == 1) {
                 // Buy
-                int coins = movement.inventory.coins;
+                int coins = inventory.coins;
 
                 if(coins >= 30) {
                     StartCoroutine(movement.WaitMalus(30,false));
                     movement.goToChest = true;
                 }
                 else {
-                    movement.audio.BuyLoose();
+                    audio.BuyLoose();
                     gameController.EndUserTurn();
                     // Afficher un texte également
                 }
@@ -429,119 +431,119 @@ public class UserUI : CoroutineSystem {
         }
 
         if(e.started && showShop && !gameController.freeze) {
-            int actualCoins = movement.inventory.coins;
+            int actualCoins = inventory.coins;
             shopText.gameObject.SetActive(true);
 
             if(actualCoins >= gameController.shopItems[index].price) { // Assez d'argent
 
                 switch(index) {
                     case 0: // Dé double
-                        bool hasDoubleDice = movement.inventory.hasDoubleDice;
+                        bool hasDoubleDice = inventory.hasDoubleDice;
 
                         if(!hasDoubleDice) { // Le joueur n'a pas encore l'objet
-                            movement.inventory.hasDoubleDice = true;
+                            inventory.hasDoubleDice = true;
                             DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else { // Le joueur a déjà cet objet
-                            movement.audio.BuyLoose();
+                            audio.BuyLoose();
                             DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
 
                     case 1: // Dé inverse
-                        bool hasReverseDice = movement.inventory.hasReverseDice;
+                        bool hasReverseDice = inventory.hasReverseDice;
 
                         if(!hasReverseDice) {
-                            movement.inventory.hasReverseDice = true;
+                            inventory.hasReverseDice = true;
                             DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            movement.audio.BuyLoose();
+                            audio.BuyLoose();
                             DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
 
                     case 2: // Bombe
-                        bool hasBomb = movement.inventory.hasBomb;
+                        bool hasBomb = inventory.hasBomb;
 
                         if(!hasBomb) {
-                            movement.inventory.hasBomb = true;
+                            inventory.hasBomb = true;
                             DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }   
                         else {
-                            movement.audio.BuyLoose();
+                            audio.BuyLoose();
                             DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
 
                     case 3: // Sablier
-                        bool hasHourglass = movement.inventory.hasHourglass;
+                        bool hasHourglass = inventory.hasHourglass;
 
                         if(!hasHourglass) {
-                            movement.inventory.hasHourglass = true;
+                            inventory.hasHourglass = true;
                             DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            movement.audio.BuyLoose();
+                            audio.BuyLoose();
                             DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
 
                     case 4: // Eclair
-                        bool hasLightning = movement.inventory.hasLightning;
+                        bool hasLightning = inventory.hasLightning;
 
                         if(!hasLightning) {
-                            movement.inventory.hasLightning = true;
+                            inventory.hasLightning = true;
                             DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            movement.audio.BuyLoose();
+                            audio.BuyLoose();
                             DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
 
                     case 5: // Etoile 
-                        bool hasStar = movement.inventory.hasStar;
+                        bool hasStar = inventory.hasStar;
 
                         if(!hasStar) {
-                            movement.inventory.hasStar = true;
+                            inventory.hasStar = true;
                             DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            movement.audio.BuyLoose();
+                            audio.BuyLoose();
                             DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         break;
 
                     case 6: // Parachute
-                        bool hasParachute = movement.inventory.hasParachute;
+                        bool hasParachute = inventory.hasParachute;
 
                         if(!hasParachute) {
-                            movement.inventory.hasParachute = true;                        
+                            inventory.hasParachute = true;                        
                             DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
                             StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
                             StartCoroutine(InfoLabelWaiting());
                         }
                         else {
-                            movement.audio.BuyLoose();
+                            audio.BuyLoose();
                             DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
                             StartCoroutine(InfoLabelWaiting());
                         }
@@ -550,7 +552,7 @@ public class UserUI : CoroutineSystem {
             }
             
             else { // Pas assez d'argent
-                movement.audio.BuyLoose();
+                audio.BuyLoose();
                 DisplayShopText("Vous n'avez pas assez d'argent",new Color(1.0f,0f,0f,1.0f));
                 StartCoroutine(InfoLabelWaiting());
             }          
@@ -583,8 +585,8 @@ public class UserUI : CoroutineSystem {
                 showHUD = false;
                 showActionButton = false;
                 infoLabel.SetActive(false);
-                if(movement.isPlayer) 
-                    movement.isTurn = true;
+                if(isPlayer) 
+                    isTurn = true;
 
                 GetComponent<NavMeshAgent>().enabled = true;
                 movement.waitDiceResult = true;
@@ -616,9 +618,9 @@ public class UserUI : CoroutineSystem {
                             isInInventory = false;
                             showHUD = false;
                             showActionButton = false;
-                            movement.isTurn = true;
+                            isTurn = true;
                             movement.waitDiceResult = true;
-                            movement.inventory.hasDoubleDice = false;
+                            inventory.hasDoubleDice = false;
                             break;
 
                         case 1: // Reverse Dice
@@ -627,9 +629,9 @@ public class UserUI : CoroutineSystem {
                             isInInventory = false;
                             showHUD = false;
                             showActionButton = false;
-                            movement.isTurn = true;
+                            isTurn = true;
                             movement.waitDiceResult = true;
-                            movement.inventory.hasReverseDice = false;
+                            inventory.hasReverseDice = false;
                             break;
 
                         case 2: // Bomb
@@ -648,11 +650,11 @@ public class UserUI : CoroutineSystem {
 
                             showHUD = false;
                             showActionButton = false;
-                            movement.isTurn = true;
+                            isTurn = true;
                             movement.waitDiceResult = true;
 
                             // Camera animation on voit le dayPeriod d'avant ecran noir puis le nouveau dayPeriod
-                            movement.inventory.hasHourglass = false;
+                            inventory.hasHourglass = false;
 
                             break;
                         case 4: // Lightning
@@ -667,19 +669,19 @@ public class UserUI : CoroutineSystem {
                             ManageInventory(false);
                             isInInventory = false;
 
-                            movement.inventory.hasLightning = false;
+                            inventory.hasLightning = false;
                             break;
 
                         case 5: // Star
                             transform.gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
                             transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
-                            movement.audio.Invicibility();
+                            audio.Invicibility();
 
                             ManageInventory(false);
 
                             showHUD = false;
                             showActionButton = false;
-                            movement.isTurn = true;
+                            isTurn = true;
                             movement.waitDiceResult = true;
 
                             gameController.mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
@@ -688,7 +690,7 @@ public class UserUI : CoroutineSystem {
                             gameController.mainCamera.GetComponent<Camera>().enabled = true;
                             isInInventory = false;
 
-                            movement.inventory.hasStar = false;
+                            inventory.hasStar = false;
                             break;    
 
                         case 6: // Parachute
@@ -699,7 +701,7 @@ public class UserUI : CoroutineSystem {
                             showActionButton = false;
                             isInInventory = false;
 
-                            movement.inventory.hasParachute = false;
+                            inventory.hasParachute = false;
                             break;
                     }
                 }
@@ -761,9 +763,7 @@ public class UserUI : CoroutineSystem {
         if(active)
             index = -1;
 
-        if(hoverInventoryItem.transform.parent.gameObject.activeSelf) {
-            UserInventory inventory = movement.inventory;
-
+        if(hoverInventoryItem.transform.parent.gameObject.activeSelf) {    
             bool[] hasItems = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasBomb,inventory.hasHourglass,inventory.hasLightning,inventory.hasStar,inventory.hasParachute};
 
             for(int i = 0;i<hasItems.Length;i++) {

@@ -380,7 +380,6 @@ public class GameController : CoroutineSystem {
     public void EndUserTurn() {
         players[actualPlayer].GetComponent<UserMovement>().finishTurn = false;
         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
-        players[actualPlayer].GetComponent<UserMovement>().hasGenDice = false;
         
         if(actualPlayer < 3) {
             actualPlayer++;

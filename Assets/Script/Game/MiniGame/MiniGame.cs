@@ -24,12 +24,12 @@ public abstract class MiniGame : CoroutineSystem {
     private string lastBeginText,lastTimeText;
     private GameController gameController;
 
-    void Start() {
+    public virtual void Start() {
         
         gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
     }
 
-    public override void Update() {
+    public virtual void Update() {
         if(!finish) {
             if(begin) 
                 BeginTimer();            

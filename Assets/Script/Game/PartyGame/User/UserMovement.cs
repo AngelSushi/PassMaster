@@ -6,12 +6,10 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using System.Linq;
 
-public class UserMovement : CoroutineSystem {
+public class UserMovement : User {
 
-    public int id;
     public NavMeshAgent agent;
     public bool waitDiceResult;
-    public bool isPlayer;
     public bool finishMovement;
     public bool finishTurn;
     public bool left;
@@ -32,14 +30,9 @@ public class UserMovement : CoroutineSystem {
     public bool drop;
     public bool reverse;
     public GameObject lastStep;
-    public UserUI ui;
-    public UserInventory inventory;
-    public UserAudio audio;
     public bool isMooving;
     public GameObject giveUI;
     public GameObject changeUI;
-    public bool isTurn;
-    public bool hasGenDice;
     public int diceResult;
     public GameObject actualStep;
     public GameObject beginStep;
@@ -55,9 +48,6 @@ public class UserMovement : CoroutineSystem {
 
     private int isle;
     private bool jump;
-
-    private GameController gameController;
-
     private int random = -1;
     private float timer;
 
@@ -88,144 +78,125 @@ public class UserMovement : CoroutineSystem {
 
     private bool isInShopCoroutine;
 
-    private void Start() {
-        gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
-        dayController = GameObject.FindGameObjectsWithTag("Day")[0].GetComponent<DayController>();
+
+    public override void OnBeginTurn() {
+        stepBack = false;
+        point = Vector3.zero;
+
+        if(waitDiceResult) {
+            isMooving = true;
+            if(isPlayer) {
+                if(!ui.showHUD) 
+                    InitDice();
+                
+            }
+            else  // Bot
+                InitDice();    
+        }
     }
 
-    private void Update() {
+    public override void OnFinishTurn() {
+        agent.enabled = false;
+        left = false;
+        front = false;
+        isMooving = false;
+        right = false;
+        transform.GetChild(1).gameObject.SetActive(false);
+        hasShowChestHUD = false;
+        goToChest = false;
+        canMooveToChest = true;
+        waitChest = false;
+        hasCollideDice = false;
+        waitDiceResult = true;
+        hasJump = false;
+    }
+
+    public override void Update() {
+        base.Update();
 
         if(!gameController.freeze) {
             if(isTurn) {
-                stepBack = false;
-                point = Vector3.zero;
+                if(stop) 
+                    agent.enabled = false;
 
-                if(!hasGenDice) {
-                    if(waitDiceResult) {
-                        isMooving = true;
-                        if(isPlayer) {
-                            if(!ui.showHUD) {
-                                canJump = true;
-                                dice = gameController.dice;
-                                dice.SetActive(true);
-                                agent.enabled = false;
-                                dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
-                                dice.GetComponent<DiceController>().lockDice = false;
-                                dice.GetComponent<DiceController>().lastLockDice = true;
-                                dice.GetComponent<MeshRenderer>().enabled = true;
-
-                                int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
-                                dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
-
-                                hasGenDice = true;
-                                stack = false;
-                            }
-                            else {
-                                if(GameObject.FindGameObjectsWithTag("Dice").Length > 0) 
-                                    ui.showHUD = false;
-                            }
-                        }
-                        else { // Bot
-                            canJump = true;
-
-                            dice = gameController.dice;
-                            dice.SetActive(true);
-                            agent.enabled = false;
-                            dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
-                            dice.GetComponent<DiceController>().lockDice = false;
-                            dice.GetComponent<DiceController>().lastLockDice = true;
-                            dice.GetComponent<MeshRenderer>().enabled = true;
-
-                            int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
-                            dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
-
-                            hasGenDice = true;
-                            stack = false;
-                        }
+                if(nextStep != null && !jump && !stop) {
+                    if(!transform.GetChild(1).gameObject.activeSelf) {
+                        RunDelayed(0.2f,() => {
+                            transform.GetChild(1).gameObject.transform.localPosition = new Vector3(-0.07f,2.41f,-3.83f);
+                            transform.GetChild(1).gameObject.transform.localRotation = Quaternion.Euler(17.839f,0f,0f);
+                            transform.GetChild(1).gameObject.SetActive(true);
+                        });
                     }
+
+                    if(!hasCollideDice) {
+                        beginResult = diceResult;
+                        stepPaths = new GameObject[beginResult]; 
+                        hasCollideDice = true;
+                        waitDiceResult = false;
+                        ui.showHUD = false;
+                        if(dice != null) 
+                            dice.SetActive(false);
+                    }
+
+                    //agent.enabled = true;
+                    NavMeshPath path = new NavMeshPath();
+                    agent.CalculatePath(nextStep.position,path);
+                    ShowPath(Color.magenta,path);
+                    CheckPath();
+                    agent.SetPath(path);
                 }
-                else {
-                    if(stop) 
-                        agent.enabled = false;
 
-                    if(nextStep != null && !jump && !stop) {
-                        if(!transform.GetChild(1).gameObject.activeSelf) {
-                            RunDelayed(0.2f,() => {
-                                transform.GetChild(1).gameObject.transform.localPosition = new Vector3(-0.07f,2.41f,-3.83f);
-                                transform.GetChild(1).gameObject.transform.localRotation = Quaternion.Euler(17.839f,0f,0f);
-                                transform.GetChild(1).gameObject.SetActive(true);
-                            });
-                        }
+                if(stop && goToShop) {
+                    agent.enabled = false;
 
-                        if(!hasCollideDice) {
-                            beginResult = diceResult;
-                            stepPaths = new GameObject[beginResult]; 
-                            hasCollideDice = true;
-                            waitDiceResult = false;
-                            ui.showHUD = false;
-                            if(dice != null) 
-                               dice.SetActive(false);
-                        }
-
-                        //agent.enabled = true;
-                        NavMeshPath path = new NavMeshPath();
-                        agent.CalculatePath(nextStep.position,path);
-                        ShowPath(Color.magenta,path);
-                        CheckPath();
-                        agent.SetPath(path);
+                    if(canMooveToShop) {
+                        Vector3 shopPosition = actualStep.GetComponent<Step>().shop.transform.position;
+                        shopPosition.y = transform.position.y;
+                        transform.position = Vector3.MoveTowards(transform.position,shopPosition,agent.speed * Time.deltaTime);
                     }
-
-                    if(stop && goToShop) {
-                        agent.enabled = false;
-
-                        if(canMooveToShop) {
-                            Vector3 shopPosition = actualStep.GetComponent<Step>().shop.transform.position;
-                            shopPosition.y = transform.position.y;
-                            transform.position = Vector3.MoveTowards(transform.position,shopPosition,agent.speed * Time.deltaTime);
-                        }
-                        else { // Le joueur a collide avec l'entité 
-                            if(isPlayer) {
-                                if(!ui.showShop && !hasShowShop && lastStep.GetComponent<Step>().type  == StepType.SHOP) {
-                                    ui.showShop = true;
-                                    hasShowShop = true;
-                                }
+                    else { // Le joueur a collide avec l'entité 
+                        if(isPlayer) {
+                            if(!ui.showShop && !hasShowShop && lastStep.GetComponent<Step>().type  == StepType.SHOP) {
+                                ui.showShop = true;
+                                hasShowShop = true;
                             }
-                            else {
-                                // Est dans le shop
+                        }
+                        else {
+                            // Le bot Est dans le shop
 
-                                if(hasBuyItem && hasBotBuyItem) {
+                            if(hasBuyItem && hasBotBuyItem) {
 
-                                    int random = Random.Range(0,100);
+                                int random = Random.Range(0,100);
 
-                                    int percentage = -1;
+                                int percentage = -1;
 
-                                    if(GameController.difficulty == 0)
-                                        percentage = 30;
-                                    else if(GameController.difficulty == 1) // Medium
-                                        percentage = 60;
-                                    else if(GameController.difficulty == 2) // Hard
-                                        percentage = 85;
+                                if(GameController.difficulty == 0)
+                                    percentage = 30;
+                                else if(GameController.difficulty == 1) // Medium
+                                    percentage = 60;
+                                else if(GameController.difficulty == 2) // Hard
+                                     percentage = 85;
 
-                                    if(random >= 0 && random <= percentage) {
-                                        hasBuyItem = ShopBot();
-                                    }
-                                    else {
-                                        canMooveToShop = true;
-                                        returnToStep = true;
-                                    }
-
-                                    hasBotBuyItem = false;
+                                if(random >= 0 && random <= percentage) {
+                                    hasBuyItem = ShopBot();
                                 }
-                                if(!hasBuyItem) {
+                                else {
                                     canMooveToShop = true;
                                     returnToStep = true;
                                 }
 
-                                hasShowShop = true;                                   
+                                hasBotBuyItem = false;
                             }
+                            if(!hasBuyItem) {
+                                canMooveToShop = true;
+                                returnToStep = true;
+                            }
+
+                            hasShowShop = true;                                   
                         }
                     }
                 }
+                
 
                 if(returnToStep) {
                     Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
@@ -324,23 +295,6 @@ public class UserMovement : CoroutineSystem {
             }
 
             else {
-                agent.enabled = false;
-                left = false;
-                front = false;
-                isMooving = false;
-                right = false;
-                transform.GetChild(1).gameObject.SetActive(false);
-                hasShowChestHUD = false;
-                goToChest = false;
-                canMooveToChest = true;
-                waitChest = false;
-                hasCollideDice = false;
-                waitDiceResult = true;
-                hasJump = false;
-
-                if(drop) 
-                    inventory.DropItem(transform.gameObject);
-
                 if(returnToStep) {
                     
                     Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
@@ -679,6 +633,23 @@ public class UserMovement : CoroutineSystem {
     #endregion
 
     #region Customs Functions
+
+    private void InitDice() {
+        canJump = true;
+
+        dice = gameController.dice;
+        dice.SetActive(true);
+        agent.enabled = false;
+        dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
+        dice.GetComponent<DiceController>().lockDice = false;
+        dice.GetComponent<DiceController>().lastLockDice = true;
+        dice.GetComponent<MeshRenderer>().enabled = true;
+
+        int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
+        dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
+
+        stack = false;
+    }
 
     private void ChooseNextStep(StepType type) {
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && nextStep != null) 
