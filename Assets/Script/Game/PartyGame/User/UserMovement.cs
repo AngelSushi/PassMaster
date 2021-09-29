@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using System.Linq;
 
 public class UserMovement : CoroutineSystem {
 
@@ -595,24 +596,25 @@ public class UserMovement : CoroutineSystem {
         if(isTurn) {
             StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
 
-            foreach(GameObject step in gameController.playerConflict.Values) {
+            foreach(GameObject step in gameController.playerConflict.Values.ToList()) {
                 if(hit.gameObject == step) {
                     // On fait revenir le bot sur sa case
                     GameObject user = gameController.GetKeyByValue(step,gameController.playerConflict);
+                    UserMovement userMovement = user.GetComponent<UserMovement>();
+                    Step targetStep = step.GetComponent<Step>();
+                    
+                    Debug.Log("hit: " + hit.gameObject);
+                    Debug.Log("enterBack: " + userMovement.point);
 
-                    user.GetComponent<UserMovement>().point = user.transform.position;
-                    user.GetComponent<UserMovement>().returnStepBack = true;
+                    userMovement.point = hit.gameObject.transform.position;/*user.transform.position*/;
+                    userMovement.point.y = user.transform.position.y;
+                    userMovement.returnStepBack = true;
 
-                    if(step.GetComponent<Step>().xAxis) {
-                        if(step.GetComponent<Step>().positive) user.GetComponent<UserMovement>().point.x -= 20;
-                        else user.GetComponent<UserMovement>().point.x += 20;
-                    }
-
-                    if(step.GetComponent<Step>().zAxis) {
-                        if(step.GetComponent<Step>().positive) user.GetComponent<UserMovement>().point.z -= 20;
-                        else user.GetComponent<UserMovement>().point.z += 20;
-                    }
-
+                  /*  if(targetStep.xAxis) 
+                        userMovement.point.x += targetStep.positive ? 10 : -10;
+                    if(targetStep.zAxis) 
+                        userMovement.point.z += targetStep.positive ? 10 : -10;
+                    */
                     gameController.playerConflict.Remove(user); // Error
                 }
             }
@@ -783,29 +785,27 @@ public class UserMovement : CoroutineSystem {
         if(stepPaths != null) {
             foreach(GameObject step in stepPaths) {
                 foreach(GameObject user in gameController.players) {
-                    if(step != null && user.GetComponent<UserMovement>().actualStep == step) {
+                    UserMovement userMovement = user.GetComponent<UserMovement>();
+                    if(step != null && userMovement.actualStep == step) {
                         if(nextStep.gameObject == step) {
                             GameObject lastStep = steps[beginResult - 1];
+                            Step targetStep = step.GetComponent<Step>();
 
                             if(lastStep != nextStep.gameObject) { // Les joueurs vont que se croiser
-                                user.GetComponent<UserMovement>().stepBack = true;
-                                if(user.GetComponent<UserMovement>().point == Vector3.zero) {
-                                    user.GetComponent<UserMovement>().point = user.transform.position;
-                                    if(step.GetComponent<Step>().xAxis) {
-                                        if(step.GetComponent<Step>().positive) user.GetComponent<UserMovement>().point.x += 20;
-                                        else user.GetComponent<UserMovement>().point.x -= 20;
-                                    }
-
-                                    if(step.GetComponent<Step>().zAxis) {
-                                        if(step.GetComponent<Step>().positive) user.GetComponent<UserMovement>().point.z += 20;
-                                        else user.GetComponent<UserMovement>().point.z -= 20;
-                                    }
-
+                                userMovement.stepBack = true;
+                                if(userMovement.point == Vector3.zero) {
+                                    userMovement.point = user.transform.position;
+                                    
+                                    if(step.GetComponent<Step>().xAxis) 
+                                        userMovement.point.x += targetStep.positive ? 10 : -10;
+                                    if(step.GetComponent<Step>().zAxis) 
+                                        userMovement.point.z += targetStep.positive ? 10 : -10;
+                                    
                                     gameController.playerConflict.Add(user,step);
                                 }
                             }
                             else { // Il va y avoir plusieurs joueurs sur la même case
-                                user.GetComponent<UserMovement>().stack = true;
+                                userMovement.stack = true;
                                 stack = true;
                             }
                         }
