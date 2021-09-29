@@ -8,6 +8,7 @@ using System.Linq;
 
 public class UserMovement : CoroutineSystem {
 
+    public int id;
     public NavMeshAgent agent;
     public bool waitDiceResult;
     public bool isPlayer;

@@ -21,7 +21,6 @@ TagManager:
   - Day
   - InfoLabel
   - Hud
-  - StacksObject
   - Chest
   - Shop_Entity
   - Bomb
@@ -89,6 +88,7 @@ TagManager:
   - IngredientBox
   - PanBox
   - PlateBox
+  - arrow
   layers:
   - Default
   - TransparentFX

@@ -102,6 +102,7 @@ public class GameController : CoroutineSystem {
     public MiniGameController mgController;
     public OrderController orderController;
 
+    public Transform stackPlayersParent;
 
     void Start() {
         GameController.difficulty = 2;
@@ -467,66 +468,62 @@ public class GameController : CoroutineSystem {
     }
 
     public void ActualPlayersInStep(GameObject step,GameObject user) {
-
-        if(step.GetComponent<Step>().stack == null) {
+        Step targetStep = step.GetComponent<Step>();
+        if(targetStep.stack == null) {
             
-            step.GetComponent<Step>().stack = Instantiate(prefabInStep,new Vector3(step.transform.position.x,step.transform.position.y + 35,step.transform.position.z),prefabInStep.transform.rotation);
+            targetStep.stack = Instantiate(prefabInStep,new Vector3(step.transform.position.x,step.transform.position.y + 10,step.transform.position.z),prefabInStep.transform.rotation);
 
-            step.GetComponent<Step>().stack.transform.parent = GameObject.FindGameObjectsWithTag("StacksObject")[0].transform;
+            targetStep.stack.transform.parent = stackPlayersParent;
 
-            int length = step.GetComponent<Step>().playerInStep.Count;
+            int length = targetStep.playerInStep.Count;
 
             if(length > 0) {
-                step.GetComponent<Step>().stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
-                step.GetComponent<Step>().stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
+                targetStep.stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
+                targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
 
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                ChangeStackSpritePlayer(step,0,user.name);
+                targetStep.stack.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
+                ChangeStackSpritePlayer(step,0,user.GetComponent<UserMovement>().id);
             }
-            else {
-                Destroy(step.GetComponent<Step>().stack);
-            }
-
+            else 
+                Destroy(targetStep.stack);        
         }
         else { // Il y a plusieurs joueurs dans la step
-            int length = step.GetComponent<Step>().playerInStep.Count;
+            int length = targetStep.playerInStep.Count;
 
             if(length == 0) {
-                Destroy(step.GetComponent<Step>().stack);
+                Destroy(targetStep.stack);
                 return;
             }
 
-            step.GetComponent<Step>().stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
-            step.GetComponent<Step>().stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
+            targetStep.stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
+            targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
 
             for(int i = 0;i<length;i++) {
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(true);
-
-                ChangeStackSpritePlayer(step,i,step.GetComponent<Step>().playerInStep[i].name);
+                targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(true);
+                ChangeStackSpritePlayer(step,i,targetStep.playerInStep[i].GetComponent<UserMovement>().id);
             }
 
-            for(int i = length;i<4;i++) {
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);
-            }
+            for(int i = length;i<4;i++) 
+                targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);      
         }
     }
 
-    public void ChangeStackSpritePlayer(GameObject step,int index,String name) {
+    public void ChangeStackSpritePlayer(GameObject step,int index,int id) {
         // A REFAIRE SANS LE NOM
-        switch(name) {
-            case "User":
+        switch(id) {
+            case 0:
                 step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[0];
                 break;
 
-            case "Bot_001":
+            case 1:
                 step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[1];
                 break;
 
-            case "Bot_002":
+            case 2:
                 step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[2];
                 break;
 
-            case "Bot_003":
+            case 3:
                 step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[3];
                 break;            
         }
@@ -535,22 +532,22 @@ public class GameController : CoroutineSystem {
         step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(8.940888f,9.624872f,8.940888f);
     }
 
-    public void ChangeHUDSpritePlayer(Transform[] panels,int index,String name) {
+    public void ChangeHUDSpritePlayer(Transform[] panels,int index,int id) {
         // A check si on peut pas tt concaténer en 1 ligne . A REFAIRE SANS LE NOM
-        switch(name) {
-            case "User":
+        switch(id) {
+            case 0:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
                 break;
 
-            case "Bot_001":
+            case 1:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[1];
                 break;
 
-            case "Bot_002":
+            case 2:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[2];
                 break;
 
-            case "Bot_003":
+            case 3:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
                 break;            
         }
