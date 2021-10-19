@@ -4,7 +4,7 @@ using UnityEngine;
 using PathCreation;
 using PathCreation.Examples;
 
-public class UserInventory : User {
+public class UserInventory : MonoBehaviour {
     public bool hasDoubleDice; 
     public bool hasReverseDice; 
     public bool hasHourglass;
@@ -37,7 +37,5 @@ public class UserInventory : User {
         cards += cardsGain;
     }
 
-    public override void OnBeginTurn() {}
-    public override void OnFinishTurn() {}
 
 }

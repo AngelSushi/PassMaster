@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UserAudio : User {
+public class UserAudio : MonoBehaviour {
     
     public AudioSource coinsGain;
     public AudioSource coinsLoose;
@@ -66,7 +66,4 @@ public class UserAudio : User {
         lightning.Play();
     }
 
-    public override void OnBeginTurn() {}
-    public override void OnFinishTurn() {}
-    
 }

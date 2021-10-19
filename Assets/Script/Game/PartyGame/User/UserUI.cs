@@ -62,6 +62,7 @@ public class UserUI : User {
     
     public override void OnBeginTurn() {}
     public override void OnFinishTurn() {}
+    public override void OnDiceAction() {}
 
     private void ManageCameraPosition() {
 
@@ -562,6 +563,7 @@ public class UserUI : User {
 
             switch(index) {
                 case 0:
+                    movement.agent.enabled = true;
                     movement.stop = false;
                     if(movement.diceResult <= 0) 
                         gameController.EndUserTurn();

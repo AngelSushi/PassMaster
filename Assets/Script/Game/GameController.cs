@@ -338,32 +338,7 @@ public class GameController : CoroutineSystem {
             players[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
         }
             
-        
-/*
-        players[0].transform.GetChild(1).gameObject.SetActive(players[0].transform.GetChild(1).gameObject.activeSelf);  
-
-        players[1].SetActive(!(!playersInStack.Contains(players[1])));
-        players[1].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-
-        Debug.Log("tuuuuurn");
-
-        players[2].SetActive(!(!playersInStack.Contains(players[2])));
-
-        players[2].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-
-        players[3].SetActive(!(!playersInStack.Contains(players[3])));
-        players[3].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-
-        */
         players[0].GetComponent<UserMovement>().isTurn = true;
-
-       /* if(! players[0].activeSelf) {
-            players[0].SetActive(true);
-            players[0].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[0]);
-            ActualPlayersInStep(players[0].GetComponent<UserMovement>().actualStep,players[0]);
-        }
-        */
-
         players[0].GetComponent<UserMovement>().enabled = true;
         players[0].GetComponent<UserUI>().enabled = true;
         players[0].GetComponent<UserAudio>().enabled = true;
