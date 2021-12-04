@@ -121,7 +121,7 @@ TagManager:
   - Fantom_001
   - Fantom_002
   - Fantom_003
-  - Lightning
+  - Path
   m_SortingLayers:
   - name: Default
     uniqueID: 0
