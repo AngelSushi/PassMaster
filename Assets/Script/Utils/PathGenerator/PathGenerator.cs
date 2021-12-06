@@ -27,9 +27,9 @@ public class PathGenerator : MonoBehaviour {
         for(int i = 4;i<5;i++) {
             Vector3 position = transform.GetChild(i).position;
             position.y += 3;
-            GameObject chest = Instantiate(prefab,position,Quaternion.identity,target.transform);
-            chest.transform.eulerAngles = new Vector3(0.66f,0.66f,0.66f);
-            chest.transform.LookAt(transform.GetChild(i).position);
+            GameObject chest = Instantiate(prefab,position,Quaternion.identity,target.transform); 
+            chest.transform.localScale = new Vector3(0.66f,0.66f,0.66f);
+            //chest.transform.LookAt(transform.GetChild(i).position);
         }
     }
 }

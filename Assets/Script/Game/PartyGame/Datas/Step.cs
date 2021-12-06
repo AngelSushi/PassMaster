@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Step : MonoBehaviour {
-    public bool xAxis;
-    public bool zAxis;
+    public bool[] useVectors; // size 4 : forward , back , right , left
     public bool positive;
     public StepType type;
     public List<GameObject> playerInStep = new List<GameObject>();
