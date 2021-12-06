@@ -12,6 +12,8 @@ public class PathGeneratorWindow : Editor {
 
         if(GUILayout.Button("Generate Path")) 
             instance.GeneratePath();
+        if(GUILayout.Button("Generate Chests"))
+            instance.GenerateChest();
         
     }
 
