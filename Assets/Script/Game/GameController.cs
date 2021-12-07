@@ -114,15 +114,21 @@ public class GameController : CoroutineSystem {
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
         
-        ChangeStepName();
+    //    ChangeStepName();
     }
     
     void Update() {
+        for(int i = 0;i<stepParent.transform.GetChild(1).childCount;i++) {
+            Transform parent = stepParent.transform.GetChild(1);
+            Debug.DrawLine(parent.GetChild(i).position,parent.GetChild(i).position + parent.GetChild(i).forward * 15,Color.red);
+            Debug.DrawLine(parent.GetChild(i).position,parent.GetChild(i).position + parent.GetChild(i).right * 15,Color.green);
+        }
+        
         if(part != lastPart) 
             ChangePart();
 
-        if(!hasGenChest && !dialog.isInDialog)
-            GenerateChest();
+     //   if(!hasGenChest && !dialog.isInDialog)
+      //      GenerateChest();
 
         lastPart = part;
     }
