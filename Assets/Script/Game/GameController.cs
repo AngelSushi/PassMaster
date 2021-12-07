@@ -114,7 +114,7 @@ public class GameController : CoroutineSystem {
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
         
-        ChangeStepName();
+        //ChangeStepName();
     }
     
     void Update() {
@@ -217,7 +217,7 @@ public class GameController : CoroutineSystem {
             checkLastChest = true;
         }
         if( isFirstChest) {
-            randomIndex = 7;
+            randomIndex = /* 7 */ 0;
             isFirstChest = false;
         }
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;

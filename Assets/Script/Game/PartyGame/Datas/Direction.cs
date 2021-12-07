@@ -4,13 +4,8 @@ using UnityEngine;
 
 public class Direction : MonoBehaviour {
     
-    public bool left;
-    public bool front;
-    public bool right;
-
+    public bool[] directions; // size : 3 ; left ; front ; right 
     public StepType type;
-    public GameObject nextStepLeft;
-    public GameObject nextStepFront;
-    public GameObject nextStepRight;
+    public GameObject[] directionsStep; // size : 3 ; left ; front ; right 
     public bool reverseCount;
 }
