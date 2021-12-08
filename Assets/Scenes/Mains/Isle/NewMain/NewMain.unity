@@ -3020,7 +3020,7 @@ MonoBehaviour:
   - {fileID: 1210767827}
   - {fileID: 728759384}
   - {fileID: 0}
-  reverseCount: 1
+  reverseCount: 0
 --- !u!54 &150967999
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -13278,6 +13278,7 @@ MonoBehaviour:
   stepBack: 0
   rb: {fileID: 607161023}
   isParachuting: 0
+  canMoove: 0
 --- !u!136 &607161017
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -18425,6 +18426,7 @@ MonoBehaviour:
   stepBack: 0
   rb: {fileID: 751734326}
   isParachuting: 0
+  canMoove: 0
 --- !u!136 &751734320
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -36518,7 +36520,7 @@ MonoBehaviour:
   - {fileID: 907583421}
   - {fileID: 1641110454}
   - {fileID: 0}
-  reverseCount: 1
+  reverseCount: 0
 --- !u!54 &1530701522
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -48932,6 +48934,7 @@ MonoBehaviour:
   stepBack: 0
   rb: {fileID: 2053996414}
   isParachuting: 0
+  canMoove: 0
 --- !u!136 &2053996408
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -119002,6 +119005,7 @@ MonoBehaviour:
   stepBack: 0
   rb: {fileID: 7498732551668858026}
   isParachuting: 0
+  canMoove: 0
 --- !u!114 &7498732551668858033
 MonoBehaviour:
   m_ObjectHideFlags: 0

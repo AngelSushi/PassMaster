@@ -128,8 +128,8 @@ public class GameController : CoroutineSystem {
         if(part != lastPart) 
             ChangePart();
 
-     //   if(!hasGenChest && !dialog.isInDialog)
-      //      GenerateChest();
+        if(!hasGenChest && !dialog.isInDialog)
+            GenerateChest();
 
         lastPart = part;
     }

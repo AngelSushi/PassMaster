@@ -78,6 +78,8 @@ public class UserMovement : User {
 
     private bool isInShopCoroutine;
 
+    public bool canMoove;
+
 
     public override void OnBeginTurn() {
         stepBack = false;
@@ -119,8 +121,7 @@ public class UserMovement : User {
 
         if(!gameController.freeze) {
             if(isTurn) {
-                if(stop) 
-                    agent.enabled = false;             
+                canMoove = !stop;  
                 
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
@@ -146,7 +147,9 @@ public class UserMovement : User {
                     agent.CalculatePath(nextStep.position,path);
                     ShowPath(Color.magenta,path);
                     CheckPath();
-                    agent.SetPath(path);
+
+                    if(canMoove)
+                        agent.SetPath(path);
                 }
 
                 if(stop && goToShop) {
@@ -358,7 +361,8 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                beginResult = diceResult;  
+                diceResult = 100; 
+                beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
 
@@ -368,10 +372,9 @@ public class UserMovement : User {
                 ui.RefreshDiceResult(diceResult, actualColor);
                 GameObject hitObj = hit.gameObject;
                 hitObj.GetComponent<MeshRenderer>().enabled = false;
-               
-               RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
+                
+                RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
             }
-
        } 
     }
 
@@ -383,7 +386,6 @@ public class UserMovement : User {
                 return;
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
-
                 if(type != StepType.SHOP) {
                     if(hasShowShopHUD) 
                         hasShowShopHUD = false;
@@ -512,10 +514,9 @@ public class UserMovement : User {
                             if(!ui.showDirection) 
                                 ui.showDirection = true;
 
-                            stop = true;
+                            stop = true; 
                             return;
                         }
-
                         else {
                             agent.enabled = true;
                             if(left) 
@@ -524,14 +525,14 @@ public class UserMovement : User {
                                 nextStep = ui.direction.directionsStep[1].transform;
                             if(right) 
                                 nextStep = ui.direction.directionsStep[2].transform;
-                        }
 
-                        stop = false;
-                        return;
+                            stop = !(left || front || right);
+                        }
                     }
                     else 
-                        stop = false;
+                        stop = !(left || front || right);
                 }
+                
                 else { // Bot
                     if(nextStep == null) {
                         int percentage = Random.Range(0,100);
@@ -688,6 +689,7 @@ public class UserMovement : User {
     }
 
     private void ChooseNextStep(StepType type) {
+        Debug.Log("choose");
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && nextStep != null) 
             diceResult--;
 
@@ -708,11 +710,15 @@ public class UserMovement : User {
             if(stepIndex == -1) 
                 stepIndex = 0;
 
+            int index = 0;
             for(int i = 0;i<result;i++) {
+                index = i;
+
+
                 if(stepIndex + i + 1 < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
                     stepPaths[i] = stepParent.GetChild(stepIndex + i + 1).gameObject;
-                else // Le calcul du prochain index de la prochaine step est supérieur au nombre de step max, on retire donc le nombre de step max au calcul
-                    stepPaths[i] = stepParent.GetChild(stepIndex + i + 1 - stepParent.childCount).gameObject;
+                else  // Le calcul du prochain index de la prochaine step est supérieur au nombre de step max, on retire donc le nombre de step max au calcul
+                    stepPaths[i] = stepParent.GetChild(stepIndex + i + 1 - stepParent.childCount).gameObject;    
             }
             hasCheckPath = true;
         }
@@ -723,6 +729,8 @@ public class UserMovement : User {
     private void GetNextStep() {
         GameObject actualParent = actualStep.transform.parent.gameObject;
         int stepIndex = FindIndexInParent(actualParent,actualStep);
+
+        Debug.Log("stepIndex: " + stepIndex);
 
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
             if(stepIndex + 1 < actualParent.transform.childCount) 
@@ -736,6 +744,8 @@ public class UserMovement : User {
             else 
                 nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);    
         }                 
+
+        Debug.Log("nextStep: " + nextStep);
     }
 
     private int FindIndexInParent(GameObject parent,GameObject targetStep) {
