@@ -31,6 +31,7 @@ public class ExcelReader : MonoBehaviour {
                     if(step.GetComponent<Step>() != null) {
                         step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column4 == 1 ? true : false,excelClass.Column5 == 1 ? true : false,excelClass.Column6 == 1 ? true : false,excelClass.Column7 == 1 ? true : false};
                         step.GetComponent<Step>().positive = excelClass.Column8 == 1 ? true : false;
+                        Debug.Log("initialize " + excelClass.name + " parameters");
                     }
                 }
             }
@@ -41,6 +42,7 @@ public class ExcelReader : MonoBehaviour {
                     if(step.GetComponent<Step>() != null) {
                         step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column13 == 1 ? true : false,excelClass.Column14 == 1 ? true : false,excelClass.Column15 == 1 ? true : false,excelClass.Column16 == 1 ? true : false};
                         step.GetComponent<Step>().positive = excelClass.Column17 == 1 ? true : false;
+                        Debug.Log("initialize " + excelClass.Column11 + " parameters");
                     }
                 }
             }
@@ -51,11 +53,12 @@ public class ExcelReader : MonoBehaviour {
                     if(step.GetComponent<Step>() != null) {
                         step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column22 == 1 ? true : false,excelClass.Column23 == 1 ? true : false,excelClass.Column24 == 1 ? true : false,excelClass.Column25 == 1 ? true : false};
                         step.GetComponent<Step>().positive = excelClass.Column26 == 1 ? true : false;
+                        Debug.Log("initialize " + excelClass.Column20 + " parameters");
                     }
                 }
-            }
-
-            
+            }    
         }
+
+        Debug.Log("parameters correctly initialize");
     }
 }
