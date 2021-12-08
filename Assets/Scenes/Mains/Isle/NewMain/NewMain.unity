@@ -2366,6 +2366,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
   target: {fileID: 0}
+  game: {fileID: 0}
 --- !u!1 &97787728
 GameObject:
   m_ObjectHideFlags: 0
@@ -17266,6 +17267,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
   target: {fileID: 0}
+  game: {fileID: 0}
 --- !u!1 &708072366
 GameObject:
   m_ObjectHideFlags: 0
@@ -19083,6 +19085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
   target: {fileID: 0}
+  game: {fileID: 0}
 --- !u!1 &774640988
 GameObject:
   m_ObjectHideFlags: 0
@@ -47263,6 +47266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 6406404557955406072, guid: 7f7387d993eef0940956cb1d54b5e7e5, type: 3}
   target: {fileID: 1521184473}
+  game: {fileID: 672257448}
 --- !u!1 &2004901043
 GameObject:
   m_ObjectHideFlags: 0

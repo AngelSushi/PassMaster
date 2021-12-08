@@ -114,8 +114,6 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[3],4);
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
-        excelArray = ExcelReader.LoadJsonExcelClass(stepFile.text);
-        ExcelReader.AffectParameters(excelArray);
     }
     
     void Update() {
