@@ -114,10 +114,7 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[3],4);
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
-        excelArray = ExcelReader.LoadJsonExcelClass(stepFile.text);
         ExcelReader.AffectParameters(excelArray,stepFile.text);
-
-    //    ChangeStepName();
     }
     
     void Update() {
@@ -226,7 +223,7 @@ public class GameController : CoroutineSystem {
             checkLastChest = true;
         }
         if( isFirstChest) {
-            randomIndex = 7;
+            randomIndex = /* 7 */ 0;
             isFirstChest = false;
         }
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
