@@ -415,11 +415,11 @@ public class UserMovement : User {
 
                 if(type == StepType.BONUS_END && reverseCount) {
                     reverseCount = false;
-                    nextStep = hit.gameObject.GetComponent<Direction>().nextStepFront.transform;
+                    nextStep = hit.gameObject.GetComponent<Direction>().directionsStep[1].transform;
                     bypassDirection = true;
                 }
 
-                if(type == StepType.FLEX_DIRECTION && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) { // Le joueur collisionne avec la flèche a 4 côtés
+            /*    if(type == StepType.FLEX_DIRECTION && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) { // Le joueur collisionne avec la flèche a 4 côtés
                     Direction direction = hit.gameObject.GetComponent<Direction>();
 
                     FlexDirection flexDirection = lastStep.GetComponent<FlexDirection>();
@@ -436,6 +436,7 @@ public class UserMovement : User {
                     if(reverse) 
                         reverse = false;
                 }
+                */ 
 
                 if(type != StepType.SHOP) {
                     if(isInShopCoroutine) 
@@ -518,11 +519,11 @@ public class UserMovement : User {
                         else {
                             agent.enabled = true;
                             if(left) 
-                                nextStep = ui.direction.nextStepLeft.transform;
+                                nextStep = ui.direction.directionsStep[0].transform;
                             if(front)
-                                nextStep = ui.direction.nextStepFront.transform;
+                                nextStep = ui.direction.directionsStep[1].transform;
                             if(right) 
-                                nextStep = ui.direction.nextStepRight.transform;
+                                nextStep = ui.direction.directionsStep[2].transform;
                         }
 
                         stop = false;
@@ -540,12 +541,12 @@ public class UserMovement : User {
                             // Il faut voir le chemin le plus court vers le prochain coffre
                             NavMeshPath[] pathsDirection = new NavMeshPath[3];
 
-                            if(ui.direction.nextStepLeft != null) 
-                                NavMesh.CalculatePath(ui.direction.nextStepLeft.transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[0]);
-                            if(ui.direction.nextStepRight != null) 
-                                NavMesh.CalculatePath(ui.direction.nextStepRight.transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[1]);
-                            if(ui.direction.nextStepFront != null) 
-                                NavMesh.CalculatePath(ui.direction.nextStepFront.transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[2]);
+                            if(ui.direction.directionsStep[0] != null) 
+                                NavMesh.CalculatePath(ui.direction.directionsStep[0].transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[0]);
+                            if(ui.direction.directionsStep[2] != null) 
+                                NavMesh.CalculatePath(ui.direction.directionsStep[2].transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[1]);
+                            if(ui.direction.directionsStep[2] != null) 
+                                NavMesh.CalculatePath(ui.direction.directionsStep[2].transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[2]);
 
                             float lastMinDistance = 0f;
 
@@ -626,7 +627,7 @@ public class UserMovement : User {
                 ChooseNextStep(type); 
 
             if((type == StepType.BONUS_END || type == StepType.MALUS_END) && GameObject.ReferenceEquals(lastStep.transform.parent.gameObject,actualStep.transform.parent.gameObject)) // Si le parent de la step actuel est de la step passé est le même alors on récupère la step ou aller
-                nextStep = actualStep.GetComponent<Direction>().nextStepFront.transform;                    
+                nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;                    
             else if((type == StepType.BONUS_END || type == StepType.MALUS_END) && !GameObject.ReferenceEquals(lastStep.transform.parent.gameObject,actualStep.transform.parent.gameObject))
                 reverseCount = true;
 
@@ -759,7 +760,7 @@ public class UserMovement : User {
             Vector3 corner = path.corners[i];
             Vector3 nextCorner = path.corners[i+1];
 
-            GameObject[] directionSteps = {ui.direction.nextStepLeft,ui.direction.nextStepRight,ui.direction.nextStepFront};
+            GameObject[] directionSteps = {ui.direction.directionsStep[0],ui.direction.directionsStep[2],ui.direction.directionsStep[1]};
             // LE coffre n'est pas sur le path ca ne risque pas de marcher récupérer la step du coffre
 
             foreach(GameObject step in directionSteps) {
