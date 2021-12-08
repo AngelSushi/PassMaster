@@ -802,11 +802,12 @@ public class UserMovement : User {
                                 if(userMovement.point == Vector3.zero) {
                                     userMovement.point = user.transform.position;
                                     
-                                    if(step.GetComponent<Step>().xAxis) 
+                                   /* if(step.GetComponent<Step>().xAxis) 
                                         userMovement.point.x += targetStep.positive ? 10 : -10;
                                     if(step.GetComponent<Step>().zAxis) 
                                         userMovement.point.z += targetStep.positive ? 10 : -10;
-                                    
+                                    */
+
                                     gameController.playerConflict.Add(user,step);
                                 }
                             }

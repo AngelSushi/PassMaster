@@ -45,7 +45,7 @@ public class GameController : CoroutineSystem {
     public int[] turnOrder = new int[4];
 
     public GameObject mainCamera;
-    public TextAsset dialogsFile; 
+    public TextAsset dialogsFile,stepFile; 
 
     public GamePart part;
 
@@ -104,6 +104,7 @@ public class GameController : CoroutineSystem {
 
     public Transform stackPlayersParent;
 
+    public JsonExcelArray excelArray;
     void Start() {
         GameController.difficulty = 2;
 
@@ -113,16 +114,24 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[3],4);
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
-        
-        ChangeStepName();
+        excelArray = ExcelReader.LoadJsonExcelClass(stepFile.text);
+        ExcelReader.AffectParameters(excelArray,stepFile.text);
+
+    //    ChangeStepName();
     }
     
     void Update() {
+        for(int i = 0;i<stepParent.transform.GetChild(1).childCount;i++) {
+            Transform parent = stepParent.transform.GetChild(1);
+            Debug.DrawLine(parent.GetChild(i).position,parent.GetChild(i).position + parent.GetChild(i).forward * 15,Color.red);
+            Debug.DrawLine(parent.GetChild(i).position,parent.GetChild(i).position + parent.GetChild(i).right * 15,Color.green);
+        }
+        
         if(part != lastPart) 
             ChangePart();
 
-        if(!hasGenChest && !dialog.isInDialog)
-            GenerateChest();
+     //   if(!hasGenChest && !dialog.isInDialog)
+      //      GenerateChest();
 
         lastPart = part;
     }
