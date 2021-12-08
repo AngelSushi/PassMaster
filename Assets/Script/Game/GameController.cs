@@ -45,7 +45,7 @@ public class GameController : CoroutineSystem {
     public int[] turnOrder = new int[4];
 
     public GameObject mainCamera;
-    public TextAsset dialogsFile; 
+    public TextAsset dialogsFile,stepFile; 
 
     public GamePart part;
 
@@ -104,6 +104,7 @@ public class GameController : CoroutineSystem {
 
     public Transform stackPlayersParent;
 
+    public JsonExcelArray excelArray;
     void Start() {
         GameController.difficulty = 2;
 
@@ -113,7 +114,9 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[3],4);
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
-        
+        excelArray = ExcelReader.LoadJsonExcelClass(stepFile.text);
+        ExcelReader.AffectParameters(excelArray,stepFile.text);
+
     //    ChangeStepName();
     }
     
