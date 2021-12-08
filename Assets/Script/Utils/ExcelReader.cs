@@ -23,7 +23,7 @@ public class ExcelReader : MonoBehaviour {
         return JsonUtility.FromJson<JsonExcelArray>(text);
     }
 
-    public static void AffectParameters(JsonExcelArray excelArray,string text) {
+    public static void AffectParameters(JsonExcelArray excelArray) {
         foreach(JsonExcelClass excelClass in excelArray.excelClass) {
             if(excelClass.name != "") {
                 GameObject step = GameObject.Find(excelClass.name);
