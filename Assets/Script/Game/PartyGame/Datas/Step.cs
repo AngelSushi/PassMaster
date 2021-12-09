@@ -11,7 +11,4 @@ public class Step : MonoBehaviour {
     public GameObject chest;
     public GameObject shop;
 
-    public Vector3 camPosition;
-    public Quaternion camRotation;
-
 }

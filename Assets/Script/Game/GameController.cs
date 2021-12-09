@@ -114,16 +114,9 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[3],4);
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
-        excelArray = ExcelReader.LoadJsonExcelClass(stepFile.text);
-        ExcelReader.AffectParameters(excelArray);
     }
     
     void Update() {
-        for(int i = 0;i<stepParent.transform.GetChild(1).childCount;i++) {
-            Transform parent = stepParent.transform.GetChild(1);
-            Debug.DrawLine(parent.GetChild(i).position,parent.GetChild(i).position + parent.GetChild(i).forward * 15,Color.red);
-            Debug.DrawLine(parent.GetChild(i).position,parent.GetChild(i).position + parent.GetChild(i).right * 15,Color.green);
-        }
         
         if(part != lastPart) 
             ChangePart();
@@ -402,8 +395,8 @@ public class GameController : CoroutineSystem {
             mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
         }
         else {
-            mainCamera.transform.position = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camPosition;
-            mainCamera.transform.rotation = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camRotation;
+           // mainCamera.transform.position = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camPosition;
+           // mainCamera.transform.rotation = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camRotation;
         }
     }
 
