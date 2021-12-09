@@ -42,10 +42,11 @@ public class PathGenerator : MonoBehaviour {
             chest.transform.position += GetChestDirection(chest,step) * amplifierDirection;
             chest.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
             chest.transform.LookAt(transform.GetChild(i).position);
-            chest.transform.eulerAngles = new Vector3(0f,chest.transform.eulerAngles.y - 90.0f,0f);
+            chest.transform.eulerAngles = new Vector3(0f,chest.transform.eulerAngles.y - 90.0f,0f); // A supprimer pr la deuxieme ile
             chest.AddComponent<BoxCollider>();
             chest.GetComponent<BoxCollider>().center = new Vector3(-0.325f,-0.283f,-0.235f);
             chest.GetComponent<BoxCollider>().size = new Vector3(9.072f,10.917f,14.796f);
+            step.chest = chest;
         }
     }
 
