@@ -114,10 +114,14 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[3],4);
 
         dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
+
+        for(int i = 0;i<players.Length;i++) {
+            if(turn == 1)
+                players[i].transform.position = posBegin[i];  
+        }
     }
     
     void Update() {
-        
         if(part != lastPart) 
             ChangePart();
 
@@ -216,10 +220,11 @@ public class GameController : CoroutineSystem {
 
             checkLastChest = true;
         }
-        if( isFirstChest) {
-            randomIndex = /* 7 */ 0;
+      /*  if( isFirstChest) {
+            randomIndex = /* 7 ;
             isFirstChest = false;
         }
+        */
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
 
         Vector3 cameraPosition = new Vector3(chest.transform.position.x,5479f,chest.transform.position.z);
@@ -331,13 +336,7 @@ public class GameController : CoroutineSystem {
 
         List<GameObject> playersInStack = GetPlayersInStack();
 
-        for(int i = 0;i<players.Length;i++) {
-            if(turn == 1)
-                players[i].transform.position = posBegin[i];
-
-            players[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
-        }
-            
+        players[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
         players[0].GetComponent<UserMovement>().isTurn = true;
         players[0].GetComponent<UserMovement>().enabled = true;
         players[0].GetComponent<UserUI>().enabled = true;
@@ -349,7 +348,7 @@ public class GameController : CoroutineSystem {
 
         ManageCameraPosition();       
 
-        light.transform.rotation = Quaternion.Euler(39.997f,-74.92f,-0.283f);
+        light.transform.rotation = Quaternion.Euler(58.809f,174.994f,294.254f);
     }
 
     public void EndUserTurn() {
@@ -391,8 +390,8 @@ public class GameController : CoroutineSystem {
 
     private void ManageCameraPosition() {
         if(turn == 1) {
-            mainCamera.transform.position = new Vector3(-804f,5213f,-15807f);
-            mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+            mainCamera.transform.position = new Vector3(-1198.469f,5221.931f,-14929.02f);
+            mainCamera.transform.rotation = Quaternion.Euler(10.51f,180f,0f);
         }
         else {
            // mainCamera.transform.position = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camPosition;
