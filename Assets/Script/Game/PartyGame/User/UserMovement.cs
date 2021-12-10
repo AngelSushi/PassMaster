@@ -145,6 +145,13 @@ public class UserMovement : User {
 
                     NavMeshPath path = new NavMeshPath();
                     agent.CalculatePath(nextStep.position,path);
+
+                    if(lastStep == nextStep) {
+                        Debug.Log("je dois changer");
+                    }
+
+
+
                     ShowPath(Color.magenta,path);
                     CheckPath();
 
@@ -468,7 +475,7 @@ public class UserMovement : User {
                 if(type == StepType.STEP_END) {
                     RunDelayed(0.1f,() => {
                         if(diceResult > 0) {
-                            if(diceResult == 1) {} // Go to grotte
+                            if(diceResult == 1) {} 
                             else 
                                 reverse = true;
                         }
@@ -479,7 +486,7 @@ public class UserMovement : User {
                     StartCoroutine(WaitToReturnStep());
                 
 
-                if(type == StepType.SHOP  && beginStep != hit.gameObject && !hasShowShopHUD) {
+                if(type == StepType.SHOP  && beginStep != hit.gameObject && finishMovement && !hasShowShopHUD) {
                     // Au lieu de la fonction faire une coroutine qui attends genre 1 demi seconde et après faire le reste
                     
                     if(isPlayer) 
@@ -521,8 +528,10 @@ public class UserMovement : User {
                             agent.enabled = true;
                             if(left) 
                                 nextStep = ui.direction.directionsStep[0].transform;
-                            if(front)
+                            if(front) {
+                                Debug.Log("mon super enter");
                                 nextStep = ui.direction.directionsStep[1].transform;
+                            }
                             if(right) 
                                 nextStep = ui.direction.directionsStep[2].transform;
 
@@ -689,7 +698,6 @@ public class UserMovement : User {
     }
 
     private void ChooseNextStep(StepType type) {
-        Debug.Log("choose");
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && nextStep != null) 
             diceResult--;
 
@@ -729,8 +737,6 @@ public class UserMovement : User {
     private void GetNextStep() {
         GameObject actualParent = actualStep.transform.parent.gameObject;
         int stepIndex = FindIndexInParent(actualParent,actualStep);
-
-        Debug.Log("stepIndex: " + stepIndex);
 
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
             if(stepIndex + 1 < actualParent.transform.childCount) 
