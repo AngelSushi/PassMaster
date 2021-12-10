@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SimpleDialog", menuName = "Dialogs/SimpleDialog", order = 1)]
-public class Dialogs : ScriptableObject {
+public class DialogsSO : ScriptableObject {
 
     public string name;
     public string author;
