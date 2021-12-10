@@ -7,7 +7,6 @@ using UnityEngine.UI;
 using System.Linq;
 
 public class UserMovement : User {
-
     public NavMeshAgent agent;
     public bool waitDiceResult;
     public bool finishMovement;
@@ -45,41 +44,30 @@ public class UserMovement : User {
     public int beginResult;
     public GameObject[] stepPaths;
     public bool stepBack;
-
-    private int isle;
     private bool jump;
     private int random = -1;
     private float timer;
-
     private Vector3 point;
     private bool hasCheckPath;
-
     private bool hasShowChestHUD;
     private bool canMooveToChest = true;
-
     private bool hasCollideDice;
     private GameObject dice;
     private bool hasJump;
     private bool hasShowShopHUD;
     private bool hasShowShop;
-
     public Rigidbody rb;
-    // Object
-    
     private Color actualColor;
-
     public bool isParachuting;
-
     private Vector3 parachuteMovement;
-
     private bool hasBuyItem;
-
     private bool bypassDirection;
-
     private bool isInShopCoroutine;
-
     public bool canMoove;
 
+    [HideInInspector]
+    public int currentTabIndex;
+    public string currentTabName;
 
     public override void OnBeginTurn() {
         stepBack = false;
