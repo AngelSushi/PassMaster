@@ -26,7 +26,6 @@ public class UserMovement : User {
     public bool doubleDice;
     public bool reverseDice;    
     public bool hasBotBuyItem;
-    public bool drop;
     public bool reverse;
     public GameObject lastStep;
     public bool isMooving;
@@ -37,7 +36,6 @@ public class UserMovement : User {
     public GameObject beginStep;
     public bool canJump;
     public bool isJumping;
-    public DayController dayController;
     public Transform nextStep;
     public float jumpSpeed;
     public bool stack;
@@ -67,7 +65,6 @@ public class UserMovement : User {
 
     [HideInInspector]
     public int currentTabIndex;
-    public string currentTabName;
 
     public override void OnBeginTurn() {
         stepBack = false;

@@ -860,7 +860,7 @@ public class UserUI : User {
         if(direction != null) {
             if(direction.directions[0]) {
                 if(direction.directionsStep[0].name.Contains("front") || direction.directionsStep[0].name.Contains("interior")) {
-                    if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
                         directions[0].gameObject.SetActive(true);
                 }
                 else 
@@ -871,7 +871,7 @@ public class UserUI : User {
 
             if(direction.directions[1]) {
                 if(direction.directionsStep[1].name.Contains("front") || direction.directionsStep[1].name.Contains("interior")) {
-                    if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
                         directions[1].gameObject.SetActive(true);                  
                 }
                 else 
@@ -882,7 +882,7 @@ public class UserUI : User {
 
             if(direction.directions[2]) {
                 if(direction.directionsStep[2].name.Contains("front") || direction.directionsStep[2].name.Contains("interior")) {
-                    if(movement.dayController.dayPeriod == 0 || movement.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
                         directions[2].gameObject.SetActive(true);           
                 }
                 else 

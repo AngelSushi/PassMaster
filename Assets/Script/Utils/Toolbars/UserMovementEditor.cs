@@ -5,45 +5,145 @@ using UnityEditor;
 
 [CustomEditor(typeof(UserMovement))]
 public class UserMovementEditor : Editor {
-    
-    private SerializedProperty id;
-    private SerializedProperty diceResult;
-    
     private UserMovement classTarget;
     private SerializedObject serializedClass;
+
+    // Controller Tab
+    private SerializedProperty movement,ui,inventory,audio,gameController;
+
+    // Player tab
+    private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed;
+
+    // Movement tab
+    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnToStep,goToChest,returnStepBack,goToShop,
+    canMooveToShop,reverseCount,reverse,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
+
+    // Object tab;
+    private SerializedProperty doubleDice,reverseDice,hasBotBuyItem,isParachuting;
+    // UI Tab
+    private SerializedProperty giveUI,changeUI;
+    
 
     private void OnEnable() {
         classTarget = (UserMovement)target;
         serializedClass = new SerializedObject(classTarget);
 
+        // Controller tab
+        movement = serializedClass.FindProperty("movement");
+        ui = serializedClass.FindProperty("ui");
+        inventory = serializedClass.FindProperty("inventory");
+        audio = serializedClass.FindProperty("audio");
+        gameController = serializedClass.FindProperty("gameController");
+
+        // Player tab
         id = serializedClass.FindProperty("id");
+        isTurn = serializedClass.FindProperty("isTurn");
+        isPlayer = serializedClass.FindProperty("isPlayer");
+        agent = serializedClass.FindProperty("agent");
+        rb = serializedClass.FindProperty("rb");
+        canMoove = serializedClass.FindProperty("canMoove");
+        isMooving = serializedClass.FindProperty("isMooving");
+        canJump = serializedClass.FindProperty("canJump");
+        isJumping = serializedClass.FindProperty("isJumping");
+        jumpSpeed = serializedClass.FindProperty("jumpSpeed");
+
+        // Movement tab
+        waitDiceResult = serializedClass.FindProperty("waitDiceResult");
+        finishMovement = serializedClass.FindProperty("finishMovement");
+        finishTurn = serializedClass.FindProperty("finishTurn");
+        left = serializedClass.FindProperty("left");
+        front = serializedClass.FindProperty("front");
+        right = serializedClass.FindProperty("right");
+        stop = serializedClass.FindProperty("stop");
+        lastStepIsArrow = serializedClass.FindProperty("lastStepIsArrow");
+        waitChest = serializedClass.FindProperty("waitChest");
+        returnToStep = serializedClass.FindProperty("returnToStep");
+        goToChest = serializedClass.FindProperty("goToChest");
+        returnStepBack = serializedClass.FindProperty("returnStepBack");
+        goToShop = serializedClass.FindProperty("goToShop");
+        canMooveToShop = serializedClass.FindProperty("canMooveToShop");
+        reverseCount = serializedClass.FindProperty("reverseCount");
+        reverse = serializedClass.FindProperty("reverse");
         diceResult = serializedClass.FindProperty("diceResult");
+        actualStep = serializedClass.FindProperty("actualStep");
+        beginStep = serializedClass.FindProperty("beginStep");
+        nextStep = serializedClass.FindProperty("nextStep");
+        stack = serializedClass.FindProperty("stack");
+        beginResult = serializedClass.FindProperty("beginResult");
+        stepPaths = serializedClass.FindProperty("stepPaths");
+        stepBack = serializedClass.FindProperty("stepBack");
+
+        // Object tab
+        doubleDice = serializedClass.FindProperty("doubleDice");
+        reverseDice = serializedClass.FindProperty("reverseDice");
+        hasBotBuyItem = serializedClass.FindProperty("hasBotBuyItem");
+        isParachuting = serializedClass.FindProperty("isParachuting");
+
+        // UI Tab
+        giveUI = serializedClass.FindProperty("giveUI");
+        changeUI = serializedClass.FindProperty("changeUI");
     }
     public override void OnInspectorGUI() {
-       // DrawDefaultInspector();
-
         serializedClass.Update();
         EditorGUI.BeginChangeCheck();
 
         classTarget.currentTabIndex = GUILayout.Toolbar(classTarget.currentTabIndex,new string[] {"Controller","Player","Movement","Object","UI"});
 
         switch(classTarget.currentTabIndex) {
-            case 0:
-                classTarget.currentTabName = "Controller";
-                EditorGUILayout.PropertyField(diceResult);
+            case 0: // Controller
+                EditorGUILayout.PropertyField(movement);
+                EditorGUILayout.PropertyField(ui);
+                EditorGUILayout.PropertyField(inventory);
+                EditorGUILayout.PropertyField(audio);
+                EditorGUILayout.PropertyField(gameController);
                 break;
-            case 1:
-                classTarget.currentTabName = "Player";
+            case 1: // Player
                 EditorGUILayout.PropertyField(id);
+                EditorGUILayout.PropertyField(isTurn);
+                EditorGUILayout.PropertyField(isPlayer);
+                EditorGUILayout.PropertyField(agent);
+                EditorGUILayout.PropertyField(rb);
+                EditorGUILayout.PropertyField(canMoove);
+                EditorGUILayout.PropertyField(isMooving);
+                EditorGUILayout.PropertyField(canJump);
+                EditorGUILayout.PropertyField(isJumping);
+                EditorGUILayout.PropertyField(jumpSpeed);
                 break;
             case 2:
-                classTarget.currentTabName = "Movement";
+                EditorGUILayout.PropertyField(waitDiceResult);
+                EditorGUILayout.PropertyField(finishMovement);
+                EditorGUILayout.PropertyField(finishTurn);
+                EditorGUILayout.PropertyField(left);
+                EditorGUILayout.PropertyField(front);
+                EditorGUILayout.PropertyField(right);
+                EditorGUILayout.PropertyField(stop);
+                EditorGUILayout.PropertyField(lastStepIsArrow);
+                EditorGUILayout.PropertyField(waitChest);
+                EditorGUILayout.PropertyField(returnToStep); 
+                EditorGUILayout.PropertyField(goToChest);
+                EditorGUILayout.PropertyField(returnStepBack);
+                EditorGUILayout.PropertyField(goToShop);
+                EditorGUILayout.PropertyField(canMooveToShop);
+                EditorGUILayout.PropertyField(reverseCount);
+                EditorGUILayout.PropertyField(reverse);
+                EditorGUILayout.PropertyField(diceResult);
+                EditorGUILayout.PropertyField(actualStep);
+                EditorGUILayout.PropertyField(beginStep);
+                EditorGUILayout.PropertyField(nextStep);
+                EditorGUILayout.PropertyField(stack);
+                EditorGUILayout.PropertyField(beginResult);
+                EditorGUILayout.PropertyField(stepPaths);
+                EditorGUILayout.PropertyField(stepBack);
                 break;
             case 3:
-                classTarget.currentTabName = "Object";
+                EditorGUILayout.PropertyField(doubleDice);
+                EditorGUILayout.PropertyField(reverseDice);
+                EditorGUILayout.PropertyField(hasBotBuyItem);
+                EditorGUILayout.PropertyField(isParachuting);
                 break;
             case 4:
-                classTarget.currentTabName = "UI";
+                EditorGUILayout.PropertyField(giveUI);
+                EditorGUILayout.PropertyField(changeUI);
                 break;
         }
 
