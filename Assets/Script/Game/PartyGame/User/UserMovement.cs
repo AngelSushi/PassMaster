@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System.Linq;
 
 public class UserMovement : User {
+
     public NavMeshAgent agent;
     public bool waitDiceResult;
     public bool finishMovement;
@@ -113,8 +114,6 @@ public class UserMovement : User {
             if(isTurn) {
                 canMoove = !stop;  
 
-                
-
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
                         RunDelayed(0.2f,() => {
@@ -137,9 +136,7 @@ public class UserMovement : User {
                     
                     if(lastStep == nextStep.gameObject) 
                         ChooseNextStep(StepType.NONE);
-                    
-
-                    
+                     
                     agent.CalculatePath(nextStep.position,path);
                     ShowPath(Color.magenta,path);
                     CheckPath();
@@ -164,9 +161,7 @@ public class UserMovement : User {
                                 hasShowShop = true;
                             }
                         }
-                        else {
-                            // Le bot Est dans le shop
-
+                        else { // Le bot Est dans le shop
                             if(hasBuyItem && hasBotBuyItem) {
 
                                 int random = Random.Range(0,100);
@@ -209,7 +204,6 @@ public class UserMovement : User {
                         return;
                     }
                 }
-
 
                 if(finishMovement) {
                     StepType type = actualStep.GetComponent<Step>().type;
@@ -427,9 +421,6 @@ public class UserMovement : User {
                         nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
                     }
                 }
-
-
-                
             }
 
             if(type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION) {
@@ -529,7 +520,42 @@ public class UserMovement : User {
                 }
                 
                 else { // Bot
-                    // Plus ou moins de chance de prendre la direction vers le coffre
+                    // Facile = 50 ; Moyen = 70 ; Difficile  = 90 de chance d'aller vers le coffre
+                    int percentageGoToChest = 0;
+
+                    switch(GameController.difficulty) {
+                        case 0: // Facile
+                            percentageGoToChest = 50;
+                            break;
+
+                        case 1: // Moyen
+                            percentageGoToChest = 70;
+                            break;
+
+                        case 2: // Difficile
+                            percentageGoToChest = 90;
+                            break;
+                    }
+
+                    int randomGoToChest = Random.Range(0,100);
+
+                    if(randomGoToChest <= percentageGoToChest) {
+                        // compter le nombre de case entre la direction 
+
+                        for(int i = 0;i<ui.direction.directionsStep.Length;i++) {
+                            if(ui.direction.directionsStep[i] != null) {
+                                GameObject beginCalcul = ui.direction.directionsStep[i];
+
+                                
+                            }
+                        } 
+                        
+
+                    }
+                    else {
+
+                    }
+
                 }
             }
         }

@@ -105,6 +105,8 @@ public class GameController : CoroutineSystem {
     public Transform stackPlayersParent;
 
     public JsonExcelArray excelArray;
+
+    public GameObject stepChest;
     void Start() {
         GameController.difficulty = 2;
 
@@ -204,7 +206,6 @@ public class GameController : CoroutineSystem {
         actualChest = null;
         freeze = true;
 
-
         if(randomIndex == -1) {
             randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
             mainCamera.transform.position = new Vector3(-1062.2f,5479f,-15821.6f);
@@ -220,6 +221,7 @@ public class GameController : CoroutineSystem {
 
             checkLastChest = true;
         }
+
       /*  if( isFirstChest) {
             randomIndex = /* 7 ;
             isFirstChest = false;
@@ -258,6 +260,14 @@ public class GameController : CoroutineSystem {
 
                 freeze = false;
             }
+
+            foreach(Step step in FindObjectsOfType(typeof(Step))) {
+                if(step.chest != null && step.chest.activeSelf) {
+                    stepChest = step.chest;
+                    break;
+                }
+            }
+
             // Marche que pour le tour 1 attention jpense 
         }
     }
