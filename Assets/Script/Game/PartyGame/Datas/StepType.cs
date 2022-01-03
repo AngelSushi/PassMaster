@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum StepType {
+    
     BONUS,
     MALUS,
     SHOP,
@@ -10,5 +11,6 @@ public enum StepType {
     FLEX_DIRECTION,
     BONUS_END,
     MALUS_END,
-    STEP_END
+    STEP_END,
+    NONE
 }

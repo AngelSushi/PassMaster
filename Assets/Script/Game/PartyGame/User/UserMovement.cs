@@ -26,7 +26,6 @@ public class UserMovement : User {
     public bool doubleDice;
     public bool reverseDice;    
     public bool hasBotBuyItem;
-    public bool reverse;
     public GameObject lastStep;
     public bool isMooving;
     public GameObject giveUI;
@@ -65,6 +64,12 @@ public class UserMovement : User {
 
     [HideInInspector]
     public int currentTabIndex;
+
+    private NavMeshPath path;
+
+    void Start() {
+        path = new NavMeshPath();
+    }
 
     public override void OnBeginTurn() {
         stepBack = false;
@@ -107,7 +112,9 @@ public class UserMovement : User {
         if(!gameController.freeze) {
             if(isTurn) {
                 canMoove = !stop;  
+
                 
+
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
                         RunDelayed(0.2f,() => {
@@ -127,21 +134,19 @@ public class UserMovement : User {
                         if(dice != null) 
                             dice.SetActive(false);
                     }
+                    
+                    if(lastStep == nextStep.gameObject) 
+                        ChooseNextStep(StepType.NONE);
+                    
 
-                    NavMeshPath path = new NavMeshPath();
+                    
                     agent.CalculatePath(nextStep.position,path);
-
-                    if(lastStep == nextStep) {
-                        Debug.Log("je dois changer");
-                    }
-
-
-
                     ShowPath(Color.magenta,path);
                     CheckPath();
 
-                    if(canMoove)
-                        agent.SetPath(path);
+                    if(canMoove) 
+                        agent.SetPath(path);    
+                    
                 }
 
                 if(stop && goToShop) {
@@ -377,7 +382,7 @@ public class UserMovement : User {
             if(type == null) 
                 return;
 
-            if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
+            if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
                 if(type != StepType.SHOP) {
                     if(hasShowShopHUD) 
                         hasShowShopHUD = false;
@@ -407,31 +412,6 @@ public class UserMovement : User {
                 if(diceResult < 0 && nextStep != null) 
                     finishMovement = true;
 
-                if(type == StepType.BONUS_END && reverseCount) {
-                    reverseCount = false;
-                    nextStep = hit.gameObject.GetComponent<Direction>().directionsStep[1].transform;
-                    bypassDirection = true;
-                }
-
-            /*    if(type == StepType.FLEX_DIRECTION && !ui.showHUD && !isJumping && !bypassDirection && !lastStepIsArrow && ui.direction == null) { // Le joueur collisionne avec la flèche a 4 côtés
-                    Direction direction = hit.gameObject.GetComponent<Direction>();
-
-                    FlexDirection flexDirection = lastStep.GetComponent<FlexDirection>();
-
-                    direction.nextStepFront = flexDirection.frontDirection;
-                    direction.nextStepLeft = flexDirection.leftDirection;
-                    direction.nextStepRight = flexDirection.rightDirection;
-
-                    ui.direction = direction;
-
-                    if(isPlayer) 
-                        ui.showDirection = true;           
-                    
-                    if(reverse) 
-                        reverse = false;
-                }
-                */ 
-
                 if(type != StepType.SHOP) {
                     if(isInShopCoroutine) 
                         isInShopCoroutine = false;
@@ -439,7 +419,26 @@ public class UserMovement : User {
 
                 if(stop) 
                     stop = false;
+
+                if(type == StepType.BONUS_END || type == StepType.MALUS_END) {
+                    if(lastStep.GetComponent<Direction>() == null) {
+                        bypassDirection = true;
+                        GetNextStep();
+                        nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
+                    }
+                }
+
+
                 
+            }
+
+            if(type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION) {
+                if(ui.direction == null) 
+                    ui.direction = hit.gameObject.GetComponent<Direction>();
+
+                if(bypassDirection && reverseCount) {
+                    reverseCount = false;
+                }
             }
         }
     }
@@ -456,13 +455,17 @@ public class UserMovement : User {
 
                    
                }
-    // A modifier avec un rundelayed
+
+               if(actualStep != null && nextStep != null && actualStep == nextStep.gameObject) {
+                  ChooseNextStep(StepType.NONE);
+               }
+
                 if(type == StepType.STEP_END) {
                     RunDelayed(0.1f,() => {
                         if(diceResult > 0) {
                             if(diceResult == 1) {} 
                             else 
-                                reverse = true;
+                                reverseCount = true;
                         }
                     });              
                 }
@@ -497,9 +500,7 @@ public class UserMovement : User {
                     diceResult = -1;
                 }
             }
-
-            if(type == StepType.FIX_DIRECTION && !bypassDirection && isTurn) {
-                ui.direction = hit.gameObject.GetComponent<Direction>();
+            if(type == StepType.FIX_DIRECTION && (lastStep != null && lastStep.GetComponent<Step>() != null && (lastStep.GetComponent<Step>().type != StepType.BONUS_END || lastStep.GetComponent<Step>().type != StepType.MALUS_END)) && !bypassDirection && isTurn) {
                 if(isPlayer) { // Joueur
                     if(!lastStepIsArrow) {
                         if(!left && !right && !front) {
@@ -514,8 +515,8 @@ public class UserMovement : User {
                             if(left) 
                                 nextStep = ui.direction.directionsStep[0].transform;
                             if(front) {
-                                Debug.Log("mon super enter");
                                 nextStep = ui.direction.directionsStep[1].transform;
+                            // front = false;
                             }
                             if(right) 
                                 nextStep = ui.direction.directionsStep[2].transform;
@@ -528,62 +529,7 @@ public class UserMovement : User {
                 }
                 
                 else { // Bot
-                    if(nextStep == null) {
-                        int percentage = Random.Range(0,100);
-                        stop = true;
-                        
-                        if(inventory.cards < gameController.secretCode.Length) {
-                            // Il faut voir le chemin le plus court vers le prochain coffre
-                            NavMeshPath[] pathsDirection = new NavMeshPath[3];
-
-                            if(ui.direction.directionsStep[0] != null) 
-                                NavMesh.CalculatePath(ui.direction.directionsStep[0].transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[0]);
-                            if(ui.direction.directionsStep[2] != null) 
-                                NavMesh.CalculatePath(ui.direction.directionsStep[2].transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[1]);
-                            if(ui.direction.directionsStep[2] != null) 
-                                NavMesh.CalculatePath(ui.direction.directionsStep[2].transform.position,gameController.actualChest.transform.position /* faut prendre la step du chest */,NavMesh.AllAreas,pathsDirection[2]);
-
-                            float lastMinDistance = 0f;
-
-                            foreach(NavMeshPath pathDirection in pathsDirection) {
-                                //if(pathDirection.remainingDistance > 0 && (lastMinDistance == 0 || pathDirection.remainingDistance < lastMinDistance)) 
-                                  //  lastMinDistance = pathDirection.remainingDistance;          
-                            }
-
-                            GameObject chestDirection = null;
-
-                       /*     switch(lastMinDistance) {
-                                case pathsDirection[0].remainingDistance: // Left
-                                    chestDirection = ui.direction.nextStepLeft;
-                                    break;
-                                
-                                case pathsDirection[1].remainingDistance:  // Righ
-                                    chestDirection = ui.direction.nextStepRight;
-                                    break;
-
-                                case pathsDirection[2].remainingDistance : // Front
-                                    chestDirection = ui.direction.nextStepFront;
-                                    break;
-                            }*/
-
-                            int needValue = GameController.difficulty == 0 ? 60 : GameController.difficulty == 1 ? 65 : GameController.difficulty == 2 ? 70 : 0;
-                            
-                            if(percentage < needValue)  // le bot va vers la direction du coffre
-                                nextStep = chestDirection.transform;
-                            else {
-                                // On random dans les directions qui ne sont pas nulles
-
-
-                            }
-
-
-                        } 
-                        else {
-
-                        }
-                    }
-                    else
-                        stop = false;
+                    // Plus ou moins de chance de prendre la direction vers le coffre
                 }
             }
         }
@@ -621,18 +567,12 @@ public class UserMovement : User {
             if(type == StepType.STEP_END) 
                 ChooseNextStep(type); 
 
-            if((type == StepType.BONUS_END || type == StepType.MALUS_END) && GameObject.ReferenceEquals(lastStep.transform.parent.gameObject,actualStep.transform.parent.gameObject)) // Si le parent de la step actuel est de la step passé est le même alors on récupère la step ou aller
-                nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;                    
-            else if((type == StepType.BONUS_END || type == StepType.MALUS_END) && !GameObject.ReferenceEquals(lastStep.transform.parent.gameObject,actualStep.transform.parent.gameObject))
-                reverseCount = true;
-
             left = false;
             front = false;
             right = false;
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION || type == StepType.BONUS_END  || type == StepType.MALUS_END || type == StepType.STEP_END) 
                 lastStep = hit.gameObject;
-
         }
     }
 
@@ -730,13 +670,11 @@ public class UserMovement : User {
                 nextStep = actualParent.transform.GetChild(0);
         } 
         else { // Le joueur utilise le dé inverse ou est en reverseCount
-            if(stepIndex - 1 > 0) 
+            if(stepIndex - 1 >= 0) 
                 nextStep = actualParent.transform.GetChild(stepIndex - 1);          
             else 
                 nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);    
         }                 
-
-        Debug.Log("nextStep: " + nextStep);
     }
 
     private int FindIndexInParent(GameObject parent,GameObject targetStep) {
@@ -794,7 +732,7 @@ public class UserMovement : User {
             foreach(GameObject step in stepPaths) {
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
-                    if(step != null && userMovement.actualStep == step) {
+                    if(step != null && !userMovement.isTurn && userMovement.actualStep == step) {
                         if(nextStep.gameObject == step) {
                             GameObject lastStep = steps[beginResult - 1];
                             Step targetStep = step.GetComponent<Step>();

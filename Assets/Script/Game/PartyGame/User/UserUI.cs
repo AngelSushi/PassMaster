@@ -388,21 +388,24 @@ public class UserUI : User {
         if(e.started && showDirection && !gameController.freeze) {
             if(directions[0].GetChild(1).gameObject.activeSelf) {
                 movement.left = true;
+                movement.reverseCount = direction.reverseCountDirections[0];
                 directions[0].GetChild(0).gameObject.SetActive(true);
                 directions[0].GetChild(1).gameObject.SetActive(false); 
             }
             else if(directions[1].GetChild(1).gameObject.activeSelf) {
                 movement.front = true;
+                movement.reverseCount = direction.reverseCountDirections[1];
                 directions[1].GetChild(0).gameObject.SetActive(true);
                 directions[1].GetChild(1).gameObject.SetActive(false);
             }
             else if(directions[2].GetChild(1).gameObject.activeSelf) {
                 movement.right = true;
+                movement.reverseCount = direction.reverseCountDirections[2];
                 directions[2].GetChild(0).gameObject.SetActive(true);
                 directions[2].GetChild(1).gameObject.SetActive(false);
             }
 
-            movement.reverseCount = direction.reverseCount;
+           // movement.reverseCount = direction.reverseCount;
             showDirection = false;
             index = -1;
         }
@@ -856,7 +859,6 @@ public class UserUI : User {
 
     private void ManageHudDirection(bool active) {
         // front ou interior
-
         if(direction != null) {
             if(direction.directions[0]) {
                 if(direction.directionsStep[0].name.Contains("front") || direction.directionsStep[0].name.Contains("interior")) {
