@@ -545,7 +545,28 @@ public class UserMovement : User {
                         for(int i = 0;i<ui.direction.directionsStep.Length;i++) {
                             if(ui.direction.directionsStep[i] != null) {
                                 GameObject beginCalcul = ui.direction.directionsStep[i];
+                                GameObject actualStep = beginCalcul;
+                                Transform beginParent = beginCalcul.transform.parent;
+                                int beginIndex = FindIndexInParent(beginParent.gameObject,beginCalcul);
+                
+                                int stepDistance = 0;
+                                for(int j = beginIndex;j<beginParent.childCount;j++) {
+                                    stepDistance++;
 
+                                    actualStep = beginParent.transform.GetChild(j + beginIndex).gameObject;
+
+                                    if(actualStep == gameController.stepChest) 
+                                        break;
+                                    
+
+                                    if(beginIndex + j == beginParent.childCount - 1) {
+                                        
+                                    }
+
+                                    /**
+                                        
+                                    **/
+                                }
                                 
                             }
                         } 
