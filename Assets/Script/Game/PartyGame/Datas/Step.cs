@@ -10,5 +10,6 @@ public class Step : MonoBehaviour {
     public GameObject stack;
     public GameObject chest;
     public GameObject shop;
+    public bool skipIA;
 
 }

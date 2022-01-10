@@ -222,11 +222,11 @@ public class GameController : CoroutineSystem {
             checkLastChest = true;
         }
 
-      /*  if( isFirstChest) {
-            randomIndex = /* 7 ;
+        if( isFirstChest) {
+            randomIndex =  78;
             isFirstChest = false;
         }
-        */
+        
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
 
         Vector3 cameraPosition = new Vector3(chest.transform.position.x,5479f,chest.transform.position.z);

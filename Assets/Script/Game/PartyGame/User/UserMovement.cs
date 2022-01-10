@@ -352,7 +352,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                diceResult = 100; 
+                if(!isPlayer) diceResult = 100; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -539,37 +539,10 @@ public class UserMovement : User {
 
                     int randomGoToChest = Random.Range(0,100);
 
-                    if(randomGoToChest <= percentageGoToChest) {
+                    if(/*randomGoToChest <= percentageGoToChest*/true) {
                         // compter le nombre de case entre la direction 
 
-                        for(int i = 0;i<ui.direction.directionsStep.Length;i++) {
-                            if(ui.direction.directionsStep[i] != null) {
-                                GameObject beginCalcul = ui.direction.directionsStep[i];
-                                GameObject actualStep = beginCalcul;
-                                Transform beginParent = beginCalcul.transform.parent;
-                                int beginIndex = FindIndexInParent(beginParent.gameObject,beginCalcul);
-                
-                                int stepDistance = 0;
-                                for(int j = beginIndex;j<beginParent.childCount;j++) {
-                                    stepDistance++;
-
-                                    actualStep = beginParent.transform.GetChild(j + beginIndex).gameObject;
-
-                                    if(actualStep == gameController.stepChest) 
-                                        break;
-                                    
-
-                                    if(beginIndex + j == beginParent.childCount - 1) {
-                                        
-                                    }
-
-                                    /**
-                                        
-                                    **/
-                                }
-                                
-                            }
-                        } 
+                        FindSmallestChestPath(ui.direction.directionsStep[1],ui.direction.gameObject);
                         
 
                     }
@@ -580,6 +553,47 @@ public class UserMovement : User {
                 }
             }
         }
+    }
+
+    public Material stepMaterial;
+
+    private bool FindSmallestChestPath(GameObject begin,GameObject end) {
+        int beginIndex = FindIndexInParent(begin.transform.parent.gameObject,begin);
+
+        for(int i = FindIndexInParent(begin.transform.parent.gameObject,begin); i != FindIndexInParent(end.transform.parent.gameObject,end);i++) {
+            if(i >= begin.transform.parent.childCount) 
+                i -= begin.transform.parent.childCount;
+
+            GameObject actualObj = begin.transform.parent.GetChild(i).gameObject;
+
+            if(actualObj.transform.childCount > 1)
+                actualObj.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = stepMaterial;
+            
+
+            if(actualObj.GetComponent<Direction>() != null) {
+                Debug.Log("it's direction: " + actualObj);
+
+                for(int j = 0;j<actualObj.GetComponent<Direction>().directionsStep.Length;j++) {
+                    GameObject beginDirection = actualObj.GetComponent<Direction>().directionsStep[j];
+                    if(actualObj.GetComponent<Direction>().directionsStep[j] != null && ContainsObjectInParent(gameController.stepChest,actualObj.GetComponent<Direction>().directionsStep[j].transform.parent)) { // Le parent de la direction pointée contient le coffre
+                        Debug.Log("my direction: " + actualObj.GetComponent<Direction>().directionsStep[j]);
+                        return FindSmallestChestPath(beginDirection,beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount).gameObject);
+                    }
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    private bool ContainsObjectInParent(GameObject obj,Transform parent) {
+        for(int i = 0;i<parent.childCount;i++) {
+            if(parent.GetChild(i).gameObject == obj)
+                return true;
+        }
+
+        return false;
     }
 
     private void OnTriggerExit(Collider hit) {
@@ -733,46 +747,6 @@ public class UserMovement : User {
         return -1;
     }
 
-    private GameObject CheckStepPath(NavMeshPath path) {
-        
-        for(int i = 0;i<path.corners.Length - 1;i++) {
-
-            // On sait que : 
-            //  Xm = Xa + k(Xb-Xa)
-            // Avec cette équation on en déduit que : k = (Xm - Xa) / (Xb - Xa)
-            // On génère un nombre aléatoire entre Xa et Xb et on vérifie que k est compris dans l'intervalle [0;1]
-            // On fait la même chose pour Z
-
-            Vector3 corner = path.corners[i];
-            Vector3 nextCorner = path.corners[i+1];
-
-            GameObject[] directionSteps = {ui.direction.directionsStep[0],ui.direction.directionsStep[2],ui.direction.directionsStep[1]};
-            // LE coffre n'est pas sur le path ca ne risque pas de marcher récupérer la step du coffre
-
-            foreach(GameObject step in directionSteps) {
-                if(step != null) {
-                    Transform transform = step.transform;
-
-                    float x = transform.position.x;
-                    float z = transform.position.z;
-
-                    float numérateurX = x - corner.x;
-                    float dénominateurX = nextCorner.x - corner.x;
-
-                    if(numérateurX / dénominateurX >= 0 && numérateurX / dénominateurX <= 1) {
-                        
-                        float numérateurZ = z - corner.z;
-                        float dénominateurZ = nextCorner.z - corner.z;
-
-                        if(numérateurZ / dénominateurZ >= 0 && numérateurZ / dénominateurZ <= 1) 
-                            return step;
-                        
-                    }
-                }
-            }         
-        }
-        return null;
-    }
 
     private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
         if(stepPaths != null) {

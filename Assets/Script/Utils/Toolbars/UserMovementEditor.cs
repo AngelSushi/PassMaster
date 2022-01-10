@@ -16,12 +16,12 @@ public class UserMovementEditor : Editor {
 
     // Movement tab
     private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnToStep,goToChest,returnStepBack,goToShop,
-    canMooveToShop,reverseCount,reverse,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
+    canMooveToShop,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
 
     // Object tab;
     private SerializedProperty doubleDice,reverseDice,hasBotBuyItem,isParachuting;
     // UI Tab
-    private SerializedProperty giveUI,changeUI;
+    private SerializedProperty giveUI,changeUI,stepMaterial;
     
 
     private void OnEnable() {
@@ -63,7 +63,6 @@ public class UserMovementEditor : Editor {
         goToShop = serializedClass.FindProperty("goToShop");
         canMooveToShop = serializedClass.FindProperty("canMooveToShop");
         reverseCount = serializedClass.FindProperty("reverseCount");
-        reverse = serializedClass.FindProperty("reverse");
         diceResult = serializedClass.FindProperty("diceResult");
         actualStep = serializedClass.FindProperty("actualStep");
         beginStep = serializedClass.FindProperty("beginStep");
@@ -82,6 +81,7 @@ public class UserMovementEditor : Editor {
         // UI Tab
         giveUI = serializedClass.FindProperty("giveUI");
         changeUI = serializedClass.FindProperty("changeUI");
+        stepMaterial = serializedClass.FindProperty("stepMaterial");
     }
     public override void OnInspectorGUI() {
         serializedClass.Update();
@@ -125,7 +125,6 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(goToShop);
                 EditorGUILayout.PropertyField(canMooveToShop);
                 EditorGUILayout.PropertyField(reverseCount);
-                EditorGUILayout.PropertyField(reverse);
                 EditorGUILayout.PropertyField(diceResult);
                 EditorGUILayout.PropertyField(actualStep);
                 EditorGUILayout.PropertyField(beginStep);
@@ -144,6 +143,7 @@ public class UserMovementEditor : Editor {
             case 4:
                 EditorGUILayout.PropertyField(giveUI);
                 EditorGUILayout.PropertyField(changeUI);
+                EditorGUILayout.PropertyField(stepMaterial);
                 break;
         }
 
