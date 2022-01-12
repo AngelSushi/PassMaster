@@ -223,7 +223,7 @@ public class GameController : CoroutineSystem {
         }
 
         if( isFirstChest) {
-            randomIndex =  78/*48*/;
+            randomIndex =  /*78 48 69 */ 58;
             isFirstChest = false;
         }
         

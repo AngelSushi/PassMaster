@@ -548,12 +548,20 @@ public class UserMovement : User {
                         if(/*randomGoToChest <= percentageGoToChest*/true) {
                             // compter le nombre de case entre la direction 
 
-                            FindSmallestChestPath(ui.direction.directionsStep[1],ui.direction.gameObject);
+                            FindSmallestChestPath(ui.direction.directionsStep[1],ui.direction.gameObject,iaDirectionPath,false);
                             
 
                         }
                         else {
 
+                        }
+
+                        if(hasFindChest) {
+                            Debug.Log("finalSize: " + iaDirectionPath.Count);
+                            foreach(GameObject obj in iaDirectionPath) {
+                                if(obj.transform.childCount > 1)
+                                    obj.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = stepMaterial;
+                            }
                         }
 
                         hasFindChest = true;
@@ -566,25 +574,22 @@ public class UserMovement : User {
 
     public Material stepMaterial;
 
-    private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionPath) {
+    private bool decrement;
+
+    private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement) {
         int beginIndex = FindIndexInParent(begin.transform.parent.gameObject,begin);
 
-        Debug.Log("load: " + begin.transform.parent + " begin: " + begin);
-
-        for(int i = FindIndexInParent(begin.transform.parent.gameObject,begin); i != FindIndexInParent(end.transform.parent.gameObject,end);i++) {
+        for(int i = FindIndexInParent(begin.transform.parent.gameObject,begin); i != FindIndexInParent(end.transform.parent.gameObject,end);) {
             if(i >= begin.transform.parent.childCount) 
                 i -= begin.transform.parent.childCount;
 
             GameObject actualObj = begin.transform.parent.GetChild(i).gameObject;
 
-            if(!iaDirectionPath.Contains(actualObj))
+         //   if(!iaDirectionPath.Contains(actualObj))
                 iaDirectionPath.Add(actualObj);
 
-            if(actualObj.transform.childCount > 1)
-                actualObj.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = stepMaterial;
-            
-
             if(actualObj == gameController.stepChest) {
+                Debug.Log("find: " + begin.transform.parent);
                 hasFindChest = true;
                 return true;
             }
@@ -592,24 +597,37 @@ public class UserMovement : User {
             if(actualObj.GetComponent<Direction>() != null) {
                 for(int j = 0;j<actualObj.GetComponent<Direction>().directionsStep.Length;j++) {
                     GameObject beginDirection = actualObj.GetComponent<Direction>().directionsStep[j];
-                    if(beginDirection != null) { // Le parent de la direction pointée contient le coffre
-                        Direction nextDir = beginDirection.GetComponent<Direction>();
+                    if(beginDirection != null) { 
+                        Direction nextDir = actualObj.GetComponent<Direction>().directionsStep[j].GetComponent<Direction>();
+
+                        GameObject beginObj = beginDirection;
+                        GameObject endObj = null;
+
                         if(nextDir != null) {
-                            bool result = FindSmallestChestPath(nextDir.directionsStep[1].gameObject,nextDir.directionsStep[1].gameObject.transform.parent.GetChild(nextDir.directionsStep[1].gameObject.transform.parent.childCount- 1).gameObject,iaDirectionPath);
-                        
-                            // si ca return false enlever au nombre de step compté le nombre de step qui a été compté
-                        
-                            if(!result) {
-                                Debug.Log("don't find: " + begin.transform.parent);
-                            }
+                            beginObj = nextDir.directionsStep[1].gameObject;
+                            endObj = nextDir.directionsStep[1].gameObject.transform.parent.GetChild(nextDir.directionsStep[1].gameObject.transform.parent.childCount- 1).gameObject;
+                            // Si il y a deux directions qui se suivent et que la step d'après (direction[1]) est la dernière de son parent // BUG
                         }
                         else {
-                            bool result = FindSmallestChestPath(beginDirection,beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount - 1).gameObject,iaDirectionPath);
+                            if(beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject) // -2 ici car on ne veut pas prendre en compte la direction
+                                endObj = beginObj.transform.parent.GetChild(0).gameObject;              
+                            else 
+                                endObj = beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount - 1).gameObject;
 
-                            if(!result) {
-                                Debug.Log("don't find: " + begin.transform.parent);
-                            }
+                            
                         }
+
+                        decrement = beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject;
+
+                        int beginSize = iaDirectionPath.Count;
+                        bool result = FindSmallestChestPath(beginObj,endObj,iaDirectionSteps,decrement);
+                        int size = iaDirectionPath.Count - beginSize;
+
+                        if(!result && iaDirectionSteps.Contains(beginObj.transform.parent.GetChild(beginObj.transform.parent.childCount - 1).gameObject)) { // Si le dernier élément lister a effacer et le dernier élement du parent
+                            Debug.Log("erase: " + iaDirectionSteps[0].transform.parent.gameObject.name + " begin: " + iaDirectionSteps[0].name);
+                            EraseSteps(beginSize,size,iaDirectionSteps);
+                        }
+                        
                     }
                  
                 }
@@ -618,13 +636,29 @@ public class UserMovement : User {
             if(hasFindChest)
                 break;
 
+            if(decrement)
+                i--;
+            else
+                i++;
+
         }
 
         return false;
     }
 
     private void EraseSteps(int beginIndex,int size,List<GameObject> iaDirectionSteps) {
+        List<GameObject> erase = new List<GameObject>();
 
+        for(int i = 0;i<iaDirectionSteps.Count;i++) {
+            if(i >= beginIndex && i <= beginIndex + size) {
+                erase.Add(iaDirectionSteps[i]);       
+                Debug.Log("eraseObj: " + iaDirectionSteps[i].name);
+            }
+        }
+
+        foreach(GameObject eraseObj in erase) 
+            iaDirectionPath.Remove(eraseObj);
+        
     }
 
     private void OnTriggerExit(Collider hit) {
