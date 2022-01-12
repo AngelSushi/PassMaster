@@ -223,7 +223,7 @@ public class GameController : CoroutineSystem {
         }
 
         if( isFirstChest) {
-            randomIndex =  78;
+            randomIndex =  78/*48*/;
             isFirstChest = false;
         }
         
@@ -263,7 +263,7 @@ public class GameController : CoroutineSystem {
 
             foreach(Step step in FindObjectsOfType(typeof(Step))) {
                 if(step.chest != null && step.chest.activeSelf) {
-                    stepChest = step.chest;
+                    stepChest = step.gameObject;
                     break;
                 }
             }
