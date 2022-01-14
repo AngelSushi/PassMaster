@@ -524,9 +524,9 @@ public class UserMovement : User {
                 
                 else { // Bot Facile = 50 ; Moyen = 70 ; Difficile  = 90 de chance d'aller vers le coffre
                     if(!hasFindChest) {
-
+                        stop = true;
                         iaDirectionPath = new List<GameObject>();
-
+                        Dictionary<GameObject,int> iaPathDirections = new Dictionary<GameObject, int>();
                         int percentageGoToChest = 0;
 
                         switch(GameController.difficulty) {
@@ -545,120 +545,37 @@ public class UserMovement : User {
 
                         int randomGoToChest = Random.Range(0,100);
 
-                        if(/*randomGoToChest <= percentageGoToChest*/true) {
-                            // compter le nombre de case entre la direction 
+                        GenerateIAPaths(iaPathDirections);
 
-                            FindSmallestChestPath(ui.direction.directionsStep[1],ui.direction.gameObject,iaDirectionPath,false);
-                            
+                        
 
-                        }
-                        else {
+                        bool goToSmallest = randomGoToChest <= percentageGoToChest;
+                        int lastSize = 0;
 
-                        }
-
-                        if(hasFindChest) {
-                            Debug.Log("finalSize: " + iaDirectionPath.Count);
-                            foreach(GameObject obj in iaDirectionPath) {
-                                if(obj.transform.childCount > 1)
-                                    obj.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material = stepMaterial;
+                        foreach(GameObject direction in iaPathDirections.Keys) {
+                            if(goToSmallest) {
+                                if(lastSize == 0 || lastSize >= iaPathDirections[direction]) 
+                                    lastSize = iaPathDirections[direction];
+                            }
+                            else { 
+                                if(lastSize == 0 || lastSize <= iaPathDirections[direction])
+                                    lastSize = iaPathDirections[direction];
                             }
                         }
 
-                        hasFindChest = true;
-                    }
-
-                }
-            }
-        }
-    }
-
-    public Material stepMaterial;
-
-    private bool decrement;
-
-    private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement) {
-        int beginIndex = FindIndexInParent(begin.transform.parent.gameObject,begin);
-
-        for(int i = FindIndexInParent(begin.transform.parent.gameObject,begin); i != FindIndexInParent(end.transform.parent.gameObject,end);) {
-            if(i >= begin.transform.parent.childCount) 
-                i -= begin.transform.parent.childCount;
-
-            GameObject actualObj = begin.transform.parent.GetChild(i).gameObject;
-
-         //   if(!iaDirectionPath.Contains(actualObj))
-                iaDirectionPath.Add(actualObj);
-
-            if(actualObj == gameController.stepChest) {
-                Debug.Log("find: " + begin.transform.parent);
-                hasFindChest = true;
-                return true;
-            }
-
-            if(actualObj.GetComponent<Direction>() != null) {
-                for(int j = 0;j<actualObj.GetComponent<Direction>().directionsStep.Length;j++) {
-                    GameObject beginDirection = actualObj.GetComponent<Direction>().directionsStep[j];
-                    if(beginDirection != null) { 
-                        Direction nextDir = actualObj.GetComponent<Direction>().directionsStep[j].GetComponent<Direction>();
-
-                        GameObject beginObj = beginDirection;
-                        GameObject endObj = null;
-
-                        if(nextDir != null) {
-                            beginObj = nextDir.directionsStep[1].gameObject;
-                            endObj = nextDir.directionsStep[1].gameObject.transform.parent.GetChild(nextDir.directionsStep[1].gameObject.transform.parent.childCount- 1).gameObject;
-                            // Si il y a deux directions qui se suivent et que la step d'après (direction[1]) est la dernière de son parent // BUG
-                        }
-                        else {
-                            if(beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject) // -2 ici car on ne veut pas prendre en compte la direction
-                                endObj = beginObj.transform.parent.GetChild(0).gameObject;              
-                            else 
-                                endObj = beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount - 1).gameObject;
-
-                            
-                        }
-
-                        decrement = beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject;
-
-                        int beginSize = iaDirectionPath.Count;
-                        bool result = FindSmallestChestPath(beginObj,endObj,iaDirectionSteps,decrement);
-                        int size = iaDirectionPath.Count - beginSize;
-
-                        if(!result && iaDirectionSteps.Contains(beginObj.transform.parent.GetChild(beginObj.transform.parent.childCount - 1).gameObject)) { // Si le dernier élément lister a effacer et le dernier élement du parent
-                            Debug.Log("erase: " + iaDirectionSteps[0].transform.parent.gameObject.name + " begin: " + iaDirectionSteps[0].name);
-                            EraseSteps(beginSize,size,iaDirectionSteps);
-                        }
+                        Debug.Log("value: " + goToSmallest);
+                        Debug.Log("go to " + (goToSmallest ? " smallest " : " far"));
                         
+
+                        Debug.Log("current direction: " + gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections));
+                        RunDelayed(0.1f,() => {
+                            nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
+                            stop = false;
+                        });
                     }
-                 
                 }
             }
-
-            if(hasFindChest)
-                break;
-
-            if(decrement)
-                i--;
-            else
-                i++;
-
         }
-
-        return false;
-    }
-
-    private void EraseSteps(int beginIndex,int size,List<GameObject> iaDirectionSteps) {
-        List<GameObject> erase = new List<GameObject>();
-
-        for(int i = 0;i<iaDirectionSteps.Count;i++) {
-            if(i >= beginIndex && i <= beginIndex + size) {
-                erase.Add(iaDirectionSteps[i]);       
-                Debug.Log("eraseObj: " + iaDirectionSteps[i].name);
-            }
-        }
-
-        foreach(GameObject eraseObj in erase) 
-            iaDirectionPath.Remove(eraseObj);
-        
     }
 
     private void OnTriggerExit(Collider hit) {
@@ -686,6 +603,9 @@ public class UserMovement : User {
 
                 hasCheckPath = false;
                 ui.direction = null;
+
+                if(!isPlayer && hasFindChest)
+                    hasFindChest = false;
             }
             else 
                 lastStepIsArrow = false;   
@@ -812,6 +732,101 @@ public class UserMovement : User {
         return -1;
     }
 
+        
+    private void GenerateIAPaths(Dictionary<GameObject,int> iaPathDirections) {
+        for(int i = 0;i < ui.direction.directionsStep.Length;i++) {
+            GameObject end = ui.direction.gameObject;
+            
+            if(ui.direction.directionsStep[i] == null)
+                continue;
+
+            iaDirectionPath.Clear();
+
+            bool sameParent = true;
+            if(ui.direction.directionsStep[i].transform.parent != end.transform.parent) { // Le parent de la step de début est différent du parent de la step de fin
+                end = ui.direction.directionsStep[i].transform.parent.GetChild(ui.direction.directionsStep[i].transform.parent.childCount - 1).gameObject;
+                sameParent = false;
+            }
+
+            FindSmallestChestPath(ui.direction.directionsStep[i],end,iaDirectionPath,false,sameParent);
+
+            iaPathDirections.Add(ui.direction.directionsStep[i],iaDirectionPath.Count);
+        }
+    }
+
+    private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
+        int indexEnd = FindIndexInParent(end.transform.parent.gameObject,end);
+
+        if(end.GetComponent<Direction>() != null && !sameParent)
+            indexEnd++;
+
+        for(int i = FindIndexInParent(begin.transform.parent.gameObject,begin); i != indexEnd;) {
+            if(i >= begin.transform.parent.childCount) 
+                i -= begin.transform.parent.childCount;
+            
+            GameObject actualObj = begin.transform.parent.GetChild(i).gameObject;
+
+            if(!iaDirectionPath.Contains(actualObj))
+                iaDirectionPath.Add(actualObj);
+
+            if(actualObj == gameController.stepChest) {
+                hasFindChest = true;
+                return true;
+            }
+
+            if(actualObj.GetComponent<Direction>() != null) {
+                for(int j = 0;j<actualObj.GetComponent<Direction>().directionsStep.Length;j++) {
+                    GameObject beginDirection = actualObj.GetComponent<Direction>().directionsStep[j];
+                    if(beginDirection != null) { 
+                        Direction nextDir = actualObj.GetComponent<Direction>().directionsStep[j].GetComponent<Direction>();
+
+                        GameObject beginObj = beginDirection;
+                        GameObject endObj = null;
+
+                        if(nextDir != null) {
+                            beginObj = nextDir.directionsStep[1].gameObject;
+                            endObj = nextDir.directionsStep[1].gameObject.transform.parent.GetChild(nextDir.directionsStep[1].gameObject.transform.parent.childCount- 1).gameObject;
+                        }
+                        else {
+                            if(beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject) // -2 ici car on ne veut pas prendre en compte la direction
+                                endObj = beginObj.transform.parent.GetChild(0).gameObject;              
+                            else 
+                                endObj = beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount - 1).gameObject;
+                        }
+
+                        decrement = beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject;
+
+                        int beginSize = iaDirectionPath.Count;
+                        bool result = FindSmallestChestPath(beginObj,endObj,iaDirectionSteps,decrement,beginObj.transform.parent == endObj.transform.parent);
+                        int size = iaDirectionPath.Count - beginSize;
+
+                        if(!result)  
+                            EraseSteps(beginSize,size,iaDirectionSteps);   
+                    }
+                }
+            }
+
+            if(decrement)
+                i--;
+            else
+                i++;
+
+        }
+
+        return false;
+    }
+
+    private void EraseSteps(int beginIndex,int size,List<GameObject> iaDirectionSteps) {
+        List<GameObject> erase = new List<GameObject>();
+
+        for(int i = 0;i<iaDirectionSteps.Count;i++) {
+            if(i >= beginIndex && i <= beginIndex + size) 
+                erase.Add(iaDirectionSteps[i]);
+        }
+
+        foreach(GameObject eraseObj in erase) 
+            iaDirectionPath.Remove(eraseObj);
+    }
 
     private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
         if(stepPaths != null) {
