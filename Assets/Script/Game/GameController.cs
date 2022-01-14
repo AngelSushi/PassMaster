@@ -74,8 +74,6 @@ public class GameController : CoroutineSystem {
     public static int difficulty;
     public bool freeze;
 
-    public List<ShopItem> shopItems;
-
     public List<Material> diceMaterials;
     public List<GameObject> prefabObjects = new List<GameObject>();
 
