@@ -50,6 +50,8 @@ public class DialogController : MonoBehaviour {
     public class OnDialogEndArgs : EventArgs {
         public Dialog dialog;
         public GameObject actualPlayer;
+        public Vector3 shopPosition;
+        public GameObject shopObject;
     }
 
     void Start() {
@@ -69,9 +71,11 @@ public class DialogController : MonoBehaviour {
             }
 
             if(finish) {
-                if(answer > 0) { // LE JOUEUR A UN CHOIX A FAIRE
+                if(answer >= 0) { // LE JOUEUR A UN CHOIX A FAIRE
+                    OnDialogEndArgs args = new OnDialogEndArgs{ dialog = null, actualPlayer = null,shopPosition = Vector3.zero, shopObject = null};
                     switch(answer) {
-                        case 1:
+                        case 0:
+                            
                             if(gController.part  == GameController.GamePart.DIALOG_TUTORIAL) {
                                 // LANCER LE TUTORIAL
                                 gController.part = GameController.GamePart.TUTORIAL;
@@ -91,8 +95,14 @@ public class DialogController : MonoBehaviour {
                                 hasReturnToMainMenu = true; // Faire en sorte que quand on relance ca nous met la var en false
                             }
 
+                            if(currentDialog.id == 0) {// Dialogue du shop
+                                Vector3 shopVector =  gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop != null ? gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop.transform.position : Vector3.zero;
+                                args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], shopPosition = shopVector,shopObject = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop};                               
+                            }
+
+                            
                             break;
-                        case 2:
+                        case 1:
                             if(gController.part == GameController.GamePart.DIALOG_TUTORIAL) {
                                 // SKIP LE TUTO
                                 gController.mainCamera.transform.position = new Vector3(gController.players[0].transform.position.x,5747.6f,gController.players[0].transform.position.z);
@@ -105,10 +115,11 @@ public class DialogController : MonoBehaviour {
                                 EndDialog();
 
                             break;
-                        case 3:
-                            break;
                     }
 
+                    EndDialog();
+                    OnDialogEnd?.Invoke(this,args); // Call only if OnDialogEnd is null ; you should write if(OnDialogEnd != null) ....
+                           
                 }
                 else { // LE JOUEUR NA PAS DE CHOIX A FAIRE
                     if(!answerObj.activeSelf) {
@@ -150,29 +161,19 @@ public class DialogController : MonoBehaviour {
 
        if(e.started) {
             if(answerObj.activeSelf && isInDialog) {
-                if(!arrowObj.activeSelf) {
+                if(answer < currentDialog.Answers[0].Split('\n').Length ) {
                     arrowObj.SetActive(true);
-                    arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,66,0);
-                    answer = 1;
-                }
-                else {
-                    if(answer < currentDialog.Answers[0].Split('\n').Length ) {
-                        arrowObj.SetActive(true);
-                        arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,15 ,0);
-                        answer++;
-                    }
+                    arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,15 ,0);
+                    answer++;
                 }
             }
-
         }
     }
 
     public void OnPrevious(InputAction.CallbackContext e) { // Appelé quand le joueur change vers le haut de choix de réponse 
-        
         if(e.started) {
             if(answerObj.activeSelf && isInDialog) {
-        
-                if(answer > 1){
+                if(answer >= 1){
                     arrowObj.SetActive(true);
                     arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,66,0);
                     answer--;
@@ -205,10 +206,7 @@ public class DialogController : MonoBehaviour {
         }
 
         if((length > 1 && index == length) || (length == 1)) {
-           // CHECK SI IL Y A ANSWER
-
             if(currentDialog.NeedAnswer) {
-                Debug.Log("need answer");
                 answerObj.SetActive(true);
                 textAnswer.gameObject.SetActive(true);
                 arrowObj.SetActive(true);
@@ -237,11 +235,10 @@ public class DialogController : MonoBehaviour {
         finish = false;
         currentDialog.isFinish = true;
 
-        OnDialogEnd?.Invoke(this,new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer]}); // Call only if OnDialogEnd is null ; you should write if(OnDialogEnd != null) ....
     }
 
     public Dialog GetDialogByName(string name) {
-         foreach (var dialog in dialogs.dialogs) {
+         foreach (var dialog in dialogArray.dialogs) {
             if(dialog.Name == name) 
                 return dialog;    
         }       

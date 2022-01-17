@@ -349,8 +349,11 @@ public class UserMovement : User {
                 if(type == StepType.SHOP) {
                     RunDelayed(0.5f,() => {
                         Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
-                        gameController.dialog.currentDialog = shopDialog;
-                        StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
+                        if(gameController.dialog.currentDialog != shopDialog) {
+                            gameController.dialog.isInDialog = true;
+                            gameController.dialog.currentDialog = shopDialog;
+                            StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
+                        }
                     });
                 }
             }
@@ -783,7 +786,7 @@ public class UserMovement : User {
 
     #region Timers
 
-    private void ShowPath(Color color,NavMeshPath path) {
+    public static void ShowPath(Color color,NavMeshPath path) {
         for(int i = 0;i<path.corners.Length - 1;i++) 
             Debug.DrawLine(path.corners[i], path.corners[i + 1], color);
     }

@@ -459,10 +459,7 @@ public class UserUI : User {
 
     }
 
-    public void UseObject(GameObject player,string objet) {
-        DisplayInfoText(new Vector2(971,297),new Color(0f,0.53f,0.03f),player.name + "vient d'utiliser l'objet " + objet);
-        StartCoroutine(InfoLabelWaiting());
-    }
+
     public void OnMove(InputAction.CallbackContext e) {
         if(cameraView && !gameController.freeze) 
             vecMove = e.ReadValue<Vector2>();
@@ -630,13 +627,13 @@ public class UserUI : User {
     }
 
     private void ManageShop(bool active) {
-        shopParent.SetActive(active);
+        shopParent.transform.GetChild(0).gameObject.SetActive(active);
+        shopParent.transform.GetChild(1).gameObject.SetActive(active);
     }
 
     private IEnumerator InfoLabelWaiting() {
         yield return new WaitForSeconds(2f);
         infoLabel.SetActive(false);
-        shopParent.SetActive(false);
     }
 
     public void RefreshDiceResult(int result,Color color) {
@@ -694,8 +691,4 @@ public class UserUI : User {
         infoLabel.SetActive(true);
     }
 
-    private void DisplayShopText(string text,Color color) {
-        shopParent.GetComponent<Text>().text = text;
-        shopParent.GetComponent<Text>().color = color;
-    }
 }
