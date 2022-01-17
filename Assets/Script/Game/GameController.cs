@@ -113,12 +113,16 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[2],3);
         classedPlayers.Add(players[3],4);
 
-        dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
+        dialog.dialogArray = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
 
         for(int i = 0;i<players.Length;i++) {
             if(turn == 1)
                 players[i].transform.position = posBegin[i];  
         }
+
+        for(int i = 0;i<dialog.dialogArray.dialogs.Length;i++) 
+            dialog.dialogArray.dialogs[i].id = i;
+        
     }
     
     void Update() {

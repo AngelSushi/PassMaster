@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 [System.Serializable]
 public class Dialog {
 
+    public int id;
     public string Author;
     public string Name;
     public string[] Content;
@@ -29,7 +30,7 @@ public class DialogController : MonoBehaviour {
     public Text text;
     public GameObject nextObj;
     public GameObject dialogObj;
-    public DialogArray dialogs;
+    public DialogArray dialogArray;
     public bool finish = false;
     public GameObject answerObj;
     public Text textAnswer;
@@ -43,6 +44,13 @@ public class DialogController : MonoBehaviour {
     private int answer = 0;
 
     private bool hasReturnToMainMenu;
+
+    // Events
+    public event EventHandler<OnDialogEndArgs> OnDialogEnd;
+    public class OnDialogEndArgs : EventArgs {
+        public Dialog dialog;
+        public GameObject actualPlayer;
+    }
 
     void Start() {
         gController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
@@ -178,7 +186,6 @@ public class DialogController : MonoBehaviour {
     }
 
     public IEnumerator ShowText(string displayText,int length) {
-       
         nextPage = false;
         dialogObj.SetActive(true);
         text.gameObject.SetActive(true);
@@ -198,13 +205,13 @@ public class DialogController : MonoBehaviour {
         }
 
         if((length > 1 && index == length) || (length == 1)) {
-           
            // CHECK SI IL Y A ANSWER
 
-            if(currentDialog.NeedAnswer == true) {
+            if(currentDialog.NeedAnswer) {
+                Debug.Log("need answer");
                 answerObj.SetActive(true);
                 textAnswer.gameObject.SetActive(true);
-               // arrowObj.SetActive(true);
+                arrowObj.SetActive(true);
 
                 textAnswer.text = currentDialog.Answers[0];
             }
@@ -229,13 +236,14 @@ public class DialogController : MonoBehaviour {
         isInDialog = false;
         finish = false;
         currentDialog.isFinish = true;
+
+        OnDialogEnd?.Invoke(this,new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer]}); // Call only if OnDialogEnd is null ; you should write if(OnDialogEnd != null) ....
     }
 
     public Dialog GetDialogByName(string name) {
          foreach (var dialog in dialogs.dialogs) {
-            if(dialog.Name == name) {
-                return dialog;
-            }
+            if(dialog.Name == name) 
+                return dialog;    
         }       
 
         return null;  

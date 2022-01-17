@@ -21,8 +21,6 @@ public class UserMovement : User {
     public bool returnToStep;
     public bool goToChest;
     public bool returnStepBack;
-    public bool goToShop;
-    public bool canMooveToShop = true;
     public bool reverseCount;
     public bool doubleDice;
     public bool reverseDice;    
@@ -52,15 +50,11 @@ public class UserMovement : User {
     private bool hasCollideDice;
     private GameObject dice;
     private bool hasJump;
-    private bool hasShowShopHUD;
-    private bool hasShowShop;
     public Rigidbody rb;
     private Color actualColor;
     public bool isParachuting;
     private Vector3 parachuteMovement;
-    private bool hasBuyItem;
     private bool bypassDirection;
-    private bool isInShopCoroutine;
     public bool canMoove;
 
     private bool hasFindChest;
@@ -147,25 +141,6 @@ public class UserMovement : User {
                     if(canMoove) 
                         agent.SetPath(path);    
                     
-                }
-
-                if(stop && goToShop) {
-                    agent.enabled = false;
-
-                    if(canMooveToShop) {
-                        Vector3 shopPosition = actualStep.GetComponent<Step>().shop.transform.position;
-                        shopPosition.y = transform.position.y;
-                        transform.position = Vector3.MoveTowards(transform.position,shopPosition,agent.speed * Time.deltaTime);
-                    }
-                    else { // Le joueur a collide avec l'entité 
-                        if(isPlayer) {
-                            if(!ui.showShop && !hasShowShop && lastStep.GetComponent<Step>().type  == StepType.SHOP) {
-                                ui.showShop = true;
-                                hasShowShop = true;
-                            }
-                        }
-                        
-                    }
                 }
                 
 
@@ -307,10 +282,6 @@ public class UserMovement : User {
            if(hit.gameObject.tag == "Chest") 
                 canMooveToChest = false;
 
-            if(hit.gameObject.tag == "Shop_Entity") {        
-                canMooveToShop = false;
-            }
-
             if(hit.gameObject.tag == "Dice") {
                 if(diceResult == 0 || diceResult == -1) {
                     diceResult = hit.gameObject.GetComponent<DiceController>().index;
@@ -343,22 +314,10 @@ public class UserMovement : User {
         if(isTurn) {
             StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
 
-            if(type == null) 
+            if(type == StepType.NONE) 
                 return;
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
-                if(type != StepType.SHOP) {
-                    if(hasShowShopHUD) 
-                        hasShowShopHUD = false;
-                    if(hasShowShop) 
-                        hasShowShop = false;
-
-                    if(!isPlayer) {
-                        if(goToShop) 
-                            goToShop = false;
-                    }
-                }
-
                 if(isJumping) {
                     isJumping = false;  
                     jump = false;
@@ -376,11 +335,6 @@ public class UserMovement : User {
                 if(diceResult < 0 && nextStep != null) 
                     finishMovement = true;
 
-                if(type != StepType.SHOP) {
-                    if(isInShopCoroutine) 
-                        isInShopCoroutine = false;
-                }
-
                 if(stop) 
                     stop = false;
 
@@ -390,6 +344,14 @@ public class UserMovement : User {
                         GetNextStep();
                         nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
                     }
+                }
+
+                if(type == StepType.SHOP) {
+                    RunDelayed(0.5f,() => {
+                        Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
+                        gameController.dialog.currentDialog = shopDialog;
+                        StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
+                    });
                 }
             }
 
@@ -429,15 +391,6 @@ public class UserMovement : User {
                                 reverseCount = true;
                         }
                     });              
-                }
-
-                if(type == StepType.SHOP && returnToStep) 
-                    StartCoroutine(WaitToReturnStep());
-                
-
-                if(type == StepType.SHOP  && beginStep != hit.gameObject && finishMovement && !hasShowShopHUD) {
-                    // Au lieu de la fonction faire une coroutine qui attends genre 1 demi seconde et après faire le reste
-                    
                 }
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
@@ -888,13 +841,6 @@ public class UserMovement : User {
          
     }
     
-    private IEnumerator WaitToReturnStep() {
-        yield return new WaitForSeconds(0.05f);
-        if(diceResult <= 0 && returnToStep) 
-            gameController.EndUserTurn();
-        
-        returnToStep = false;
-    }
 
     public IEnumerator WaitChest() {
         agent.enabled = false;

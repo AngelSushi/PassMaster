@@ -27,13 +27,11 @@ public class UserUI : User {
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
     public Transform chestHUD;
-    public Transform shopHUD;
     public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
-    public ParticleSystem[] lightningParticles;
     public Text coinTextReward;
     public Text itemDescription; // texte de la description d'un iutem dans le shop
     public Text turnText,nightText; // texte pour afficher les tours et la nuit
-    public Text shopText;
+    public GameObject shopParent;
     public Direction direction;
     public Sprite userSprite;
 
@@ -516,11 +514,6 @@ public class UserUI : User {
         }
     }
 
-    private void ManageShopHUD(bool active) {
-        shopHUD.gameObject.SetActive(active);
-        shopHUD.GetChild(0).gameObject.SetActive(active);
-    }
-
     private void ManageHudState(bool active) {
         if(!gameController.GetComponent<DialogController>().isInDialog && gameController.hasGenChest) {
             int actualPlayer = gameController.actualPlayer;
@@ -590,8 +583,7 @@ public class UserUI : User {
         nightText.gameObject.SetActive(false);     
     }
 
-    private void ManageHudDirection(bool active) {
-        // front ou interior
+    private void ManageHudDirection(bool active) { // front ou interior
         if(direction != null) {
             if(direction.directions[0]) {
                 if(direction.directionsStep[0].name.Contains("front") || direction.directionsStep[0].name.Contains("interior")) {
@@ -638,13 +630,13 @@ public class UserUI : User {
     }
 
     private void ManageShop(bool active) {
-        shopText.gameObject.transform.parent.gameObject.SetActive(active);
+        shopParent.SetActive(active);
     }
 
     private IEnumerator InfoLabelWaiting() {
         yield return new WaitForSeconds(2f);
         infoLabel.SetActive(false);
-        shopText.gameObject.SetActive(false);
+        shopParent.SetActive(false);
     }
 
     public void RefreshDiceResult(int result,Color color) {
@@ -703,7 +695,7 @@ public class UserUI : User {
     }
 
     private void DisplayShopText(string text,Color color) {
-        shopText.gameObject.GetComponent<Text>().text = text;
-        shopText.gameObject.GetComponent<Text>().color = color;
+        shopParent.GetComponent<Text>().text = text;
+        shopParent.GetComponent<Text>().color = color;
     }
 }

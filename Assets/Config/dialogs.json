@@ -1,89 +1,22 @@
 {
 "dialogs": 
     [
-        {
-            "Author": "System",
-			"Name": "StartTextAlpha",
-			"Content": [
-				"Ce jeu est encore en phase de développement. Les personnages,décors et autres assets sont susceptibles d'être modifiés par la suite. Bon jeu à vous ! "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-        },
-		
 		{
-			"Author": "System",
-			"Name": "EndTextAlpha",
+			"Author": "",
+			"Name": "AskShop",
 			"Content": [
-				"Le jeu s'arrête pour l'instant ici. Si vous voulez rejouer, vous pouvez relancer le jeu. Merci à vous d'avoir joué :) "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		
-		},
-		
-		{
-			"Author": "System",
-			"Name": "AskTextTutorial",
-			"Content": [
-				"Avant toute chose un didacticiel est disponible. Souhaites-tu le faire ?"
+				"Voulez vous aller au shop ? "
 			],
 			"NeedAnswer": true,
 			"Answers": [
 				"Oui\nNon"
 			]
 		},
-		
-		{
-			"Author": "Pirate",
-			"Name": "StartTextTutorial",
-			"Content": [
-				"Très bien je vois que tu es novice et que tu souhaites avoir une petite aide.",
-				"Pour commencer, marche devant toi avec ZQSD "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		},
-		{
-			"Author": "Pirate",
-			"Name": "StartSprintTutorial",
-			"Content": [
-				"Bravo, tu sais désormais te déplacer. Voyons maintenant comment te déplacer plus vite. Tu peux sprinter avec A. ",
-				"Tu peux sprinter avec ta touche A. Rends toi au deux prochains cercles en sprintant. "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		
-		},
-		
-		{
-			"Author": "Pirate",
-			"Name": "EndMoveTutorial",
-			"Content": [
-				"Parfait. Je vois que tu sais désormais te déplacer. Maintenant passons au saut.",
-				"Tu vois la caisse là-bas ? Rends toi dessus et essaye de sauter sur la caisse."
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		
-		},
-		{
-			"Author": "Pirate",
-			"Name": "EndTutorial",
-			"Content": [
-				"Bravo, tu viens de finir le tutoriel avec succès. Veux tu le recommencer ? "
-			],
-			"NeedAnswer": true,
-			"Answers": [
-				"Oui\nNon"
-			]
-		},
-		
 		{
 			"Author": "",
 			"Name": "AskChestBuy",
 			"Content": [
-				"Voulez-vous ouvrir le coffre ?"
+				"Voulez-vous ouvrir le coffre ? "
 			],
 			"NeedAnswer": true,
 			"Answers": [
