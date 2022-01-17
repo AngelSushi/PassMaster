@@ -68,6 +68,17 @@
 		},
 		{
 			"Author": "",
+			"Name": "BuyItem",
+			"Content": [
+				"Êtes vous de sur de vouloir acheter "
+			],
+			"NeedAnswer": true,
+			"Answers": [
+				"Oui\nNon"
+			]
+		},
+		{
+			"Author": "",
 			"Name": "AskChestBuy",
 			"Content": [
 				"Voulez-vous ouvrir le coffre ? "

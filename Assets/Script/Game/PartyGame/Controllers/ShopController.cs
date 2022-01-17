@@ -19,6 +19,10 @@ public class ShopController : CoroutineSystem {
 
     public DialogController shopDialogs; 
 
+    private bool askBuy;
+
+    private int lastSlot;
+
     void Start() {
         shopDialogs.dialogArray = gameController.dialog.dialogArray;
         gameController.dialog.OnDialogEnd += EventOnDialogEnd;
@@ -59,9 +63,13 @@ public class ShopController : CoroutineSystem {
             shopPath = new NavMeshPath();
             mooveToShop = true;
         }
+
+        Debug.Log("id: " + e.dialog.id);
     }
 
     public void OnEnterHoverButton(int slot) {
+        if(askBuy)
+            return;
 
         shopDialogs.isInDialog = true;
         Dialog hoverDialog = shopDialogs.GetDialogByName("HoverItem_" + ConvertSlotToItem(slot));
@@ -71,6 +79,9 @@ public class ShopController : CoroutineSystem {
     }
 
     public void OnLeaveHoverButton(int slot) {
+        if(askBuy)
+            return;
+
         shopDialogs.EndDialog();
     }
 
@@ -111,6 +122,41 @@ public class ShopController : CoroutineSystem {
             actualAmount = 1;
 
         transform.GetChild(1).GetChild(slot).GetChild(3).GetChild(1).gameObject.GetComponent<Text>().text = "" + actualAmount;
+    }
+
+    public void BuyItem(int slot) {
+        if(askBuy && slot == lastSlot) 
+            return;
+
+        Dialog buyItem = shopDialogs.GetDialogByName("BuyItem");
+
+        int amount = int.Parse(transform.GetChild(1).GetChild(slot).GetChild(3).GetChild(1).gameObject.GetComponent<Text>().text);
+        String content = buyItem.Content[0] + "x" + amount + " " + TranslateItem(ConvertSlotToItem(slot)) + " ? ";
+    
+        shopDialogs.isInDialog = true;
+        shopDialogs.currentDialog = buyItem;
+        askBuy = true;
+        lastSlot = slot;
+        StartCoroutine(shopDialogs.ShowText(content,buyItem.Content.Length));
+    }
+
+    private string TranslateItem(string item) {
+        switch(item) {
+            case "DoubleDice":
+                return "Dé double";
+            case "TripleDice":
+                return "Dé triple";
+            case "ReverseDice":
+                return "Dé inverse";
+            case "Bomb":
+                return "Bombe";
+            case "Lightning":
+                return "Eclair";
+            case "Hourglass":
+                return "Sablier";
+            default:
+                return ""; 
+        }
     }
 
 }

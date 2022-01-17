@@ -23,18 +23,20 @@ public class UserInventory : MonoBehaviour {
 
     public void CoinGain(int coinsGain) {
         coins += coinsGain;
-
     }
 
     public void CoinLoose(int coinsLoose) {
         if(coins - coinsLoose >= 0) coins -= coinsLoose; 
         
         else coins = 0;
-        
     }
 
     public void AddCards(int cardsGain) {
         cards += cardsGain;
+    }
+
+    public bool HasEnoughMoney(int money) {
+        return money >= coins;
     }
 
 
