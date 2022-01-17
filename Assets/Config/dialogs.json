@@ -14,6 +14,60 @@
 		},
 		{
 			"Author": "",
+			"Name": "HoverItem_DoubleDice",
+			"Content": [
+				"Le dé double multiplie par deux votre lancé de dé à chaque fois que vous l'utilisez. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "HoverItem_TripleDice",
+			"Content": [
+				"Le dé triple multiplie par trois votre lancé de dé à chaque fois que vous l'utilisez. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "HoverItem_ReverseDice",
+			"Content": [
+				"Le dé inverse vous fait allez dans le sens opposé à chaque utilisation et pendant 1 tour. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "HoverItem_Bomb",
+			"Content": [
+				"Vous pouvez déposer la bombe ou vous voulez sur la carte. Gare à celui qui se la prendra. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "HoverItem_Lightning",
+			"Content": [
+				"Vous déclenchez la fureur de Zeus qui s'abat sur un endroit de la carte. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "HoverItem_Hourglass",
+			"Content": [
+				"Vous changez le moment de la journée. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
 			"Name": "AskChestBuy",
 			"Content": [
 				"Voulez-vous ouvrir le coffre ? "

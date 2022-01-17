@@ -220,9 +220,11 @@ public class DialogController : MonoBehaviour {
 
     }
 
-    void EndDialog() {
+    public void EndDialog() {
         dialogObj.SetActive(false);
-        nextObj.SetActive(false);
+        if(nextObj != null)
+            nextObj.SetActive(false);
+        
         text.gameObject.SetActive(false);
         answerObj.SetActive(false);
         textAnswer.gameObject.SetActive(false);

@@ -15,9 +15,12 @@ public class ShopController : CoroutineSystem {
     private bool mooveToShop;
     private NavMeshPath shopPath;
 
-    public GameObject dialogShopParent; 
+    public GameObject dialogShopParent;
+
+    public DialogController shopDialogs; 
 
     void Start() {
+        shopDialogs.dialogArray = gameController.dialog.dialogArray;
         gameController.dialog.OnDialogEnd += EventOnDialogEnd;
     }
 
@@ -38,11 +41,7 @@ public class ShopController : CoroutineSystem {
 
                 gameController.mainCamera.GetComponent<Camera>().fieldOfView = 60;
                 gameController.mainCamera.transform.position = actualPlayer.transform.GetChild(1).gameObject.transform.position;
-                gameController.mainCamera.transform.rotation = actualPlayer.transform.GetChild(1).gameObject.transform.rotation;
-
-                for(int i = 0;i<dialogShopParent.transform.childCount;i++) 
-                    dialogShopParent.transform.GetChild(i).gameObject.SetActive(true);
-                
+                gameController.mainCamera.transform.rotation = actualPlayer.transform.GetChild(1).gameObject.transform.rotation;                
             });
             
         }
@@ -59,6 +58,38 @@ public class ShopController : CoroutineSystem {
             beginPosition = e.actualPlayer.transform.position;
             shopPath = new NavMeshPath();
             mooveToShop = true;
+        }
+    }
+
+    public void OnEnterHoverButton(int slot) {
+
+        shopDialogs.isInDialog = true;
+        Dialog hoverDialog = shopDialogs.GetDialogByName("HoverItem_" + ConvertSlotToItem(slot));
+        shopDialogs.currentDialog = hoverDialog;
+        StartCoroutine(shopDialogs.ShowText(hoverDialog.Content[0],hoverDialog.Content.Length));
+
+    }
+
+    public void OnLeaveHoverButton(int slot) {
+        shopDialogs.EndDialog();
+    }
+
+    private string ConvertSlotToItem(int slot) {
+        switch(slot) {
+            case 0:
+                return "DoubleDice";
+            case 1:
+                return "TripleDice";
+            case 2:
+                return "ReverseDice";
+            case 3:
+                return "Bomb";
+            case 4:
+                return "Lightning";
+            case 5:
+                return "Hourglass";
+            default:
+                return "";
         }
     }
 
