@@ -52,7 +52,7 @@ public class ShopController : CoroutineSystem {
     }
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
-        if(e.dialog.id == 0) { // IL s'agit de la fin du dialogue de shop
+        if(e.dialog.id == 0 && e.answerIndex == 0) { // IL s'agit de la fin du dialogue de shop
             if(e.shopPosition == Vector3.zero || e.shopObject == null)
                 return;
 
@@ -62,6 +62,10 @@ public class ShopController : CoroutineSystem {
             beginPosition = e.actualPlayer.transform.position;
             shopPath = new NavMeshPath();
             mooveToShop = true;
+        }
+
+        if(e.dialog.id == 8 && e.answerIndex == 0) { // Fin du dialogue BuyItem
+            
         }
 
         Debug.Log("id: " + e.dialog.id);

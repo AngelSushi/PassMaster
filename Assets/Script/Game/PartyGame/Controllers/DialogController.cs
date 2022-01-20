@@ -52,6 +52,7 @@ public class DialogController : MonoBehaviour {
         public GameObject actualPlayer;
         public Vector3 shopPosition;
         public GameObject shopObject;
+        public int answerIndex;
     }
 
     void Start() {
@@ -72,7 +73,7 @@ public class DialogController : MonoBehaviour {
 
             if(finish) {
                 if(answer >= 0) { // LE JOUEUR A UN CHOIX A FAIRE
-                    OnDialogEndArgs args = new OnDialogEndArgs{ dialog = null, actualPlayer = null,shopPosition = Vector3.zero, shopObject = null};
+                    OnDialogEndArgs args = new OnDialogEndArgs{ dialog = null, actualPlayer = null,shopPosition = Vector3.zero, shopObject = null,answerIndex = -1};
                     switch(answer) {
                         case 0:
                             
@@ -97,7 +98,7 @@ public class DialogController : MonoBehaviour {
 
                             if(currentDialog.id == 0) {// Dialogue du shop
                                 Vector3 shopVector =  gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop != null ? gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop.transform.position : Vector3.zero;
-                                args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], shopPosition = shopVector,shopObject = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop};                               
+                                args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], shopPosition = shopVector,shopObject = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop, answerIndex = answer};                               
                             }
 
                             
