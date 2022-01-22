@@ -80,31 +80,24 @@ public class GameController : CoroutineSystem {
     public Shader invicibilityShader;
 
     public LoadingScene loadingScene;
-
-    public List<GameObject> allSteps;
-
     public List<GameObject> allMainObjects;
-
     public int nightIndex;
-
     private  List<int> points = new List<int>();
     public Dictionary<GameObject,int> playerPoint = new Dictionary<GameObject,int>();
-
     private GamePart lastPart;
-
     public bool hasChangeState;
     private bool isFirstChest = true;
-
     public DayController dayController;
     public DialogController dialog;
     public MiniGameController mgController;
     public OrderController orderController;
-
     public Transform stackPlayersParent;
-
     public JsonExcelArray excelArray;
-
     public GameObject stepChest;
+
+    public ShopController shopController;
+
+
     void Start() {
         GameController.difficulty = 2;
 
@@ -251,7 +244,6 @@ public class GameController : CoroutineSystem {
             else {
                 players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
                 players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
-                players[actualPlayer].GetComponent<UserMovement>().returnToStep = true;
                 
                 mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
                 mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
@@ -366,6 +358,10 @@ public class GameController : CoroutineSystem {
     public void EndUserTurn() {
         players[actualPlayer].GetComponent<UserMovement>().finishTurn = false;
         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
+
+        if(!mainCamera.activeSelf) {
+            mainCamera.SetActive(true);
+        }
         
         if(actualPlayer < 3) {
             actualPlayer++;
@@ -388,8 +384,7 @@ public class GameController : CoroutineSystem {
             players[actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
             players[actualPlayer].SetActive(true);
 
-            if(turn > 1) 
-                ManageCameraPosition();    
+            ManageCameraPosition();    
 
         }
         else { // Le tour est fini. Lancement d'un mini jeux

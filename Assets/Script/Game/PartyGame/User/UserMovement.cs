@@ -18,7 +18,6 @@ public class UserMovement : User {
     public bool stop;
     public bool lastStepIsArrow;
     public bool waitChest;
-    public bool returnToStep;
     public bool goToChest;
     public bool returnStepBack;
     public bool reverseCount;
@@ -142,16 +141,6 @@ public class UserMovement : User {
                         agent.SetPath(path);    
                     
                 }
-                
-
-                if(returnToStep) {
-                    Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
-
-                    if(transform.position != returnStep && actualStep != null) {
-                        transform.position = Vector3.MoveTowards(transform.position,returnStep,40 * Time.deltaTime);
-                        return;
-                    }
-                }
 
                 if(finishMovement) {
                     StepType type = actualStep.GetComponent<Step>().type;
@@ -240,18 +229,6 @@ public class UserMovement : User {
             }
 
             else {
-                if(returnToStep) {
-                    
-                    Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
-
-                    if(transform.position != returnStep && actualStep != null) {
-                        transform.position = Vector3.MoveTowards(transform.position,returnStep,agent.speed * Time.deltaTime);
-                        return;
-                    }
-
-                  // returnToStep = false;
-                }
-
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
                 
@@ -318,6 +295,14 @@ public class UserMovement : User {
                 return;
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
+                if(gameController.shopController.returnToStep) {
+                    RunDelayed(0.35f,() => {
+                        finishTurn = true;
+                        gameController.shopController.returnToStep = false;
+                        return;
+                    });
+                }
+                
                 if(isJumping) {
                     isJumping = false;  
                     jump = false;

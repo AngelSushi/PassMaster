@@ -79,6 +79,24 @@
 		},
 		{
 			"Author": "",
+			"Name": "NotEnoughMoneyShop",
+			"Content": [
+				"Désolé mais vous n'avez pas assez d'argent pour acheter cet objet "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "EndShop",
+			"Content": [
+				"Merci pour votre achat. A la prochaine ! "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
 			"Name": "AskChestBuy",
 			"Content": [
 				"Voulez-vous ouvrir le coffre ? "

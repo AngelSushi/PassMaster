@@ -96,7 +96,9 @@ public class DialogController : MonoBehaviour {
                                 hasReturnToMainMenu = true; // Faire en sorte que quand on relance ca nous met la var en false
                             }
 
-                            if(currentDialog.id == 0) {// Dialogue du shop
+                            Debug.Log("dialogID: " + currentDialog.id);
+
+                            if(currentDialog.id == 0 || currentDialog.id == 7) {// Dialogue du shop
                                 Vector3 shopVector =  gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop != null ? gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop.transform.position : Vector3.zero;
                                 args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], shopPosition = shopVector,shopObject = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop, answerIndex = answer};                               
                             }
@@ -118,9 +120,9 @@ public class DialogController : MonoBehaviour {
                             break;
                     }
 
-                    EndDialog();
+                    Debug.Log("invoke: " + OnDialogEnd);
                     OnDialogEnd?.Invoke(this,args); // Call only if OnDialogEnd is null ; you should write if(OnDialogEnd != null) ....
-                           
+                    EndDialog();                           
                 }
                 else { // LE JOUEUR NA PAS DE CHOIX A FAIRE
                     if(!answerObj.activeSelf) {
@@ -159,7 +161,6 @@ public class DialogController : MonoBehaviour {
     }
 
     public void OnNext(InputAction.CallbackContext e) { // Appelé quand le joueur change vers le bas de choix de réponse
-
        if(e.started) {
             if(answerObj.activeSelf && isInDialog) {
                 if(answer < currentDialog.Answers[0].Split('\n').Length ) {

@@ -477,15 +477,9 @@ public class UserUI : User {
 
         if(e.started && showShop && !gameController.freeze) {
             showShop = false;
-            movement.returnToStep = true;
-            index = -1;
-        }
-    }
-
-    public void OnClickButton() {
-        if(showShop && !gameController.freeze) {
-            showShop = false;
-            movement.returnToStep = true;
+            gameController.shopController.returnToStep = true;
+            gameController.mainCamera.SetActive(false); 
+            transform.GetChild(1).gameObject.SetActive(true);
             index = -1;
         }
     }

@@ -13,6 +13,7 @@ public class ShopController : CoroutineSystem {
     private Vector3 shopPosition;
     private Vector3 beginPosition;
     private bool mooveToShop;
+    public bool returnToStep;
     private NavMeshPath shopPath;
 
     public GameObject dialogShopParent;
@@ -26,6 +27,7 @@ public class ShopController : CoroutineSystem {
     void Start() {
         shopDialogs.dialogArray = gameController.dialog.dialogArray;
         gameController.dialog.OnDialogEnd += EventOnDialogEnd;
+        shopDialogs.OnDialogEnd += EventOnDialogEnd;
     }
 
     public override void Update() {
@@ -49,6 +51,14 @@ public class ShopController : CoroutineSystem {
             });
             
         }
+
+        if(returnToStep) {
+            actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,shopPath);
+            actualPlayer.GetComponent<NavMeshAgent>().SetPath(shopPath);
+
+            if(shopObject != null && shopObject.transform.GetChild(0).gameObject.activeSelf)   
+                shopObject.transform.GetChild(0).gameObject.SetActive(false);
+        }
     }
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
@@ -64,11 +74,30 @@ public class ShopController : CoroutineSystem {
             mooveToShop = true;
         }
 
-        if(e.dialog.id == 8 && e.answerIndex == 0) { // Fin du dialogue BuyItem
+        if(e.dialog.id == 7 && e.answerIndex == 0) { // Fin du dialogue BuyItem
+            UserInventory inventory = e.actualPlayer.GetComponent<UserInventory>();
             
+            int amount = int.Parse(transform.GetChild(1).GetChild(lastSlot).GetChild(3).GetChild(1).gameObject.GetComponent<Text>().text);
+            int price = int.Parse(transform.GetChild(1).GetChild(lastSlot).GetChild(2).GetChild(1).gameObject.GetComponent<Text>().text);
+
+            if(inventory.coins >= amount * price) {
+                inventory.CoinLoose(amount * price);
+                e.actualPlayer.GetComponent<UserAudio>().CoinsLoose();
+            }
+
+            Dialog stateDialog = inventory.coins <= amount * price ? shopDialogs.GetDialogByName("NotEnoughMoneyShop") : shopDialogs.GetDialogByName("EndShop");
+
+            shopDialogs.isInDialog = true;
+            shopDialogs.currentDialog = stateDialog;
+            StartCoroutine(stateDialog.Content[0],stateDialog.Content.Length);
         }
 
-        Debug.Log("id: " + e.dialog.id);
+        if(e.dialog.id == 9) {  
+            returnToStep = true;
+            e.actualPlayer.GetComponent<UserUI>().showShop = false;
+            gameController.mainCamera.SetActive(false); 
+            actualPlayer.transform.GetChild(1).gameObject.SetActive(true);
+        }
     }
 
     public void OnEnterHoverButton(int slot) {
@@ -136,7 +165,7 @@ public class ShopController : CoroutineSystem {
 
         int amount = int.Parse(transform.GetChild(1).GetChild(slot).GetChild(3).GetChild(1).gameObject.GetComponent<Text>().text);
         String content = buyItem.Content[0] + "x" + amount + " " + TranslateItem(ConvertSlotToItem(slot)) + " ? ";
-    
+
         shopDialogs.isInDialog = true;
         shopDialogs.currentDialog = buyItem;
         askBuy = true;
