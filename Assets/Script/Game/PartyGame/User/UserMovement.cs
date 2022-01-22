@@ -18,11 +18,8 @@ public class UserMovement : User {
     public bool stop;
     public bool lastStepIsArrow;
     public bool waitChest;
-    public bool returnToStep;
     public bool goToChest;
     public bool returnStepBack;
-    public bool goToShop;
-    public bool canMooveToShop = true;
     public bool reverseCount;
     public bool doubleDice;
     public bool reverseDice;    
@@ -52,15 +49,11 @@ public class UserMovement : User {
     private bool hasCollideDice;
     private GameObject dice;
     private bool hasJump;
-    private bool hasShowShopHUD;
-    private bool hasShowShop;
     public Rigidbody rb;
     private Color actualColor;
     public bool isParachuting;
     private Vector3 parachuteMovement;
-    private bool hasBuyItem;
     private bool bypassDirection;
-    private bool isInShopCoroutine;
     public bool canMoove;
 
     private bool hasFindChest;
@@ -147,65 +140,6 @@ public class UserMovement : User {
                     if(canMoove) 
                         agent.SetPath(path);    
                     
-                }
-
-                if(stop && goToShop) {
-                    agent.enabled = false;
-
-                    if(canMooveToShop) {
-                        Vector3 shopPosition = actualStep.GetComponent<Step>().shop.transform.position;
-                        shopPosition.y = transform.position.y;
-                        transform.position = Vector3.MoveTowards(transform.position,shopPosition,agent.speed * Time.deltaTime);
-                    }
-                    else { // Le joueur a collide avec l'entité 
-                        if(isPlayer) {
-                            if(!ui.showShop && !hasShowShop && lastStep.GetComponent<Step>().type  == StepType.SHOP) {
-                                ui.showShop = true;
-                                hasShowShop = true;
-                            }
-                        }
-                        else { // Le bot Est dans le shop
-                            if(hasBuyItem && hasBotBuyItem) {
-
-                                int random = Random.Range(0,100);
-
-                                int percentage = -1;
-
-                                if(GameController.difficulty == 0)
-                                    percentage = 30;
-                                else if(GameController.difficulty == 1) // Medium
-                                    percentage = 60;
-                                else if(GameController.difficulty == 2) // Hard
-                                     percentage = 85;
-
-                                if(random >= 0 && random <= percentage) {
-                                    hasBuyItem = ShopBot();
-                                }
-                                else {
-                                    canMooveToShop = true;
-                                    returnToStep = true;
-                                }
-
-                                hasBotBuyItem = false;
-                            }
-                            if(!hasBuyItem) {
-                                canMooveToShop = true;
-                                returnToStep = true;
-                            }
-
-                            hasShowShop = true;                                   
-                        }
-                    }
-                }
-                
-
-                if(returnToStep) {
-                    Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
-
-                    if(transform.position != returnStep && actualStep != null) {
-                        transform.position = Vector3.MoveTowards(transform.position,returnStep,40 * Time.deltaTime);
-                        return;
-                    }
                 }
 
                 if(finishMovement) {
@@ -295,18 +229,6 @@ public class UserMovement : User {
             }
 
             else {
-                if(returnToStep) {
-                    
-                    Vector3 returnStep = new Vector3(actualStep.transform.position.x,transform.position.y,actualStep.transform.position.z);
-
-                    if(transform.position != returnStep && actualStep != null) {
-                        transform.position = Vector3.MoveTowards(transform.position,returnStep,agent.speed * Time.deltaTime);
-                        return;
-                    }
-
-                  // returnToStep = false;
-                }
-
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
                 
@@ -337,13 +259,6 @@ public class UserMovement : User {
            if(hit.gameObject.tag == "Chest") 
                 canMooveToChest = false;
 
-            if(hit.gameObject.tag == "Shop_Entity") {        
-                canMooveToShop = false;
-
-                if(!isPlayer)
-                     hasBuyItem = ShopBot();
-            }
-
             if(hit.gameObject.tag == "Dice") {
                 if(diceResult == 0 || diceResult == -1) {
                     diceResult = hit.gameObject.GetComponent<DiceController>().index;
@@ -355,7 +270,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(!isPlayer) diceResult = 100; 
+                if(isPlayer) diceResult = 40; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -376,22 +291,18 @@ public class UserMovement : User {
         if(isTurn) {
             StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
 
-            if(type == null) 
+            if(type == StepType.NONE) 
                 return;
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
-                if(type != StepType.SHOP) {
-                    if(hasShowShopHUD) 
-                        hasShowShopHUD = false;
-                    if(hasShowShop) 
-                        hasShowShop = false;
-
-                    if(!isPlayer) {
-                        if(goToShop) 
-                            goToShop = false;
-                    }
+                if(gameController.shopController.returnToStep) {
+                    RunDelayed(0.35f,() => {
+                        finishTurn = true;
+                        gameController.shopController.returnToStep = false;
+                        return;
+                    });
                 }
-
+                
                 if(isJumping) {
                     isJumping = false;  
                     jump = false;
@@ -409,11 +320,6 @@ public class UserMovement : User {
                 if(diceResult < 0 && nextStep != null) 
                     finishMovement = true;
 
-                if(type != StepType.SHOP) {
-                    if(isInShopCoroutine) 
-                        isInShopCoroutine = false;
-                }
-
                 if(stop) 
                     stop = false;
 
@@ -423,6 +329,17 @@ public class UserMovement : User {
                         GetNextStep();
                         nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
                     }
+                }
+
+                if(type == StepType.SHOP && diceResult == 0) {
+                    RunDelayed(0.5f,() => {
+                        Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
+                        if(gameController.dialog.currentDialog != shopDialog) {
+                            gameController.dialog.isInDialog = true;
+                            gameController.dialog.currentDialog = shopDialog;
+                            StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
+                        }
+                    });
                 }
             }
 
@@ -462,23 +379,6 @@ public class UserMovement : User {
                                 reverseCount = true;
                         }
                     });              
-                }
-
-                if(type == StepType.SHOP && returnToStep) 
-                    StartCoroutine(WaitToReturnStep());
-                
-
-                if(type == StepType.SHOP  && beginStep != hit.gameObject && finishMovement && !hasShowShopHUD) {
-                    // Au lieu de la fonction faire une coroutine qui attends genre 1 demi seconde et après faire le reste
-                    
-                    if(isPlayer) 
-                        StartCoroutine(WaitToShop());
-                    else { // Bot
-                        if(!returnToStep && !goToShop && !isInShopCoroutine) {
-                            StartCoroutine(WaitToShopBot());
-                            isInShopCoroutine = true;
-                        }
-                    }
                 }
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
@@ -669,8 +569,9 @@ public class UserMovement : User {
     }
 
     private void ChooseNextStep(StepType type) {
-        if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && nextStep != null) 
+        if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) {
             diceResult--;
+        }
 
         GetNextStep();
 
@@ -867,166 +768,11 @@ public class UserMovement : User {
         rb.AddForce(jumpSpeed * Vector3.up,ForceMode.Impulse);    
     }
 
-    private GameObject GetNearStep() {
-        List<GameObject> steps = gameController.allSteps;
-       
-        Transform nearestStep = null;
-        float miniumDistance = Mathf.Infinity;
-        Vector3 currentPos = transform.position;
-
-        foreach (GameObject stepTrans in steps) {
-            float distance = Vector3.Distance(stepTrans.transform.position, currentPos);
-            if (distance < miniumDistance) {
-                nearestStep = stepTrans.transform;
-                miniumDistance = distance;
-            }
-        }
-
-        return nearestStep.gameObject;
-
-    }
-
-    private void UseItemBot() {
-
-        int random = Random.Range(0,100);
-
-        int percentage = -1;
-
-        if(GameController.difficulty == 0)
-            percentage = 30;
-        if(GameController.difficulty == 1)
-            percentage = 60;
-        if(GameController.difficulty == 2)
-            percentage = 85;
-
-        if(random <= percentage) { // Utilise un item
-            List<int> hasItems = new List<int>();
-            bool[] items = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasBomb,inventory.hasHourglass,inventory.hasLightning,inventory.hasStar,inventory.hasParachute};
-
-            for(int i = 0;i<items.Length;i++) {
-                if(items[i]) hasItems.Add(i);
-            }
-
-            if(hasItems.Count > 0) { // Le bot a au moins 1 objet
-                int itemToUse = Random.Range(0,hasItems.Count - 1);
-
-                switch(itemToUse) {
-                    case 0: // Dé double
-                        doubleDice = true;
-                        inventory.hasDoubleDice = false;
-                        ui.UseObject(transform.gameObject,"Dé double");
-                        break;
-
-                    case 1: // Dé inverse
-                        reverseDice = true;
-                        inventory.hasReverseDice = false;
-                        ui.UseObject(transform.gameObject,"Dé inverse");
-                        break;    
-
-                    case 2: // Bomb
-                        break;
-
-                    case 3: // Hourglass
-                        if(gameController.dayController.dayPeriod < 2) 
-                            gameController.dayController.dayPeriod++;
-                        else 
-                            gameController.dayController.dayPeriod = 0;
-
-                        inventory.hasHourglass = false;
-                        ui.UseObject(transform.gameObject,"Sablier");
-                        break;    
-
-                    case 4: // Lightning
-                        break;
-
-                    case 5: // Star
-                        //GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();
-                        //transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.GetInvicibilityShader();  
-                        //audio.Invicibility();
-                        //GetComponent<UserUI>().UseObject(transform.gameObject,"Invincibilité");
-                        break;
-
-                    case 6: // Parachute
-                        break;         
-                }
-
-
-            }
-        }    
-        
-    }
-
-    private bool ShopBot() {
-        int item = Random.Range(0,gameController.shopItems.Count - 1);
-
-        if(inventory.coins >= gameController.shopItems[item].price) {
-            switch(item) {
-                case 0: // Dé double
-                    if(!inventory.hasDoubleDice) {
-                        inventory.hasDoubleDice = true;
-                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
-                        return true;
-                    }
-                    break;
-
-                case 1: // Dé inverse
-                    if(!inventory.hasReverseDice) {
-                        inventory.hasReverseDice = true;
-                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
-                        return true;
-                    }
-                    break;
-
-                case 2:
-                    if(!inventory.hasBomb) {
-                        inventory.hasBomb = true;
-                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
-                        return true;
-                    }
-                break;
-
-                case 3:
-                    if(!inventory.hasHourglass) {
-                        inventory.hasHourglass = true;
-                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
-                        return true;
-                    }
-                break;
-
-                case 4:
-                    if(!inventory.hasLightning) {
-                        inventory.hasLightning = true;
-                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
-                        return true;
-                    }
-                    break;
-
-                case 5:
-                    if(!inventory.hasStar) {
-                        inventory.hasStar = true;
-                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
-                        return true;
-                    }
-                    break;
-
-                case 6:
-                    if(!inventory.hasParachute) {
-                        inventory.hasParachute = true;
-                        StartCoroutine(WaitMalus(gameController.shopItems[item].price,false));
-                        return true;
-                    }
-                    break;
-            }
-        }
-        
-        return false;
-    } 
-
     #endregion
 
     #region Timers
 
-    private void ShowPath(Color color,NavMeshPath path) {
+    public static void ShowPath(Color color,NavMeshPath path) {
         for(int i = 0;i<path.corners.Length - 1;i++) 
             Debug.DrawLine(path.corners[i], path.corners[i + 1], color);
     }
@@ -1084,48 +830,6 @@ public class UserMovement : User {
          
     }
     
-    private IEnumerator WaitToReturnStep() {
-        yield return new WaitForSeconds(0.05f);
-        if(diceResult <= 0 && returnToStep) 
-            gameController.EndUserTurn();
-        
-        returnToStep = false;
-    }
-
-    private IEnumerator WaitToShop() {
-        yield return new WaitForSeconds(0.05f);
-        
-        stop = true;
-        ui.showShopHUD = true;                    
-        hasShowShopHUD = true;
-
-    }
-
-    private IEnumerator WaitToShopBot(){
-        yield return new WaitForSeconds(0.05f);
-
-        stop = true;
-        int random = /*Random.Range(0,100) */ 28;
-        int percentage = -1;
-
-        if(GameController.difficulty == 0)
-            percentage = 30;
-        else if(GameController.difficulty == 1) // Medium
-            percentage = 60;
-        else if(GameController.difficulty == 2) // Hard
-            percentage = 85;
-
-
-       /* if(random >= 0 && random <= percentage && inventory.coins >= 10)  // Lance le shop
-            goToShop = true;
-        else { */
-            stop = false;
-            if(diceResult <= 0) 
-                gameController.EndUserTurn();
-        //}
-        hasShowChestHUD = true;  
-
-    }
 
     public IEnumerator WaitChest() {
         agent.enabled = false;

@@ -15,7 +15,7 @@ public class UserMovementEditor : Editor {
     private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed;
 
     // Movement tab
-    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnToStep,goToChest,returnStepBack,goToShop,
+    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,goToChest,returnStepBack,goToShop,
     canMooveToShop,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
 
     // Object tab;
@@ -57,7 +57,6 @@ public class UserMovementEditor : Editor {
         stop = serializedClass.FindProperty("stop");
         lastStepIsArrow = serializedClass.FindProperty("lastStepIsArrow");
         waitChest = serializedClass.FindProperty("waitChest");
-        returnToStep = serializedClass.FindProperty("returnToStep");
         goToChest = serializedClass.FindProperty("goToChest");
         returnStepBack = serializedClass.FindProperty("returnStepBack");
         goToShop = serializedClass.FindProperty("goToShop");
@@ -119,7 +118,6 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(stop);
                 EditorGUILayout.PropertyField(lastStepIsArrow);
                 EditorGUILayout.PropertyField(waitChest);
-                EditorGUILayout.PropertyField(returnToStep); 
                 EditorGUILayout.PropertyField(goToChest);
                 EditorGUILayout.PropertyField(returnStepBack);
                 EditorGUILayout.PropertyField(goToShop);
