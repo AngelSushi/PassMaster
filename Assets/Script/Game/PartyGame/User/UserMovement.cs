@@ -270,7 +270,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 3; 
+                if(isPlayer) diceResult = 40; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -331,7 +331,7 @@ public class UserMovement : User {
                     }
                 }
 
-                if(type == StepType.SHOP) {
+                if(type == StepType.SHOP && diceResult == 0) {
                     RunDelayed(0.5f,() => {
                         Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
                         if(gameController.dialog.currentDialog != shopDialog) {
@@ -569,8 +569,9 @@ public class UserMovement : User {
     }
 
     private void ChooseNextStep(StepType type) {
-        if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && nextStep != null) 
+        if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) {
             diceResult--;
+        }
 
         GetNextStep();
 
