@@ -18,7 +18,6 @@ public class UserMovement : User {
     public bool stop;
     public bool lastStepIsArrow;
     public bool waitChest;
-    public bool goToChest;
     public bool returnStepBack;
     public bool reverseCount;
     public bool doubleDice;
@@ -95,7 +94,6 @@ public class UserMovement : User {
         right = false;
         transform.GetChild(1).gameObject.SetActive(false);
         hasShowChestHUD = false;
-        goToChest = false;
         canMooveToChest = true;
         waitChest = false;
         hasCollideDice = false;
@@ -152,65 +150,7 @@ public class UserMovement : User {
                     ui.ClearDiceResult();
                     hasCheckPath = false;
                     finishMovement = false;
-                }
-
-                if(finishTurn) { // Mettre tout dans gameController pour une meilleur gestion et plus propre
-                    nextStep = null;
-
-                    if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) {
-                        if(isPlayer) {
-                            if(!hasShowChestHUD) {
-                                ui.showChestHUD = true;
-                                hasShowChestHUD = true;
-                            }
-
-                            if(goToChest && hasShowChestHUD) {
-                                agent.enabled = false;
-
-                                if(canMooveToChest) {
-                                    Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,agent.speed * Time.deltaTime);               
-                                }
-                                else { // Le joueur collide avec le coffre
-
-                                    if(!waitChest) {                                      
-                                        actualStep.GetComponent<Step>().chest.GetComponent<Animator>().SetBool("Open",true);                                        
-                                        StartCoroutine(WaitChest());
-                                        waitChest = true;
-                                    }
-
-                                }
-                            }                      
-                        }
-                        else { // le bot
-                            if(inventory.coins >= 30 && inventory.cards < 6) {
-                                if(canMooveToChest) {
-                                    Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,agent.speed * Time.deltaTime);               
-                                }
-                                else { // Le joueur collide avec le coffre
-
-                                    actualStep.GetComponent<Step>().chest.GetComponent<Animator>().SetBool("Open",true);
-                                    if(!waitChest) {
-                                        
-                                        StartCoroutine(WaitChest());
-                                        waitChest = true;
-                                    }
-
-                                }
-                            }
-                            else {
-                                if(canMooveToChest) 
-                                    gameController.EndUserTurn();
-                            }
-                        }
-                    }
-
-                    else 
-                        gameController.EndUserTurn();
-                    
-                    return;
-                }             
+                }            
 
                 if(!isPlayer && waitDiceResult) {
                     if(random == -1) 
@@ -270,7 +210,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 40; 
+                if(isPlayer) diceResult = 55; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -344,6 +284,7 @@ public class UserMovement : User {
             }
 
             if(type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION) {
+                actualStep = hit.gameObject;
                 if(ui.direction == null) 
                     ui.direction = hit.gameObject.GetComponent<Direction>();
 
@@ -394,32 +335,35 @@ public class UserMovement : User {
                     diceResult = -1;
                 }
             }
+
+            if(type == StepType.FIX_DIRECTION && lastStepIsArrow && isPlayer) {
+                Debug.Log("actualStep: " + actualStep);
+                nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
+                lastStepIsArrow = false;
+                return;
+            }
+
             if(type == StepType.FIX_DIRECTION && (lastStep != null && lastStep.GetComponent<Step>() != null && (lastStep.GetComponent<Step>().type != StepType.BONUS_END || lastStep.GetComponent<Step>().type != StepType.MALUS_END)) && !bypassDirection && isTurn) {
                 if(isPlayer) { // Joueur
-                    if(!lastStepIsArrow) {
-                        if(!left && !right && !front) {
-                            if(!ui.showDirection) 
-                                ui.showDirection = true;
-
-                            stop = true; 
-                            return;
-                        }
-                        else {
-                            agent.enabled = true;
-                            if(left) 
-                                nextStep = ui.direction.directionsStep[0].transform;
-                            if(front) {
-                                nextStep = ui.direction.directionsStep[1].transform;
-                            // front = false;
-                            }
-                            if(right) 
-                                nextStep = ui.direction.directionsStep[2].transform;
-
-                            stop = !(left || front || right);
-                        }
+                    if(!left && !right && !front) {
+                        if(!ui.showDirection) 
+                            ui.showDirection = true;
+                        stop = true; 
+                        return;
                     }
-                    else 
+                    else {
+                        agent.enabled = true;
+                        if(left) 
+                            nextStep = ui.direction.directionsStep[0].transform;
+                        if(front) {
+                            nextStep = ui.direction.directionsStep[1].transform;
+                        // front = false;
+                        }
+                        if(right) 
+                            nextStep = ui.direction.directionsStep[2].transform;
+
                         stop = !(left || front || right);
+                    }
                 }
                 
                 else { // Bot Facile = 50 ; Moyen = 70 ; Difficile  = 90 de chance d'aller vers le coffre
@@ -446,8 +390,6 @@ public class UserMovement : User {
                         int randomGoToChest = Random.Range(0,100);
 
                         GenerateIAPaths(iaPathDirections);
-
-                        
 
                         bool goToSmallest = randomGoToChest <= percentageGoToChest;
                         int lastSize = 0;
