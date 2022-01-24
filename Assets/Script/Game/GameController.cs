@@ -115,6 +115,8 @@ public class GameController : CoroutineSystem {
 
         for(int i = 0;i<dialog.dialogArray.dialogs.Length;i++) 
             dialog.dialogArray.dialogs[i].id = i;
+
+            
         
     }
     
@@ -200,6 +202,10 @@ public class GameController : CoroutineSystem {
     private void GenerateChest() {
         actualChest = null;
         freeze = true;
+        if(chestParent.transform.childCount == 0) {
+            Debug.Log("There is no chest on the map. Please put");
+            return;
+        }
 
         if(randomIndex == -1) {
             randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
@@ -218,7 +224,7 @@ public class GameController : CoroutineSystem {
         }
 
         if( isFirstChest) {
-            randomIndex =  /*78 48 69 */ 58;
+            randomIndex =  2;
             isFirstChest = false;
         }
         

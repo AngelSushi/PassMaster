@@ -4,7 +4,7 @@ using UnityEngine;
 using PathCreation;
 using PathCreation.Examples;
 
-public class UserInventory : MonoBehaviour {
+public class UserInventory : User {
     public bool hasDoubleDice; 
     public bool hasReverseDice; 
     public bool hasHourglass;
@@ -31,13 +31,25 @@ public class UserInventory : MonoBehaviour {
         else coins = 0;
     }
 
-    public void AddCards(int cardsGain) {
-        cards += cardsGain;
+    public int AddCards() {
+        cards++;
+
+        int rand = Random.Range(0,secretCode.Length);
+
+        while(secretCode[rand] != -1) 
+            rand = Random.Range(0,secretCode.Length);
+        
+        secretCode[rand] = gameController.secretCode[rand];
+
+        return secretCode[rand];
     }
 
     public bool HasEnoughMoney(int money) {
         return money >= coins;
     }
 
+    public override void OnBeginTurn() {}
+    public override void OnFinishTurn() {}
+    public override void OnDiceAction() {}
 
 }

@@ -110,8 +110,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5075022766829352787}
-  m_LocalRotation: {x: -0.7070437, y: 0.009420289, z: -0.009419909, w: 0.7070444}
-  m_LocalPosition: {x: 3.1716309, y: 0, z: 0}
+  m_LocalRotation: {x: 0.7071068, y: 0.00009894115, z: 0.00009894115, w: -0.7071068}
+  m_LocalPosition: {x: 3.3499146, y: 1.1865234, z: 0}
   m_LocalScale: {x: 366.21487, y: 366.21484, z: 366.21487}
   m_Children: []
   m_Father: {fileID: 5707977044982497547}
@@ -259,7 +259,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5707977044982497547}
   m_Layer: 0
-  m_Name: chest
+  m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

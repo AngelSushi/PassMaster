@@ -99,14 +99,41 @@
 			"Author": "",
 			"Name": "AskChestBuy",
 			"Content": [
-				"Voulez-vous ouvrir le coffre ? "
+				"Voulez-vous ouvrir le coffre ? Cela vous coûtera 30 pièces. "
 			],
 			"NeedAnswer": true,
 			"Answers": [
 				"Oui\nNon"
 			]
+		},	
+		{
+			"Author": "",
+			"Name": "NotEnoughMoneyChest",
+			"Content": [
+				"Vous n'avez pas assez de pièces pour ouvrir le coffre. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},		
+		{
+			"Author": "",
+			"Name": "FindNewCode",
+			"Content": [
+				"Vous venez de débloquer un nouveau chiffre du code secret. Il s'agit du chiffre %n. Il vous reste %b chiffre(s) à trouver. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},		
+		{
+			"Author": "",
+			"Name": "FindAllSecretCode",
+			"Content": [
+				"Vous venez de trouver l'intégralité du code secret. Vous pouvez désormais vous rendre vers la dernière île. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		
 		},
-
 		{
 			"Author": "",
 			"Name": "QuitGame",
@@ -117,27 +144,6 @@
 			"Answers": [
 				"Oui\nNon"
 			]
-		},
-		
-		{
-			"Author": "",
-			"Name": "FindNewCode",
-			"Content": [
-				"Vous venez de débloquer un nouveau chiffre du code secret. Il s'agit du chiffre %n. Il vous reste %b chiffre(s) à trouver. "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		},
-		
-		{
-			"Author": "",
-			"Name": "FindAllSecretCode",
-			"Content": [
-				"Vous venez de trouver l'intégralité du code secret. Vous pouvez vous rendre à la grotte. "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		
 		}
     ]
 }	

@@ -20,6 +20,12 @@ public class PathGenerator : MonoBehaviour {
             plane.transform.LookAt(nextPosition);
             plane.transform.eulerAngles = new Vector3(0f,plane.transform.eulerAngles.y - 178f,0f);
             plane.layer = 31;
+
+            if(plane.transform.childCount > 0) {
+                for(int j = 0;j<plane.transform.childCount;j++) 
+                    plane.transform.GetChild(j).gameObject.layer = 31; 
+            }
+            
         }
     }
 
@@ -58,6 +64,12 @@ public class PathGenerator : MonoBehaviour {
             plane.transform.LookAt(nextPosition);
             plane.transform.eulerAngles = new Vector3(0f,plane.transform.eulerAngles.y - 178f,0f);
             plane.layer = 31;
+
+            if(plane.transform.childCount > 0) {
+                for(int j = 0;j<plane.transform.childCount;j++) 
+                    plane.transform.GetChild(j).gameObject.layer = 31;
+            }
+            
             plane.transform.parent = chest.transform;
         }
     }

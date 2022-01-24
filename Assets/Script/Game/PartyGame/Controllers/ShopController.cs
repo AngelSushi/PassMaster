@@ -11,7 +11,6 @@ public class ShopController : CoroutineSystem {
 
     private GameObject actualPlayer,shopObject;
     private Vector3 shopPosition;
-    private Vector3 beginPosition;
     private bool mooveToShop;
     public bool returnToStep;
     private NavMeshPath shopPath;
@@ -37,7 +36,6 @@ public class ShopController : CoroutineSystem {
 
             RunDelayed(0.65f,() => { // Pas synchro avec la vitesse du joueur
                 shopPosition = Vector3.zero;
-                beginPosition = Vector3.zero;
                 mooveToShop = false;
                 actualPlayer.GetComponent<UserUI>().showShop = true;
 
@@ -62,16 +60,18 @@ public class ShopController : CoroutineSystem {
     }
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
+        if(e.dialog == null)
+            return;
+
         if(e.dialog.id == 0 && e.answerIndex == 0) { // IL s'agit de la fin du dialogue de shop
-            if(e.shopPosition == Vector3.zero || e.shopObject == null)
+            if(e.position == Vector3.zero || e.obj == null)
                 return;
 
             actualPlayer = e.actualPlayer;
-            shopObject = e.shopObject;
-            shopPosition = e.shopPosition;
-            beginPosition = e.actualPlayer.transform.position;
+            shopObject = e.obj;
+            shopPosition = e.position;
             shopPath = new NavMeshPath();
-            mooveToShop = true;
+          //  mooveToShop = true;
         }
 
         if(e.dialog.id == 7 && e.answerIndex == 0) { // Fin du dialogue BuyItem

@@ -87,6 +87,7 @@ public class UserMovement : User {
     }
 
     public override void OnFinishTurn() {
+        Debug.Log("finishTurn");
         agent.enabled = false;
         left = false;
         front = false;
@@ -136,8 +137,7 @@ public class UserMovement : User {
                     CheckPath();
 
                     if(canMoove) 
-                        agent.SetPath(path);    
-                    
+                        agent.SetPath(path);   
                 }
 
                 if(finishMovement) {
@@ -210,7 +210,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 55; 
+                if(isPlayer) diceResult = 6; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -730,19 +730,11 @@ public class UserMovement : User {
 
         random = -1;
         timer = 0f;
-    }
 
-    public IEnumerator WaitBonus(bool stepReward,int amount) {
-        yield return new WaitForSeconds(0.5f);
-
-        inventory.CoinGain(amount);
-        audio.CoinsGain();
-        ui.DisplayReward(true,3,stepReward);
-        ui.ClearDiceResult();
-        gameController.ActualizePlayerClassement();
-
-        random = -1;
-        timer = 0f;
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) 
+            DisplayChestDialog();
+        else 
+            gameController.EndUserTurn();
     }
 
     private IEnumerator WaitMalus(bool stepReward) {
@@ -753,80 +745,45 @@ public class UserMovement : User {
             inventory.CoinLoose(3);
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
-        } 
-        else 
-            finishTurn = true;  
+        }   
 
         ui.ClearDiceResult();   
 
         random = -1;
         timer = 0f;
+
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) 
+            DisplayChestDialog();
+        else 
+            gameController.EndUserTurn();
     }
 
-    public IEnumerator WaitMalus(int malusCoins,bool stepReward) {
-        yield return new WaitForSeconds(0.2f);
-        audio.CoinsLoose();
-        inventory.CoinLoose(malusCoins);
-        ui.DisplayReward(false,malusCoins,stepReward);
-        gameController.ActualizePlayerClassement();
-         
+    public IEnumerator WaitMalus(bool stepReward,int amount) {
+        yield return new WaitForSeconds(0.5f);
+        
+        if(inventory.coins > 0) {
+            audio.CoinsLoose();
+            inventory.CoinLoose(amount);
+            ui.DisplayReward(false,amount,stepReward);
+            gameController.ActualizePlayerClassement();
+        }   
+
+        ui.ClearDiceResult();   
+
+        random = -1;
+        timer = 0f;
+
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) 
+            DisplayChestDialog();
+        else 
+            gameController.EndUserTurn();
     }
-    
 
-    public IEnumerator WaitChest() {
-        agent.enabled = false;
-        
-        if(inventory.cards + 1 == 6) 
-            audio.FindSecretCode();
-        else 
-            audio.CardGain();
-
-        if(!isPlayer) 
-            StartCoroutine(WaitMalus(30,false));
-
-        yield return new WaitForSeconds(1f);      
-
-        int[] secretCode = gameController.secretCode;
-        int random = Random.Range(0,secretCode.Length - 1);
-
-        int targetCode = secretCode[random];
-        bool finishCode = true;
-
-        List<int> indexes = new List<int>();
-
-        for(int i = 0;i<secretCode.Length;i++) {
-            if(secretCode[i] == targetCode) 
-                indexes.Add(i); 
-            if(inventory.secretCode[i] == -1) 
-                finishCode = false;
-            
-        }
-
-        foreach(int index in indexes) {
-            if(inventory.secretCode[index] != -1) {
-                inventory.secretCode[index] = targetCode;
-                break;
-            }
-        }
-        
-        inventory.AddCards(1);
-
-        Dialog currentDialog = gameController.dialog.GetDialogByName("FindNewCode");
-
-
-        if(!finishCode) {
-            currentDialog.Content[0] = currentDialog.Content[0].Replace("%n","" + targetCode);
-            currentDialog.Content[0] = currentDialog.Content[0].Replace("%b","" + (6 - inventory.cards));
-        }
-
-        else 
-            currentDialog = gameController.dialog.GetDialogByName("FindAllSecretCode");   
-
-        gameController.dialog.currentDialog = currentDialog;
+    private void DisplayChestDialog() {
+        Dialog askChest = gameController.dialog.GetDialogByName("AskChestBuy");
         gameController.dialog.isInDialog = true;
-        gameController.dialog.finish = false;
-        StartCoroutine(gameController.dialog.ShowText(currentDialog.Content[0],currentDialog.Content.Length));
-
+        gameController.dialog.currentDialog = askChest;
+        StartCoroutine(gameController.dialog.ShowText(askChest.Content[0],askChest.Content.Length));
     }
 
     private IEnumerator WaitTimeToReturn() {
@@ -837,8 +794,5 @@ public class UserMovement : User {
     }
 
     #endregion
-    
-   
-    
-    
+     
 }
