@@ -11,7 +11,6 @@ public class UserUI : User {
     public bool showTurnInfo;
     public bool showActionButton;
     public bool showDirection;
-    public bool showChestHUD;
     public bool showShop;
     public bool cameraView;
     public bool useBomb;
@@ -50,7 +49,6 @@ public class UserUI : User {
             ManagerHudTurnState(showTurnInfo && gameController.part == GameController.GamePart.PARTYGAME);
             ManageActionButtonState(showActionButton);
             ManageHudDirection(showDirection);
-            ManageChestHUD(showChestHUD);
             ManageShop(showShop);
         } 
     }
@@ -143,22 +141,6 @@ public class UserUI : User {
             }
         }
 
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index < 1) 
-                index++;
-
-            switch(index) {
-                case 0:
-                    chestHUD.GetChild(1).gameObject.SetActive(true);
-                    break;
-
-                case 1:
-                    chestHUD.GetChild(1).gameObject.SetActive(false);
-                    chestHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
-
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
             if(index < 7) 
                 index++;
@@ -230,26 +212,7 @@ public class UserUI : User {
                     directions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
-        }
-
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index > 0) 
-                index--;
-
-            switch(index) {
-                case 0:
-                    chestHUD.GetChild(1).gameObject.SetActive(true);
-                    chestHUD.GetChild(2).gameObject.SetActive(false);
-                    break;
-
-                case 1:
-                    chestHUD.GetChild(1).gameObject.SetActive(false);
-                    chestHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
-
-        
+        }      
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index > 0) 
@@ -285,30 +248,6 @@ public class UserUI : User {
 
            // movement.reverseCount = direction.reverseCount;
             showDirection = false;
-            index = -1;
-        }
-
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index == 0) {              
-                isTurn = false;
-                gameController.EndUserTurn();                
-            }
-            else if(index == 1) {
-                // Buy
-                int coins = inventory.coins;
-
-                if(coins >= 30) {
-                    StartCoroutine(movement.WaitMalus(30,false));
-                    movement.goToChest = true;
-                }
-                else {
-                    audio.BuyLoose();
-                    gameController.EndUserTurn();
-                    // Afficher un texte également
-                }
-            }
-
-            showChestHUD = false;
             index = -1;
         }
 
@@ -614,10 +553,6 @@ public class UserUI : User {
             foreach(Transform direction in directions)
                 direction.gameObject.SetActive(false);
         }
-    }
-
-    private void ManageChestHUD(bool active) {
-        chestHUD.gameObject.SetActive(active);
     }
 
     private void ManageShop(bool active) {
