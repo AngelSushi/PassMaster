@@ -258,6 +258,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5707977044982497547}
+  - component: {fileID: 4513426613997431603}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Untagged
@@ -282,3 +283,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!111 &4513426613997431603
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6406404557955406072}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: a8e0666aecd66ed4d85755a5d304a4ec, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: a8e0666aecd66ed4d85755a5d304a4ec, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0

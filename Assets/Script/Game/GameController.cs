@@ -94,9 +94,15 @@ public class GameController : CoroutineSystem {
     public Transform stackPlayersParent;
     public JsonExcelArray excelArray;
     public GameObject stepChest;
-
     public ShopController shopController;
+    public ChestController chestController;
+    public Animation blackScreenAnim;
 
+    public static GameController Instance { get; private set;}
+
+    void Awake() {
+        Instance = this;
+    }
 
     void Start() {
         GameController.difficulty = 2;
@@ -203,7 +209,7 @@ public class GameController : CoroutineSystem {
         actualChest = null;
         freeze = true;
         if(chestParent.transform.childCount == 0) {
-            Debug.Log("There is no chest on the map. Please put");
+            Debug.Log("There is no chest on the map. Please put someone");
             return;
         }
 
@@ -225,12 +231,43 @@ public class GameController : CoroutineSystem {
 
         if( isFirstChest) {
             randomIndex =  2;
-            isFirstChest = false;
+           // isFirstChest = false;
         }
         
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
+        chest.SetActive(true);
 
-        Vector3 cameraPosition = new Vector3(chest.transform.position.x,5479f,chest.transform.position.z);
+        foreach(Step step in FindObjectsOfType(typeof(Step))) {
+            if(step.chest != null && step.chest.activeSelf) {
+                stepChest = step.gameObject;
+                break;
+            }
+        }
+
+        chest.GetComponent<Animation>().clip = chestController.chestAnimations[0];
+
+        if(!blackScreenAnim.isPlaying) {
+            float timeToWait = 2.4f;
+
+            if(isFirstChest) {    
+                blackScreenAnim["BSAnim"].time = 1f;
+                timeToWait = 1.1f;
+                isFirstChest = false;
+            }
+
+            blackScreenAnim.Play();
+            mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
+            mainCamera.transform.LookAt(chest.transform);
+
+            RunDelayed(timeToWait,() => { // 2.4 pour full ; 1.1 
+                chest.GetComponent<Animation>().Play();
+                StartCoroutine(CameraEffects.Instance.Shake(2f,0.25f));
+                hasGenChest = true;
+            });
+        }
+
+
+        /*Vector3 cameraPosition = new Vector3(chest.transform.position.x,5479f,chest.transform.position.z);
         
         mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
         mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,cameraPosition,75 * Time.deltaTime);
@@ -261,15 +298,44 @@ public class GameController : CoroutineSystem {
                 freeze = false;
             }
 
-            foreach(Step step in FindObjectsOfType(typeof(Step))) {
-                if(step.chest != null && step.chest.activeSelf) {
-                    stepChest = step.gameObject;
-                    break;
-                }
-            }
+            
 
             // Marche que pour le tour 1 attention jpense 
         }
+        */
+    }
+
+    private Vector3 GetChestDirection(GameObject obj,Step step) {
+        if(step.useVectors.Length > 0) {
+            bool forward = step.useVectors[0];
+            bool back = step.useVectors[1];
+            bool right = step.useVectors[2];
+            bool left = step.useVectors[3];
+
+            if(forward) {
+                if(right && !left) 
+                    return obj.transform.forward * 25f + obj.transform.right * 25f;
+                else if(!right && left) 
+                    return obj.transform.forward * 25f + obj.transform.right * -1 * 25f;
+                else 
+                    return obj.transform.forward * 25f;
+            }
+            else if(back) {
+                if(right && !left) 
+                    return obj.transform.forward * -1 * 25f + obj.transform.right * 25f;
+                else if(!right && left) 
+                    return obj.transform.forward * -1 *  25f + obj.transform.right * -1 * 25f;
+                else 
+                    return obj.transform.forward * -1 * 25f;
+            }
+            else if(right) 
+                return obj.transform.right * 25f;
+            else if(left)
+                return obj.transform.right * -1 * 25f;
+
+        }
+
+        return Vector3.zero;
     }
 
     public int GetLastChest() {
@@ -283,7 +349,7 @@ public class GameController : CoroutineSystem {
 
     public void RandomSecretCode() {
         for(int i = 0;i<secretCode.Length;i++) {
-            secretCode[i] = Random.Range(0,9);
+            secretCode[i] = Random.Range(0,10);
         }
     }
 

@@ -12,6 +12,7 @@ public class ShopController : CoroutineSystem {
     private GameObject actualPlayer,shopObject;
     private Vector3 shopPosition;
     private bool mooveToShop;
+    [HideInInspector]
     public bool returnToStep;
     private NavMeshPath shopPath;
 

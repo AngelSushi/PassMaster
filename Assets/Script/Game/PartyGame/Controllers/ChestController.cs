@@ -5,16 +5,18 @@ using UnityEngine;
 using UnityEngine.AI;
 public class ChestController : CoroutineSystem {
 
-    public GameController gameController;
     public int chestCoinsPrice;
     private GameObject actualPlayer;
     private GameObject obj;
     private Vector3 chestPosition;
     private bool goToChest;
+    [HideInInspector]
+    public bool returnToStep;
     private NavMeshPath chestPath;
+    public AnimationClip[] chestAnimations;
 
     void Start() {
-        gameController.dialog.OnDialogEnd += EventOnDialogEnd;
+        GameController.Instance.dialog.OnDialogEnd += EventOnDialogEnd;
     }
 
     public override void Update() {
@@ -22,52 +24,53 @@ public class ChestController : CoroutineSystem {
             actualPlayer.GetComponent<NavMeshAgent>().SetDestination(chestPosition);
 
             RunDelayed(0.65f,() => {
-                if(!obj.GetComponent<Animation>().isPlaying) {
+                if(!GameController.Instance.dialog.isInDialog && !obj.GetComponent<Animation>().isPlaying) {
                     obj.GetComponent<Animation>().Play();
-                    bool hasFullSecretCode = actualPlayer.GetComponent<UserInventory>().cards == gameController.secretCode.Length;
+                    goToChest = false;
+                    bool hasFullSecretCode = actualPlayer.GetComponent<UserInventory>().cards == GameController.Instance.secretCode.Length;
                     
                     if(hasFullSecretCode)   
                         actualPlayer.GetComponent<UserAudio>().CardGain();
                     else
                         actualPlayer.GetComponent<UserAudio>().FindSecretCode();
 
-                    goToChest = false;
-
                     RunDelayed(0.2f,() => { // Faire la vérification avant si on a pas déjà assez de cartes
                         int secretNumber = actualPlayer.GetComponent<UserInventory>().AddCards();
 
-                        Dialog chestDialog = hasFullSecretCode ? gameController.dialog.GetDialogByName("FindAllSecretCode") : gameController.dialog.GetDialogByName("FindNewCode");
+                        Dialog chestDialog = hasFullSecretCode ? GameController.Instance.dialog.GetDialogByName("FindAllSecretCode") : GameController.Instance.dialog.GetDialogByName("FindNewCode");
                         string content = chestDialog.Content[0];
 
                         if(!hasFullSecretCode) {
-                            content.Replace("%n","" + secretNumber);
-                            content.Replace("%b","" + (gameController.secretCode.Length - actualPlayer.GetComponent<UserInventory>().cards));
+                            content = content.Replace("%n","" + secretNumber);
+                            content = content.Replace("%b","" + (GameController.Instance.secretCode.Length - actualPlayer.GetComponent<UserInventory>().cards));
                         }
 
-                        gameController.dialog.isInDialog = true;
-                        gameController.dialog.currentDialog = chestDialog;
-                        StartCoroutine(gameController.dialog.ShowText(content,chestDialog.Content.Length));
+                        GameController.Instance.dialog.isInDialog = true;
+                        GameController.Instance.dialog.currentDialog = chestDialog;
+                        StartCoroutine(GameController.Instance.dialog.ShowText(content,chestDialog.Content.Length));
                         StartCoroutine(actualPlayer.GetComponent<UserMovement>().WaitMalus(true,30));
                     });
                 }
             });
-
-            
+        }
+        else if(returnToStep) {
+            actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,chestPath);
+            actualPlayer.GetComponent<NavMeshAgent>().SetPath(chestPath);
         }
     }
 
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
-        if(e.dialog == null)
+        if(e.dialog == null) 
             return;
-
+        
         if(e.dialog.id == 10 && e.answerIndex == 0) {
             if(e.actualPlayer.GetComponent<UserInventory>().coins < chestCoinsPrice) {
                 RunDelayed(0.05f,() => {
-                    Dialog moneyDialog = gameController.dialog.GetDialogByName("NotEnoughMoneyChest");
-                    gameController.dialog.isInDialog = true;
-                    gameController.dialog.currentDialog = moneyDialog;
-                    StartCoroutine(gameController.dialog.ShowText(moneyDialog.Content[0],moneyDialog.Content.Length));
+                    Dialog moneyDialog = GameController.Instance.dialog.GetDialogByName("NotEnoughMoneyChest");
+                    GameController.Instance.dialog.isInDialog = true;
+                    GameController.Instance.dialog.currentDialog = moneyDialog;
+                    StartCoroutine(GameController.Instance.dialog.ShowText(moneyDialog.Content[0],moneyDialog.Content.Length));
                 });
 
                 return;
@@ -81,7 +84,10 @@ public class ChestController : CoroutineSystem {
         } 
 
         if(e.dialog.id == 11) 
-            gameController.EndUserTurn();
+            GameController.Instance.EndUserTurn();
+
+        if(e.dialog.id == 12 || e.dialog.id == 13) 
+            returnToStep = true;
     }
 
     private Vector3 GetDirection(GameObject obj,Step step) {

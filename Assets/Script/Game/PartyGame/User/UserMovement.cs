@@ -87,7 +87,6 @@ public class UserMovement : User {
     }
 
     public override void OnFinishTurn() {
-        Debug.Log("finishTurn");
         agent.enabled = false;
         left = false;
         front = false;
@@ -171,8 +170,7 @@ public class UserMovement : User {
             else {
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
-                
-
+            
                 if(stepBack) {
                     agent.enabled = false;
                     transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
@@ -235,10 +233,15 @@ public class UserMovement : User {
                 return;
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
-                if(gameController.shopController.returnToStep) {
+                if(gameController.shopController.returnToStep || gameController.chestController.returnToStep) {
                     RunDelayed(0.35f,() => {
-                        finishTurn = true;
-                        gameController.shopController.returnToStep = false;
+
+                        if(gameController.shopController.returnToStep) 
+                            gameController.shopController.returnToStep = false;
+                        else
+                            gameController.chestController.returnToStep = false;
+
+                        gameController.EndUserTurn();
                         return;
                     });
                 }
@@ -731,8 +734,10 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) 
-            DisplayChestDialog();
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+            if(!gameController.dialog.isInDialog)
+                DisplayChestDialog();
+        }
         else 
             gameController.EndUserTurn();
     }
@@ -752,8 +757,10 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) 
-            DisplayChestDialog();
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+            if(!gameController.dialog.isInDialog)
+                DisplayChestDialog();
+        }
         else 
             gameController.EndUserTurn();
     }
@@ -773,8 +780,10 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) 
-            DisplayChestDialog();
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+            if(!gameController.dialog.isInDialog)
+                DisplayChestDialog();
+        }
         else 
             gameController.EndUserTurn();
     }

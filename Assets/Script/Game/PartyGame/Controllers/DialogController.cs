@@ -96,14 +96,12 @@ public class DialogController : MonoBehaviour {
                                 hasReturnToMainMenu = true; // Faire en sorte que quand on relance ca nous met la var en false
                             }
 
-                            Debug.Log("dialogID: " + currentDialog.id);
-
                             if(currentDialog.id == 0 || currentDialog.id == 7) {// Dialogue du shop
                                 Vector3 shopVector =  gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop.transform.position;
                                 args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = shopVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop, answerIndex = answer};                               
                             }
 
-                            if(currentDialog.id == 10 || currentDialog.id == 11) {
+                            if(currentDialog.id == 10 || currentDialog.id == 11 || currentDialog.id == 12 || currentDialog.id == 13) {
                                 Vector3 chestVector = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.transform.position;
                                 Debug.Log("chest: " + chestVector);
                                 args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = chestVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest, answerIndex = answer};                               
