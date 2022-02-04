@@ -28,6 +28,7 @@ public class GameController : CoroutineSystem {
     public GameObject prefabInStep;
     public GameObject stepParent;
 
+    public GameObject firstStep;
     //public GamePart partOfGame = GamePart.TUTORIEL;
     public GameObject light;
     public GameObject[] diceResultObj = new GameObject[4];
@@ -63,8 +64,6 @@ public class GameController : CoroutineSystem {
     public Sprite[] smallSprites = new Sprite[4];
     public Color[] classedColors = new Color[4];
     public int turn;
-
-
     public int[] secretCode;
 
     public bool hasGenChest;
@@ -75,9 +74,6 @@ public class GameController : CoroutineSystem {
     public bool freeze;
 
     public List<Material> diceMaterials;
-    public List<GameObject> prefabObjects = new List<GameObject>();
-
-    public Shader invicibilityShader;
 
     public LoadingScene loadingScene;
     public List<GameObject> allMainObjects;
@@ -252,8 +248,6 @@ public class GameController : CoroutineSystem {
                 timeToWait = 1.1f;
                 isFirstChest = false;
             }
-
-            
 
             blackScreenAnim.Play();
 
@@ -455,14 +449,18 @@ public class GameController : CoroutineSystem {
             actualPlayer++;
             players[actualPlayer].GetComponent<UserMovement>().isTurn = true;
 
-            if(! players[actualPlayer].activeSelf) {
+            if(!players[actualPlayer].activeSelf) {
                 players[actualPlayer].SetActive(true);
-                players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[actualPlayer]);
-                ActualPlayersInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep,players[actualPlayer]);
+
+                if(players[actualPlayer].GetComponent<UserMovement>().actualStep != null) {        
+                    players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[actualPlayer]);
+                    ActualPlayersInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep,players[actualPlayer]);
+                }
             }
 
-            if(turn == 1) 
+            if(turn == 1) {
                 players[actualPlayer].transform.position = posBegin[0];
+            }
 
             players[actualPlayer].GetComponent<UserMovement>().enabled = true;
             players[actualPlayer].GetComponent<UserUI>().enabled = true;
@@ -484,14 +482,16 @@ public class GameController : CoroutineSystem {
     }
 
     private void ManageCameraPosition() {
-        if(turn == 1) {
-            mainCamera.transform.position = new Vector3(-1198.469f,5221.931f,-14929.02f);
-            mainCamera.transform.rotation = Quaternion.Euler(10.51f,180f,0f);
-        }
+        if(turn == 1) 
+            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetChestDirection(firstStep,firstStep.GetComponent<Step>()) * 2.25f);
         else {
-           // mainCamera.transform.position = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camPosition;
-           // mainCamera.transform.rotation = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camRotation;
+            GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep;
+            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetChestDirection(actualStep,actualStep.GetComponent<Step>()) * 2.25f);
         }
+
+        Transform transform = players[actualPlayer].transform;
+        transform.position = new Vector3(transform.position.x,transform.position.y + 5f,transform.position.z);
+        mainCamera.transform.LookAt(transform);
     }
 
     private List<GameObject> GetPlayersInStack() {

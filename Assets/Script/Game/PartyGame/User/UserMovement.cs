@@ -167,7 +167,11 @@ public class UserMovement : User {
                     }
                     else 
                         ui.showHUD = true;          
-                }           
+                }    
+
+                if(finishTurn) {
+                    gameController.EndUserTurn();
+                }       
             }
 
             else {
@@ -222,7 +226,9 @@ public class UserMovement : User {
                 ui.RefreshDiceResult(diceResult, actualColor);
                 GameObject hitObj = hit.gameObject;
                 hitObj.GetComponent<MeshRenderer>().enabled = false;
-                
+
+                ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
+
                 RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
             }
        } 
@@ -534,6 +540,10 @@ public class UserMovement : User {
 
     private void CheckPath() {
         if(!hasCheckPath && stepPaths != null) { 
+
+            if(beginStep == null)
+                beginStep = nextStep.gameObject;
+
             Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
             int stepIndex = actualStep != null ? FindIndexInParent(stepParent.gameObject,actualStep) : FindIndexInParent(stepParent.gameObject,beginStep);
             int result = actualStep != null ? diceResult : beginResult;
@@ -558,7 +568,7 @@ public class UserMovement : User {
     }
 
     private void GetNextStep() {
-        GameObject actualParent = actualStep.transform.parent.gameObject;
+        GameObject actualParent = actualStep != null ? actualStep.transform.parent.gameObject : gameController.firstStep.transform.parent.gameObject;
         int stepIndex = FindIndexInParent(actualParent,actualStep);
 
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
@@ -740,12 +750,10 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog)
                 DisplayChestDialog();
         }
-        else 
-            gameController.EndUserTurn();
     }
 
     private IEnumerator WaitMalus(bool stepReward) {
@@ -763,12 +771,10 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog)
                 DisplayChestDialog();
         }
-        else 
-            gameController.EndUserTurn();
     }
 
     public IEnumerator WaitMalus(bool stepReward,int amount) {
@@ -786,12 +792,10 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog)
                 DisplayChestDialog();
         }
-        else 
-            gameController.EndUserTurn();
     }
 
     private void DisplayChestDialog() {
