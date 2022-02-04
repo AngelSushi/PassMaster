@@ -15,8 +15,7 @@ public class UserMovementEditor : Editor {
     private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed;
 
     // Movement tab
-    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,goToChest,returnStepBack,goToShop,
-    canMooveToShop,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
+    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnStepBack,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
 
     // Object tab;
     private SerializedProperty doubleDice,reverseDice,hasBotBuyItem,isParachuting;
@@ -58,10 +57,7 @@ public class UserMovementEditor : Editor {
         stop = serializedClass.FindProperty("stop");
         lastStepIsArrow = serializedClass.FindProperty("lastStepIsArrow");
         waitChest = serializedClass.FindProperty("waitChest");
-        goToChest = serializedClass.FindProperty("goToChest");
         returnStepBack = serializedClass.FindProperty("returnStepBack");
-        goToShop = serializedClass.FindProperty("goToShop");
-        canMooveToShop = serializedClass.FindProperty("canMooveToShop");
         reverseCount = serializedClass.FindProperty("reverseCount");
         diceResult = serializedClass.FindProperty("diceResult");
         actualStep = serializedClass.FindProperty("actualStep");
@@ -120,10 +116,7 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(stop);
                 EditorGUILayout.PropertyField(lastStepIsArrow);
                 EditorGUILayout.PropertyField(waitChest);
-                EditorGUILayout.PropertyField(goToChest);
                 EditorGUILayout.PropertyField(returnStepBack);
-                EditorGUILayout.PropertyField(goToShop);
-                EditorGUILayout.PropertyField(canMooveToShop);
                 EditorGUILayout.PropertyField(reverseCount);
                 EditorGUILayout.PropertyField(diceResult);
                 EditorGUILayout.PropertyField(actualStep);
