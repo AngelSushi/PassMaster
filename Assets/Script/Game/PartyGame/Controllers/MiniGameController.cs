@@ -59,7 +59,7 @@ public class MiniGameController : CoroutineSystem {
                     gameController.part = GameController.GamePart.MINIGAME;
 
                     hasTurnChange = false;
-                    gameController.dayController.mainAudio.Stop();
+                   // gameController.dayController.mainAudio.Stop();
                     gameController.players[gameController.actualPlayer].GetComponent<UserUI>().showTurnInfo = false;
                     gameController.loadingScene.loadScene = true;
                     hasLoadScene = true;

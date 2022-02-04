@@ -24,17 +24,24 @@ public class ChestController : CoroutineSystem {
             actualPlayer.GetComponent<NavMeshAgent>().SetDestination(chestPosition);
 
             RunDelayed(0.65f,() => {
-                if(!GameController.Instance.dialog.isInDialog && !obj.GetComponent<Animation>().isPlaying) {
+                goToChest = false;
+                
+                if(!obj.GetComponent<Animation>().isPlaying) {
+                    obj.GetComponent<Animation>().clip = chestAnimations[1];
                     obj.GetComponent<Animation>().Play();
-                    goToChest = false;
-                    bool hasFullSecretCode = actualPlayer.GetComponent<UserInventory>().cards == GameController.Instance.secretCode.Length;
-                    
-                    if(hasFullSecretCode)   
+                }
+
+                bool hasFullSecretCode = actualPlayer.GetComponent<UserInventory>().cards == GameController.Instance.secretCode.Length;
+                
+                if(!AudioController.Instance.ambiantSource.isPlaying) {
+                    if(!hasFullSecretCode)   
                         actualPlayer.GetComponent<UserAudio>().CardGain();
                     else
                         actualPlayer.GetComponent<UserAudio>().FindSecretCode();
+                }
 
-                    RunDelayed(0.2f,() => { // Faire la vérification avant si on a pas déjà assez de cartes
+                RunDelayed(0.2f,() => { // Faire la vérification avant si on a pas déjà assez de cartes
+                    if(!GameController.Instance.dialog.isInDialog) {
                         int secretNumber = actualPlayer.GetComponent<UserInventory>().AddCards();
 
                         Dialog chestDialog = hasFullSecretCode ? GameController.Instance.dialog.GetDialogByName("FindAllSecretCode") : GameController.Instance.dialog.GetDialogByName("FindNewCode");
@@ -48,9 +55,10 @@ public class ChestController : CoroutineSystem {
                         GameController.Instance.dialog.isInDialog = true;
                         GameController.Instance.dialog.currentDialog = chestDialog;
                         StartCoroutine(GameController.Instance.dialog.ShowText(content,chestDialog.Content.Length));
-                        StartCoroutine(actualPlayer.GetComponent<UserMovement>().WaitMalus(true,30));
-                    });
-                }
+                        StartCoroutine(actualPlayer.GetComponent<UserMovement>().WaitMalus(true,chestCoinsPrice));
+                    }
+                });
+                
             });
         }
         else if(returnToStep) {

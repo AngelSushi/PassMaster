@@ -221,12 +221,15 @@ public class GameController : CoroutineSystem {
         int lastIndex = GetLastChest();
         bool hasLastChest = (lastIndex == -1);
 
-        if(hasLastChest && !checkLastChest) {
+        if(hasLastChest && !checkLastChest && lastIndex != -1) {
+            chestParent.transform.GetChild(lastIndex).gameObject.SetActive(false);
             while(randomIndex >= (lastIndex - 3) && randomIndex <= (lastIndex + 3)) {
                 randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
             }
 
             checkLastChest = true;
+            
+            // Enlever le fait qu'on puisse avoir le coffre a 2 endroits en mm temps
         }
 
         if( isFirstChest) {
@@ -235,14 +238,9 @@ public class GameController : CoroutineSystem {
         }
         
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
-        chest.SetActive(true);
+       // chest.SetActive(true);
 
-        foreach(Step step in FindObjectsOfType(typeof(Step))) {
-            if(step.chest != null && step.chest.activeSelf) {
-                stepChest = step.gameObject;
-                break;
-            }
-        }
+        
 
         chest.GetComponent<Animation>().clip = chestController.chestAnimations[0];
 
@@ -255,54 +253,72 @@ public class GameController : CoroutineSystem {
                 isFirstChest = false;
             }
 
+            
+
             blackScreenAnim.Play();
-            mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
-            mainCamera.transform.LookAt(chest.transform);
+
+            chest.SetActive(true);
+            foreach(Step step in FindObjectsOfType(typeof(Step))) {
+                if(step.chest != null && step.chest.activeSelf) {
+                    stepChest = step.gameObject;
+                    break;
+                }
+            }
+            chest.SetActive(false);
+
+            if(timeToWait == 1.1f) { // First chest
+                mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
+                mainCamera.transform.LookAt(chest.transform);
+            }
+            else { 
+                RunDelayed(0.8f,() => {
+                    
+                    if(players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) 
+                        players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(false);
+
+                    mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
+                    mainCamera.transform.LookAt(chest.transform);
+                });
+            }
 
             RunDelayed(timeToWait,() => { // 2.4 pour full ; 1.1 
+                chest.SetActive(true);
                 chest.GetComponent<Animation>().Play();
                 StartCoroutine(CameraEffects.Instance.Shake(2f,0.25f));
                 hasGenChest = true;
+                AudioController.Instance.ambiantSource.clip = AudioController.Instance.earthQuake;
+                AudioController.Instance.ambiantSource.volume = 0.2f;
+                AudioController.Instance.ambiantSource.Play();
+
+                RunDelayed(2.5f,() => {
+                    AudioController.Instance.ambiantSource.Stop();
+
+                    actualChest = chest;
+                    hasGenChest = true;
+                    randomIndex = -1;
+                    chest.GetComponent<Animation>().clip = chestController.chestAnimations[1];
+
+                    if(!hasBeginGame) {
+                        BeginTurn(false);
+                        hasBeginGame = true;
+                        freeze = false;
+                    }
+                    else {
+                        players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
+                        players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
+                        
+                        mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
+                        mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+                        mainCamera.SetActive(true);
+                        mainCamera.GetComponent<Camera>().enabled = true;
+
+                        EndUserTurn();
+
+                        freeze = false;
+                    }
+                });
             });
         }
-
-
-        /*Vector3 cameraPosition = new Vector3(chest.transform.position.x,5479f,chest.transform.position.z);
-        
-        mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
-        mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,cameraPosition,75 * Time.deltaTime);
-        
-        if(mainCamera.transform.position == cameraPosition) {
-            players[actualPlayer].GetComponent<UserAudio>().SpawnChest();
-            chest.SetActive(true);
-            actualChest = chest;
-            hasGenChest = true;
-            
-            if(!hasBeginGame) {
-                BeginTurn(false);
-                hasBeginGame = true;
-                freeze = false;
-                randomIndex = -1;
-            }
-            else {
-                players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
-                players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
-                
-                mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
-                mainCamera.SetActive(true);
-                mainCamera.GetComponent<Camera>().enabled = true;
-
-                EndUserTurn();
-
-                freeze = false;
-            }
-
-            
-
-            // Marche que pour le tour 1 attention jpense 
-        }
-        */
     }
 
     private Vector3 GetChestDirection(GameObject obj,Step step) {

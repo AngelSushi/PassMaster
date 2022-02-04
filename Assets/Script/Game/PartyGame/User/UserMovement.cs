@@ -63,6 +63,9 @@ public class UserMovement : User {
 
     private NavMeshPath path;
 
+    
+    public GameObject userCam;
+
     void Start() {
         path = new NavMeshPath();
     }
@@ -236,12 +239,15 @@ public class UserMovement : User {
                 if(gameController.shopController.returnToStep || gameController.chestController.returnToStep) {
                     RunDelayed(0.35f,() => {
 
-                        if(gameController.shopController.returnToStep) 
+                        if(gameController.shopController.returnToStep) {
                             gameController.shopController.returnToStep = false;
-                        else
+                            gameController.EndUserTurn();
+                        }
+                        else {
                             gameController.chestController.returnToStep = false;
-
-                        gameController.EndUserTurn();
+                            gameController.hasGenChest = false;
+                        }
+        
                         return;
                     });
                 }
