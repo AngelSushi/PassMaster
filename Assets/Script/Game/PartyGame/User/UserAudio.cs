@@ -3,67 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UserAudio : MonoBehaviour {
-    
-    public AudioSource coinsGain;
-    public AudioSource coinsLoose;
-    public AudioSource spawnChest;
-    public AudioSource buyLoose;
-    public AudioSource cardGain;
-    public AudioSource findSecretCode;
-    public AudioSource buttonHover;
-    public AudioSource buttonClick;
-    public AudioSource bombFall;
-    public AudioSource bombExplode;
-    public AudioSource invicibility;
-    public AudioSource lightning;
+
+    public AudioSource userSource;
 
     public void CoinsGain() {
-        coinsGain.Play();
+        userSource.clip = AudioController.Instance.coinsGain;
+        userSource.Play();
     }
 
     public void CoinsLoose() {
-        coinsLoose.Play();
-    }
-
-    public void SpawnChest() {
-        spawnChest.Play();
+        userSource.clip = AudioController.Instance.coinsLoose;
+        userSource.Play();
     }
 
     public void BuyLoose() {
-        buyLoose.Play();
+        userSource.clip = AudioController.Instance.buyLoose;
+        userSource.Play();
     }  
 
-    public void CardGain() {
-        cardGain.Play();
+    public void CardGain() { // Don't use userSource because it's already use by CoinsLoose while the chest opens
+        AudioController.Instance.ambiantSource.clip = AudioController.Instance.cardGain;
+        AudioController.Instance.ambiantSource.Play();
     } 
 
     public void FindSecretCode() {
-        findSecretCode.Play();
+        AudioController.Instance.ambiantSource.clip = AudioController.Instance.findSecretCode;
+        AudioController.Instance.ambiantSource.Play();
     }
 
     public void ButtonHover() {
-        buttonHover.Play();
+        userSource.clip = AudioController.Instance.buttonHover;
+        userSource.Play();
     }
 
     public void ButtonClick() {
-        buttonClick.Play();
+        userSource.clip = AudioController.Instance.buttonClick;
+        userSource.Play();
     }
-
-    public void BombFall(){
-        bombFall.Play();
-    }
-
-    public void BombExplode() {
-        bombFall.Stop();
-        bombExplode.Play();
-    }
-
-    public void Invicibility() {
-        invicibility.Play();
-    }
-
-    public void Lightning() {
-        lightning.Play();
-    }
-
 }

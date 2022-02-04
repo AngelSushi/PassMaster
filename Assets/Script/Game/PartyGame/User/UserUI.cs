@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -287,97 +287,7 @@ public class UserUI : User {
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
 
                     switch(index) {
-                        case 0: // Double Dice
-                            movement.doubleDice = true;
-                            ManageInventory(false);
-                            isInInventory = false;
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-                            inventory.hasDoubleDice = false;
-                            break;
-
-                        case 1: // Reverse Dice
-                            movement.reverseDice = true;
-                            ManageInventory(false);
-                            isInInventory = false;
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-                            inventory.hasReverseDice = false;
-                            break;
-
-                        case 2: // Bomb
-                            
-
-                            break;
-                        case 3: //Hourglass
-                            if(gameController.dayController.dayPeriod < 2) 
-                                gameController.dayController.dayPeriod++;
-                            else 
-                                gameController.dayController.dayPeriod = 0;
-
-                            // BLack screeen animation
-                            ManageInventory(false);
-                            isInInventory = false;
-
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-
-                            // Camera animation on voit le dayPeriod d'avant ecran noir puis le nouveau dayPeriod
-                            inventory.hasHourglass = false;
-
-                            break;
-                        case 4: // Lightning
-                            cameraView = true;
-                            useLightning = true;
-                            camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-
-                            camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
-                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f);           
-                            DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f), "Appuyez sur ECHAP pour quitter le mode");
-
-                            ManageInventory(false);
-                            isInInventory = false;
-
-                            inventory.hasLightning = false;
-                            break;
-
-                        case 5: // Star
-                            transform.gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
-                            transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
-                            audio.Invicibility();
-
-                            ManageInventory(false);
-
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-
-                            gameController.mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                            gameController.mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
-                            gameController.mainCamera.SetActive(true);
-                            gameController.mainCamera.GetComponent<Camera>().enabled = true;
-                            isInInventory = false;
-
-                            inventory.hasStar = false;
-                            break;    
-
-                        case 6: // Parachute
-                            movement.agent.enabled = false;
-                            movement.isParachuting = true;
-                            ManageInventory(false); 
-                            showHUD = false;
-                            showActionButton = false;
-                            isInInventory = false;
-
-                            inventory.hasParachute = false;
-                            break;
+                        
                     }
                 }
                 else { // Le joueur n'a pas l'objet
@@ -503,9 +413,7 @@ public class UserUI : User {
             actions[i].GetChild(0).gameObject.SetActive(active);
             if(!active) 
                 actions[i].GetChild(1).gameObject.SetActive(active);
-        }
-
-        
+        }    
     }
 
     private void ManagerHudTurnState(bool active) {
