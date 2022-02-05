@@ -169,12 +169,14 @@ public class UserMovement : User {
                         ui.showHUD = true;          
                 }    
 
-                if(finishTurn) {
+            /*    if(finishTurn && (actualStep.GetComponent<Step>().chest != null && !actualStep.GetComponent<Step>().chest.activeSelf) && actualStep.GetComponent<Step>().type != StepType.SHOP) {
                     gameController.EndUserTurn();
-                }       
+                }
+              */         
             }
 
             else {
+
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
             
@@ -215,7 +217,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 6; 
+                if(isPlayer) diceResult = 7; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -751,8 +753,12 @@ public class UserMovement : User {
         timer = 0f;
 
         if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
-            if(!gameController.dialog.isInDialog)
-                DisplayChestDialog();
+            if(!gameController.dialog.isInDialog) {
+                if(isPlayer) 
+                    DisplayChestDialog();
+                else
+                    gameController.chestController.CheckChestBot(inventory);          
+            }
         }
     }
 
@@ -772,8 +778,12 @@ public class UserMovement : User {
         timer = 0f;
 
         if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
-            if(!gameController.dialog.isInDialog)
-                DisplayChestDialog();
+            if(!gameController.dialog.isInDialog) {
+                if(isPlayer) 
+                    DisplayChestDialog();
+                else
+                    gameController.chestController.CheckChestBot(inventory);
+            }
         }
     }
 
@@ -793,8 +803,12 @@ public class UserMovement : User {
         timer = 0f;
 
         if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
-            if(!gameController.dialog.isInDialog)
-                DisplayChestDialog();
+            if(!gameController.dialog.isInDialog) {
+                if(isPlayer) 
+                    DisplayChestDialog();
+                else
+                    gameController.chestController.CheckChestBot(inventory);          
+            }
         }
     }
 

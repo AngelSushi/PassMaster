@@ -211,21 +211,18 @@ public class GameController : CoroutineSystem {
 
         if(randomIndex == -1) {
             randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
-            mainCamera.transform.position = new Vector3(-1062.2f,5479f,-15821.6f);
         }
 
         int lastIndex = GetLastChest();
-        bool hasLastChest = (lastIndex == -1);
-
-        if(hasLastChest && !checkLastChest && lastIndex != -1) {
+        bool hasLastChest = (lastIndex != -1);
+ 
+        if(hasLastChest && !checkLastChest) {
             chestParent.transform.GetChild(lastIndex).gameObject.SetActive(false);
             while(randomIndex >= (lastIndex - 3) && randomIndex <= (lastIndex + 3)) {
                 randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
             }
 
             checkLastChest = true;
-            
-            // Enlever le fait qu'on puisse avoir le coffre a 2 endroits en mm temps
         }
 
         if( isFirstChest) {
