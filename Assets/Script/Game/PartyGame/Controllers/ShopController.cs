@@ -12,10 +12,13 @@ public class ShopController : CoroutineSystem {
     private GameObject actualPlayer,shopObject;
     private Vector3 shopPosition;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     private bool mooveToShop;
     [HideInInspector]
 =======
 <<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
     private Vector3 beginPosition;
     private bool mooveToShop;
 =======
@@ -23,6 +26,9 @@ public class ShopController : CoroutineSystem {
     public bool mooveToShop;
     [HideInInspector]
 >>>>>>> Stashed changes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     public bool returnToStep;
     private NavMeshPath shopPath;

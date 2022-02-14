@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class ChestController : CoroutineSystem {
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     public int chestCoinsPrice;
     private GameObject actualPlayer;
     private GameObject obj;
@@ -21,6 +22,8 @@ public class ChestController : CoroutineSystem {
     }
 =======
 <<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
     private List<GameObject> chestObj = new List<GameObject>();
     private GameObject actualChestObj;
 
@@ -189,9 +192,12 @@ public class ChestController : CoroutineSystem {
             returnToStep = true;
     }
 
+<<<<<<< Updated upstream
     public void CheckChestBot(UserInventory inventory) { // Check if bot can go to chest 
         if(inventory.coins < chestCoinsPrice) {
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< Updated upstream
     void Update() {
         
@@ -199,6 +205,9 @@ public class ChestController : CoroutineSystem {
     public void CheckChestBot(UserInventory inventory) { // Check if bot can go to chest 
         if(inventory.coins < chestCoinsPrice) {
             Debug.Log("not enough money for bot");
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             GameController.Instance.EndUserTurn();
             return;
@@ -209,14 +218,20 @@ public class ChestController : CoroutineSystem {
         chestPosition = actualBot.GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.transform.position - GetDirection(actualBot.GetComponent<UserMovement>().actualStep,actualBot.GetComponent<UserMovement>().actualStep.GetComponent<Step>());
         actualPlayer = actualBot;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         obj = actualBot.GetComponent<UserMovement>().actualStep;
         chestPath = new NavMeshPath();
         goToChest = true;
 =======
+=======
+>>>>>>> Stashed changes
         obj = actualBot.GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest;
         chestPath = new NavMeshPath();
         goToChest = true;
 >>>>>>> Stashed changes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 

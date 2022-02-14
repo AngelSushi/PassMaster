@@ -218,13 +218,19 @@ public class UserMovement : User {
                 
                 agent.enabled = true;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 if(isPlayer) diceResult = 7; 
 =======
 <<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
                 if(isPlayer) diceResult = 40; 
 =======
                 if(!isPlayer) diceResult = 7; 
 >>>>>>> Stashed changes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
@@ -784,9 +790,12 @@ public class UserMovement : User {
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         }   
 =======
 <<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
         } 
         else 
             finishTurn = true;  
@@ -795,6 +804,9 @@ public class UserMovement : User {
         else
             gameController.EndUserTurn();
 >>>>>>> Stashed changes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
         ui.ClearDiceResult();   
@@ -813,6 +825,7 @@ public class UserMovement : User {
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     public IEnumerator WaitMalus(bool stepReward,int amount) {
         yield return new WaitForSeconds(0.5f);
         
@@ -824,6 +837,8 @@ public class UserMovement : User {
         }   
 =======
 <<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
     public IEnumerator WaitChest() {
         agent.enabled = false;
 =======
@@ -883,6 +898,9 @@ public class UserMovement : User {
         timer = 0f;
     }
 >>>>>>> Stashed changes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
     private void DisplayChestDialog() {

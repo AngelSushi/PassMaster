@@ -31,6 +31,7 @@ public class CoinsReward : MonoBehaviour {
                     if(stepReward) {
                         controller.players[controller.actualPlayer].GetComponent<UserMovement>().finishTurn = true;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                         if(!controller.dialog.isInDialog) {
                             controller.EndUserTurn();
                         }
@@ -38,11 +39,16 @@ public class CoinsReward : MonoBehaviour {
 =======
 <<<<<<< Updated upstream
 =======
+>>>>>>> Stashed changes
+=======
                         if(!controller.dialog.isInDialog && !GameController.Instance.shopController.mooveToShop && !GameController.Instance.chestController.goToChest) {
                             controller.EndUserTurn();
                         }
                     }
 >>>>>>> Stashed changes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                     if(!controller.players[controller.actualPlayer].GetComponent<UserMovement>().isPlayer) 
                         controller.players[controller.actualPlayer].GetComponent<UserMovement>().hasBotBuyItem = true;
