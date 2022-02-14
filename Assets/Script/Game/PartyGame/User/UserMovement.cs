@@ -217,7 +217,15 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
+<<<<<<< Updated upstream
                 if(isPlayer) diceResult = 7; 
+=======
+<<<<<<< Updated upstream
+                if(isPlayer) diceResult = 40; 
+=======
+                if(!isPlayer) diceResult = 7; 
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -290,11 +298,16 @@ public class UserMovement : User {
 
                 if(type == StepType.SHOP && diceResult == 0) {
                     RunDelayed(0.5f,() => {
-                        Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
-                        if(gameController.dialog.currentDialog != shopDialog) {
-                            gameController.dialog.isInDialog = true;
-                            gameController.dialog.currentDialog = shopDialog;
-                            StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
+                        if(isPlayer) {
+                            Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
+                            if(gameController.dialog.currentDialog != shopDialog) {
+                                gameController.dialog.isInDialog = true;
+                                gameController.dialog.currentDialog = shopDialog;
+                                StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
+                            }
+                        }
+                        else {
+                            gameController.shopController.AskShopBot(inventory);
                         }
                     });
                 }
@@ -762,7 +775,7 @@ public class UserMovement : User {
         }
     }
 
-    private IEnumerator WaitMalus(bool stepReward) {
+    private IEnumerator WaitMalus(bool stepReward) { // WaitMalus on step
         yield return new WaitForSeconds(0.5f);
         
         if(inventory.coins > 0) {
@@ -770,7 +783,19 @@ public class UserMovement : User {
             inventory.CoinLoose(3);
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
+<<<<<<< Updated upstream
         }   
+=======
+<<<<<<< Updated upstream
+        } 
+        else 
+            finishTurn = true;  
+=======
+        }   
+        else
+            gameController.EndUserTurn();
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
         ui.ClearDiceResult();   
 
@@ -787,6 +812,7 @@ public class UserMovement : User {
         }
     }
 
+<<<<<<< Updated upstream
     public IEnumerator WaitMalus(bool stepReward,int amount) {
         yield return new WaitForSeconds(0.5f);
         
@@ -796,6 +822,32 @@ public class UserMovement : User {
             ui.DisplayReward(false,amount,stepReward);
             gameController.ActualizePlayerClassement();
         }   
+=======
+<<<<<<< Updated upstream
+    public IEnumerator WaitChest() {
+        agent.enabled = false;
+=======
+    public IEnumerator WaitMalus(bool stepReward,int amount) { // WaitMalus on buy or other actions
+        yield return new WaitForSeconds(0.5f);
+>>>>>>> Stashed changes
+        
+        if(inventory.cards + 1 == 6) 
+            audio.FindSecretCode();
+        else 
+            audio.CardGain();
+
+        if(!isPlayer) 
+            StartCoroutine(WaitMalus(30,false));
+
+<<<<<<< Updated upstream
+        yield return new WaitForSeconds(1f);      
+
+        int[] secretCode = gameController.secretCode;
+        int random = Random.Range(0,secretCode.Length - 1);
+
+        int targetCode = secretCode[random];
+        bool finishCode = true;
+>>>>>>> Stashed changes
 
         ui.ClearDiceResult();   
 
@@ -810,7 +862,28 @@ public class UserMovement : User {
                     gameController.chestController.CheckChestBot(inventory);          
             }
         }
+<<<<<<< Updated upstream
     }
+=======
+        
+        inventory.AddCards(1);
+
+        Dialog currentDialog = gameController.dialog.GetDialogByName("FindNewCode");
+
+
+        if(!finishCode) {
+            currentDialog.Content[0] = currentDialog.Content[0].Replace("%n","" + targetCode);
+            currentDialog.Content[0] = currentDialog.Content[0].Replace("%b","" + (6 - inventory.cards));
+        }
+
+        else 
+            currentDialog = gameController.dialog.GetDialogByName("FindAllSecretCode");   
+=======
+        random = -1;
+        timer = 0f;
+    }
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
     private void DisplayChestDialog() {
         Dialog askChest = gameController.dialog.GetDialogByName("AskChestBuy");

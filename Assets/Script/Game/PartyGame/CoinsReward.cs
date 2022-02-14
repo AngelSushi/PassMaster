@@ -30,10 +30,20 @@ public class CoinsReward : MonoBehaviour {
                     
                     if(stepReward) {
                         controller.players[controller.actualPlayer].GetComponent<UserMovement>().finishTurn = true;
+<<<<<<< Updated upstream
                         if(!controller.dialog.isInDialog) {
                             controller.EndUserTurn();
                         }
                     }
+=======
+<<<<<<< Updated upstream
+=======
+                        if(!controller.dialog.isInDialog && !GameController.Instance.shopController.mooveToShop && !GameController.Instance.chestController.goToChest) {
+                            controller.EndUserTurn();
+                        }
+                    }
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                     if(!controller.players[controller.actualPlayer].GetComponent<UserMovement>().isPlayer) 
                         controller.players[controller.actualPlayer].GetComponent<UserMovement>().hasBotBuyItem = true;
 
