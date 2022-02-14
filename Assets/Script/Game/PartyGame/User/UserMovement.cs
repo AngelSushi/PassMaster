@@ -18,7 +18,6 @@ public class UserMovement : User {
     public bool stop;
     public bool lastStepIsArrow;
     public bool waitChest;
-    public bool goToChest;
     public bool returnStepBack;
     public bool reverseCount;
     public bool doubleDice;
@@ -64,6 +63,9 @@ public class UserMovement : User {
 
     private NavMeshPath path;
 
+    
+    public GameObject userCam;
+
     void Start() {
         path = new NavMeshPath();
     }
@@ -95,7 +97,6 @@ public class UserMovement : User {
         right = false;
         transform.GetChild(1).gameObject.SetActive(false);
         hasShowChestHUD = false;
-        goToChest = false;
         canMooveToChest = true;
         waitChest = false;
         hasCollideDice = false;
@@ -138,8 +139,7 @@ public class UserMovement : User {
                     CheckPath();
 
                     if(canMoove) 
-                        agent.SetPath(path);    
-                    
+                        agent.SetPath(path);   
                 }
 
                 if(finishMovement) {
@@ -152,65 +152,7 @@ public class UserMovement : User {
                     ui.ClearDiceResult();
                     hasCheckPath = false;
                     finishMovement = false;
-                }
-
-                if(finishTurn) { // Mettre tout dans gameController pour une meilleur gestion et plus propre
-                    nextStep = null;
-
-                    if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) {
-                        if(isPlayer) {
-                            if(!hasShowChestHUD) {
-                                ui.showChestHUD = true;
-                                hasShowChestHUD = true;
-                            }
-
-                            if(goToChest && hasShowChestHUD) {
-                                agent.enabled = false;
-
-                                if(canMooveToChest) {
-                                    Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,agent.speed * Time.deltaTime);               
-                                }
-                                else { // Le joueur collide avec le coffre
-
-                                    if(!waitChest) {                                      
-                                        actualStep.GetComponent<Step>().chest.GetComponent<Animator>().SetBool("Open",true);                                        
-                                        StartCoroutine(WaitChest());
-                                        waitChest = true;
-                                    }
-
-                                }
-                            }                      
-                        }
-                        else { // le bot
-                            if(inventory.coins >= 30 && inventory.cards < 6) {
-                                if(canMooveToChest) {
-                                    Vector3 chestPosition = new Vector3(actualStep.GetComponent<Step>().chest.transform.position.x,transform.position.y,actualStep.GetComponent<Step>().chest.transform.position.z);
-                                    transform.position = Vector3.MoveTowards(transform.position,chestPosition,agent.speed * Time.deltaTime);               
-                                }
-                                else { // Le joueur collide avec le coffre
-
-                                    actualStep.GetComponent<Step>().chest.GetComponent<Animator>().SetBool("Open",true);
-                                    if(!waitChest) {
-                                        
-                                        StartCoroutine(WaitChest());
-                                        waitChest = true;
-                                    }
-
-                                }
-                            }
-                            else {
-                                if(canMooveToChest) 
-                                    gameController.EndUserTurn();
-                            }
-                        }
-                    }
-
-                    else 
-                        gameController.EndUserTurn();
-                    
-                    return;
-                }             
+                }            
 
                 if(!isPlayer && waitDiceResult) {
                     if(random == -1) 
@@ -225,14 +167,19 @@ public class UserMovement : User {
                     }
                     else 
                         ui.showHUD = true;          
-                }           
+                }    
+
+            /*    if(finishTurn && (actualStep.GetComponent<Step>().chest != null && !actualStep.GetComponent<Step>().chest.activeSelf) && actualStep.GetComponent<Step>().type != StepType.SHOP) {
+                    gameController.EndUserTurn();
+                }
+              */         
             }
 
             else {
+
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
-                
-
+            
                 if(stepBack) {
                     agent.enabled = false;
                     transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
@@ -270,7 +217,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 40; 
+                if(isPlayer) diceResult = 7; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -281,7 +228,9 @@ public class UserMovement : User {
                 ui.RefreshDiceResult(diceResult, actualColor);
                 GameObject hitObj = hit.gameObject;
                 hitObj.GetComponent<MeshRenderer>().enabled = false;
-                
+
+                ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
+
                 RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
             }
        } 
@@ -295,10 +244,18 @@ public class UserMovement : User {
                 return;
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
-                if(gameController.shopController.returnToStep) {
+                if(gameController.shopController.returnToStep || gameController.chestController.returnToStep) {
                     RunDelayed(0.35f,() => {
-                        finishTurn = true;
-                        gameController.shopController.returnToStep = false;
+
+                        if(gameController.shopController.returnToStep) {
+                            gameController.shopController.returnToStep = false;
+                            gameController.EndUserTurn();
+                        }
+                        else {
+                            gameController.chestController.returnToStep = false;
+                            gameController.hasGenChest = false;
+                        }
+        
                         return;
                     });
                 }
@@ -344,6 +301,7 @@ public class UserMovement : User {
             }
 
             if(type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION) {
+                actualStep = hit.gameObject;
                 if(ui.direction == null) 
                     ui.direction = hit.gameObject.GetComponent<Direction>();
 
@@ -394,32 +352,35 @@ public class UserMovement : User {
                     diceResult = -1;
                 }
             }
+
+            if(type == StepType.FIX_DIRECTION && lastStepIsArrow && isPlayer) {
+                Debug.Log("actualStep: " + actualStep);
+                nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
+                lastStepIsArrow = false;
+                return;
+            }
+
             if(type == StepType.FIX_DIRECTION && (lastStep != null && lastStep.GetComponent<Step>() != null && (lastStep.GetComponent<Step>().type != StepType.BONUS_END || lastStep.GetComponent<Step>().type != StepType.MALUS_END)) && !bypassDirection && isTurn) {
                 if(isPlayer) { // Joueur
-                    if(!lastStepIsArrow) {
-                        if(!left && !right && !front) {
-                            if(!ui.showDirection) 
-                                ui.showDirection = true;
-
-                            stop = true; 
-                            return;
-                        }
-                        else {
-                            agent.enabled = true;
-                            if(left) 
-                                nextStep = ui.direction.directionsStep[0].transform;
-                            if(front) {
-                                nextStep = ui.direction.directionsStep[1].transform;
-                            // front = false;
-                            }
-                            if(right) 
-                                nextStep = ui.direction.directionsStep[2].transform;
-
-                            stop = !(left || front || right);
-                        }
+                    if(!left && !right && !front) {
+                        if(!ui.showDirection) 
+                            ui.showDirection = true;
+                        stop = true; 
+                        return;
                     }
-                    else 
+                    else {
+                        agent.enabled = true;
+                        if(left) 
+                            nextStep = ui.direction.directionsStep[0].transform;
+                        if(front) {
+                            nextStep = ui.direction.directionsStep[1].transform;
+                        // front = false;
+                        }
+                        if(right) 
+                            nextStep = ui.direction.directionsStep[2].transform;
+
                         stop = !(left || front || right);
+                    }
                 }
                 
                 else { // Bot Facile = 50 ; Moyen = 70 ; Difficile  = 90 de chance d'aller vers le coffre
@@ -446,8 +407,6 @@ public class UserMovement : User {
                         int randomGoToChest = Random.Range(0,100);
 
                         GenerateIAPaths(iaPathDirections);
-
-                        
 
                         bool goToSmallest = randomGoToChest <= percentageGoToChest;
                         int lastSize = 0;
@@ -583,6 +542,10 @@ public class UserMovement : User {
 
     private void CheckPath() {
         if(!hasCheckPath && stepPaths != null) { 
+
+            if(beginStep == null)
+                beginStep = nextStep.gameObject;
+
             Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
             int stepIndex = actualStep != null ? FindIndexInParent(stepParent.gameObject,actualStep) : FindIndexInParent(stepParent.gameObject,beginStep);
             int result = actualStep != null ? diceResult : beginResult;
@@ -607,7 +570,7 @@ public class UserMovement : User {
     }
 
     private void GetNextStep() {
-        GameObject actualParent = actualStep.transform.parent.gameObject;
+        GameObject actualParent = actualStep != null ? actualStep.transform.parent.gameObject : gameController.firstStep.transform.parent.gameObject;
         int stepIndex = FindIndexInParent(actualParent,actualStep);
 
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
@@ -788,19 +751,15 @@ public class UserMovement : User {
 
         random = -1;
         timer = 0f;
-    }
 
-    public IEnumerator WaitBonus(bool stepReward,int amount) {
-        yield return new WaitForSeconds(0.5f);
-
-        inventory.CoinGain(amount);
-        audio.CoinsGain();
-        ui.DisplayReward(true,3,stepReward);
-        ui.ClearDiceResult();
-        gameController.ActualizePlayerClassement();
-
-        random = -1;
-        timer = 0f;
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+            if(!gameController.dialog.isInDialog) {
+                if(isPlayer) 
+                    DisplayChestDialog();
+                else
+                    gameController.chestController.CheckChestBot(inventory);          
+            }
+        }
     }
 
     private IEnumerator WaitMalus(bool stepReward) {
@@ -811,80 +770,53 @@ public class UserMovement : User {
             inventory.CoinLoose(3);
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
-        } 
-        else 
-            finishTurn = true;  
+        }   
 
         ui.ClearDiceResult();   
 
         random = -1;
         timer = 0f;
-    }
 
-    public IEnumerator WaitMalus(int malusCoins,bool stepReward) {
-        yield return new WaitForSeconds(0.2f);
-        audio.CoinsLoose();
-        inventory.CoinLoose(malusCoins);
-        ui.DisplayReward(false,malusCoins,stepReward);
-        gameController.ActualizePlayerClassement();
-         
-    }
-    
-
-    public IEnumerator WaitChest() {
-        agent.enabled = false;
-        
-        if(inventory.cards + 1 == 6) 
-            audio.FindSecretCode();
-        else 
-            audio.CardGain();
-
-        if(!isPlayer) 
-            StartCoroutine(WaitMalus(30,false));
-
-        yield return new WaitForSeconds(1f);      
-
-        int[] secretCode = gameController.secretCode;
-        int random = Random.Range(0,secretCode.Length - 1);
-
-        int targetCode = secretCode[random];
-        bool finishCode = true;
-
-        List<int> indexes = new List<int>();
-
-        for(int i = 0;i<secretCode.Length;i++) {
-            if(secretCode[i] == targetCode) 
-                indexes.Add(i); 
-            if(inventory.secretCode[i] == -1) 
-                finishCode = false;
-            
-        }
-
-        foreach(int index in indexes) {
-            if(inventory.secretCode[index] != -1) {
-                inventory.secretCode[index] = targetCode;
-                break;
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+            if(!gameController.dialog.isInDialog) {
+                if(isPlayer) 
+                    DisplayChestDialog();
+                else
+                    gameController.chestController.CheckChestBot(inventory);
             }
         }
+    }
+
+    public IEnumerator WaitMalus(bool stepReward,int amount) {
+        yield return new WaitForSeconds(0.5f);
         
-        inventory.AddCards(1);
+        if(inventory.coins > 0) {
+            audio.CoinsLoose();
+            inventory.CoinLoose(amount);
+            ui.DisplayReward(false,amount,stepReward);
+            gameController.ActualizePlayerClassement();
+        }   
 
-        Dialog currentDialog = gameController.dialog.GetDialogByName("FindNewCode");
+        ui.ClearDiceResult();   
 
+        random = -1;
+        timer = 0f;
 
-        if(!finishCode) {
-            currentDialog.Content[0] = currentDialog.Content[0].Replace("%n","" + targetCode);
-            currentDialog.Content[0] = currentDialog.Content[0].Replace("%b","" + (6 - inventory.cards));
+        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+            if(!gameController.dialog.isInDialog) {
+                if(isPlayer) 
+                    DisplayChestDialog();
+                else
+                    gameController.chestController.CheckChestBot(inventory);          
+            }
         }
+    }
 
-        else 
-            currentDialog = gameController.dialog.GetDialogByName("FindAllSecretCode");   
-
-        gameController.dialog.currentDialog = currentDialog;
+    private void DisplayChestDialog() {
+        Dialog askChest = gameController.dialog.GetDialogByName("AskChestBuy");
         gameController.dialog.isInDialog = true;
-        gameController.dialog.finish = false;
-        StartCoroutine(gameController.dialog.ShowText(currentDialog.Content[0],currentDialog.Content.Length));
-
+        gameController.dialog.currentDialog = askChest;
+        StartCoroutine(gameController.dialog.ShowText(askChest.Content[0],askChest.Content.Length));
     }
 
     private IEnumerator WaitTimeToReturn() {
@@ -895,8 +827,5 @@ public class UserMovement : User {
     }
 
     #endregion
-    
-   
-    
-    
+     
 }

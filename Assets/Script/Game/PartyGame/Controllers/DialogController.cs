@@ -50,8 +50,8 @@ public class DialogController : MonoBehaviour {
     public class OnDialogEndArgs : EventArgs {
         public Dialog dialog;
         public GameObject actualPlayer;
-        public Vector3 shopPosition;
-        public GameObject shopObject;
+        public Vector3 position;
+        public GameObject obj;
         public int answerIndex;
     }
 
@@ -73,7 +73,7 @@ public class DialogController : MonoBehaviour {
 
             if(finish) {
                 if(answer >= 0) { // LE JOUEUR A UN CHOIX A FAIRE
-                    OnDialogEndArgs args = new OnDialogEndArgs{ dialog = null, actualPlayer = null,shopPosition = Vector3.zero, shopObject = null,answerIndex = -1};
+                    OnDialogEndArgs args = new OnDialogEndArgs{ dialog = null, actualPlayer = null,position = Vector3.zero, obj = null,answerIndex = -1};
                     switch(answer) {
                         case 0:
                             
@@ -96,13 +96,16 @@ public class DialogController : MonoBehaviour {
                                 hasReturnToMainMenu = true; // Faire en sorte que quand on relance ca nous met la var en false
                             }
 
-                            Debug.Log("dialogID: " + currentDialog.id);
-
                             if(currentDialog.id == 0 || currentDialog.id == 7) {// Dialogue du shop
-                                Vector3 shopVector =  gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop != null ? gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop.transform.position : Vector3.zero;
-                                args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], shopPosition = shopVector,shopObject = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop, answerIndex = answer};                               
+                                Vector3 shopVector =  gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop.transform.position;
+                                args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = shopVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop, answerIndex = answer};                               
                             }
 
+                            if(currentDialog.id == 10 || currentDialog.id == 11 || currentDialog.id == 12 || currentDialog.id == 13) {
+                                Vector3 chestVector = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.transform.position;
+                                Debug.Log("chest: " + chestVector);
+                                args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = chestVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest, answerIndex = answer};                               
+                            }
                             
                             break;
                         case 1:
@@ -114,15 +117,12 @@ public class DialogController : MonoBehaviour {
 
                             }
 
-                            if(currentDialog.Name == "QuitGame") 
-                                EndDialog();
-
                             break;
                     }
+                    EndDialog(); 
 
-                    Debug.Log("invoke: " + OnDialogEnd);
                     OnDialogEnd?.Invoke(this,args); // Call only if OnDialogEnd is null ; you should write if(OnDialogEnd != null) ....
-                    EndDialog();                           
+                                              
                 }
                 else { // LE JOUEUR NA PAS DE CHOIX A FAIRE
                     if(!answerObj.activeSelf) {

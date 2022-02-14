@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,7 +11,6 @@ public class UserUI : User {
     public bool showTurnInfo;
     public bool showActionButton;
     public bool showDirection;
-    public bool showChestHUD;
     public bool showShop;
     public bool cameraView;
     public bool useBomb;
@@ -50,7 +49,6 @@ public class UserUI : User {
             ManagerHudTurnState(showTurnInfo && gameController.part == GameController.GamePart.PARTYGAME);
             ManageActionButtonState(showActionButton);
             ManageHudDirection(showDirection);
-            ManageChestHUD(showChestHUD);
             ManageShop(showShop);
         } 
     }
@@ -143,22 +141,6 @@ public class UserUI : User {
             }
         }
 
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index < 1) 
-                index++;
-
-            switch(index) {
-                case 0:
-                    chestHUD.GetChild(1).gameObject.SetActive(true);
-                    break;
-
-                case 1:
-                    chestHUD.GetChild(1).gameObject.SetActive(false);
-                    chestHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
-
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
             if(index < 7) 
                 index++;
@@ -230,26 +212,7 @@ public class UserUI : User {
                     directions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
-        }
-
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index > 0) 
-                index--;
-
-            switch(index) {
-                case 0:
-                    chestHUD.GetChild(1).gameObject.SetActive(true);
-                    chestHUD.GetChild(2).gameObject.SetActive(false);
-                    break;
-
-                case 1:
-                    chestHUD.GetChild(1).gameObject.SetActive(false);
-                    chestHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
-
-        
+        }      
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index > 0) 
@@ -285,30 +248,6 @@ public class UserUI : User {
 
            // movement.reverseCount = direction.reverseCount;
             showDirection = false;
-            index = -1;
-        }
-
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index == 0) {              
-                isTurn = false;
-                gameController.EndUserTurn();                
-            }
-            else if(index == 1) {
-                // Buy
-                int coins = inventory.coins;
-
-                if(coins >= 30) {
-                    StartCoroutine(movement.WaitMalus(30,false));
-                    movement.goToChest = true;
-                }
-                else {
-                    audio.BuyLoose();
-                    gameController.EndUserTurn();
-                    // Afficher un texte également
-                }
-            }
-
-            showChestHUD = false;
             index = -1;
         }
 
@@ -348,97 +287,7 @@ public class UserUI : User {
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
 
                     switch(index) {
-                        case 0: // Double Dice
-                            movement.doubleDice = true;
-                            ManageInventory(false);
-                            isInInventory = false;
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-                            inventory.hasDoubleDice = false;
-                            break;
-
-                        case 1: // Reverse Dice
-                            movement.reverseDice = true;
-                            ManageInventory(false);
-                            isInInventory = false;
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-                            inventory.hasReverseDice = false;
-                            break;
-
-                        case 2: // Bomb
-                            
-
-                            break;
-                        case 3: //Hourglass
-                            if(gameController.dayController.dayPeriod < 2) 
-                                gameController.dayController.dayPeriod++;
-                            else 
-                                gameController.dayController.dayPeriod = 0;
-
-                            // BLack screeen animation
-                            ManageInventory(false);
-                            isInInventory = false;
-
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-
-                            // Camera animation on voit le dayPeriod d'avant ecran noir puis le nouveau dayPeriod
-                            inventory.hasHourglass = false;
-
-                            break;
-                        case 4: // Lightning
-                            cameraView = true;
-                            useLightning = true;
-                            camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-
-                            camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
-                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f);           
-                            DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f), "Appuyez sur ECHAP pour quitter le mode");
-
-                            ManageInventory(false);
-                            isInInventory = false;
-
-                            inventory.hasLightning = false;
-                            break;
-
-                        case 5: // Star
-                            transform.gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
-                            transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
-                            audio.Invicibility();
-
-                            ManageInventory(false);
-
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-
-                            gameController.mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                            gameController.mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
-                            gameController.mainCamera.SetActive(true);
-                            gameController.mainCamera.GetComponent<Camera>().enabled = true;
-                            isInInventory = false;
-
-                            inventory.hasStar = false;
-                            break;    
-
-                        case 6: // Parachute
-                            movement.agent.enabled = false;
-                            movement.isParachuting = true;
-                            ManageInventory(false); 
-                            showHUD = false;
-                            showActionButton = false;
-                            isInInventory = false;
-
-                            inventory.hasParachute = false;
-                            break;
+                        
                     }
                 }
                 else { // Le joueur n'a pas l'objet
@@ -564,9 +413,7 @@ public class UserUI : User {
             actions[i].GetChild(0).gameObject.SetActive(active);
             if(!active) 
                 actions[i].GetChild(1).gameObject.SetActive(active);
-        }
-
-        
+        }    
     }
 
     private void ManagerHudTurnState(bool active) {
@@ -614,10 +461,6 @@ public class UserUI : User {
             foreach(Transform direction in directions)
                 direction.gameObject.SetActive(false);
         }
-    }
-
-    private void ManageChestHUD(bool active) {
-        chestHUD.gameObject.SetActive(active);
     }
 
     private void ManageShop(bool active) {
