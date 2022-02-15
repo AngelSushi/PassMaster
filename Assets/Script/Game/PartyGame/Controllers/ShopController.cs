@@ -8,6 +8,7 @@ using System.Linq;
 
 public class ShopController : CoroutineSystem {
 
+<<<<<<< Updated upstream
     
     private GameObject actualPlayer,shopObject;
     private Vector3 shopPosition;
@@ -22,6 +23,16 @@ public class ShopController : CoroutineSystem {
     private Vector3 beginPosition;
     private bool mooveToShop;
 =======
+=======
+    private GameObject actualPlayer,shopObject;
+    private Vector3 shopPosition;
+
+    [HideInInspector]
+    private Vector3 beginPosition;
+
+    [HideInInspector]
+    public bool mooveToShop;
+>>>>>>> Stashed changes
     [HideInInspector]
     public bool mooveToShop;
     [HideInInspector]
@@ -169,7 +180,7 @@ public class ShopController : CoroutineSystem {
             case 2:
                 return "ReverseDice";
             case 3:
-                return "Bomb";
+                return "Shell";
             case 4:
                 return "Lightning";
             case 5:
@@ -223,8 +234,8 @@ public class ShopController : CoroutineSystem {
                 return "Dé triple";
             case "ReverseDice":
                 return "Dé inverse";
-            case "Bomb":
-                return "Bombe";
+            case "Shell":
+                return "Carapace";
             case "Lightning":
                 return "Eclair";
             case "Hourglass":
