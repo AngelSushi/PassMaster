@@ -30,10 +30,17 @@ public class ShopController : CoroutineSystem {
     [HideInInspector]
     private Vector3 beginPosition;
 
+    [HideInInspector]
+    public bool mooveToShop;
 >>>>>>> Stashed changes
     [HideInInspector]
     public bool mooveToShop;
     [HideInInspector]
+>>>>>>> Stashed changes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     public bool returnToStep;
     private NavMeshPath shopPath;
 
@@ -173,7 +180,7 @@ public class ShopController : CoroutineSystem {
             case 2:
                 return "ReverseDice";
             case 3:
-                return "Bomb";
+                return "Shell";
             case 4:
                 return "Lightning";
             case 5:
@@ -227,8 +234,8 @@ public class ShopController : CoroutineSystem {
                 return "Dé triple";
             case "ReverseDice":
                 return "Dé inverse";
-            case "Bomb":
-                return "Bombe";
+            case "Shell":
+                return "Carapace";
             case "Lightning":
                 return "Eclair";
             case "Hourglass":
