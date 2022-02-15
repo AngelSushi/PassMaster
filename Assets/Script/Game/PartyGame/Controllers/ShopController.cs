@@ -4,30 +4,52 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.AI;
+using System.Linq;
 
 public class ShopController : CoroutineSystem {
 
-    public GameController gameController;
-
+    
     private GameObject actualPlayer,shopObject;
     private Vector3 shopPosition;
-    private bool mooveToShop;
+    [HideInInspector]
+    private Vector3 beginPosition;
+    [HideInInspector]
+    public bool mooveToShop;
     [HideInInspector]
     public bool returnToStep;
+    [HideInInspector]
+    public bool hasFinishBuy = true;
+
     private NavMeshPath shopPath;
 
     public GameObject dialogShopParent;
 
     public DialogController shopDialogs; 
 
+    public List<ShopItem> shopItems;
+
     private bool askBuy;
 
     private int lastSlot;
+    private GameController gameController;
 
     void Start() {
+        gameController = GameController.Instance;
         shopDialogs.dialogArray = gameController.dialog.dialogArray;
         gameController.dialog.OnDialogEnd += EventOnDialogEnd;
         shopDialogs.OnDialogEnd += EventOnDialogEnd;
+
+        shopItems = shopItems.OrderBy(item=>item.price).ToList();
+
+        if(transform.GetChild(1).childCount != shopItems.Count) 
+            Debug.Log("error in size of items");
+
+        for(int i = 0;i<transform.GetChild(1).childCount;i++) {
+            Transform shopItemTrans = transform.GetChild(1).GetChild(i);
+            shopItemTrans.GetChild(0).gameObject.GetComponent<Image>().sprite = shopItems[i].sprite;
+            shopItemTrans.GetChild(1).gameObject.GetComponent<Text>().text = shopItems[i].name;
+            shopItemTrans.GetChild(2).GetChild(1).gameObject.GetComponent<Text>().text = "" + shopItems[i].price;
+        }
     }
 
     public override void Update() {
@@ -38,15 +60,40 @@ public class ShopController : CoroutineSystem {
             RunDelayed(0.65f,() => { // Pas synchro avec la vitesse du joueur
                 shopPosition = Vector3.zero;
                 mooveToShop = false;
-                actualPlayer.GetComponent<UserUI>().showShop = true;
+                if(actualPlayer.GetComponent<UserMovement>().isPlayer) {
+                    actualPlayer.GetComponent<UserUI>().showShop = true;
 
-                shopObject.transform.GetChild(0).gameObject.SetActive(true);
-                gameController.mainCamera.SetActive(true); 
-                actualPlayer.transform.GetChild(1).gameObject.SetActive(false);
+                    shopObject.transform.GetChild(0).gameObject.SetActive(true);
+                    gameController.mainCamera.SetActive(true); 
+                    actualPlayer.transform.GetChild(1).gameObject.SetActive(false);
 
-                gameController.mainCamera.GetComponent<Camera>().fieldOfView = 60;
-                gameController.mainCamera.transform.position = actualPlayer.transform.GetChild(1).gameObject.transform.position;
-                gameController.mainCamera.transform.rotation = actualPlayer.transform.GetChild(1).gameObject.transform.rotation;                
+                    gameController.mainCamera.GetComponent<Camera>().fieldOfView = 60;
+                    gameController.mainCamera.transform.position = actualPlayer.transform.GetChild(1).gameObject.transform.position;
+                    gameController.mainCamera.transform.rotation = actualPlayer.transform.GetChild(1).gameObject.transform.rotation;     
+                }   
+                else {
+                    List<ShopItem> expensiveItems = shopItems;
+                    expensiveItems.Reverse();
+
+                    UserInventory inv = actualPlayer.GetComponent<UserInventory>();
+
+                    if(inv == null) {
+                        gameController.EndUserTurn();
+                        return;
+                    }
+
+                    foreach(ShopItem item in expensiveItems) {
+                        if(inv.coins >= item.price && hasFinishBuy) {
+                            StartCoroutine(actualPlayer.GetComponent<UserMovement>().WaitMalus(false,item.price));
+                            
+                            hasFinishBuy = false;
+
+                            while(!hasFinishBuy) {}
+                            // Attendre la fin du waitmalus et refaire 
+                        }
+                    }
+
+                }        
             });
             
         }
@@ -101,6 +148,9 @@ public class ShopController : CoroutineSystem {
         }
     }
 
+
+    #region User's Functions
+
     public void OnEnterHoverButton(int slot) {
         if(askBuy)
             return;
@@ -128,7 +178,7 @@ public class ShopController : CoroutineSystem {
             case 2:
                 return "ReverseDice";
             case 3:
-                return "Bomb";
+                return "Shell";
             case 4:
                 return "Lightning";
             case 5:
@@ -182,8 +232,8 @@ public class ShopController : CoroutineSystem {
                 return "Dé triple";
             case "ReverseDice":
                 return "Dé inverse";
-            case "Bomb":
-                return "Bombe";
+            case "Shell":
+                return "Carapace";
             case "Lightning":
                 return "Eclair";
             case "Hourglass":
@@ -193,4 +243,38 @@ public class ShopController : CoroutineSystem {
         }
     }
 
+    #endregion
+
+    #region Bot's Functions
+
+    public void AskShopBot(UserInventory inv) {
+        ShopItem cheapestItem = FindCheapestItem();
+
+        if(cheapestItem == null) {
+            gameController.EndUserTurn();
+            return;
+        }
+
+        if(inv.coins < cheapestItem.price) 
+            gameController.EndUserTurn();
+        else
+            mooveToShop = true;
+    }
+
+    private ShopItem FindCheapestItem() {
+        int minPrice = 0;
+        ShopItem cheapestItem = null;
+
+        foreach(ShopItem item in shopItems) {
+            if(minPrice <= item.price) {
+                minPrice = item.price;
+                cheapestItem = item;
+            }
+        }
+
+        return cheapestItem;
+    }
+
+
+    #endregion
 }

@@ -22,7 +22,6 @@ public class UserMovement : User {
     public bool reverseCount;
     public bool doubleDice;
     public bool reverseDice;    
-    public bool hasBotBuyItem;
     public GameObject lastStep;
     public bool isMooving;
     public GameObject giveUI;

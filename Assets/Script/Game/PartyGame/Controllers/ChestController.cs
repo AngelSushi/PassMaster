@@ -41,7 +41,7 @@ public class ChestController : CoroutineSystem {
                 }
 
                 RunDelayed(0.2f,() => { // Faire la vérification avant si on a pas déjà assez de cartes
-                    if(!GameController.Instance.dialog.isInDialog && actualPlayer.GetComponent<UserMovement>().isPlayer) {
+                    if(!GameController.Instance.dialog.isInDialog) {
                         if(actualPlayer.GetComponent<UserMovement>().isPlayer) {
                             int secretNumber = actualPlayer.GetComponent<UserInventory>().AddCards();
 
