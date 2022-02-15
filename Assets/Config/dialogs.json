@@ -41,9 +41,9 @@
 		},
 		{
 			"Author": "",
-			"Name": "HoverItem_Bomb",
+			"Name": "HoverItem_Shell",
 			"Content": [
-				"Vous pouvez déposer la bombe ou vous voulez sur la carte. Gare à celui qui se la prendra. "
+				"Décupler vos mouvements avec cette carapace. Gare à ceux qui se trouveront sur votre chemin. "
 			],
 			"NeedAnswer": false,
 			"Answers": []

@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06430dc9d8ebf5c4082955879ed2dcbe, type: 3}
+  m_Script: {fileID: 11500000, guid: a265c95026132584fb479f93bf03faec, type: 3}
   m_Name: Shell
   m_EditorClassIdentifier: 
   name: Carapace
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 05fde66110c1ba247b320087c936ec36, type: 3}
   price: 70
   maxQuantity: 1
