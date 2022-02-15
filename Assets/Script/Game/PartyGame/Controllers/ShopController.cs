@@ -8,6 +8,7 @@ using System.Linq;
 
 public class ShopController : CoroutineSystem {
 
+<<<<<<< Updated upstream
     
     private GameObject actualPlayer,shopObject;
     private Vector3 shopPosition;
@@ -22,14 +23,17 @@ public class ShopController : CoroutineSystem {
     private Vector3 beginPosition;
     private bool mooveToShop;
 =======
+=======
+    private GameObject actualPlayer,shopObject;
+    private Vector3 shopPosition;
+
+    [HideInInspector]
+    private Vector3 beginPosition;
+
+>>>>>>> Stashed changes
     [HideInInspector]
     public bool mooveToShop;
     [HideInInspector]
->>>>>>> Stashed changes
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     public bool returnToStep;
     private NavMeshPath shopPath;
 
