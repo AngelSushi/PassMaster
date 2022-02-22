@@ -53,16 +53,11 @@ public class UserMovement : User {
     private Vector3 parachuteMovement;
     private bool bypassDirection;
     public bool canMoove;
-
     private bool hasFindChest;
     private List<GameObject> iaDirectionPath;
-
     [HideInInspector]
     public int currentTabIndex;
-
     private NavMeshPath path;
-
-    
     public GameObject userCam;
 
     void Start() {
@@ -216,7 +211,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 7; 
+                if(!isPlayer) diceResult = 41; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -249,6 +244,7 @@ public class UserMovement : User {
                         if(gameController.shopController.returnToStep) {
                             gameController.shopController.returnToStep = false;
                             gameController.EndUserTurn();
+                            Debug.Log("return to step end turn");
                         }
                         else {
                             gameController.chestController.returnToStep = false;
@@ -287,15 +283,20 @@ public class UserMovement : User {
                     }
                 }
 
-                if(type == StepType.SHOP && diceResult == 0) {
-                    RunDelayed(0.5f,() => {
-                        Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
-                        if(gameController.dialog.currentDialog != shopDialog) {
-                            gameController.dialog.isInDialog = true;
-                            gameController.dialog.currentDialog = shopDialog;
-                            StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
-                        }
-                    });
+                if(type == StepType.SHOP && diceResult == 0) { // Faire en sorte qu'on puisse y aller sans que ca soit la dernière step 
+                    if(isPlayer) {
+                        RunDelayed(0.5f,() => {
+                            Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
+                            if(gameController.dialog.currentDialog != shopDialog) {
+                                gameController.dialog.isInDialog = true;
+                                gameController.dialog.currentDialog = shopDialog;
+                                StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
+                            }
+                        });
+                    }
+                    else {
+                        gameController.shopController.AskShopBot(inventory,actualStep.GetComponent<Step>().shop);
+                    }
                 }
             }
 
@@ -427,7 +428,9 @@ public class UserMovement : User {
 
                         Debug.Log("current direction: " + gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections));
                         RunDelayed(0.1f,() => {
-                            nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
+                         //   nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
+
+                            nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
                             stop = false;
                         });
                     }

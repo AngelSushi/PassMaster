@@ -258,7 +258,7 @@ public class GameController : CoroutineSystem {
             chest.SetActive(false);
 
             if(timeToWait == 1.1f) { // First chest
-                mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
+                mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
                 mainCamera.transform.LookAt(chest.transform);
             }
             else { 
@@ -267,7 +267,7 @@ public class GameController : CoroutineSystem {
                     if(players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) 
                         players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(false);
 
-                    mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
+                    mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
                     mainCamera.transform.LookAt(chest.transform);
                 });
             }
@@ -312,7 +312,7 @@ public class GameController : CoroutineSystem {
         }
     }
 
-    private Vector3 GetChestDirection(GameObject obj,Step step) {
+    public Vector3 GetDirection(GameObject obj,Step step,float distance) {
         if(step.useVectors.Length > 0) {
             bool forward = step.useVectors[0];
             bool back = step.useVectors[1];
@@ -321,24 +321,24 @@ public class GameController : CoroutineSystem {
 
             if(forward) {
                 if(right && !left) 
-                    return obj.transform.forward * 25f + obj.transform.right * 25f;
+                    return obj.transform.forward * distance + obj.transform.right * distance;
                 else if(!right && left) 
-                    return obj.transform.forward * 25f + obj.transform.right * -1 * 25f;
+                    return obj.transform.forward * distance + obj.transform.right * -1 * distance;
                 else 
-                    return obj.transform.forward * 25f;
+                    return obj.transform.forward * distance;
             }
             else if(back) {
                 if(right && !left) 
-                    return obj.transform.forward * -1 * 25f + obj.transform.right * 25f;
+                    return obj.transform.forward * -1 * distance + obj.transform.right * distance;
                 else if(!right && left) 
-                    return obj.transform.forward * -1 *  25f + obj.transform.right * -1 * 25f;
+                    return obj.transform.forward * -1 *  distance + obj.transform.right * -1 * distance;
                 else 
-                    return obj.transform.forward * -1 * 25f;
+                    return obj.transform.forward * -1 * distance;
             }
             else if(right) 
-                return obj.transform.right * 25f;
+                return obj.transform.right * distance;
             else if(left)
-                return obj.transform.right * -1 * 25f;
+                return obj.transform.right * -1 * distance;
 
         }
 
@@ -480,10 +480,10 @@ public class GameController : CoroutineSystem {
 
     private void ManageCameraPosition() {
         if(turn == 1) 
-            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetChestDirection(firstStep,firstStep.GetComponent<Step>()) * 2.25f);
+            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetDirection(firstStep,firstStep.GetComponent<Step>(),25f) * 2.25f);
         else {
             GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep;
-            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetChestDirection(actualStep,actualStep.GetComponent<Step>()) * 2.25f);
+            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
         }
 
         Transform transform = players[actualPlayer].transform;

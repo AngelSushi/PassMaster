@@ -33,6 +33,9 @@ public class ShopController : CoroutineSystem {
     private int lastSlot;
     private GameController gameController;
 
+    private bool isBotBuying;
+
+    private  List<ShopItem> expensiveItems;
     void Start() {
         gameController = GameController.Instance;
         shopDialogs.dialogArray = gameController.dialog.dialogArray;
@@ -70,40 +73,47 @@ public class ShopController : CoroutineSystem {
                     gameController.mainCamera.GetComponent<Camera>().fieldOfView = 60;
                     gameController.mainCamera.transform.position = actualPlayer.transform.GetChild(1).gameObject.transform.position;
                     gameController.mainCamera.transform.rotation = actualPlayer.transform.GetChild(1).gameObject.transform.rotation;     
-                }   
+                }  
                 else {
-                    List<ShopItem> expensiveItems = shopItems;
+                    expensiveItems = shopItems;
                     expensiveItems.Reverse();
-
-                    UserInventory inv = actualPlayer.GetComponent<UserInventory>();
-
-                    if(inv == null) {
-                        gameController.EndUserTurn();
-                        return;
-                    }
-
-                    foreach(ShopItem item in expensiveItems) {
-                        if(inv.coins >= item.price && hasFinishBuy) {
-                            StartCoroutine(actualPlayer.GetComponent<UserMovement>().WaitMalus(false,item.price));
-                            
-                            hasFinishBuy = false;
-
-                            while(!hasFinishBuy) {}
-                            // Attendre la fin du waitmalus et refaire 
-                        }
-                    }
-
-                }        
+                } 
+                       
             });
             
         }
 
-        if(returnToStep) {
-            actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,shopPath);
-            actualPlayer.GetComponent<NavMeshAgent>().SetPath(shopPath);
+// IA Shop
+        if(expensiveItems != null && isBotBuying && !returnToStep && hasFinishBuy) {
+            UserInventory inv = actualPlayer.GetComponent<UserInventory>();
 
-            if(shopObject != null && shopObject.transform.GetChild(0).gameObject.activeSelf)   
-                shopObject.transform.GetChild(0).gameObject.SetActive(false);
+            if(inv == null) {
+                gameController.EndUserTurn();
+                return;
+            }
+
+            foreach(ShopItem item in expensiveItems) {
+                if(inv.coins >= item.price && hasFinishBuy) {
+                    StartCoroutine(actualPlayer.GetComponent<UserMovement>().WaitMalus(false,item.price));
+                    
+                    hasFinishBuy = false;
+                }
+            }
+
+            if(actualPlayer.GetComponent<UserMovement>().isTurn && inv.coins <= FindCheapestItem().price && hasFinishBuy) {
+                returnToStep = true;
+            }
+
+            if(returnToStep) {
+                if(!actualPlayer.GetComponent<NavMeshAgent>().enabled)
+                    return;
+
+                actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,shopPath);
+                actualPlayer.GetComponent<NavMeshAgent>().SetPath(shopPath);
+
+                if(shopObject != null && shopObject.transform.GetChild(0).gameObject.activeSelf)   
+                    shopObject.transform.GetChild(0).gameObject.SetActive(false);
+            }
         }
     }
 
@@ -247,7 +257,7 @@ public class ShopController : CoroutineSystem {
 
     #region Bot's Functions
 
-    public void AskShopBot(UserInventory inv) {
+    public void AskShopBot(UserInventory inv,GameObject shop) {
         ShopItem cheapestItem = FindCheapestItem();
 
         if(cheapestItem == null) {
@@ -256,9 +266,18 @@ public class ShopController : CoroutineSystem {
         }
 
         if(inv.coins < cheapestItem.price) 
-            gameController.EndUserTurn();
-        else
-            mooveToShop = true;
+          gameController.EndUserTurn();
+        else {
+            RunDelayed(0.1f,() => {
+                actualPlayer = inv.gameObject;
+                shopObject = shop;
+                shopPosition = shop.transform.position - gameController.GetDirection(actualPlayer.GetComponent<UserMovement>().actualStep,actualPlayer.GetComponent<UserMovement>().actualStep.GetComponent<Step>(),3f);
+
+                shopPath = new NavMeshPath();
+                mooveToShop = true;
+                isBotBuying = true;
+            });
+        }
     }
 
     private ShopItem FindCheapestItem() {
@@ -266,6 +285,20 @@ public class ShopController : CoroutineSystem {
         ShopItem cheapestItem = null;
 
         foreach(ShopItem item in shopItems) {
+            if(minPrice <= item.price) {
+                minPrice = item.price;
+                cheapestItem = item;
+            }
+        }
+
+        return cheapestItem;
+    }
+
+    private ShopItem FindCheapestItem(List<ShopItem> items) {
+        int minPrice = 0;
+        ShopItem cheapestItem = null;
+
+        foreach(ShopItem item in items) {
             if(minPrice <= item.price) {
                 minPrice = item.price;
                 cheapestItem = item;
