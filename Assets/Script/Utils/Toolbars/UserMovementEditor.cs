@@ -18,7 +18,7 @@ public class UserMovementEditor : Editor {
     private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnStepBack,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
 
     // Object tab;
-    private SerializedProperty doubleDice,reverseDice,hasBotBuyItem,isParachuting;
+    private SerializedProperty doubleDice,tripleDice,reverseDice,hasBotBuyItem,isParachuting;
     // UI Tab
     private SerializedProperty giveUI,changeUI,stepMaterial;
     
@@ -70,6 +70,7 @@ public class UserMovementEditor : Editor {
 
         // Object tab
         doubleDice = serializedClass.FindProperty("doubleDice");
+        tripleDice = serializedClass.FindProperty("tripleDice");
         reverseDice = serializedClass.FindProperty("reverseDice");
         hasBotBuyItem = serializedClass.FindProperty("hasBotBuyItem");
         isParachuting = serializedClass.FindProperty("isParachuting");
@@ -129,6 +130,7 @@ public class UserMovementEditor : Editor {
                 break;
             case 3:
                 EditorGUILayout.PropertyField(doubleDice);
+                EditorGUILayout.PropertyField(tripleDice);
                 EditorGUILayout.PropertyField(reverseDice);
                 EditorGUILayout.PropertyField(hasBotBuyItem);
                 EditorGUILayout.PropertyField(isParachuting);

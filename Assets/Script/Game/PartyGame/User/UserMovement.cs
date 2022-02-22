@@ -21,6 +21,7 @@ public class UserMovement : User {
     public bool returnStepBack;
     public bool reverseCount;
     public bool doubleDice;
+    public bool tripleDice;
     public bool reverseDice;    
     public GameObject lastStep;
     public bool isMooving;
@@ -207,7 +208,9 @@ public class UserMovement : User {
                     if(diceResult == 0) 
                         diceResult = 6;
                     if(doubleDice) 
-                        diceResult *= 2;           
+                        diceResult *= 2;
+                    if(tripleDice)
+                        diceResult *= 3;           
                 }
                 
                 agent.enabled = true;
@@ -215,11 +218,10 @@ public class UserMovement : User {
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
-
-                if(ui != null) 
-                    actualColor = doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
                 
-                ui.RefreshDiceResult(diceResult, actualColor);
+                actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                ui.RefreshDiceResult(diceResult, actualColor,true);
+
                 GameObject hitObj = hit.gameObject;
                 hitObj.GetComponent<MeshRenderer>().enabled = false;
 
@@ -343,7 +345,7 @@ public class UserMovement : User {
                     ChooseNextStep(type);
 
                     if(ui != null) 
-                        ui.RefreshDiceResult(diceResult,actualColor);
+                        ui.RefreshDiceResult(diceResult,actualColor,false);
 
                 }
 
@@ -523,7 +525,7 @@ public class UserMovement : User {
         dice.GetComponent<DiceController>().lastLockDice = true;
         dice.GetComponent<MeshRenderer>().enabled = true;
 
-        int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
+        int matIndex = tripleDice ? 3 : doubleDice ? 1 : reverseDice ? 2 : 0;
         dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
 
         stack = false;
@@ -536,8 +538,12 @@ public class UserMovement : User {
 
         GetNextStep();
 
-        if(ui != null) 
-            ui.RefreshDiceResult(diceResult,actualColor);
+        if(ui != null) {
+            if(beginResult == diceResult) 
+                ui.RefreshDiceResult(doubleDice ? diceResult / 2 : tripleDice ? diceResult / 3 : diceResult,actualColor,true);
+            else
+                ui.RefreshDiceResult(diceResult,actualColor,false);
+        }
 
         finishMovement = (diceResult == 0);
     }

@@ -254,7 +254,6 @@ public class UserUI : User {
         if(e.started && showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
             if(index == 0) {
                 ManageInventory(true);
-                isInInventory = true;
             }
             else if(index == 1) {
                 showHUD = false;
@@ -287,8 +286,39 @@ public class UserUI : User {
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
 
                     switch(index) {
-                        
+                        case 0: // Double dice
+                            Debug.Log("use double dice");
+                            movement.doubleDice = true;
+                            break;
+
+                        case 1: // Triple Dice
+                            Debug.Log("use triple dice");
+                            movement.tripleDice = true;
+                            break;
+
+                        case 2: // Reverse Dice
+                            Debug.Log("reverse dice");
+                            movement.reverseDice = true;
+                            break;
+
+                        case 3: // Hourglass
+                            break;
+
+                        case 4:  // Lightning
+                            break;
+
+                        case 5: // Shell   
+                            break;
                     }
+
+                    showHUD = false;
+                    showActionButton = false;
+                    ManageInventory(false);
+                    infoLabel.SetActive(false);
+                    GetComponent<NavMeshAgent>().enabled = true;
+                    movement.waitDiceResult = true;
+                    index = -1;
+
                 }
                 else { // Le joueur n'a pas l'objet
                     if(index >= 0 && hoverInventoryItem.transform.parent.gameObject.activeSelf) {
@@ -301,7 +331,6 @@ public class UserUI : User {
             else {
                 index = 0;
                 ManageInventory(false);
-                isInInventory = false;
             }
         }
 
@@ -335,6 +364,7 @@ public class UserUI : User {
 
     private void ManageInventory(bool active) {
         hoverInventoryItem.transform.parent.gameObject.SetActive(active);
+        isInInventory = active;
 
         if(active)
             index = -1;
@@ -478,9 +508,19 @@ public class UserUI : User {
         infoLabel.SetActive(false);
     }
 
-    public void RefreshDiceResult(int result,Color color) {
+    public void RefreshDiceResult(int result,Color color,bool begin) {
         if(!diceResult.activeSelf) 
             diceResult.SetActive(true);
+        
+        if(begin) {
+            if(movement.doubleDice || movement.tripleDice) {
+                diceResult.transform.GetChild(0).gameObject.SetActive(true);
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = movement.tripleDice ? "x3" : movement.doubleDice ? "x2" : "";
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = movement.tripleDice ? new Color(1f,0.74f,0f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f);
+            }
+        }
+        else 
+            diceResult.transform.GetChild(0).gameObject.SetActive(false);
 
         if(color == null) 
             color = new Color(0f,0.35f,1f,1.0f);
