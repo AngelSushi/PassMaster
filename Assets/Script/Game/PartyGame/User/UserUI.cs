@@ -142,7 +142,7 @@ public class UserUI : User {
         }
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
-            if(index < 7) 
+            if(index < 6) 
                 index++;
 
             Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
@@ -282,7 +282,7 @@ public class UserUI : User {
         }
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
-            if(index <= 6 && index > -1) {
+            if(index <= 5 && index > -1) {
         
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
 
@@ -340,13 +340,18 @@ public class UserUI : User {
             index = -1;
 
         if(hoverInventoryItem.transform.parent.gameObject.activeSelf) {    
-            bool[] hasItems = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasBomb,inventory.hasHourglass,inventory.hasLightning,inventory.hasStar,inventory.hasParachute};
+            int[] items = {inventory.doubleDiceItem,inventory.tripleDiceItem,inventory.reverseDiceItem,inventory.hourglassItem,inventory.lightningItem,inventory.shellItem};
 
-            for(int i = 0;i<hasItems.Length;i++) {
-                if(hasItems[i]) 
+            for(int i = 0;i<items.Length;i++) {
+                if(items[i] > 0) {
                     inventoryItems[i].GetChild(0).gameObject.SetActive(true);
-                else 
+                    inventoryItems[i].GetChild(1).gameObject.SetActive(true);
+                    inventoryItems[i].GetChild(1).gameObject.GetComponent<Text>().text = "" + items[i];
+                }
+                else {
                     inventoryItems[i].GetChild(0).gameObject.SetActive(false);
+                    inventoryItems[i].GetChild(1).gameObject.SetActive(false);
+                }
                 
             }
 

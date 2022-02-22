@@ -5,13 +5,12 @@ using PathCreation;
 using PathCreation.Examples;
 
 public class UserInventory : MonoBehaviour {
-    public bool hasDoubleDice; 
-    public bool hasReverseDice; 
-    public bool hasHourglass;
-    public bool hasStar; 
-    public bool hasLightning;
-    public bool hasParachute;
-    public bool hasBomb;
+    public int doubleDiceItem; 
+    public int tripleDiceItem;
+    public int reverseDiceItem; 
+    public int hourglassItem;
+    public int shellItem; 
+    public int lightningItem;
 
     public int coins;
     public int cards;
