@@ -23,19 +23,31 @@ public class UserInventory : MonoBehaviour {
 
     public void CoinGain(int coinsGain) {
         coins += coinsGain;
-
     }
 
     public void CoinLoose(int coinsLoose) {
         if(coins - coinsLoose >= 0) coins -= coinsLoose; 
         
         else coins = 0;
+    }
+
+    public int AddCards() {
+        cards++;
+
+        int rand = Random.Range(0,secretCode.Length);
+
+        while(secretCode[rand] != -1 || rand >= secretCode.Length) 
+            rand = Random.Range(0,secretCode.Length);
+
+        Debug.Log("rand: "+ rand);
         
+        secretCode[rand] = GameController.Instance.secretCode[rand];
+
+        return secretCode[rand];
     }
 
-    public void AddCards(int cardsGain) {
-        cards += cardsGain;
+    public bool HasEnoughMoney(int money) {
+        return money >= coins;
     }
-
 
 }

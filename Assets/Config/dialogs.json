@@ -1,96 +1,139 @@
 {
 "dialogs": 
     [
-        {
-            "Author": "System",
-			"Name": "StartTextAlpha",
-			"Content": [
-				"Ce jeu est encore en phase de développement. Les personnages,décors et autres assets sont susceptibles d'être modifiés par la suite. Bon jeu à vous ! "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-        },
-		
 		{
-			"Author": "System",
-			"Name": "EndTextAlpha",
+			"Author": "",
+			"Name": "AskShop",
 			"Content": [
-				"Le jeu s'arrête pour l'instant ici. Si vous voulez rejouer, vous pouvez relancer le jeu. Merci à vous d'avoir joué :) "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		
-		},
-		
-		{
-			"Author": "System",
-			"Name": "AskTextTutorial",
-			"Content": [
-				"Avant toute chose un didacticiel est disponible. Souhaites-tu le faire ?"
+				"Voulez vous aller au shop ? "
 			],
 			"NeedAnswer": true,
 			"Answers": [
 				"Oui\nNon"
 			]
 		},
-		
 		{
-			"Author": "Pirate",
-			"Name": "StartTextTutorial",
+			"Author": "",
+			"Name": "HoverItem_DoubleDice",
 			"Content": [
-				"Très bien je vois que tu es novice et que tu souhaites avoir une petite aide.",
-				"Pour commencer, marche devant toi avec ZQSD "
+				"Le dé double multiplie par deux votre lancé de dé à chaque fois que vous l'utilisez. "
 			],
 			"NeedAnswer": false,
 			"Answers": []
 		},
 		{
-			"Author": "Pirate",
-			"Name": "StartSprintTutorial",
+			"Author": "",
+			"Name": "HoverItem_TripleDice",
 			"Content": [
-				"Bravo, tu sais désormais te déplacer. Voyons maintenant comment te déplacer plus vite. Tu peux sprinter avec A. ",
-				"Tu peux sprinter avec ta touche A. Rends toi au deux prochains cercles en sprintant. "
+				"Le dé triple multiplie par trois votre lancé de dé à chaque fois que vous l'utilisez. "
 			],
 			"NeedAnswer": false,
 			"Answers": []
-		
 		},
-		
 		{
-			"Author": "Pirate",
-			"Name": "EndMoveTutorial",
+			"Author": "",
+			"Name": "HoverItem_ReverseDice",
 			"Content": [
-				"Parfait. Je vois que tu sais désormais te déplacer. Maintenant passons au saut.",
-				"Tu vois la caisse là-bas ? Rends toi dessus et essaye de sauter sur la caisse."
+				"Le dé inverse vous fait allez dans le sens opposé à chaque utilisation et pendant 1 tour. "
 			],
 			"NeedAnswer": false,
 			"Answers": []
-		
 		},
 		{
-			"Author": "Pirate",
-			"Name": "EndTutorial",
+			"Author": "",
+			"Name": "HoverItem_Shell",
 			"Content": [
-				"Bravo, tu viens de finir le tutoriel avec succès. Veux tu le recommencer ? "
+				"Surfez sur cette carapace et allez beaucoup plus vite dans vos déplacements.Gare à ceux qui se trouvent sur votre chemin. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "HoverItem_Lightning",
+			"Content": [
+				"Vous déclenchez la fureur de Zeus qui s'abat sur un endroit de la carte. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "HoverItem_Hourglass",
+			"Content": [
+				"Vous changez le moment de la journée. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "BuyItem",
+			"Content": [
+				"Êtes vous de sur de vouloir acheter "
 			],
 			"NeedAnswer": true,
 			"Answers": [
 				"Oui\nNon"
 			]
 		},
-		
+		{
+			"Author": "",
+			"Name": "NotEnoughMoneyShop",
+			"Content": [
+				"Désolé mais vous n'avez pas assez d'argent pour acheter cet objet "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+			"Author": "",
+			"Name": "EndShop",
+			"Content": [
+				"Merci pour votre achat. A la prochaine ! "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
 		{
 			"Author": "",
 			"Name": "AskChestBuy",
 			"Content": [
-				"Voulez-vous ouvrir le coffre ?"
+				"Voulez-vous ouvrir le coffre ? Cela vous coûtera 30 pièces. "
 			],
 			"NeedAnswer": true,
 			"Answers": [
 				"Oui\nNon"
 			]
+		},	
+		{
+			"Author": "",
+			"Name": "NotEnoughMoneyChest",
+			"Content": [
+				"Vous n'avez pas assez de pièces pour ouvrir le coffre. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},		
+		{
+			"Author": "",
+			"Name": "FindNewCode",
+			"Content": [
+				"Vous venez de débloquer un nouveau chiffre du code secret. Il s'agit du chiffre %n. Il vous reste %b chiffre(s) à trouver. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},		
+		{
+			"Author": "",
+			"Name": "FindAllSecretCode",
+			"Content": [
+				"Vous venez de trouver l'intégralité du code secret. Vous pouvez désormais vous rendre vers la dernière île. "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		
 		},
-
 		{
 			"Author": "",
 			"Name": "QuitGame",
@@ -101,27 +144,6 @@
 			"Answers": [
 				"Oui\nNon"
 			]
-		},
-		
-		{
-			"Author": "",
-			"Name": "FindNewCode",
-			"Content": [
-				"Vous venez de débloquer un nouveau chiffre du code secret. Il s'agit du chiffre %n. Il vous reste %b chiffre(s) à trouver. "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		},
-		
-		{
-			"Author": "",
-			"Name": "FindAllSecretCode",
-			"Content": [
-				"Vous venez de trouver l'intégralité du code secret. Vous pouvez vous rendre à la grotte. "
-			],
-			"NeedAnswer": false,
-			"Answers": []
-		
 		}
     ]
 }	

@@ -9,14 +9,13 @@ public class UserMovementEditor : Editor {
     private SerializedObject serializedClass;
 
     // Controller Tab
-    private SerializedProperty movement,ui,inventory,audio,gameController;
+    private SerializedProperty movement,ui,inventory,audio,gameController,userCam;
 
     // Player tab
     private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed;
 
     // Movement tab
-    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnToStep,goToChest,returnStepBack,goToShop,
-    canMooveToShop,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
+    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnStepBack,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
 
     // Object tab;
     private SerializedProperty doubleDice,reverseDice,hasBotBuyItem,isParachuting;
@@ -34,6 +33,7 @@ public class UserMovementEditor : Editor {
         inventory = serializedClass.FindProperty("inventory");
         audio = serializedClass.FindProperty("audio");
         gameController = serializedClass.FindProperty("gameController");
+        userCam = serializedClass.FindProperty("userCam");
 
         // Player tab
         id = serializedClass.FindProperty("id");
@@ -57,11 +57,7 @@ public class UserMovementEditor : Editor {
         stop = serializedClass.FindProperty("stop");
         lastStepIsArrow = serializedClass.FindProperty("lastStepIsArrow");
         waitChest = serializedClass.FindProperty("waitChest");
-        returnToStep = serializedClass.FindProperty("returnToStep");
-        goToChest = serializedClass.FindProperty("goToChest");
         returnStepBack = serializedClass.FindProperty("returnStepBack");
-        goToShop = serializedClass.FindProperty("goToShop");
-        canMooveToShop = serializedClass.FindProperty("canMooveToShop");
         reverseCount = serializedClass.FindProperty("reverseCount");
         diceResult = serializedClass.FindProperty("diceResult");
         actualStep = serializedClass.FindProperty("actualStep");
@@ -96,6 +92,7 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(inventory);
                 EditorGUILayout.PropertyField(audio);
                 EditorGUILayout.PropertyField(gameController);
+                EditorGUILayout.PropertyField(userCam);
                 break;
             case 1: // Player
                 EditorGUILayout.PropertyField(id);
@@ -119,11 +116,7 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(stop);
                 EditorGUILayout.PropertyField(lastStepIsArrow);
                 EditorGUILayout.PropertyField(waitChest);
-                EditorGUILayout.PropertyField(returnToStep); 
-                EditorGUILayout.PropertyField(goToChest);
                 EditorGUILayout.PropertyField(returnStepBack);
-                EditorGUILayout.PropertyField(goToShop);
-                EditorGUILayout.PropertyField(canMooveToShop);
                 EditorGUILayout.PropertyField(reverseCount);
                 EditorGUILayout.PropertyField(diceResult);
                 EditorGUILayout.PropertyField(actualStep);

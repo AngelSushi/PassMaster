@@ -28,6 +28,7 @@ public class GameController : CoroutineSystem {
     public GameObject prefabInStep;
     public GameObject stepParent;
 
+    public GameObject firstStep;
     //public GamePart partOfGame = GamePart.TUTORIEL;
     public GameObject light;
     public GameObject[] diceResultObj = new GameObject[4];
@@ -63,8 +64,6 @@ public class GameController : CoroutineSystem {
     public Sprite[] smallSprites = new Sprite[4];
     public Color[] classedColors = new Color[4];
     public int turn;
-
-
     public int[] secretCode;
 
     public bool hasGenChest;
@@ -74,39 +73,33 @@ public class GameController : CoroutineSystem {
     public static int difficulty;
     public bool freeze;
 
-    public List<ShopItem> shopItems;
-
     public List<Material> diceMaterials;
-    public List<GameObject> prefabObjects = new List<GameObject>();
-
-    public Shader invicibilityShader;
 
     public LoadingScene loadingScene;
-
-    public List<GameObject> allSteps;
-
     public List<GameObject> allMainObjects;
-
     public int nightIndex;
-
     private  List<int> points = new List<int>();
     public Dictionary<GameObject,int> playerPoint = new Dictionary<GameObject,int>();
-
     private GamePart lastPart;
-
     public bool hasChangeState;
     private bool isFirstChest = true;
-
     public DayController dayController;
     public DialogController dialog;
     public MiniGameController mgController;
     public OrderController orderController;
-
     public Transform stackPlayersParent;
-
     public JsonExcelArray excelArray;
-
     public GameObject stepChest;
+    public ShopController shopController;
+    public ChestController chestController;
+    public Animation blackScreenAnim;
+
+    public static GameController Instance { get; private set;}
+
+    void Awake() {
+        Instance = this;
+    }
+
     void Start() {
         GameController.difficulty = 2;
 
@@ -115,12 +108,18 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[2],3);
         classedPlayers.Add(players[3],4);
 
-        dialog.dialogs = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
+        dialog.dialogArray = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
 
         for(int i = 0;i<players.Length;i++) {
             if(turn == 1)
                 players[i].transform.position = posBegin[i];  
         }
+
+        for(int i = 0;i<dialog.dialogArray.dialogs.Length;i++) 
+            dialog.dialogArray.dialogs[i].id = i;
+
+            
+        
     }
     
     void Update() {
@@ -205,16 +204,20 @@ public class GameController : CoroutineSystem {
     private void GenerateChest() {
         actualChest = null;
         freeze = true;
+        if(chestParent.transform.childCount == 0) {
+            Debug.Log("There is no chest on the map. Please put someone");
+            return;
+        }
 
         if(randomIndex == -1) {
             randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
-            mainCamera.transform.position = new Vector3(-1062.2f,5479f,-15821.6f);
         }
 
         int lastIndex = GetLastChest();
-        bool hasLastChest = (lastIndex == -1);
-
+        bool hasLastChest = (lastIndex != -1);
+ 
         if(hasLastChest && !checkLastChest) {
+            chestParent.transform.GetChild(lastIndex).gameObject.SetActive(false);
             while(randomIndex >= (lastIndex - 3) && randomIndex <= (lastIndex + 3)) {
                 randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
             }
@@ -223,53 +226,123 @@ public class GameController : CoroutineSystem {
         }
 
         if( isFirstChest) {
-            randomIndex =  /*78 48 69 */ 58;
-            isFirstChest = false;
+            randomIndex =  2;
+           // isFirstChest = false;
         }
         
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
+       // chest.SetActive(true);
 
-        Vector3 cameraPosition = new Vector3(chest.transform.position.x,5479f,chest.transform.position.z);
         
-        mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
-        mainCamera.transform.position = Vector3.MoveTowards(mainCamera.transform.position,cameraPosition,75 * Time.deltaTime);
-        
-        if(mainCamera.transform.position == cameraPosition) {
-            players[actualPlayer].GetComponent<UserAudio>().SpawnChest();
+
+        chest.GetComponent<Animation>().clip = chestController.chestAnimations[0];
+
+        if(!blackScreenAnim.isPlaying) {
+            float timeToWait = 2.4f;
+
+            if(isFirstChest) {    
+                blackScreenAnim["BSAnim"].time = 1f;
+                timeToWait = 1.1f;
+                isFirstChest = false;
+            }
+
+            blackScreenAnim.Play();
+
             chest.SetActive(true);
-            actualChest = chest;
-            hasGenChest = true;
-            
-            if(!hasBeginGame) {
-                BeginTurn(false);
-                hasBeginGame = true;
-                freeze = false;
-                randomIndex = -1;
-            }
-            else {
-                players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
-                players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
-                players[actualPlayer].GetComponent<UserMovement>().returnToStep = true;
-                
-                mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
-                mainCamera.SetActive(true);
-                mainCamera.GetComponent<Camera>().enabled = true;
-
-                EndUserTurn();
-
-                freeze = false;
-            }
-
             foreach(Step step in FindObjectsOfType(typeof(Step))) {
                 if(step.chest != null && step.chest.activeSelf) {
                     stepChest = step.gameObject;
                     break;
                 }
             }
+            chest.SetActive(false);
 
-            // Marche que pour le tour 1 attention jpense 
+            if(timeToWait == 1.1f) { // First chest
+                mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
+                mainCamera.transform.LookAt(chest.transform);
+            }
+            else { 
+                RunDelayed(0.8f,() => {
+                    
+                    if(players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) 
+                        players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(false);
+
+                    mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
+                    mainCamera.transform.LookAt(chest.transform);
+                });
+            }
+
+            RunDelayed(timeToWait,() => { // 2.4 pour full ; 1.1 
+                chest.SetActive(true);
+                chest.GetComponent<Animation>().Play();
+                StartCoroutine(CameraEffects.Instance.Shake(2f,0.25f));
+                hasGenChest = true;
+                AudioController.Instance.ambiantSource.clip = AudioController.Instance.earthQuake;
+                AudioController.Instance.ambiantSource.volume = 0.2f;
+                AudioController.Instance.ambiantSource.Play();
+
+                RunDelayed(2.5f,() => {
+                    AudioController.Instance.ambiantSource.Stop();
+
+                    actualChest = chest;
+                    hasGenChest = true;
+                    randomIndex = -1;
+                    chest.GetComponent<Animation>().clip = chestController.chestAnimations[1];
+
+                    if(!hasBeginGame) {
+                        BeginTurn(false);
+                        hasBeginGame = true;
+                        freeze = false;
+                    }
+                    else {
+                        players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
+                        players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
+                        
+                        mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
+                        mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+                        mainCamera.SetActive(true);
+                        mainCamera.GetComponent<Camera>().enabled = true;
+
+                        EndUserTurn();
+
+                        freeze = false;
+                    }
+                });
+            });
         }
+    }
+
+    public Vector3 GetDirection(GameObject obj,Step step,float distance) {
+        if(step.useVectors.Length > 0) {
+            bool forward = step.useVectors[0];
+            bool back = step.useVectors[1];
+            bool right = step.useVectors[2];
+            bool left = step.useVectors[3];
+
+            if(forward) {
+                if(right && !left) 
+                    return obj.transform.forward * distance + obj.transform.right * distance;
+                else if(!right && left) 
+                    return obj.transform.forward * distance + obj.transform.right * -1 * distance;
+                else 
+                    return obj.transform.forward * distance;
+            }
+            else if(back) {
+                if(right && !left) 
+                    return obj.transform.forward * -1 * distance + obj.transform.right * distance;
+                else if(!right && left) 
+                    return obj.transform.forward * -1 *  distance + obj.transform.right * -1 * distance;
+                else 
+                    return obj.transform.forward * -1 * distance;
+            }
+            else if(right) 
+                return obj.transform.right * distance;
+            else if(left)
+                return obj.transform.right * -1 * distance;
+
+        }
+
+        return Vector3.zero;
     }
 
     public int GetLastChest() {
@@ -283,7 +356,7 @@ public class GameController : CoroutineSystem {
 
     public void RandomSecretCode() {
         for(int i = 0;i<secretCode.Length;i++) {
-            secretCode[i] = Random.Range(0,9);
+            secretCode[i] = Random.Range(0,10);
         }
     }
 
@@ -364,19 +437,27 @@ public class GameController : CoroutineSystem {
     public void EndUserTurn() {
         players[actualPlayer].GetComponent<UserMovement>().finishTurn = false;
         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
+
+        if(!mainCamera.activeSelf) {
+            mainCamera.SetActive(true);
+        }
         
         if(actualPlayer < 3) {
             actualPlayer++;
             players[actualPlayer].GetComponent<UserMovement>().isTurn = true;
 
-            if(! players[actualPlayer].activeSelf) {
+            if(!players[actualPlayer].activeSelf) {
                 players[actualPlayer].SetActive(true);
-                players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[actualPlayer]);
-                ActualPlayersInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep,players[actualPlayer]);
+
+                if(players[actualPlayer].GetComponent<UserMovement>().actualStep != null) {        
+                    players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[actualPlayer]);
+                    ActualPlayersInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep,players[actualPlayer]);
+                }
             }
 
-            if(turn == 1) 
+            if(turn == 1) {
                 players[actualPlayer].transform.position = posBegin[0];
+            }
 
             players[actualPlayer].GetComponent<UserMovement>().enabled = true;
             players[actualPlayer].GetComponent<UserUI>().enabled = true;
@@ -386,8 +467,7 @@ public class GameController : CoroutineSystem {
             players[actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
             players[actualPlayer].SetActive(true);
 
-            if(turn > 1) 
-                ManageCameraPosition();    
+            ManageCameraPosition();    
 
         }
         else { // Le tour est fini. Lancement d'un mini jeux
@@ -399,14 +479,16 @@ public class GameController : CoroutineSystem {
     }
 
     private void ManageCameraPosition() {
-        if(turn == 1) {
-            mainCamera.transform.position = new Vector3(-1198.469f,5221.931f,-14929.02f);
-            mainCamera.transform.rotation = Quaternion.Euler(10.51f,180f,0f);
-        }
+        if(turn == 1) 
+            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetDirection(firstStep,firstStep.GetComponent<Step>(),25f) * 2.25f);
         else {
-           // mainCamera.transform.position = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camPosition;
-           // mainCamera.transform.rotation = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().camRotation;
+            GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep;
+            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
         }
+
+        Transform transform = players[actualPlayer].transform;
+        transform.position = new Vector3(transform.position.x,transform.position.y + 5f,transform.position.z);
+        mainCamera.transform.LookAt(transform);
     }
 
     private List<GameObject> GetPlayersInStack() {

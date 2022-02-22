@@ -21,23 +21,28 @@ public class CoinsReward : MonoBehaviour {
 
     private IEnumerator ChangePosition() {
         while(changePos) {
-            if(!minigame) { // Jeu de plateau
+            if(!minigame) { // Board game
                 if(transform.position.y < 425)  
                     transform.position = new Vector2(transform.position.x,transform.position.y + 5);
             
                 else {
                     changePos = false;
                     
-                    if(stepReward) 
+                    if(stepReward) {
                         controller.players[controller.actualPlayer].GetComponent<UserMovement>().finishTurn = true;
-                    if(!controller.players[controller.actualPlayer].GetComponent<UserMovement>().isPlayer) 
-                        controller.players[controller.actualPlayer].GetComponent<UserMovement>().hasBotBuyItem = true;
+                        if(!controller.dialog.isInDialog) 
+                            controller.EndUserTurn();
+                        
+                    }
+                    else { // reward is in shop
+                        controller.shopController.hasFinishBuy = true;
+                    }
 
                     transform.gameObject.SetActive(false);
                     yield return null;
                 }
             }
-            else { // Mini jeu
+            else { // leaderboard mini game
 
                 if((int)transform.localPosition.y < beginY + 60) {
                     transform.gameObject.SetActive(true);

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,8 +11,6 @@ public class UserUI : User {
     public bool showTurnInfo;
     public bool showActionButton;
     public bool showDirection;
-    public bool showChestHUD;
-    public bool showShopHUD;
     public bool showShop;
     public bool cameraView;
     public bool useBomb;
@@ -28,13 +26,11 @@ public class UserUI : User {
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
     public Transform chestHUD;
-    public Transform shopHUD;
     public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
-    public ParticleSystem[] lightningParticles;
     public Text coinTextReward;
     public Text itemDescription; // texte de la description d'un iutem dans le shop
     public Text turnText,nightText; // texte pour afficher les tours et la nuit
-    public Text shopText;
+    public GameObject shopParent;
     public Direction direction;
     public Sprite userSprite;
 
@@ -53,9 +49,7 @@ public class UserUI : User {
             ManagerHudTurnState(showTurnInfo && gameController.part == GameController.GamePart.PARTYGAME);
             ManageActionButtonState(showActionButton);
             ManageHudDirection(showDirection);
-            ManageChestHUD(showChestHUD);
             ManageShop(showShop);
-            ManageShopHUD(showShopHUD);  
         } 
     }
 
@@ -147,73 +141,6 @@ public class UserUI : User {
             }
         }
 
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index < 1) 
-                index++;
-
-            switch(index) {
-                case 0:
-                    chestHUD.GetChild(1).gameObject.SetActive(true);
-                    break;
-
-                case 1:
-                    chestHUD.GetChild(1).gameObject.SetActive(false);
-                    chestHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
-
-        if(e.started && showShop && !gameController.freeze) {
-            if(index < 6) {
-                index++;
-                audio.ButtonHover();
-            }
-            if(nextShopId < 2) 
-                nextShopId++;
-
-            for(int i = 0;i<3;i++) 
-                items[i].GetChild(3).gameObject.SetActive(false); 
-
-            items[nextShopId].GetChild(3).gameObject.SetActive(true);
-
-            if(index <= 2) {
-                itemDescription.text = gameController.shopItems[index].description;
-                items[nextShopId].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.shopItems[index].price;
-                items[nextShopId].GetChild(2).gameObject.GetComponent<Text>().text = gameController.shopItems[index].name;
-                items[nextShopId].GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.shopItems[index].dimension;
-
-            }
-
-            if(index > 2) {
-                int begin = 2;
-
-                for(int i = index;i>index - 3;i--) {
-                    items[begin].GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.shopItems[i].img;
-                    itemDescription.text = gameController.shopItems[i].description;
-                    items[begin].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.shopItems[i].price;
-                    items[begin].GetChild(2).gameObject.GetComponent<Text>().text = gameController.shopItems[i].name;
-                    begin--;
-                }
-            }
-
-        }
-
-        if(e.started && showShopHUD && !gameController.freeze) {
-            if(index < 1) 
-                index++;
-
-            switch(index) {
-                case 0:
-                    shopHUD.GetChild(1).gameObject.SetActive(true);
-                    break;
-
-                case 1:
-                    shopHUD.GetChild(1).gameObject.SetActive(false);
-                    shopHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
-
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
             if(index < 7) 
                 index++;
@@ -285,84 +212,7 @@ public class UserUI : User {
                     directions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
-        }
-
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index > 0) 
-                index--;
-
-            switch(index) {
-                case 0:
-                    chestHUD.GetChild(1).gameObject.SetActive(true);
-                    chestHUD.GetChild(2).gameObject.SetActive(false);
-                    break;
-
-                case 1:
-                    chestHUD.GetChild(1).gameObject.SetActive(false);
-                    chestHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
-
-        if(e.started && showShop && !gameController.freeze) { 
-
-            for(int i = 0;i<3;i++) 
-                items[2+i].GetChild(3).gameObject.SetActive(false);
-
-            int begin = 2; 
-
-            if(index >= 2) {
-                for(int i = index;i>index - 3;i--) {
-                        
-                    items[begin].GetChild(2).gameObject.GetComponent<Text>().text = gameController.shopItems[i].name;
-                    items[begin].GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.shopItems[i].img;
-                    items[nextShopId].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.shopItems[i].price;
-                    items[nextShopId].GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.shopItems[index].dimension;
-                    begin--;
-                        
-                }
-            }
-            else if(index == 1 || index == 0){
-                    
-                for(int i = 0;i<3;i++) {
-                    items[i].GetChild(0).gameObject.GetComponent<Image>().sprite = gameController.shopItems[i].img;
-                    items[i].GetChild(2).gameObject.GetComponent<Text>().text = gameController.shopItems[i].name;
-                    items[i].GetChild(1).GetChild(0).gameObject.GetComponent<Text>().text = "" + gameController.shopItems[i].price;
-                    items[nextShopId].GetChild(0).gameObject.GetComponent<RectTransform>().sizeDelta = gameController.shopItems[index].dimension; 
-                }
-            }
-            
-            if(index > 0) {
-                index--;
-                audio.ButtonHover();
-            }
-            if(nextShopId > 0) 
-                nextShopId--;
-            
-            if(index == 0) 
-                items[0].GetChild(3).gameObject.SetActive(true);
-            else if(index >= 1 && index < 6) 
-                items[1].GetChild(3).gameObject.SetActive(true);
-            else if(index == 6) 
-                items[2].GetChild(3).gameObject.SetActive(true);
-
-        }
-
-        if(e.started && showShopHUD && !gameController.freeze) {
-            if(index > 0) 
-                index--;
-
-            switch(index) {
-                case 0:
-                    shopHUD.GetChild(1).gameObject.SetActive(true);
-                    shopHUD.GetChild(2).gameObject.SetActive(false);
-                    break;
-
-                case 1: 
-                    shopHUD.GetChild(2).gameObject.SetActive(true);
-                    break;    
-            }
-        }
+        }      
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index > 0) 
@@ -375,16 +225,7 @@ public class UserUI : User {
         }
     }
 
-    public void OnInteract(InputAction.CallbackContext e) {
-        if(e.started && !hoverInventoryItem.transform.parent.gameObject.activeSelf &&  cameraView && useBomb && !gameController.freeze) {
-            // Bombe
-
-        }
-
-        if(e.started && !hoverInventoryItem.transform.parent.gameObject.activeSelf &&  cameraView && useLightning && !gameController.freeze) {
-            // Lightning
-
-        }        
+    public void OnInteract(InputAction.CallbackContext e) {       
         if(e.started && showDirection && !gameController.freeze) {
             if(directions[0].GetChild(1).gameObject.activeSelf) {
                 movement.left = true;
@@ -407,177 +248,6 @@ public class UserUI : User {
 
            // movement.reverseCount = direction.reverseCount;
             showDirection = false;
-            index = -1;
-        }
-
-        if(e.started && showChestHUD && !gameController.freeze) {
-            if(index == 0) {              
-                isTurn = false;
-                gameController.EndUserTurn();                
-            }
-            else if(index == 1) {
-                // Buy
-                int coins = inventory.coins;
-
-                if(coins >= 30) {
-                    StartCoroutine(movement.WaitMalus(30,false));
-                    movement.goToChest = true;
-                }
-                else {
-                    audio.BuyLoose();
-                    gameController.EndUserTurn();
-                    // Afficher un texte également
-                }
-            }
-
-            showChestHUD = false;
-            index = -1;
-        }
-
-        if(e.started && showShop && !gameController.freeze) {
-            int actualCoins = inventory.coins;
-            shopText.gameObject.SetActive(true);
-
-            if(actualCoins >= gameController.shopItems[index].price) { // Assez d'argent
-
-                switch(index) {
-                    case 0: // Dé double
-                        bool hasDoubleDice = inventory.hasDoubleDice;
-
-                        if(!hasDoubleDice) { // Le joueur n'a pas encore l'objet
-                            inventory.hasDoubleDice = true;
-                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
-                            StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        else { // Le joueur a déjà cet objet
-                            audio.BuyLoose();
-                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        break;
-
-                    case 1: // Dé inverse
-                        bool hasReverseDice = inventory.hasReverseDice;
-
-                        if(!hasReverseDice) {
-                            inventory.hasReverseDice = true;
-                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
-                            StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        else {
-                            audio.BuyLoose();
-                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        break;
-
-                    case 2: // Bombe
-                        bool hasBomb = inventory.hasBomb;
-
-                        if(!hasBomb) {
-                            inventory.hasBomb = true;
-                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
-                            StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
-                            StartCoroutine(InfoLabelWaiting());
-                        }   
-                        else {
-                            audio.BuyLoose();
-                            DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        break;
-
-                    case 3: // Sablier
-                        bool hasHourglass = inventory.hasHourglass;
-
-                        if(!hasHourglass) {
-                            inventory.hasHourglass = true;
-                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
-                            StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        else {
-                            audio.BuyLoose();
-                            DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        break;
-
-                    case 4: // Eclair
-                        bool hasLightning = inventory.hasLightning;
-
-                        if(!hasLightning) {
-                            inventory.hasLightning = true;
-                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
-                            StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        else {
-                            audio.BuyLoose();
-                            DisplayShopText( "Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        break;
-
-                    case 5: // Etoile 
-                        bool hasStar = inventory.hasStar;
-
-                        if(!hasStar) {
-                            inventory.hasStar = true;
-                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
-                            StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        else {
-                            audio.BuyLoose();
-                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        break;
-
-                    case 6: // Parachute
-                        bool hasParachute = inventory.hasParachute;
-
-                        if(!hasParachute) {
-                            inventory.hasParachute = true;                        
-                            DisplayShopText("Achat effectué avec succès",new Color(0,1.0f,0.12f,1.0f));
-                            StartCoroutine(movement.WaitMalus(gameController.shopItems[index].price,false));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        else {
-                            audio.BuyLoose();
-                            DisplayShopText("Vous possédez déjà cet objet",new Color(1.0f,0f,0f,1.0f));
-                            StartCoroutine(InfoLabelWaiting());
-                        }
-                        break;
-                }
-            }
-            
-            else { // Pas assez d'argent
-                audio.BuyLoose();
-                DisplayShopText("Vous n'avez pas assez d'argent",new Color(1.0f,0f,0f,1.0f));
-                StartCoroutine(InfoLabelWaiting());
-            }          
-        }
-
-        if(e.started && showShopHUD && !gameController.freeze) {
-
-            switch(index) {
-                case 0:
-                    movement.agent.enabled = true;
-                    movement.stop = false;
-                    if(movement.diceResult <= 0) 
-                        gameController.EndUserTurn();
-                    break;
-
-                case 1:
-                    movement.goToShop = true;
-                    break;    
-            }
-
-            showShopHUD = false;
             index = -1;
         }
 
@@ -617,97 +287,7 @@ public class UserUI : User {
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
 
                     switch(index) {
-                        case 0: // Double Dice
-                            movement.doubleDice = true;
-                            ManageInventory(false);
-                            isInInventory = false;
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-                            inventory.hasDoubleDice = false;
-                            break;
-
-                        case 1: // Reverse Dice
-                            movement.reverseDice = true;
-                            ManageInventory(false);
-                            isInInventory = false;
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-                            inventory.hasReverseDice = false;
-                            break;
-
-                        case 2: // Bomb
-                            
-
-                            break;
-                        case 3: //Hourglass
-                            if(gameController.dayController.dayPeriod < 2) 
-                                gameController.dayController.dayPeriod++;
-                            else 
-                                gameController.dayController.dayPeriod = 0;
-
-                            // BLack screeen animation
-                            ManageInventory(false);
-                            isInInventory = false;
-
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-
-                            // Camera animation on voit le dayPeriod d'avant ecran noir puis le nouveau dayPeriod
-                            inventory.hasHourglass = false;
-
-                            break;
-                        case 4: // Lightning
-                            cameraView = true;
-                            useLightning = true;
-                            camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-
-                            camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
-                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f);           
-                            DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f), "Appuyez sur ECHAP pour quitter le mode");
-
-                            ManageInventory(false);
-                            isInInventory = false;
-
-                            inventory.hasLightning = false;
-                            break;
-
-                        case 5: // Star
-                            transform.gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
-                            transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = gameController.invicibilityShader;
-                            audio.Invicibility();
-
-                            ManageInventory(false);
-
-                            showHUD = false;
-                            showActionButton = false;
-                            isTurn = true;
-                            movement.waitDiceResult = true;
-
-                            gameController.mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                            gameController.mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
-                            gameController.mainCamera.SetActive(true);
-                            gameController.mainCamera.GetComponent<Camera>().enabled = true;
-                            isInInventory = false;
-
-                            inventory.hasStar = false;
-                            break;    
-
-                        case 6: // Parachute
-                            movement.agent.enabled = false;
-                            movement.isParachuting = true;
-                            ManageInventory(false); 
-                            showHUD = false;
-                            showActionButton = false;
-                            isInInventory = false;
-
-                            inventory.hasParachute = false;
-                            break;
+                        
                     }
                 }
                 else { // Le joueur n'a pas l'objet
@@ -728,10 +308,7 @@ public class UserUI : User {
 
     }
 
-    public void UseObject(GameObject player,string objet) {
-        DisplayInfoText(new Vector2(971,297),new Color(0f,0.53f,0.03f),player.name + "vient d'utiliser l'objet " + objet);
-        StartCoroutine(InfoLabelWaiting());
-    }
+
     public void OnMove(InputAction.CallbackContext e) {
         if(cameraView && !gameController.freeze) 
             vecMove = e.ReadValue<Vector2>();
@@ -749,15 +326,9 @@ public class UserUI : User {
 
         if(e.started && showShop && !gameController.freeze) {
             showShop = false;
-            movement.returnToStep = true;
-            index = -1;
-        }
-    }
-
-    public void OnClickButton() {
-        if(showShop && !gameController.freeze) {
-            showShop = false;
-            movement.returnToStep = true;
+            gameController.shopController.returnToStep = true;
+            gameController.mainCamera.SetActive(false); 
+            transform.GetChild(1).gameObject.SetActive(true);
             index = -1;
         }
     }
@@ -781,11 +352,6 @@ public class UserUI : User {
 
             hoverInventoryItem.gameObject.SetActive(false);
         }
-    }
-
-    private void ManageShopHUD(bool active) {
-        shopHUD.gameObject.SetActive(active);
-        shopHUD.GetChild(0).gameObject.SetActive(active);
     }
 
     private void ManageHudState(bool active) {
@@ -847,9 +413,7 @@ public class UserUI : User {
             actions[i].GetChild(0).gameObject.SetActive(active);
             if(!active) 
                 actions[i].GetChild(1).gameObject.SetActive(active);
-        }
-
-        
+        }    
     }
 
     private void ManagerHudTurnState(bool active) {
@@ -857,8 +421,7 @@ public class UserUI : User {
         nightText.gameObject.SetActive(false);     
     }
 
-    private void ManageHudDirection(bool active) {
-        // front ou interior
+    private void ManageHudDirection(bool active) { // front ou interior
         if(direction != null) {
             if(direction.directions[0]) {
                 if(direction.directionsStep[0].name.Contains("front") || direction.directionsStep[0].name.Contains("interior")) {
@@ -900,18 +463,14 @@ public class UserUI : User {
         }
     }
 
-    private void ManageChestHUD(bool active) {
-        chestHUD.gameObject.SetActive(active);
-    }
-
     private void ManageShop(bool active) {
-        shopText.gameObject.transform.parent.gameObject.SetActive(active);
+        shopParent.transform.GetChild(0).gameObject.SetActive(active);
+        shopParent.transform.GetChild(1).gameObject.SetActive(active);
     }
 
     private IEnumerator InfoLabelWaiting() {
         yield return new WaitForSeconds(2f);
         infoLabel.SetActive(false);
-        shopText.gameObject.SetActive(false);
     }
 
     public void RefreshDiceResult(int result,Color color) {
@@ -969,8 +528,4 @@ public class UserUI : User {
         infoLabel.SetActive(true);
     }
 
-    private void DisplayShopText(string text,Color color) {
-        shopText.gameObject.GetComponent<Text>().text = text;
-        shopText.gameObject.GetComponent<Text>().color = color;
-    }
 }
