@@ -22,6 +22,7 @@ public class UserMovement : User {
     public bool reverseCount;
     public bool doubleDice;
     public bool tripleDice;
+    public bool useHourglass;
     public bool reverseDice;    
     public GameObject lastStep;
     public bool isMooving;

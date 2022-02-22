@@ -163,42 +163,7 @@ public class GameController : CoroutineSystem {
 
     public void ManageTurn() {
         players[actualPlayer].GetComponent<UserUI>().ChangeTurnValue(turn,nightIndex);
-
-        switch(difficulty) {
-            case 0: // Facile
-                // 2 jour ; 2 crépuscule ; 1 nuit
-                if(nightIndex == 4 || nightIndex == 3)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 2 || nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;
-
-            case 1: // Medium
-                // 2 jour ; 1 crépuscule ; 1 nuit
-                if(nightIndex == 3 || nightIndex == 2)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;
-
-            case 2: // Hard
-                // 1 jour ; 1 crépuscule ; 1 nuit
-                if(nightIndex == 2)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;        
-        }
-        
+        dayController.ChangeNaturalDayPeriod(difficulty,nightIndex);
     }
 
     private void GenerateChest() {

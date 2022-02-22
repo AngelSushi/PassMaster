@@ -287,21 +287,20 @@ public class UserUI : User {
 
                     switch(index) {
                         case 0: // Double dice
-                            Debug.Log("use double dice");
                             movement.doubleDice = true;
                             break;
 
                         case 1: // Triple Dice
-                            Debug.Log("use triple dice");
                             movement.tripleDice = true;
                             break;
 
                         case 2: // Reverse Dice
-                            Debug.Log("reverse dice");
                             movement.reverseDice = true;
                             break;
 
                         case 3: // Hourglass
+                            movement.useHourglass = true;
+                            gameController.blackScreenAnim.Play();
                             break;
 
                         case 4:  // Lightning
@@ -460,7 +459,7 @@ public class UserUI : User {
         if(direction != null) {
             if(direction.directions[0]) {
                 if(direction.directionsStep[0].name.Contains("front") || direction.directionsStep[0].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
                         directions[0].gameObject.SetActive(true);
                 }
                 else 
@@ -471,7 +470,7 @@ public class UserUI : User {
 
             if(direction.directions[1]) {
                 if(direction.directionsStep[1].name.Contains("front") || direction.directionsStep[1].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
                         directions[1].gameObject.SetActive(true);                  
                 }
                 else 
@@ -482,7 +481,7 @@ public class UserUI : User {
 
             if(direction.directions[2]) {
                 if(direction.directionsStep[2].name.Contains("front") || direction.directionsStep[2].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
                         directions[2].gameObject.SetActive(true);           
                 }
                 else 
