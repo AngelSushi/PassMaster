@@ -763,7 +763,7 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog) {
                 if(isPlayer) 
                     DisplayChestDialog();
@@ -788,7 +788,7 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog) {
                 if(isPlayer) 
                     DisplayChestDialog();
@@ -813,7 +813,7 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog) {
                 if(isPlayer) 
                     DisplayChestDialog();

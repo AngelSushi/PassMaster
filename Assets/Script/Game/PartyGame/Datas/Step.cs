@@ -12,4 +12,6 @@ public class Step : MonoBehaviour {
     public GameObject shop;
     public bool skipIA;
 
+    public Dictionary<ItemType,int> itemsInStep = new Dictionary<ItemType, int>();
+
 }

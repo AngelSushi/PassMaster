@@ -25,13 +25,23 @@ public class BlackScreenEvents : CoroutineSystem {
         controller.players[controller.actualPlayer].GetComponent<UserMovement>().useLightning = false;
         controller.players[controller.actualPlayer].GetComponent<UserUI>().infoLabel.SetActive(false);
         controller.dayController.ChangeManualDayPeriod(DayController.DayPeriod.RAIN);
-        GameObject lightingStep =  controller.players[controller.actualPlayer].GetComponent<UserMovement>().targetLightningStep;
-        controller.mainCamera.transform.position = new Vector3(lightingStep.transform.position.x,lightingStep.transform.position.y + 15,lightingStep.transform.position.z) - (controller.GetDirection(lightingStep,lightingStep.GetComponent<Step>(),25f) * 2.25f);
+        GameObject lightningStep =  controller.players[controller.actualPlayer].GetComponent<UserMovement>().targetLightningStep;
+        controller.mainCamera.transform.position = new Vector3(lightningStep.transform.position.x,lightningStep.transform.position.y + 15,lightningStep.transform.position.z) - (controller.GetDirection(lightningStep,lightningStep.GetComponent<Step>(),25f) * 2.25f);
         
-        controller.mainCamera.transform.LookAt(new Vector3(lightingStep.transform.position.x,lightingStep.transform.position.y + 5f,lightingStep.transform.position.z));
+        controller.mainCamera.transform.LookAt(new Vector3(lightningStep.transform.position.x,lightningStep.transform.position.y + 5f,lightningStep.transform.position.z));
 
-        Vector3 lightningStepPos = lightingStep.transform.position;
+        Vector3 lightningStepPos = lightningStep.transform.position;
         lightningStepPos.y += 20f;
+        List<GameObject> playersInStep = new List<GameObject>();
+
+        foreach(GameObject player in controller.players) {
+            if(player.GetComponent<UserMovement>().actualStep == lightningStep) 
+                playersInStep.Add(player);
+            
+        }
+
+
+
         
         RunDelayed(1f,() => {
             GameObject newLightning = Instantiate(controller.itemController.lightningEffect,lightningStepPos,Quaternion.identity);
@@ -40,6 +50,8 @@ public class BlackScreenEvents : CoroutineSystem {
 
             AudioController.Instance.ambiantSource.clip = AudioController.Instance.lightning;
             AudioController.Instance.ambiantSource.Play();  
+
+            controller.itemController.DropCoins(controller.players[controller.actualPlayer],controller.players[controller.actualPlayer].GetComponent<UserInventory>());
 
             RunDelayed(2f,() => {
                 Destroy(newLightning);
