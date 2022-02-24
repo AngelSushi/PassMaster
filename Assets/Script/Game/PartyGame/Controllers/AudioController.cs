@@ -16,6 +16,7 @@ public class AudioController : MonoBehaviour {
     public AudioClip buttonHover;
     public AudioClip buttonClick;
     public AudioClip earthQuake;
+    public AudioClip lightning;
 
     public AudioSource mainSource;
     public AudioSource ambiantSource; 

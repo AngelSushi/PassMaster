@@ -61,6 +61,12 @@ public class DayController : MonoBehaviour {
 
 
     public void ChangeNaturalDayPeriod(int difficulty,int nightIndex) {
+
+        if(dayPeriod == DayPeriod.RAIN) {
+            dayPeriod = lastDayPeriod; // Faire en sorte que s'il y a que 1 période de crépuscule et que c de la pluie ca va en nuit
+            return;
+        }
+
         switch(difficulty) {
             case 0: // Facile 2 jour ; 2 crépuscule ; 1 nuit
                 if(nightIndex == 4 || nightIndex == 3)
@@ -96,6 +102,13 @@ public class DayController : MonoBehaviour {
         lastDayPeriod = dayPeriod;
     }
 
+    public void ChangeManualDayPeriod(DayPeriod nextPeriod) {
+        dayPeriod = nextPeriod;
+
+        if(nextPeriod != DayPeriod.RAIN)
+            lastDayPeriod = nextPeriod;
+    }
+
 
     public void ChangeDayPeriodWithHourglass() {
         int actualPeriodIndex = GetIdFromDayPeriod(dayPeriod);
@@ -108,6 +121,9 @@ public class DayController : MonoBehaviour {
             else
                 dayPeriod = ConvertIdToDayPeriod(0);
         }
+
+        GameController.Instance.players[GameController.Instance.actualPlayer].GetComponent<UserUI>().CloseActionHUD(true);
+        lastDayPeriod = dayPeriod;
     }
 
     private DayPeriod ConvertIdToDayPeriod(int id) {

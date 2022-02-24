@@ -18,7 +18,7 @@ public class UserMovementEditor : Editor {
     private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnStepBack,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
 
     // Object tab;
-    private SerializedProperty doubleDice,tripleDice,reverseDice,useHourglass,hasBotBuyItem,isParachuting;
+    private SerializedProperty doubleDice,tripleDice,reverseDice,useHourglass,useLightning,targetLightningStep,hasBotBuyItem,isParachuting;
     // UI Tab
     private SerializedProperty giveUI,changeUI,stepMaterial;
     
@@ -73,6 +73,8 @@ public class UserMovementEditor : Editor {
         tripleDice = serializedClass.FindProperty("tripleDice");
         reverseDice = serializedClass.FindProperty("reverseDice");
         useHourglass = serializedClass.FindProperty("useHourglass");
+        useLightning = serializedClass.FindProperty("useLightning");
+        targetLightningStep = serializedClass.FindProperty("targetLightningStep");
         hasBotBuyItem = serializedClass.FindProperty("hasBotBuyItem");
         isParachuting = serializedClass.FindProperty("isParachuting");
 
@@ -134,6 +136,8 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(tripleDice);
                 EditorGUILayout.PropertyField(reverseDice);
                 EditorGUILayout.PropertyField(useHourglass);
+                EditorGUILayout.PropertyField(useLightning);
+                EditorGUILayout.PropertyField(targetLightningStep);
                 EditorGUILayout.PropertyField(hasBotBuyItem);
                 EditorGUILayout.PropertyField(isParachuting);
                 break;

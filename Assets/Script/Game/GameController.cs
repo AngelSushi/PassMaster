@@ -92,6 +92,7 @@ public class GameController : CoroutineSystem {
     public GameObject stepChest;
     public ShopController shopController;
     public ChestController chestController;
+    public ItemController itemController;
     public Animation blackScreenAnim;
 
     public static GameController Instance { get; private set;}

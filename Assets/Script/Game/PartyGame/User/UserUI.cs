@@ -13,19 +13,16 @@ public class UserUI : User {
     public bool showDirection;
     public bool showShop;
     public bool cameraView;
-    public bool useBomb;
-    public bool useLightning;
+    private bool showCursor;
+    public GameObject cursor;
     public GameObject infoLabel;
     public GameObject diceResult;
     public GameObject coinIconReward;
     public GameObject camera;
-    public GameObject lightning;
     public Transform[] directions; // les parents des directions
-    public Transform[] items; // les items du shoop
     public Transform[] actions; // buttons d'actions sur le menu principale du jeu
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
-    public Transform chestHUD;
     public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
     public Text coinTextReward;
     public Text itemDescription; // texte de la description d'un iutem dans le shop
@@ -64,6 +61,9 @@ public class UserUI : User {
         float directionY = cameraView ? vecMove.y * cameraSpeed * Time.deltaTime : 0;
 
         camera.transform.Translate(directionX,directionY,0);
+
+        if(showCursor) 
+            cursor.transform.position = new Vector3(camera.transform.position.x,cursor.transform.position.y,camera.transform.position.z);
     }
 
     public void OnRight(InputAction.CallbackContext e) {
@@ -280,22 +280,70 @@ public class UserUI : User {
             return;
         }
 
+        if(e.started && movement.useLightning && cameraView && !gameController.freeze) {
+            Debug.Log("enter lightning");
+            Vector2 cursorPos = new Vector2(cursor.transform.position.x,cursor.transform.position.z);
+
+            GameObject targetStep = null;
+
+            for(int x = -7;x <7;x++) { // Range : 7
+                for(int z = -7;z<7;z++) {
+                    Vector2 calculatePos = new Vector2(cursorPos.x + x,cursorPos.y + z);
+
+                   // Debug.Log("calculatePos: " + calculatePos);
+
+                    foreach(Step step in FindObjectsOfType(typeof(Step))) {
+                        Vector2 stepPos = new Vector2(step.gameObject.transform.position.x,step.gameObject.transform.position.z);
+
+                        if((int)calculatePos.x == (int)stepPos.x && (int)calculatePos.y == (int)stepPos.y) {
+                            targetStep = step.gameObject;
+                            break;
+                        }
+                    }
+
+                    if(targetStep != null)
+                        break;
+
+                }
+
+                if(targetStep != null)
+                    break;
+            }
+
+            if(targetStep != null) {
+                gameController.blackScreenAnim.Play();
+                cameraView = false;
+                movement.targetLightningStep = targetStep;
+            }
+            else {
+                 DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,0.0f,0.0f),"Merci de choisir une meilleure position","");
+                 
+                 RunDelayed(3.5f,() => {
+                      DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur E pour choisir où l'éclair va tomber","Echap pour quitter le mode");
+                 });               
+            }
+           
+        }
+
+
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
             if(index <= 5 && index > -1) {
         
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
-
                     switch(index) {
                         case 0: // Double dice
                             movement.doubleDice = true;
+                            CloseActionHUD(true);
                             break;
 
                         case 1: // Triple Dice
                             movement.tripleDice = true;
+                            CloseActionHUD(true);
                             break;
 
                         case 2: // Reverse Dice
                             movement.reverseDice = true;
+                            CloseActionHUD(true);
                             break;
 
                         case 3: // Hourglass
@@ -304,19 +352,26 @@ public class UserUI : User {
                             break;
 
                         case 4:  // Lightning
+                            movement.useLightning = true;
+                            cameraView = true;
+                            showCursor = true;
+                            camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
+
+                            camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
+                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
+
+                            cursor.transform.position = new Vector3(camera.transform.position.x,cursor.transform.position.y,camera.transform.position.z);
+                            CloseActionHUD(false);
+
+                            DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur E pour choisir où l'éclair va tomber","Echap pour quitter le mode");
+                            
                             break;
 
                         case 5: // Shell   
                             break;
                     }
 
-                    showHUD = false;
-                    showActionButton = false;
-                    ManageInventory(false);
-                    infoLabel.SetActive(false);
-                    GetComponent<NavMeshAgent>().enabled = true;
-                    movement.waitDiceResult = true;
-                    index = -1;
+                    
 
                 }
                 else { // Le joueur n'a pas l'objet
@@ -332,8 +387,6 @@ public class UserUI : User {
                 ManageInventory(false);
             }
         }
-
-
     }
 
 
@@ -341,6 +394,18 @@ public class UserUI : User {
         if(cameraView && !gameController.freeze) 
             vecMove = e.ReadValue<Vector2>();
     }
+
+    public void CloseActionHUD(bool goToDice) {
+        showHUD = false;
+        showActionButton = false;
+        ManageInventory(false);
+        infoLabel.SetActive(false);
+        GetComponent<NavMeshAgent>().enabled = goToDice;
+        movement.waitDiceResult = goToDice;
+        if(goToDice)
+            index = -1;
+    }
+
 
     public void OnQuit(InputAction.CallbackContext e) {
         if(e.started && cameraView && !gameController.freeze) {
@@ -572,4 +637,23 @@ public class UserUI : User {
         infoLabel.SetActive(true);
     }
 
+    private void DisplayInfoTextWithSub(Vector2 pos,Color color,string text,string subText) {
+        infoLabel.transform.position = pos;
+        infoLabel.GetComponent<Text>().color = color;
+        infoLabel.GetComponent<Text>().text = text;
+        infoLabel.GetComponent<AlphaController>().actualColor = color;
+        infoLabel.GetComponent<AlphaController>().manageAlpha = true;
+        infoLabel.SetActive(true);
+
+        Vector2 subPos = pos;
+        subPos.y -= 50;
+
+        Transform subTransform = infoLabel.transform.GetChild(0);
+        subTransform.position = subPos;
+        subTransform.gameObject.GetComponent<Text>().color = color;
+        subTransform.gameObject.GetComponent<Text>().text = subText;
+        subTransform.gameObject.GetComponent<AlphaController>().actualColor = color;
+        subTransform.gameObject.GetComponent<AlphaController>().manageAlpha = true;
+
+    }
 }
