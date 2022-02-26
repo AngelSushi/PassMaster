@@ -64,6 +64,11 @@ public class UserMovement : User {
     private NavMeshPath path;
     public GameObject userCam;
 
+    public bool constantJump;
+
+    
+    public UserType userType;
+
     void Start() {
         path = new NavMeshPath();
     }
@@ -131,13 +136,13 @@ public class UserMovement : User {
                     
                     if(lastStep == nextStep.gameObject) 
                         ChooseNextStep(StepType.NONE);
-                     
-                    agent.CalculatePath(nextStep.position,path);
-                    ShowPath(Color.magenta,path);
-                    CheckPath();
 
-                    if(canMoove) 
+                    if(canMoove) {
+                        agent.CalculatePath(nextStep.position,path);
+                        ShowPath(Color.magenta,path);
+                        CheckPath();
                         agent.SetPath(path);   
+                    }
                 }
 
                 if(finishMovement) {
@@ -201,8 +206,9 @@ public class UserMovement : User {
 
     private void OnCollisionEnter(Collision hit) {
        if(isTurn) {
-           if(hit.gameObject.tag == "Chest") 
-                canMooveToChest = false;
+           if(hit.gameObject.tag == "Chest") {
+               gameController.endAnimationController.checkCode = true;
+           }
 
             if(hit.gameObject.tag == "Dice") {
                 if(diceResult == 0 || diceResult == -1) {
@@ -217,7 +223,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(!isPlayer) diceResult = 41; 
+                if(isPlayer) diceResult = 63; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -231,6 +237,16 @@ public class UserMovement : User {
                 ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
 
                 RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
+            }
+
+            if(hit.gameObject.tag == "Sol") {
+                if(isJumping) 
+                    isJumping = false;
+
+                if(constantJump) {
+                    Jump();
+                }
+
             }
        } 
     }
@@ -272,6 +288,14 @@ public class UserMovement : User {
                         if(diceResult > 0) 
                             ChooseNextStep(type);
                     }
+                }
+
+                if(type == StepType.STEP_END && gameController.endAnimationController.isInEndAnimation) {
+                     RunDelayed(1.5f,() => {
+                        gameController.endAnimationController.isInEndAnimation = false;
+                        gameController.endAnimationController.checkCode = false;
+                        gameController.EndUserTurn(); // Ne pas end tout de suite faire blackscreen + récompense de la step
+                     });
                 }
 
                 if(diceResult < 0 && nextStep != null) 
@@ -335,13 +359,18 @@ public class UserMovement : User {
                }
 
                 if(type == StepType.STEP_END) {
-                    RunDelayed(0.1f,() => {
-                        if(diceResult > 0) {
-                            if(diceResult == 1) {} 
-                            else 
-                                reverseCount = true;
-                        }
-                    });              
+                        if(diceResult == 0) {
+                            if(!gameController.endAnimationController.isInEndAnimation) {
+                                Debug.Log("play anim");
+                                stop = true;
+                                gameController.blackScreenAnim.Play();
+                                gameController.endAnimationController.isInEndAnimation = true;
+                            }
+                        } 
+                        else {
+                            reverseCount = true;
+                            Debug.Log("my count");
+                        }          
                 }
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
@@ -476,9 +505,9 @@ public class UserMovement : User {
             else 
                 lastStepIsArrow = false;   
 
-            if(type == StepType.STEP_END) 
+        /*    if(type == StepType.STEP_END) 
                 ChooseNextStep(type); 
-
+*/
             left = false;
             front = false;
             right = false;
@@ -738,7 +767,7 @@ public class UserMovement : User {
         }
     }
 
-    private void Jump() {
+    public void Jump() {
         rb.AddForce(jumpSpeed * Vector3.up,ForceMode.Impulse);    
     }
 

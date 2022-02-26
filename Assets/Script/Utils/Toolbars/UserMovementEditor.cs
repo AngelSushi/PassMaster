@@ -9,7 +9,7 @@ public class UserMovementEditor : Editor {
     private SerializedObject serializedClass;
 
     // Controller Tab
-    private SerializedProperty movement,ui,inventory,audio,gameController,userCam;
+    private SerializedProperty movement,ui,inventory,audio,gameController,userType,userCam;
 
     // Player tab
     private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed;
@@ -33,6 +33,7 @@ public class UserMovementEditor : Editor {
         inventory = serializedClass.FindProperty("inventory");
         audio = serializedClass.FindProperty("audio");
         gameController = serializedClass.FindProperty("gameController");
+        userType = serializedClass.FindProperty("userType");
         userCam = serializedClass.FindProperty("userCam");
 
         // Player tab
@@ -96,6 +97,7 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(inventory);
                 EditorGUILayout.PropertyField(audio);
                 EditorGUILayout.PropertyField(gameController);
+                EditorGUILayout.PropertyField(userType);
                 EditorGUILayout.PropertyField(userCam);
                 break;
             case 1: // Player
