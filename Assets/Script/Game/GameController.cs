@@ -92,6 +92,8 @@ public class GameController : CoroutineSystem {
     public GameObject stepChest;
     public ShopController shopController;
     public ChestController chestController;
+    public ItemController itemController;
+    public EndAnimationController endAnimationController;
     public Animation blackScreenAnim;
 
     public static GameController Instance { get; private set;}
@@ -547,7 +549,7 @@ public class GameController : CoroutineSystem {
                 targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
 
                 targetStep.stack.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                ChangeStackSpritePlayer(step,0,user.GetComponent<UserMovement>().id);
+             //   ChangeStackSpritePlayer(step,0,user.GetComponent<UserMovement>().id);
             }
             else 
                 Destroy(targetStep.stack);        
@@ -565,7 +567,7 @@ public class GameController : CoroutineSystem {
 
             for(int i = 0;i<length;i++) {
                 targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(true);
-                ChangeStackSpritePlayer(step,i,targetStep.playerInStep[i].GetComponent<UserMovement>().id);
+           //     ChangeStackSpritePlayer(step,i,targetStep.playerInStep[i].GetComponent<UserMovement>().id);
             }
 
             for(int i = length;i<4;i++) 
@@ -597,22 +599,22 @@ public class GameController : CoroutineSystem {
         step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(8.940888f,9.624872f,8.940888f);
     }
 
-    public void ChangeHUDSpritePlayer(Transform[] panels,int index,int id) {
+    public void ChangeHUDSpritePlayer(Transform[] panels,int index,UserType type) {
         // A check si on peut pas tt concaténer en 1 ligne . A REFAIRE SANS LE NOM
-        switch(id) {
-            case 0:
+        switch(type) {
+            case UserType.PLAYER: // Player
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
                 break;
 
-            case 1:
+            case UserType.BOT_001:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[1];
                 break;
 
-            case 2:
+            case UserType.BOT_002:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[2];
                 break;
 
-            case 3:
+            case UserType.BOT_003:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
                 break;            
         }

@@ -16,6 +16,8 @@ public class UserInventory : MonoBehaviour {
     public int coins;
     public int cards;
     public int[] secretCode = new int[6];
+
+    public int points { get { return cards * 100000 + coins; } set {points = value; } }
     
     private List<Vector3> drop = new List<Vector3>();
     private List<string> objectSpawn = new List<string>();

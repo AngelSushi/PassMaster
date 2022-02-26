@@ -368,7 +368,7 @@ public class UserUI : User {
                     if(j > 3) 
                         playerIndex -= 4;
                     
-                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,gameController.players[playerIndex].GetComponent<UserMovement>().id);
+                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,gameController.players[playerIndex].GetComponent<UserMovement>().userType);
 
                     int rank = -1;
                     int rankIndex = 0;

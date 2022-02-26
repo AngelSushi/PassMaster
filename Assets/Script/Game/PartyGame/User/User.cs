@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum UserType {
+    PLAYER,
+    BOT_001,
+    BOT_002,
+    BOT_003
+}
 public abstract class User : CoroutineSystem {
-
-    public int id;
     public bool isTurn;
     public bool isPlayer;
     public UserMovement movement;
@@ -12,6 +16,7 @@ public abstract class User : CoroutineSystem {
     public UserInventory inventory;
     public UserAudio audio;
     public GameController gameController;
+
 
     private bool lastIsTurn;
     private bool lastShowHUD;
