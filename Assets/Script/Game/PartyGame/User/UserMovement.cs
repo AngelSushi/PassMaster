@@ -63,11 +63,9 @@ public class UserMovement : User {
     public int currentTabIndex;
     private NavMeshPath path;
     public GameObject userCam;
-
     public bool constantJump;
-
-    
     public UserType userType;
+    public bool checkObjectToUse;
 
     void Start() {
         path = new NavMeshPath();
@@ -158,18 +156,25 @@ public class UserMovement : User {
                 }            
 
                 if(!isPlayer && waitDiceResult) {
-                    if(random == -1) 
-                        random = Random.Range(1,5);           
 
-                    timer += Time.deltaTime;
-
-                    if(timer >= random && !hasJump) {
-                        Jump();
-                        hasJump = true;
-                        ui.showHUD = false;
+                    if(inventory.HasObjects()) {
+                        checkObjectToUse = true;
                     }
-                    else 
-                        ui.showHUD = true;          
+
+                    if(!checkObjectToUse) {
+                        if(random == -1) 
+                            random = Random.Range(1,5);           
+
+                        timer += Time.deltaTime;
+
+                        if(timer >= random && !hasJump) {
+                            Jump();
+                            hasJump = true;
+                            ui.showHUD = false;
+                        }
+                        else 
+                            ui.showHUD = true;
+                    }          
                 }    
 
             /*    if(finishTurn && (actualStep.GetComponent<Step>().chest != null && !actualStep.GetComponent<Step>().chest.activeSelf) && actualStep.GetComponent<Step>().type != StepType.SHOP) {
@@ -223,7 +228,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 63; 
+            //    if(isPlayer) diceResult = 63; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -587,7 +592,7 @@ public class UserMovement : User {
                 beginStep = nextStep.gameObject;
 
             Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
-            int stepIndex = actualStep != null ? FindIndexInParent(stepParent.gameObject,actualStep) : FindIndexInParent(stepParent.gameObject,beginStep);
+            int stepIndex = actualStep != null ? gameController.FindIndexInParent(stepParent.gameObject,actualStep) : gameController.FindIndexInParent(stepParent.gameObject,beginStep);
             int result = actualStep != null ? diceResult : beginResult;
 
             if(stepIndex == -1) 
@@ -611,7 +616,7 @@ public class UserMovement : User {
 
     private void GetNextStep() {
         GameObject actualParent = actualStep != null ? actualStep.transform.parent.gameObject : gameController.firstStep.transform.parent.gameObject;
-        int stepIndex = FindIndexInParent(actualParent,actualStep);
+        int stepIndex = gameController.FindIndexInParent(actualParent,actualStep);
 
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
             if(stepIndex + 1 < actualParent.transform.childCount) 
@@ -626,17 +631,7 @@ public class UserMovement : User {
                 nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);    
         }                 
     }
-
-    private int FindIndexInParent(GameObject parent,GameObject targetStep) {
-        for(int i = 0;i<parent.transform.childCount;i++){
-            if(parent.transform.GetChild(i).gameObject == targetStep) 
-                return i;    
-        }
-
-        return -1;
-    }
-
-        
+     
     private void GenerateIAPaths(Dictionary<GameObject,int> iaPathDirections) {
         for(int i = 0;i < ui.direction.directionsStep.Length;i++) {
             GameObject end = ui.direction.gameObject;
@@ -659,12 +654,12 @@ public class UserMovement : User {
     }
 
     private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
-        int indexEnd = FindIndexInParent(end.transform.parent.gameObject,end);
+        int indexEnd = gameController.FindIndexInParent(end.transform.parent.gameObject,end);
 
         if(end.GetComponent<Direction>() != null && !sameParent)
             indexEnd++;
 
-        for(int i = FindIndexInParent(begin.transform.parent.gameObject,begin); i != indexEnd;) {
+        for(int i = gameController.FindIndexInParent(begin.transform.parent.gameObject,begin); i != indexEnd;) {
             if(i >= begin.transform.parent.childCount) 
                 i -= begin.transform.parent.childCount;
             

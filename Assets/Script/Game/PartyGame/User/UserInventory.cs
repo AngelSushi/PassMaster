@@ -51,4 +51,12 @@ public class UserInventory : MonoBehaviour {
         return money >= coins;
     }
 
+    public bool HasObjects() {
+        return doubleDiceItem != 0 || tripleDiceItem != 0 || reverseDiceItem != 0 || hourglassItem != 0 || lightningItem != 0 || shellItem != 0;
+    }
+
+    public void UseItemBot() {
+        
+    }
+
 }
