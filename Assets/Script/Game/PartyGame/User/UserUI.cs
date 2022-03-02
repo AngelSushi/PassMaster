@@ -595,6 +595,7 @@ public class UserUI : User {
 
     public void ClearDiceResult() {
         diceResult.GetComponent<Text>().text = "";
+        diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
     }
 
     public void DisplayReward(bool bonus,int coins,bool stepReward) {

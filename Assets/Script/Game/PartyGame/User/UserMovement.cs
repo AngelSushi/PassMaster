@@ -103,6 +103,9 @@ public class UserMovement : User {
         hasCollideDice = false;
         waitDiceResult = true;
         hasJump = false;
+
+        if(!isPlayer)
+            checkObjectToUse = false;
     }
 
     public override void Update() {
@@ -156,9 +159,9 @@ public class UserMovement : User {
                 }            
 
                 if(!isPlayer && waitDiceResult) {
-
                     if(inventory.HasObjects()) {
                         checkObjectToUse = true;
+                        inventory.UseItemBot();
                     }
 
                     if(!checkObjectToUse) {
@@ -175,12 +178,7 @@ public class UserMovement : User {
                         else 
                             ui.showHUD = true;
                     }          
-                }    
-
-            /*    if(finishTurn && (actualStep.GetComponent<Step>().chest != null && !actualStep.GetComponent<Step>().chest.activeSelf) && actualStep.GetComponent<Step>().type != StepType.SHOP) {
-                    gameController.EndUserTurn();
-                }
-              */         
+                }         
             }
 
             else {

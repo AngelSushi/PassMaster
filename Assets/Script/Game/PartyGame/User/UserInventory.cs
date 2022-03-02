@@ -22,6 +22,7 @@ public class UserInventory : MonoBehaviour {
     private List<string> objectSpawn = new List<string>();
     private List<int> objList = new List<int>();
 
+
     public void CoinGain(int coinsGain) {
         coins += coinsGain;
     }
@@ -55,8 +56,52 @@ public class UserInventory : MonoBehaviour {
         return doubleDiceItem != 0 || tripleDiceItem != 0 || reverseDiceItem != 0 || hourglassItem != 0 || lightningItem != 0 || shellItem != 0;
     }
 
+
+    public Material basicMat;
+
     public void UseItemBot() {
+        Dictionary<int,int> itemsPercentage = new Dictionary<int, int>();
         
+        // Ajouter les pourcentages de base d'un item
+        List<int> possessedItems = GetPossessedItems();
+
+        foreach(ItemAction action in FindObjectsOfType<ItemAction>()) {
+            if(possessedItems.Contains(action.itemID) && action.DoAction(transform.gameObject)) 
+                itemsPercentage.Add(action.itemID,action.percentageToAdd);
+            
+        }
+
+        foreach(int itemID in possessedItems) {
+            switch(itemID) {
+                case 0:
+                    transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
+                    Debug.Log("use double dice");
+                    break;
+            }
+        }
+
+        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
+
+
+    }
+
+    private List<int> GetPossessedItems() {
+        List<int> possessedItemsId = new List<int>();
+
+        if(doubleDiceItem > 0) // Id = 0
+            possessedItemsId.Add(0);
+        if(tripleDiceItem > 0) // Id = 1
+            possessedItemsId.Add(1);
+        if(reverseDiceItem > 0) // Id = 2
+            possessedItemsId.Add(2);
+        if(hourglassItem > 0) // Id = 3
+            possessedItemsId.Add(3);
+        if(lightningItem > 0) // Id = 4
+            possessedItemsId.Add(4);
+        if(shellItem > 0) // Id = 5
+            possessedItemsId.Add(5);
+
+        return possessedItemsId;
     }
 
 }
