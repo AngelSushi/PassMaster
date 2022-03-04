@@ -1,56 +1,66 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using System.Linq;
 
 public class ItemAction : MonoBehaviour {
-    public enum ActionType {
-        NONE,
-        IN_RANGE,
-        HAS_COINS,
-        LEADERBOARD
-    }
-
     public int itemID;
     public int actionPercentage;
     public int percentageToAdd;
-    public ActionType actionType;
     public StepType rangeType;
     public int rangeMax;
+    public int coinsToHave;
+    public GameObject possessPlayer; // The player who use the object
+    public GameObject targetPlayer;
+    public bool succeed;
+    public bool differentPlayerToTarget;
+    public UnityEvent actionsEvent;
     private GameController controller;
-    public List<GameObject> stepsActionPath;
+    private List<GameObject> stepsActionPath;
 
     void Start() {
         controller = GameController.Instance;
+        stepsActionPath = new List<GameObject>();
     }
 
-    public bool DoAction(GameObject targetPlayer) {
-        switch(actionType) {
-            case ActionType.IN_RANGE:
-                return CheckInRangeAction(targetPlayer);
-            case ActionType.HAS_COINS:
-                return CheckHasCoinsAction();
-            case ActionType.LEADERBOARD:
-                return CheckLeaderboardAction();
-            default:
-                return false;
-        }
+    public bool DoAction(GameObject player) {
+        targetPlayer = player;
+        actionsEvent.Invoke();
+        return succeed;
     }
 
-    public bool CheckInRangeAction(GameObject targetPlayer) { 
+    public void CheckInRangeAction() { 
         GameObject beginStep = targetPlayer.GetComponent<UserMovement>().actualStep;
-
         if(beginStep == null)
             beginStep = controller.firstStep;
 
         int beginIndex = controller.FindIndexInParent(beginStep.transform.parent.gameObject,beginStep);
         stepsActionPath.Clear();
         
-        return FindSmallestPathTo(beginStep,rangeType,stepsActionPath,false,true); 
+        succeed = FindSmallestPathTo(beginStep,rangeType,stepsActionPath,false,true); 
         
     }
-    public bool CheckHasCoinsAction() { return true; }
-    public bool CheckLeaderboardAction() { return true; }
 
+    public void CheckHasCoinsAction() { 
+       succeed = targetPlayer.GetComponent<UserInventory>().coins >= coinsToHave; 
+    }
+
+    public void CheckLeaderboardAction() { 
+        List<GameObject> classedPlayers = new List<GameObject>(controller.players);
+        classedPlayers = classedPlayers.OrderBy(player=>player.GetComponent<UserInventory>().points).ToList();
+        classedPlayers.Reverse();
+
+        succeed = classedPlayers[0] == targetPlayer;    
+    }
+
+    public void CheckCoinsAndCards() {
+        succeed = targetPlayer.GetComponent<UserInventory>().cards == possessPlayer.GetComponent<UserInventory>().cards && targetPlayer.GetComponent<UserInventory>().coins >= possessPlayer.GetComponent<UserInventory>().coins;
+    }
+
+    public void CheckCoinsAndObjects() {
+        succeed = targetPlayer.GetComponent<UserInventory>().coins > 0 || targetPlayer.GetComponent<UserInventory>().HasObjects();
+    }
 
 
     private bool FindSmallestPathTo(GameObject begin,StepType endType,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
@@ -68,6 +78,16 @@ public class ItemAction : MonoBehaviour {
             if(actualObj.GetComponent<Step>() != null && actualObj.GetComponent<Step>().type == endType) {
                 Debug.Log("is in range of " + endType);
                 return true;
+            }
+            else {
+                if(differentPlayerToTarget) {
+                    foreach(GameObject player in controller.players) {
+                        if(player.GetComponent<UserMovement>().actualStep != null && player.GetComponent<UserMovement>().actualStep == actualObj) {
+                            Debug.Log("is in range of " + player.name);
+                            return true;
+                        }
+                    }
+                }
             }
             
 

@@ -19,6 +19,7 @@ public class ItemController : CoroutineSystem {
     public GameObject lightningEffect;
     public GameObject coins;
 
+
     public void DropCoins(GameObject player,UserInventory inv) {
 
      //   player.GetComponent<UserMovement>().actualStep.GetComponent<Step>().itemsInStep.Add(ItemType.COINS,inv.coins / 2);

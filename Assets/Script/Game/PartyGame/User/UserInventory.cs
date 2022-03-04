@@ -66,8 +66,11 @@ public class UserInventory : MonoBehaviour {
         List<int> possessedItems = GetPossessedItems();
 
         foreach(ItemAction action in FindObjectsOfType<ItemAction>()) {
-            if(possessedItems.Contains(action.itemID) && action.DoAction(transform.gameObject)) 
-                itemsPercentage.Add(action.itemID,action.percentageToAdd);
+            action.DoAction(transform.gameObject);
+            Debug.Log("result: " + action.succeed);
+
+            //if(possessedItems.Contains(action.itemID) && action.DoAction(transform.gameObject)) 
+              //  itemsPercentage.Add(action.itemID,action.percentageToAdd);
             
         }
 
