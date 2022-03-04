@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using PathCreation;
-using PathCreation.Examples;
+using System;
 
 public class UserInventory : MonoBehaviour {
     public int doubleDiceItem; 
@@ -36,10 +35,10 @@ public class UserInventory : MonoBehaviour {
     public int AddCards() {
         cards++;
 
-        int rand = Random.Range(0,secretCode.Length);
+        int rand = UnityEngine.Random.Range(0,secretCode.Length);
 
         while(secretCode[rand] != -1 || rand >= secretCode.Length) 
-            rand = Random.Range(0,secretCode.Length);
+            rand = UnityEngine.Random.Range(0,secretCode.Length);
 
         Debug.Log("rand: "+ rand);
         
@@ -54,24 +53,42 @@ public class UserInventory : MonoBehaviour {
 
     public bool HasObjects() {
         return doubleDiceItem != 0 || tripleDiceItem != 0 || reverseDiceItem != 0 || hourglassItem != 0 || lightningItem != 0 || shellItem != 0;
-    }
-
-
-    public Material basicMat;
+    } 
 
     public void UseItemBot() {
-        Dictionary<int,int> itemsPercentage = new Dictionary<int, int>();
+        Dictionary<int,float> itemsPercentage = new Dictionary<int, float>();
         
         // Ajouter les pourcentages de base d'un item
         List<int> possessedItems = GetPossessedItems();
 
-        foreach(ItemAction action in FindObjectsOfType<ItemAction>()) {
-            action.DoAction(transform.gameObject);
-            Debug.Log("result: " + action.succeed);
+        foreach(ItemAction action in GameController.Instance.itemController.actions) {
+            foreach(int itemID in possessedItems) {
+                if(action.itemID == itemID) {
+                    switch(GameController.difficulty) {
+                        case 0:
+                            int idIndex = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
+                            action.actionPercentage = GameController.Instance.itemController.easyPercentage[idIndex];
+                            break;
 
-            //if(possessedItems.Contains(action.itemID) && action.DoAction(transform.gameObject)) 
-              //  itemsPercentage.Add(action.itemID,action.percentageToAdd);
+                        case 1:
+                            int idIndexM = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
+                            action.actionPercentage = GameController.Instance.itemController.mediumPercentage[idIndexM];
+                            break;
+
+                        case 2:
+                            int idIndexH = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
+                            action.actionPercentage = GameController.Instance.itemController.hardPercentage[idIndexH];
+                            break;
+                    }
+                }
+            }
+
+            action.DoAction(transform.gameObject);
             
+         //   if(possessedItems.Contains(action.itemID) && action.DoAction(transform.gameObject)) 
+           //     itemsPercentage.Add(action.itemID,action.percentageToAdd);
+
+            Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
         }
 
         foreach(int itemID in possessedItems) {

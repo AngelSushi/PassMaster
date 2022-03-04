@@ -18,6 +18,19 @@ public class ItemController : CoroutineSystem {
 
     public GameObject lightningEffect;
     public GameObject coins;
+    public List<ItemAction> actions;
+
+    [HideInInspector]
+    public int[] itemsID = { 0,1,2,3,4,5};
+
+    [HideInInspector]
+    public int[] easyPercentage = {28,26,26,30,24,23};  
+
+    [HideInInspector]
+    public int[] mediumPercentage = {48,46,46,50,44,43};
+
+    [HideInInspector]
+    public int[] hardPercentage = {58,56,56,60,54,53}; 
 
 
     public void DropCoins(GameObject player,UserInventory inv) {
