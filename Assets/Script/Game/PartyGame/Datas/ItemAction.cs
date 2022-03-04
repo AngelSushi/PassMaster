@@ -6,6 +6,7 @@ using System.Linq;
 
 
 public enum ItemActionResult {
+    NONE,
     SHOP,
     CHEST,
     END
@@ -21,7 +22,7 @@ public class ItemAction : MonoBehaviour {
     public int coinsToHave;
     [HideInInspector]
     public GameObject possessPlayer; // The player who use the object
-   // [HideInInspector]
+    [HideInInspector]
     public GameObject targetPlayer;
     public bool succeed;
     public bool differentPlayerToTarget;
@@ -39,13 +40,14 @@ public class ItemAction : MonoBehaviour {
 
     public void DoAction(GameObject player) {
         targetPlayer = player;
+        
         succeedActions.Clear();
         actionsEvent.Invoke();
 
         succeed = !(succeedActions.Count(succeedA => !succeedA) > 0); // Si une des actions est fausse -> succeed est faux
     }
 
-    public void CheckInRangeAction() { 
+    public void CheckInRangeAction(/*bool checkType*/) { 
         GameObject beginStep = targetPlayer.GetComponent<UserMovement>().actualStep;
         if(beginStep == null)
             beginStep = controller.firstStep;
@@ -53,8 +55,7 @@ public class ItemAction : MonoBehaviour {
         int beginIndex = controller.FindIndexInParent(beginStep.transform.parent.gameObject,beginStep);
         stepsActionPath.Clear();
 
-        succeedActions.Add(FindSmallestPathTo(beginStep,stepsActionPath,false,true)); 
-        
+        succeedActions.Add(FindSmallestPathTo(beginStep,stepsActionPath,itemID == 2 ? true : false,true));         
     }
 
     public void CheckHasCoinsAction() { 
@@ -153,31 +154,31 @@ public class ItemAction : MonoBehaviour {
         if(actualStep == null)
             return false;
 
-        switch(rangeResultType) {
-            case ItemActionResult.SHOP:
-                if(actualStep.type == StepType.SHOP) {
-                    Debug.Log("is in range of " + actualStep.type);
-                    return true;
-                }
-                break;
+        if(!differentPlayerToTarget) {
+            switch(rangeResultType) {
+                case ItemActionResult.SHOP:
+                    if(actualStep.type == StepType.SHOP) {
+                        Debug.Log("is in range of " + actualStep.type);
+                        return true;
+                    }
+                    break;
 
-            case ItemActionResult.CHEST:
-                if(actualStep.chest != null && actualStep.chest.activeSelf) {
-                    Debug.Log("is in range of " + actualStep.chest.name);
-                    return true;
-                }
-                break;
+                case ItemActionResult.CHEST:
+                    if(actualStep.chest != null && actualStep.chest.activeSelf) {
+                        Debug.Log("is in range of " + actualStep.chest.name);
+                        return true;
+                    }
+                    break;
 
-            case ItemActionResult.END:
-                if(actualStep.type == StepType.STEP_END) {
-                    Debug.Log("is in range of " + actualStep.type);
-                    return true;
-                }
-                break;
+                case ItemActionResult.END:
+                    if(actualStep.type == StepType.STEP_END) {
+                        Debug.Log("is in range of " + actualStep.type);
+                        return true;
+                    }
+                    break;
+            }
         }
-        
-        
-        if(differentPlayerToTarget) {
+        else {
             foreach(GameObject player in controller.players) {
                 if(player.GetComponent<UserMovement>().actualStep != null && player.GetComponent<UserMovement>().actualStep == actualStep.gameObject) {
                     Debug.Log("is in range of " + player.name);
