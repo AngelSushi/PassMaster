@@ -30,12 +30,13 @@ public class CoinsReward : MonoBehaviour {
                     
                     if(stepReward) {
                         controller.players[controller.actualPlayer].GetComponent<UserMovement>().finishTurn = true;
-                        if(!controller.dialog.isInDialog) {
+                        if(!controller.dialog.isInDialog) 
                             controller.EndUserTurn();
-                        }
+                        
                     }
-                    if(!controller.players[controller.actualPlayer].GetComponent<UserMovement>().isPlayer) 
-                        controller.players[controller.actualPlayer].GetComponent<UserMovement>().hasBotBuyItem = true;
+                    else { // reward is in shop
+                        controller.shopController.hasFinishBuy = true;
+                    }
 
                     transform.gameObject.SetActive(false);
                     yield return null;

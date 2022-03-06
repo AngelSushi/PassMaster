@@ -92,6 +92,8 @@ public class GameController : CoroutineSystem {
     public GameObject stepChest;
     public ShopController shopController;
     public ChestController chestController;
+    public ItemController itemController;
+    public EndAnimationController endAnimationController;
     public Animation blackScreenAnim;
 
     public static GameController Instance { get; private set;}
@@ -163,42 +165,7 @@ public class GameController : CoroutineSystem {
 
     public void ManageTurn() {
         players[actualPlayer].GetComponent<UserUI>().ChangeTurnValue(turn,nightIndex);
-
-        switch(difficulty) {
-            case 0: // Facile
-                // 2 jour ; 2 crépuscule ; 1 nuit
-                if(nightIndex == 4 || nightIndex == 3)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 2 || nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;
-
-            case 1: // Medium
-                // 2 jour ; 1 crépuscule ; 1 nuit
-                if(nightIndex == 3 || nightIndex == 2)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;
-
-            case 2: // Hard
-                // 1 jour ; 1 crépuscule ; 1 nuit
-                if(nightIndex == 2)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;        
-        }
-        
+        dayController.ChangeNaturalDayPeriod(difficulty,nightIndex);
     }
 
     private void GenerateChest() {
@@ -258,7 +225,7 @@ public class GameController : CoroutineSystem {
             chest.SetActive(false);
 
             if(timeToWait == 1.1f) { // First chest
-                mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
+                mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
                 mainCamera.transform.LookAt(chest.transform);
             }
             else { 
@@ -267,7 +234,7 @@ public class GameController : CoroutineSystem {
                     if(players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) 
                         players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(false);
 
-                    mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetChestDirection(stepChest,stepChest.GetComponent<Step>());
+                    mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
                     mainCamera.transform.LookAt(chest.transform);
                 });
             }
@@ -312,7 +279,7 @@ public class GameController : CoroutineSystem {
         }
     }
 
-    private Vector3 GetChestDirection(GameObject obj,Step step) {
+    public Vector3 GetDirection(GameObject obj,Step step,float distance) {
         if(step.useVectors.Length > 0) {
             bool forward = step.useVectors[0];
             bool back = step.useVectors[1];
@@ -321,28 +288,38 @@ public class GameController : CoroutineSystem {
 
             if(forward) {
                 if(right && !left) 
-                    return obj.transform.forward * 25f + obj.transform.right * 25f;
+                    return obj.transform.forward * distance + obj.transform.right * distance;
                 else if(!right && left) 
-                    return obj.transform.forward * 25f + obj.transform.right * -1 * 25f;
+                    return obj.transform.forward * distance + obj.transform.right * -1 * distance;
                 else 
-                    return obj.transform.forward * 25f;
+                    return obj.transform.forward * distance;
             }
             else if(back) {
                 if(right && !left) 
-                    return obj.transform.forward * -1 * 25f + obj.transform.right * 25f;
+                    return obj.transform.forward * -1 * distance + obj.transform.right * distance;
                 else if(!right && left) 
-                    return obj.transform.forward * -1 *  25f + obj.transform.right * -1 * 25f;
+                    return obj.transform.forward * -1 *  distance + obj.transform.right * -1 * distance;
                 else 
-                    return obj.transform.forward * -1 * 25f;
+                    return obj.transform.forward * -1 * distance;
             }
             else if(right) 
-                return obj.transform.right * 25f;
+                return obj.transform.right * distance;
             else if(left)
-                return obj.transform.right * -1 * 25f;
+                return obj.transform.right * -1 * distance;
 
         }
 
         return Vector3.zero;
+    }
+
+    public int FindIndexInParent(GameObject parent,GameObject targetStep) {
+
+        for(int i = 0;i<parent.transform.childCount;i++){
+            if(parent.transform.GetChild(i).gameObject == targetStep) 
+                return i;    
+        }
+
+        return -1;
     }
 
     public int GetLastChest() {
@@ -362,17 +339,6 @@ public class GameController : CoroutineSystem {
 
     public int GetPlayerPoints(GameObject player) {
         return player.GetComponent<UserInventory>().cards * 100000 + player.GetComponent<UserInventory>().coins;
-    }
-
-    public GameObject GetActualStepChest() {
-        Step[] steps = GameObject.FindObjectsOfType<Step>();
-
-        foreach(Step step in steps) {
-            if(step.chest == actualChest) 
-                return step.gameObject;    
-        }
-
-        return null;
     }
 
     public int FindPlayerClassement(GameObject player) {
@@ -480,10 +446,10 @@ public class GameController : CoroutineSystem {
 
     private void ManageCameraPosition() {
         if(turn == 1) 
-            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetChestDirection(firstStep,firstStep.GetComponent<Step>()) * 2.25f);
+            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetDirection(firstStep,firstStep.GetComponent<Step>(),25f) * 2.25f);
         else {
             GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep;
-            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetChestDirection(actualStep,actualStep.GetComponent<Step>()) * 2.25f);
+            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
         }
 
         Transform transform = players[actualPlayer].transform;
@@ -547,7 +513,7 @@ public class GameController : CoroutineSystem {
                 targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
 
                 targetStep.stack.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                ChangeStackSpritePlayer(step,0,user.GetComponent<UserMovement>().id);
+             //   ChangeStackSpritePlayer(step,0,user.GetComponent<UserMovement>().id);
             }
             else 
                 Destroy(targetStep.stack);        
@@ -565,7 +531,7 @@ public class GameController : CoroutineSystem {
 
             for(int i = 0;i<length;i++) {
                 targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(true);
-                ChangeStackSpritePlayer(step,i,targetStep.playerInStep[i].GetComponent<UserMovement>().id);
+           //     ChangeStackSpritePlayer(step,i,targetStep.playerInStep[i].GetComponent<UserMovement>().id);
             }
 
             for(int i = length;i<4;i++) 
@@ -597,22 +563,22 @@ public class GameController : CoroutineSystem {
         step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(8.940888f,9.624872f,8.940888f);
     }
 
-    public void ChangeHUDSpritePlayer(Transform[] panels,int index,int id) {
+    public void ChangeHUDSpritePlayer(Transform[] panels,int index,UserType type) {
         // A check si on peut pas tt concaténer en 1 ligne . A REFAIRE SANS LE NOM
-        switch(id) {
-            case 0:
+        switch(type) {
+            case UserType.PLAYER: // Player
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
                 break;
 
-            case 1:
+            case UserType.BOT_001:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[1];
                 break;
 
-            case 2:
+            case UserType.BOT_002:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[2];
                 break;
 
-            case 3:
+            case UserType.BOT_003:
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
                 break;            
         }
