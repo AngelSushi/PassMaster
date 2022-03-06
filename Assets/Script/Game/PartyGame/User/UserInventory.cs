@@ -83,10 +83,27 @@ public class UserInventory : MonoBehaviour {
                 }
             }
 
-            action.DoAction(transform.gameObject);
+            if(action.differentPlayerToTarget) {
+                action.possessPlayer = transform.gameObject;
+
+                foreach(GameObject player in GameController.Instance.players) {
+                    action.DoAction(player);
+
+                    if(action.succeed)
+                        break;
+                }
+            }
+            else
+                action.DoAction(transform.gameObject);
             
-         //   if(possessedItems.Contains(action.itemID) && action.DoAction(transform.gameObject)) 
-           //     itemsPercentage.Add(action.itemID,action.percentageToAdd);
+            if(possessedItems.Contains(action.itemID) && action.succeed) {
+                if(!itemsPercentage.ContainsKey(action.itemID))
+                    itemsPercentage.Add(action.itemID,action.percentageToAdd);
+                else {
+                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;
+                }
+            } 
+                
 
             Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
         }
@@ -96,6 +113,22 @@ public class UserInventory : MonoBehaviour {
                 case 0:
                     transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
                     Debug.Log("use double dice");
+                    break;
+
+                case 1:
+                    transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
+                    Debug.Log("use triple dice");
+                    break;
+
+                case 2:
+                    transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
+                    Debug.Log("use reverse dice");
+                    break;
+
+                case 3:
+                    transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
+                    GameController.Instance.blackScreenAnim.Play();
+                    Debug.Log("use hourglass");
                     break;
             }
         }

@@ -178,16 +178,7 @@ public class ItemAction : MonoBehaviour {
                     break;
             }
         }
-        else {
-            foreach(GameObject player in controller.players) {
-                if(player.GetComponent<UserMovement>().actualStep != null && player.GetComponent<UserMovement>().actualStep == actualStep.gameObject) {
-                    Debug.Log("is in range of " + player.name);
-                    return true;
-                }
-            }
-        }
         
-
         return false;
     }
 }
