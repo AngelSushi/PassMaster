@@ -67,6 +67,8 @@ public class UserMovement : User {
     public UserType userType;
     public bool checkObjectToUse;
 
+    public Animator animatorController;
+
     void Start() {
         path = new NavMeshPath();
     }
@@ -76,15 +78,13 @@ public class UserMovement : User {
         point = Vector3.zero;
 
         if(waitDiceResult) {
-            isMooving = true;
             if(!isPlayer) 
                 InitDice();      
         }
     }
 
-    public override void OnDiceAction() { // Call when a physical user (not a IA) choose the dice action on hud
+    public override void OnDiceAction() { // Call when a physical user (not an IA) choose the dice action on hud
         if(waitDiceResult) {
-            isMooving = true;
             if(isPlayer) 
                 InitDice();      
         }
@@ -112,8 +112,14 @@ public class UserMovement : User {
         base.Update();
 
         if(!gameController.freeze) {
+            
+            animatorController.SetBool("IsMooving",isMooving);
+
             if(isTurn) {
-                canMoove = !stop;  
+                canMoove = !stop;
+
+                if(stop)
+                    isMooving = false;  
 
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
@@ -144,10 +150,12 @@ public class UserMovement : User {
                         CheckPath();
                         agent.SetPath(path);   
                     }
+
                 }
 
                 if(finishMovement) {
                     StepType type = actualStep.GetComponent<Step>().type;
+                    isMooving = false;
                     if(type == StepType.BONUS)  
                         StartCoroutine(WaitBonus(true));
                     if(type == StepType.MALUS) 
@@ -181,7 +189,7 @@ public class UserMovement : User {
                 }         
             }
 
-            else {
+            else { // is not his turn
 
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
@@ -226,7 +234,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-            //    if(isPlayer) diceResult = 63; 
+                if(isPlayer) diceResult = 63; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -567,6 +575,8 @@ public class UserMovement : User {
     }
 
     private void ChooseNextStep(StepType type) {
+        isMooving = true;
+
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) {
             diceResult--;
         }
