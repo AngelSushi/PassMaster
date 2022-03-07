@@ -40,12 +40,17 @@ public class BlackScreenEvents : CoroutineSystem {
             
         }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         Debug.Log("Count: " + playersInStep.Count);
 =======
 
 
 >>>>>>> Stashed changes
+=======
+
+
+>>>>>>> main
         
         RunDelayed(1f,() => {
             GameObject newLightning = Instantiate(controller.itemController.lightningEffect,lightningStepPos,Quaternion.identity);
@@ -55,6 +60,7 @@ public class BlackScreenEvents : CoroutineSystem {
             AudioController.Instance.ambiantSource.clip = AudioController.Instance.lightning;
             AudioController.Instance.ambiantSource.Play();  
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
             RunDelayed(0.2f,() => {
                 if(playersInStep.Count > 0) {
@@ -70,10 +76,14 @@ public class BlackScreenEvents : CoroutineSystem {
 =======
             controller.itemController.DropCoins(controller.players[controller.actualPlayer],controller.players[controller.actualPlayer].GetComponent<UserInventory>());
 >>>>>>> Stashed changes
+=======
+            controller.itemController.DropCoins(controller.players[controller.actualPlayer],controller.players[controller.actualPlayer].GetComponent<UserInventory>());
+>>>>>>> main
 
             RunDelayed(2f,() => {
                 Destroy(newLightning);
                 AudioController.Instance.ambiantSource.Stop();
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 
                 foreach(GameObject player in playersInStep) {
@@ -81,6 +91,8 @@ public class BlackScreenEvents : CoroutineSystem {
                 }
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> main
             });
         });
     }

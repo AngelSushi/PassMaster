@@ -39,6 +39,7 @@ public class ItemController : CoroutineSystem {
         StartCoroutine(player.GetComponent<UserMovement>().WaitMalus(false,inv.coins / 2));
 
         GameObject coinsObj = Instantiate(coins);
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         coinsObj.transform.position = player.transform.GetChild(5).GetChild(0).gameObject.transform.position;
 
@@ -49,6 +50,8 @@ public class ItemController : CoroutineSystem {
         coinsObj.GetComponent<Rigidbody>().AddForce(20 * Vector3.forward,ForceMode.Impulse);
         
 =======
+=======
+>>>>>>> main
 
         coinsObj.AddComponent<PathFollower>();
         coinsObj.GetComponent<PathFollower>().pathCreator = player.transform.GetChild(2).GetChild(0).gameObject.GetComponent<PathCreator>();
@@ -58,7 +61,10 @@ public class ItemController : CoroutineSystem {
         RunDelayed(0.3f,() => {
             Destroy(coinsObj.GetComponent<PathFollower>());
         });
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> main
     }
 }
 
