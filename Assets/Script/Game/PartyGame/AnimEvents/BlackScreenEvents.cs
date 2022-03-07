@@ -40,8 +40,7 @@ public class BlackScreenEvents : CoroutineSystem {
             
         }
 
-
-
+        Debug.Log("Count: " + playersInStep.Count);
         
         RunDelayed(1f,() => {
             GameObject newLightning = Instantiate(controller.itemController.lightningEffect,lightningStepPos,Quaternion.identity);
@@ -51,7 +50,16 @@ public class BlackScreenEvents : CoroutineSystem {
             AudioController.Instance.ambiantSource.clip = AudioController.Instance.lightning;
             AudioController.Instance.ambiantSource.Play();  
 
-            controller.itemController.DropCoins(controller.players[controller.actualPlayer],controller.players[controller.actualPlayer].GetComponent<UserInventory>());
+            RunDelayed(0.2f,() => {
+                if(playersInStep.Count > 0) {
+                    foreach(GameObject player in playersInStep) {
+                        player.GetComponent<UserMovement>().animatorController.SetBool("IsElectrocuted",true);
+                    }
+                }
+
+                controller.itemController.DropCoins(controller.players[controller.actualPlayer],controller.players[controller.actualPlayer].GetComponent<UserInventory>());
+                
+            });
 
             RunDelayed(2f,() => {
                 Destroy(newLightning);
