@@ -39,9 +39,6 @@ public class ItemController : CoroutineSystem {
         StartCoroutine(player.GetComponent<UserMovement>().WaitMalus(false,inv.coins / 2));
 
         GameObject coinsObj = Instantiate(coins);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< Updated upstream
         coinsObj.transform.position = player.transform.GetChild(5).GetChild(0).gameObject.transform.position;
 
         if(coinsObj.GetComponent<Rigidbody>() == null)
@@ -50,29 +47,17 @@ public class ItemController : CoroutineSystem {
         coinsObj.GetComponent<Rigidbody>().AddForce(40 * Vector3.up,ForceMode.Impulse);
         coinsObj.GetComponent<Rigidbody>().AddForce(20 * Vector3.forward,ForceMode.Impulse);
         
-=======
-=======
->>>>>>> main
-=======
         coinsObj.transform.position = player.transform.GetChild(5).GetChild(0).gameObject.transform.position;
->>>>>>> Inventory&Objects
 
         if(coinsObj.GetComponent<Rigidbody>() == null)
             return;
 
-<<<<<<< HEAD
         RunDelayed(0.3f,() => {
             Destroy(coinsObj.GetComponent<PathFollower>());
         });
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> main
-=======
         coinsObj.GetComponent<Rigidbody>().AddForce(40 * Vector3.up,ForceMode.Impulse);
         coinsObj.GetComponent<Rigidbody>().AddForce(20 * Vector3.forward,ForceMode.Impulse);
         
->>>>>>> Inventory&Objects
     }
 }
 
