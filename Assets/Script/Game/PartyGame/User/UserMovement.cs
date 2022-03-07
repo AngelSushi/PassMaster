@@ -77,6 +77,10 @@ public class UserMovement : User {
 =======
 >>>>>>> main
 
+    public Animator animatorController;
+
+    public bool isElectrocuted;
+
     void Start() {
         path = new NavMeshPath();
     }
@@ -234,7 +238,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-            //    if(isPlayer) diceResult = 63; 
+                if(isPlayer) diceResult = 63; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
