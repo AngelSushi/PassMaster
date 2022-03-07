@@ -58,8 +58,6 @@ public class BlackScreenEvents : CoroutineSystem {
                 
                     }
                 }
-
-                
             });
 
             RunDelayed(2f,() => {

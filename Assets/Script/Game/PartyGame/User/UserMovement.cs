@@ -66,11 +66,9 @@ public class UserMovement : User {
     public bool constantJump;
     public UserType userType;
     public bool checkObjectToUse;
-
     public Animator animatorController;
 
     public bool isElectrocuted;
-
     void Start() {
         path = new NavMeshPath();
     }

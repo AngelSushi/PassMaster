@@ -47,6 +47,17 @@ public class ItemController : CoroutineSystem {
         coinsObj.GetComponent<Rigidbody>().AddForce(40 * Vector3.up,ForceMode.Impulse);
         coinsObj.GetComponent<Rigidbody>().AddForce(20 * Vector3.forward,ForceMode.Impulse);
         
+        coinsObj.transform.position = player.transform.GetChild(5).GetChild(0).gameObject.transform.position;
+
+        if(coinsObj.GetComponent<Rigidbody>() == null)
+            return;
+
+        RunDelayed(0.3f,() => {
+            Destroy(coinsObj.GetComponent<PathFollower>());
+        });
+        coinsObj.GetComponent<Rigidbody>().AddForce(40 * Vector3.up,ForceMode.Impulse);
+        coinsObj.GetComponent<Rigidbody>().AddForce(20 * Vector3.forward,ForceMode.Impulse);
+        
     }
 }
 
