@@ -12,7 +12,7 @@ public class UserMovementEditor : Editor {
     private SerializedProperty movement,ui,inventory,audio,gameController,userType,userCam;
 
     // Player tab
-    private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed;
+    private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed,animatorController;
 
     // Movement tab
     private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnStepBack,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
@@ -47,6 +47,7 @@ public class UserMovementEditor : Editor {
         canJump = serializedClass.FindProperty("canJump");
         isJumping = serializedClass.FindProperty("isJumping");
         jumpSpeed = serializedClass.FindProperty("jumpSpeed");
+        animatorController = serializedClass.FindProperty("animatorController");
 
         // Movement tab
         waitDiceResult = serializedClass.FindProperty("waitDiceResult");
@@ -102,7 +103,7 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(userCam);
                 break;
             case 1: // Player
-                EditorGUILayout.PropertyField(id);
+         //       EditorGUILayout.PropertyField(id);
                 EditorGUILayout.PropertyField(isTurn);
                 EditorGUILayout.PropertyField(isPlayer);
                 EditorGUILayout.PropertyField(agent);
@@ -112,6 +113,7 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(canJump);
                 EditorGUILayout.PropertyField(isJumping);
                 EditorGUILayout.PropertyField(jumpSpeed);
+                EditorGUILayout.PropertyField(animatorController);
                 break;
             case 2:
                 EditorGUILayout.PropertyField(waitDiceResult);
@@ -150,7 +152,6 @@ public class UserMovementEditor : Editor {
             case 4:
                 EditorGUILayout.PropertyField(giveUI);
                 EditorGUILayout.PropertyField(changeUI);
-                EditorGUILayout.PropertyField(stepMaterial);
                 break;
         }
 
