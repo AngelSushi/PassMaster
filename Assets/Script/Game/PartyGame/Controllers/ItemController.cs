@@ -39,15 +39,14 @@ public class ItemController : CoroutineSystem {
         StartCoroutine(player.GetComponent<UserMovement>().WaitMalus(false,inv.coins / 2));
 
         GameObject coinsObj = Instantiate(coins);
+        coinsObj.transform.position = player.transform.GetChild(5).GetChild(0).gameObject.transform.position;
 
-        coinsObj.AddComponent<PathFollower>();
-        coinsObj.GetComponent<PathFollower>().pathCreator = player.transform.GetChild(2).GetChild(0).gameObject.GetComponent<PathCreator>();
-        coinsObj.GetComponent<PathFollower>().endOfPathInstruction = EndOfPathInstruction.Stop;
-        coinsObj.GetComponent<PathFollower>().speed = 2f;
+        if(coinsObj.GetComponent<Rigidbody>() == null)
+            return;
 
-        RunDelayed(0.3f,() => {
-            Destroy(coinsObj.GetComponent<PathFollower>());
-        });
+        coinsObj.GetComponent<Rigidbody>().AddForce(40 * Vector3.up,ForceMode.Impulse);
+        coinsObj.GetComponent<Rigidbody>().AddForce(20 * Vector3.forward,ForceMode.Impulse);
+        
     }
 }
 

@@ -69,6 +69,8 @@ public class UserMovement : User {
 
     public Animator animatorController;
 
+    public bool isElectrocuted;
+
     void Start() {
         path = new NavMeshPath();
     }
@@ -114,6 +116,7 @@ public class UserMovement : User {
         if(!gameController.freeze) {
             
             animatorController.SetBool("IsMooving",isMooving);
+            animatorController.SetBool("IsElectrocuted",isElectrocuted);
 
             if(isTurn) {
                 canMoove = !stop;
@@ -201,15 +204,6 @@ public class UserMovement : User {
                 else 
                     point = Vector3.zero;
                 
-
-                if(stack) { // Pb jaune vert interchangé
-                    transform.gameObject.SetActive(false);
-                    if(actualStep.GetComponent<Step>().type != StepType.FIX_DIRECTION && !actualStep.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
-                        actualStep.GetComponent<Step>().playerInStep.Add(transform.gameObject);
-                        gameController.ActualPlayersInStep(actualStep,transform.gameObject);
-                    }
-                    
-                }
             }
         }
     }

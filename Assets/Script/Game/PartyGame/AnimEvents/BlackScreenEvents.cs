@@ -53,17 +53,22 @@ public class BlackScreenEvents : CoroutineSystem {
             RunDelayed(0.2f,() => {
                 if(playersInStep.Count > 0) {
                     foreach(GameObject player in playersInStep) {
-                        player.GetComponent<UserMovement>().animatorController.SetBool("IsElectrocuted",true);
+                        player.GetComponent<UserMovement>().isElectrocuted = true;
+                        controller.itemController.DropCoins(player,player.GetComponent<UserInventory>());
+                
                     }
                 }
 
-                controller.itemController.DropCoins(controller.players[controller.actualPlayer],controller.players[controller.actualPlayer].GetComponent<UserInventory>());
                 
             });
 
             RunDelayed(2f,() => {
                 Destroy(newLightning);
                 AudioController.Instance.ambiantSource.Stop();
+
+                foreach(GameObject player in playersInStep) {
+                    player.GetComponent<UserMovement>().isElectrocuted = false;
+                }
             });
         });
     }
