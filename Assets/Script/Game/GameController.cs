@@ -165,42 +165,7 @@ public class GameController : CoroutineSystem {
 
     public void ManageTurn() {
         players[actualPlayer].GetComponent<UserUI>().ChangeTurnValue(turn,nightIndex);
-
-        switch(difficulty) {
-            case 0: // Facile
-                // 2 jour ; 2 crépuscule ; 1 nuit
-                if(nightIndex == 4 || nightIndex == 3)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 2 || nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;
-
-            case 1: // Medium
-                // 2 jour ; 1 crépuscule ; 1 nuit
-                if(nightIndex == 3 || nightIndex == 2)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;
-
-            case 2: // Hard
-                // 1 jour ; 1 crépuscule ; 1 nuit
-                if(nightIndex == 2)
-                    dayController.dayPeriod = 0;
-                if(nightIndex == 1)
-                    dayController.dayPeriod = 1;
-                if(nightIndex == 0)
-                    dayController.dayPeriod = 2;
-
-                break;        
-        }
-        
+        dayController.ChangeNaturalDayPeriod(difficulty,nightIndex);
     }
 
     private void GenerateChest() {
@@ -347,6 +312,16 @@ public class GameController : CoroutineSystem {
         return Vector3.zero;
     }
 
+    public int FindIndexInParent(GameObject parent,GameObject targetStep) {
+
+        for(int i = 0;i<parent.transform.childCount;i++){
+            if(parent.transform.GetChild(i).gameObject == targetStep) 
+                return i;    
+        }
+
+        return -1;
+    }
+
     public int GetLastChest() {
         for(int i = 0;i<chestParent.transform.childCount;i++) {
             if(chestParent.transform.GetChild(i).gameObject.activeSelf) 
@@ -364,17 +339,6 @@ public class GameController : CoroutineSystem {
 
     public int GetPlayerPoints(GameObject player) {
         return player.GetComponent<UserInventory>().cards * 100000 + player.GetComponent<UserInventory>().coins;
-    }
-
-    public GameObject GetActualStepChest() {
-        Step[] steps = GameObject.FindObjectsOfType<Step>();
-
-        foreach(Step step in steps) {
-            if(step.chest == actualChest) 
-                return step.gameObject;    
-        }
-
-        return null;
     }
 
     public int FindPlayerClassement(GameObject player) {

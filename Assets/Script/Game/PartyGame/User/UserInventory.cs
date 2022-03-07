@@ -1,17 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using PathCreation;
-using PathCreation.Examples;
+using System;
 
 public class UserInventory : MonoBehaviour {
-    public bool hasDoubleDice; 
-    public bool hasReverseDice; 
-    public bool hasHourglass;
-    public bool hasStar; 
-    public bool hasLightning;
-    public bool hasParachute;
-    public bool hasBomb;
+    public int doubleDiceItem; 
+    public int tripleDiceItem;
+    public int reverseDiceItem; 
+    public int hourglassItem;
+    public int shellItem; 
+    public int lightningItem;
 
     public int coins;
     public int cards;
@@ -22,6 +20,7 @@ public class UserInventory : MonoBehaviour {
     private List<Vector3> drop = new List<Vector3>();
     private List<string> objectSpawn = new List<string>();
     private List<int> objList = new List<int>();
+
 
     public void CoinGain(int coinsGain) {
         coins += coinsGain;
@@ -36,10 +35,10 @@ public class UserInventory : MonoBehaviour {
     public int AddCards() {
         cards++;
 
-        int rand = Random.Range(0,secretCode.Length);
+        int rand = UnityEngine.Random.Range(0,secretCode.Length);
 
         while(secretCode[rand] != -1 || rand >= secretCode.Length) 
-            rand = Random.Range(0,secretCode.Length);
+            rand = UnityEngine.Random.Range(0,secretCode.Length);
 
         Debug.Log("rand: "+ rand);
         
@@ -50,6 +49,112 @@ public class UserInventory : MonoBehaviour {
 
     public bool HasEnoughMoney(int money) {
         return money >= coins;
+    }
+
+    public bool HasObjects() {
+        return doubleDiceItem != 0 || tripleDiceItem != 0 || reverseDiceItem != 0 || hourglassItem != 0 || lightningItem != 0 || shellItem != 0;
+    } 
+
+    public void UseItemBot() {
+        Dictionary<int,float> itemsPercentage = new Dictionary<int, float>();
+        
+        // Ajouter les pourcentages de base d'un item
+        List<int> possessedItems = GetPossessedItems();
+
+        foreach(ItemAction action in GameController.Instance.itemController.actions) {
+            foreach(int itemID in possessedItems) {
+                if(action.itemID == itemID) {
+                    switch(GameController.difficulty) {
+                        case 0:
+                            int idIndex = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
+                            action.actionPercentage = GameController.Instance.itemController.easyPercentage[idIndex];
+                            break;
+
+                        case 1:
+                            int idIndexM = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
+                            action.actionPercentage = GameController.Instance.itemController.mediumPercentage[idIndexM];
+                            break;
+
+                        case 2:
+                            int idIndexH = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
+                            action.actionPercentage = GameController.Instance.itemController.hardPercentage[idIndexH];
+                            break;
+                    }
+                }
+            }
+
+            if(action.differentPlayerToTarget) {
+                action.possessPlayer = transform.gameObject;
+
+                foreach(GameObject player in GameController.Instance.players) {
+                    action.DoAction(player);
+
+                    if(action.succeed)
+                        break;
+                }
+            }
+            else
+                action.DoAction(transform.gameObject);
+            
+            if(possessedItems.Contains(action.itemID) && action.succeed) {
+                if(!itemsPercentage.ContainsKey(action.itemID))
+                    itemsPercentage.Add(action.itemID,action.percentageToAdd);
+                else {
+                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;
+                }
+            } 
+                
+
+            Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
+        }
+
+        foreach(int itemID in possessedItems) {
+            switch(itemID) {
+                case 0:
+                    transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
+                    Debug.Log("use double dice");
+                    break;
+
+                case 1:
+                    transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
+                    Debug.Log("use triple dice");
+                    break;
+
+                case 2:
+                    transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
+                    Debug.Log("use reverse dice");
+                    break;
+
+                case 3:
+                    transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
+                    GameController.Instance.blackScreenAnim.Play();
+                    Debug.Log("use hourglass");
+                    break;
+            }
+        }
+
+        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
+
+
+    }
+
+    private List<int> GetPossessedItems() {
+        List<int> possessedItemsId = new List<int>();
+
+        if(doubleDiceItem > 0) // Id = 0
+            possessedItemsId.Add(0);
+        if(tripleDiceItem > 0) // Id = 1
+            possessedItemsId.Add(1);
+        if(reverseDiceItem > 0) // Id = 2
+            possessedItemsId.Add(2);
+        if(hourglassItem > 0) // Id = 3
+            possessedItemsId.Add(3);
+        if(lightningItem > 0) // Id = 4
+            possessedItemsId.Add(4);
+        if(shellItem > 0) // Id = 5
+            possessedItemsId.Add(5);
+
+        return possessedItemsId;
     }
 
 }
