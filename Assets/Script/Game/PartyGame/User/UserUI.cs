@@ -368,6 +368,9 @@ public class UserUI : User {
                             break;
 
                         case 5: // Shell   
+                            GameObject shell = Instantiate(gameController.shellPrefab,transform.position,Quaternion.Euler(90,0,0));
+                            shell.transform.parent = transform;
+                            CloseActionHUD(true);
                             break;
                     }
 

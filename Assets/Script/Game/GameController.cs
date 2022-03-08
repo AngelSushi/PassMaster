@@ -96,6 +96,8 @@ public class GameController : CoroutineSystem {
     public EndAnimationController endAnimationController;
     public Animation blackScreenAnim;
 
+    public GameObject shellPrefab;
+
     public static GameController Instance { get; private set;}
 
     void Awake() {

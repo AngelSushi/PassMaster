@@ -69,6 +69,7 @@ public class UserMovement : User {
     public Animator animatorController;
 
     public bool isElectrocuted;
+    public bool useShell;
     void Start() {
         path = new NavMeshPath();
     }
