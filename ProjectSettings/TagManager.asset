@@ -89,6 +89,7 @@ TagManager:
   - PanBox
   - PlateBox
   - arrow
+  - Shell
   layers:
   - Default
   - TransparentFX

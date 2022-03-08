@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using System;
 
 public class UserInventory : MonoBehaviour {
@@ -54,6 +55,36 @@ public class UserInventory : MonoBehaviour {
     public bool HasObjects() {
         return doubleDiceItem != 0 || tripleDiceItem != 0 || reverseDiceItem != 0 || hourglassItem != 0 || lightningItem != 0 || shellItem != 0;
     } 
+
+    public void UseShell() {
+        GameObject shell = Instantiate(GameController.Instance.shellPrefab,transform.position,Quaternion.Euler(90,0,0));
+        transform.parent = shell.transform;
+        Debug.Log("rot: " + shell.transform.eulerAngles);
+
+        transform.gameObject.GetComponent<UserMovement>().useShell = true;
+
+        NavMeshAgent actualAgent = transform.gameObject.GetComponent<NavMeshAgent>();
+
+        shell.AddComponent<NavMeshAgent>();
+        shell.GetComponent<NavMeshAgent>().speed = actualAgent.speed;
+        shell.GetComponent<NavMeshAgent>().angularSpeed = actualAgent.angularSpeed;
+        shell.GetComponent<NavMeshAgent>().acceleration = actualAgent.acceleration;
+        shell.GetComponent<NavMeshAgent>().radius = 0.1f;
+        shell.GetComponent<NavMeshAgent>().height = 0.12f;
+
+        transform.gameObject.GetComponent<UserMovement>().agent = shell.GetComponent<NavMeshAgent>();
+
+        UnityEditorInternal.ComponentUtility.CopyComponent(transform.gameObject.GetComponent<UserMovement>());
+        UnityEditorInternal.ComponentUtility.PasteComponentAsNew(shell);
+        
+        transform.gameObject.GetComponent<UserUI>().movement = shell.GetComponent<UserMovement>();
+
+        Destroy(actualAgent);
+        Destroy(transform.gameObject.GetComponent<UserMovement>());
+        
+    }
+
+
 
     public void UseItemBot() {
         Dictionary<int,float> itemsPercentage = new Dictionary<int, float>();

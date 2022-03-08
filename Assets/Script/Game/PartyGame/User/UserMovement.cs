@@ -150,7 +150,7 @@ public class UserMovement : User {
                         agent.CalculatePath(nextStep.position,path);
                         ShowPath(Color.magenta,path);
                         CheckPath();
-                        agent.SetPath(path);   
+                        agent.SetPath(path);
                     }
 
                 }
@@ -238,6 +238,8 @@ public class UserMovement : User {
                 GameObject hitObj = hit.gameObject;
                 hitObj.GetComponent<MeshRenderer>().enabled = false;
 
+                Debug.Log("beginDiceResult: " + diceResult + " name: " + transform.gameObject);
+
                 ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
 
                 RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
@@ -279,7 +281,7 @@ public class UserMovement : User {
                         return;
                     });
                 }
-                
+
                 if(isJumping) {
                     isJumping = false;  
                     jump = false;
@@ -287,7 +289,9 @@ public class UserMovement : User {
                     beginStep = hit.gameObject;
                 }
                 else {
+                    Debug.Log("enter else: " + diceResult + " value: " + (actualStep != hit.gameObject));
                     if(actualStep != hit.gameObject && diceResult > 0) {
+                        Debug.Log("diceResult");
                         actualStep = hit.gameObject;
                         if(diceResult > 0) 
                             ChooseNextStep(type);
@@ -570,6 +574,8 @@ public class UserMovement : User {
     private void ChooseNextStep(StepType type) {
         isMooving = true;
 
+        Debug.Log("choose next step " + transform.gameObject.name);
+
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) {
             diceResult--;
         }
@@ -619,9 +625,14 @@ public class UserMovement : User {
         GameObject actualParent = actualStep != null ? actualStep.transform.parent.gameObject : gameController.firstStep.transform.parent.gameObject;
         int stepIndex = gameController.FindIndexInParent(actualParent,actualStep);
 
+        Debug.Log("actualParent: " + actualParent.name);
+        Debug.Log("stepIndex: " + stepIndex);
+
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
-            if(stepIndex + 1 < actualParent.transform.childCount) 
+            if(stepIndex + 1 < actualParent.transform.childCount) {
                 nextStep = actualParent.transform.GetChild(stepIndex + 1);
+                Debug.Log("choose this step: " + nextStep.name);
+            }
             else 
                 nextStep = actualParent.transform.GetChild(0);
         } 

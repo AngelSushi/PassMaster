@@ -368,8 +368,7 @@ public class UserUI : User {
                             break;
 
                         case 5: // Shell   
-                            GameObject shell = Instantiate(gameController.shellPrefab,transform.position,Quaternion.Euler(90,0,0));
-                            shell.transform.parent = transform;
+                            inventory.UseShell();
                             CloseActionHUD(true);
                             break;
                     }
@@ -405,6 +404,8 @@ public class UserUI : User {
         infoLabel.SetActive(false);
         GetComponent<NavMeshAgent>().enabled = goToDice;
         movement.waitDiceResult = goToDice;
+
+        Debug.Log("myMove: " + movement.gameObject.name);
         if(goToDice)
             index = -1;
     }
@@ -469,8 +470,14 @@ public class UserUI : User {
                     int playerIndex = j;
                     if(j > 3) 
                         playerIndex -= 4;
+
+                    UserMovement userMovement = gameController.players[playerIndex].GetComponent<UserMovement>();
+
+                    if(userMovement == null && GameObject.FindGameObjectsWithTag("Shell").Length > 0) 
+                        userMovement = transform.parent.gameObject.GetComponent<UserMovement>();
                     
-                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,gameController.players[playerIndex].GetComponent<UserMovement>().userType);
+
+                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,userMovement.userType);
 
                     int rank = -1;
                     int rankIndex = 0;
