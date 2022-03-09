@@ -80,7 +80,9 @@ public class UserInventory : MonoBehaviour {
         transform.gameObject.GetComponent<UserUI>().movement = shell.GetComponent<UserMovement>();
 
         Destroy(actualAgent);
-        Destroy(transform.gameObject.GetComponent<UserMovement>());
+    //    Destroy(transform.gameObject.GetComponent<UserMovement>());
+
+        shell.GetComponent<UserMovement>().InitDice();
         
     }
 

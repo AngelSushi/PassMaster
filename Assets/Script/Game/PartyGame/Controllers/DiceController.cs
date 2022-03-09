@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DiceController : MonoBehaviour {
+public class DiceController : CoroutineSystem {
 
     public float speed;
 
@@ -46,4 +46,46 @@ public class DiceController : MonoBehaviour {
        }
 
     }
+
+ /*   private async void OnCollisionEnter(Collision hit) {
+        if(hit.gameObject.tag == "User") {
+            UserMovement movement = null;
+
+            if(hit.gameObject.transform.parent.gameObject.tag == "Shell") 
+                movement = hit.gameObject.transform.parent.gameObject.GetComponent<UserMovement>();
+            else
+                movement = hit.gameObject.GetComponent<UserMovement>();
+
+            if(movement.diceResult == 0 || movement.diceResult == -1) {
+                movement.diceResult = hit.gameObject.GetComponent<DiceController>().index;
+
+                if(movement.diceResult == 0) 
+                    movement.diceResult = 6;
+                if(movement.doubleDice) 
+                    movement.diceResult *= 2;
+                if(movement.tripleDice)
+                    movement.diceResult *= 3;           
+                
+                movement.agent.enabled = true;
+                if(movement.isPlayer) movement.diceResult = 63; 
+                movement.beginResult = movement.diceResult; 
+                movement.stepPaths = new GameObject[movement.beginResult]; 
+                movement.hasCollideDice = true;  
+                
+                movement.actualColor = movement.tripleDice ? new Color(1f,0.74f,0f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : movement.reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                movement.ui.RefreshDiceResult(movement.diceResult, movement.actualColor,true);
+
+                GameObject hitObj = hit.gameObject;
+                hitObj.GetComponent<MeshRenderer>().enabled = false;
+
+                Debug.Log("beginDiceResult: " + movement.diceResult + " name: " + transform.gameObject);
+
+                movement.ChooseNextStep(GameController.Instance.firstStep.GetComponent<Step>().type);
+
+                RunDelayed(0.1f,() => {  transform.gameObject.SetActive(false); });
+            }
+
+        }
+    }
+    */
 }

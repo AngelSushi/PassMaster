@@ -113,24 +113,23 @@ public class UserMovement : User {
         base.Update();
 
         if(!gameController.freeze) {
-            
-            animatorController.SetBool("IsMooving",isMooving);
-            animatorController.SetBool("IsElectrocuted",isElectrocuted);
-
             if(isTurn) {
                 canMoove = !stop;
+
+                if(animatorController != null) {
+                    animatorController.SetBool("IsMooving",isMooving);
+                    animatorController.SetBool("IsElectrocuted",isElectrocuted);
+                }
 
                 if(stop)
                     isMooving = false;  
 
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
-                        RunDelayed(0.2f,() => {
-                            GameObject camera = transform.GetChild(1).gameObject;
-                            camera.transform.localPosition = new Vector3(-0.07f,2.41f,-3.83f);
-                            camera.transform.localRotation = Quaternion.Euler(17.839f,0f,0f);
-                            camera.gameObject.SetActive(true);
-                        });
+                        GameObject camera = transform.GetChild(1).gameObject;
+                        camera.transform.localPosition = new Vector3(-0.07f,2.41f,-3.83f);
+                        camera.transform.localRotation = Quaternion.Euler(17.839f,0f,0f);
+                        camera.SetActive(true);
                     }
 
                     if(!hasCollideDice) {
@@ -151,6 +150,8 @@ public class UserMovement : User {
                         ShowPath(Color.magenta,path);
                         CheckPath();
                         agent.SetPath(path);
+
+                        Debug.Log("status: " + path.status);
                     }
 
                 }
@@ -158,6 +159,7 @@ public class UserMovement : User {
                 if(finishMovement) {
                     StepType type = actualStep.GetComponent<Step>().type;
                     isMooving = false;
+
                     if(type == StepType.BONUS)  
                         StartCoroutine(WaitBonus(true));
                     if(type == StepType.MALUS) 
@@ -224,25 +226,33 @@ public class UserMovement : User {
                         diceResult *= 2;
                     if(tripleDice)
                         diceResult *= 3;           
+                    
+                    agent.enabled = true;
+                  //  if(isPlayer) diceResult = 63; 
+                    beginResult = diceResult; 
+                    stepPaths = new GameObject[beginResult]; 
+                    hasCollideDice = true;  
+                    
+                    actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                    ui.RefreshDiceResult(diceResult,actualColor,true);
+
+                    GameObject hitObj = hit.gameObject;
+                    hitObj.GetComponent<MeshRenderer>().enabled = false;
+
+                    ChooseNextStep(GameController.Instance.firstStep.GetComponent<Step>().type);
+
+                    RunDelayed(0.1f,() => {  
+                        hitObj.SetActive(false);
+
+                        if(transform.parent.tag == "Shell") {
+                            UnityEditorInternal.ComponentUtility.CopyComponent(this);
+                            UnityEditorInternal.ComponentUtility.PasteComponentValues(transform.parent.gameObject.GetComponent<UserMovement>());
+
+                            Destroy(this);
+                            movement.ui.movement = transform.parent.gameObject.GetComponent<UserMovement>();
+                        }
+                    });
                 }
-                
-                agent.enabled = true;
-                if(isPlayer) diceResult = 63; 
-                beginResult = diceResult; 
-                stepPaths = new GameObject[beginResult]; 
-                hasCollideDice = true;  
-                
-                actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
-                ui.RefreshDiceResult(diceResult, actualColor,true);
-
-                GameObject hitObj = hit.gameObject;
-                hitObj.GetComponent<MeshRenderer>().enabled = false;
-
-                Debug.Log("beginDiceResult: " + diceResult + " name: " + transform.gameObject);
-
-                ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
-
-                RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
             }
 
             if(hit.gameObject.tag == "Sol") {
@@ -289,9 +299,7 @@ public class UserMovement : User {
                     beginStep = hit.gameObject;
                 }
                 else {
-                    Debug.Log("enter else: " + diceResult + " value: " + (actualStep != hit.gameObject));
                     if(actualStep != hit.gameObject && diceResult > 0) {
-                        Debug.Log("diceResult");
                         actualStep = hit.gameObject;
                         if(diceResult > 0) 
                             ChooseNextStep(type);
@@ -555,11 +563,14 @@ public class UserMovement : User {
 
     #region Customs Functions
 
-    private void InitDice() {
+    public void InitDice() {
         canJump = true;
         dice = gameController.dice;
         dice.SetActive(true);
-        agent.enabled = false;
+
+        if(!useShell)
+            agent.enabled = false;
+
         dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
         dice.GetComponent<DiceController>().lockDice = false;
         dice.GetComponent<DiceController>().lastLockDice = true;
@@ -573,8 +584,6 @@ public class UserMovement : User {
 
     private void ChooseNextStep(StepType type) {
         isMooving = true;
-
-        Debug.Log("choose next step " + transform.gameObject.name);
 
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) {
             diceResult--;
@@ -618,21 +627,16 @@ public class UserMovement : User {
             hasCheckPath = true;
         }
 
-        StepBackMovement(stepPaths);
+      //  StepBackMovement(stepPaths);
     }
 
     private void GetNextStep() {
         GameObject actualParent = actualStep != null ? actualStep.transform.parent.gameObject : gameController.firstStep.transform.parent.gameObject;
         int stepIndex = gameController.FindIndexInParent(actualParent,actualStep);
 
-        Debug.Log("actualParent: " + actualParent.name);
-        Debug.Log("stepIndex: " + stepIndex);
-
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
-            if(stepIndex + 1 < actualParent.transform.childCount) {
-                nextStep = actualParent.transform.GetChild(stepIndex + 1);
-                Debug.Log("choose this step: " + nextStep.name);
-            }
+            if(stepIndex + 1 < actualParent.transform.childCount) 
+                nextStep = actualParent.transform.GetChild(stepIndex + 1);           
             else 
                 nextStep = actualParent.transform.GetChild(0);
         } 

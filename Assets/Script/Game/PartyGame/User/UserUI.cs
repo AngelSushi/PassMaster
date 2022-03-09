@@ -405,7 +405,7 @@ public class UserUI : User {
         GetComponent<NavMeshAgent>().enabled = goToDice;
         movement.waitDiceResult = goToDice;
 
-        Debug.Log("myMove: " + movement.gameObject.name);
+        
         if(goToDice)
             index = -1;
     }
