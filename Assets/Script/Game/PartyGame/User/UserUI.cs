@@ -37,6 +37,8 @@ public class UserUI : User {
     private float cameraSpeed = 90f;
     private Vector2 vecMove;
 
+    public ParticleSystem smokeEffect;
+
 // Check que quand c'est pas le tour d'un joueur tt soit désactiver
 
     void Update() {  
@@ -474,7 +476,7 @@ public class UserUI : User {
                     UserMovement userMovement = gameController.players[playerIndex].GetComponent<UserMovement>();
 
                     if(userMovement == null && GameObject.FindGameObjectsWithTag("Shell").Length > 0) 
-                        userMovement = transform.parent.gameObject.GetComponent<UserMovement>();
+                        userMovement = transform.gameObject.GetComponent<UserMovement>();
                     
 
                     gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,userMovement.userType);
@@ -587,10 +589,10 @@ public class UserUI : User {
             diceResult.SetActive(true);
         
         if(begin) {
-            if(movement.doubleDice || movement.tripleDice) {
+            if(movement.doubleDice || movement.tripleDice || movement.useShell) {
                 diceResult.transform.GetChild(0).gameObject.SetActive(true);
-                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = movement.tripleDice ? "x3" : movement.doubleDice ? "x2" : "";
-                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = movement.tripleDice ? new Color(1f,0.74f,0f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f);
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = (movement.tripleDice || movement.useShell) ? "x3" : movement.doubleDice ? "x2" : "";
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = (movement.tripleDice || movement.useShell) ? new Color(1f,0.74f,0f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f);
             }
         }
         else 
@@ -601,6 +603,8 @@ public class UserUI : User {
 
         diceResult.GetComponent<Text>().color = color;
         diceResult.GetComponent<Text>().text = result + "";
+
+        Debug.Log("diiiice " + result);
     }
 
     public void ClearDiceResult() {

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
-public class UserInventory : MonoBehaviour {
+public class UserInventory : CoroutineSystem {
     public int doubleDiceItem; 
     public int tripleDiceItem;
     public int reverseDiceItem; 
@@ -57,7 +57,17 @@ public class UserInventory : MonoBehaviour {
     } 
 
     public void UseShell() {
+        Vector3 smokePos = new Vector3(transform.position.x, transform.position.y + 3,transform.position.z);
+
+        GameObject smoke = Instantiate(transform.gameObject.GetComponent<UserUI>().smokeEffect.gameObject,smokePos,Quaternion.identity);
+        transform.gameObject.GetComponent<UserUI>().smokeEffect.Play();
+
+        transform.gameObject.GetComponent<UserMovement>().Jump();
         GameObject shell = Instantiate(GameController.Instance.shellPrefab,transform.position,Quaternion.Euler(90,0,0));
+
+        shell.transform.GetChild(0).gameObject.SetActive(false);
+        shell.transform.GetChild(1).gameObject.SetActive(false);
+
         transform.parent = shell.transform;
         Debug.Log("rot: " + shell.transform.eulerAngles);
 
@@ -80,9 +90,16 @@ public class UserInventory : MonoBehaviour {
         transform.gameObject.GetComponent<UserUI>().movement = shell.GetComponent<UserMovement>();
 
         Destroy(actualAgent);
-    //    Destroy(transform.gameObject.GetComponent<UserMovement>());
 
-        shell.GetComponent<UserMovement>().InitDice();
+        RunDelayed(0.8f,() => {
+            shell.transform.GetChild(0).gameObject.SetActive(true);
+            shell.transform.GetChild(1).gameObject.SetActive(true);
+            shell.GetComponent<UserMovement>().InitDice();
+        });
+
+        RunDelayed(2f,() => {
+            Destroy(smoke);
+        });
         
     }
 

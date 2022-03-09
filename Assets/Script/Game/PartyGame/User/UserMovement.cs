@@ -173,7 +173,7 @@ public class UserMovement : User {
                 if(!isPlayer && waitDiceResult) {
                     if(inventory.HasObjects()) {
                         checkObjectToUse = true;
-                        inventory.UseItemBot();
+                      //  inventory.UseItemBot();
                     }
 
                     if(!checkObjectToUse) {
@@ -224,7 +224,7 @@ public class UserMovement : User {
                         diceResult = 6;
                     if(doubleDice) 
                         diceResult *= 2;
-                    if(tripleDice)
+                    if(tripleDice || useShell)
                         diceResult *= 3;           
                     
                     agent.enabled = true;
@@ -233,7 +233,7 @@ public class UserMovement : User {
                     stepPaths = new GameObject[beginResult]; 
                     hasCollideDice = true;  
                     
-                    actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                    actualColor = (tripleDice || useShell) ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
                     ui.RefreshDiceResult(diceResult,actualColor,true);
 
                     GameObject hitObj = hit.gameObject;
@@ -248,8 +248,14 @@ public class UserMovement : User {
                             UnityEditorInternal.ComponentUtility.CopyComponent(this);
                             UnityEditorInternal.ComponentUtility.PasteComponentValues(transform.parent.gameObject.GetComponent<UserMovement>());
 
+                            UnityEditorInternal.ComponentUtility.CopyComponent(ui);
+                            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(transform.parent.gameObject);
+
                             Destroy(this);
-                            movement.ui.movement = transform.parent.gameObject.GetComponent<UserMovement>();
+                            Destroy(transform.gameObject.GetComponent<UserUI>());
+
+                            ui = transform.parent.gameObject.GetComponent<UserUI>(); 
+                            ui.movement = transform.parent.gameObject.GetComponent<UserMovement>();
                         }
                     });
                 }
@@ -391,6 +397,8 @@ public class UserMovement : User {
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
                     ChooseNextStep(type);
+
+                    Debug.Log("my ui: " + ui);
 
                     if(ui != null) 
                         ui.RefreshDiceResult(diceResult,actualColor,false);
@@ -567,11 +575,16 @@ public class UserMovement : User {
         canJump = true;
         dice = gameController.dice;
         dice.SetActive(true);
+        Vector3 dicePos = transform.position;
 
-        if(!useShell)
+        if(!useShell) {
             agent.enabled = false;
+            dicePos.y += 17;
+        }
+        else 
+            dicePos.y += 30;
 
-        dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
+        dice.transform.position = dicePos;
         dice.GetComponent<DiceController>().lockDice = false;
         dice.GetComponent<DiceController>().lastLockDice = true;
         dice.GetComponent<MeshRenderer>().enabled = true;
@@ -590,8 +603,11 @@ public class UserMovement : User {
         }
 
         GetNextStep();
+        
+        Debug.Log("next step: " + transform.gameObject.name);
 
         if(ui != null) {
+            Debug.Log("refesh");
             if(beginResult == diceResult) 
                 ui.RefreshDiceResult(doubleDice ? diceResult / 2 : tripleDice ? diceResult / 3 : diceResult,actualColor,true);
             else
@@ -599,6 +615,7 @@ public class UserMovement : User {
         }
 
         finishMovement = (diceResult == 0);
+        Debug.Log("finish: " + finishMovement);
     }
 
     private void CheckPath() {

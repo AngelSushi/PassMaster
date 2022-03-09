@@ -417,10 +417,18 @@ public class GameController : CoroutineSystem {
             players[actualPlayer].GetComponent<UserMovement>().agent.radius = 0.5f;
             players[actualPlayer].GetComponent<UserMovement>().agent.height = 1.57f;
 
-            players[actualPlayer].transform.parent = players[0].transform;
+            int playerIndex = actualPlayer - 1;
+
+            if(playerIndex < 0)
+                playerIndex = players.Length - 1;
+
+            players[actualPlayer].transform.parent = players[playerIndex].transform.parent;
+
+            Debug.Log("parent: " + players[actualPlayer].transform.parent);
 
             players[actualPlayer].GetComponent<UserUI>().movement = players[actualPlayer].GetComponent<UserMovement>();
-                    
+            players[actualPlayer].transform.GetChild(1).gameObject.SetActive(false);
+
             Destroy(shell);
         }
 
