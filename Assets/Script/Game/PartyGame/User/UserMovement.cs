@@ -143,15 +143,13 @@ public class UserMovement : User {
                     }
                     
                     if(lastStep == nextStep.gameObject) 
-                        ChooseNextStep(StepType.NONE);
+                        ChooseNextStep(StepType.BONUS);
 
                     if(canMoove) {
                         agent.CalculatePath(nextStep.position,path);
                         ShowPath(Color.magenta,path);
                         CheckPath();
                         agent.SetPath(path);
-
-                        Debug.Log("status: " + path.status);
                     }
 
                 }
@@ -233,7 +231,7 @@ public class UserMovement : User {
                     stepPaths = new GameObject[beginResult]; 
                     hasCollideDice = true;  
                     
-                    actualColor = (tripleDice || useShell) ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                    actualColor = (tripleDice || useShell) ? new Color(1f,0.74f,0f,1f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
                     ui.RefreshDiceResult(diceResult,actualColor,true);
 
                     GameObject hitObj = hit.gameObject;
@@ -251,12 +249,14 @@ public class UserMovement : User {
                             UnityEditorInternal.ComponentUtility.CopyComponent(ui);
                             UnityEditorInternal.ComponentUtility.PasteComponentAsNew(transform.parent.gameObject);
 
+                            transform.parent.gameObject.GetComponent<UserMovement>().ui = transform.parent.gameObject.GetComponent<UserUI>();
+                            transform.parent.gameObject.GetComponent<UserMovement>().ui.movement = transform.parent.gameObject.GetComponent<UserMovement>();
+
                             Destroy(this);
                             Destroy(transform.gameObject.GetComponent<UserUI>());
 
-                            ui = transform.parent.gameObject.GetComponent<UserUI>(); 
-                            ui.movement = transform.parent.gameObject.GetComponent<UserMovement>();
                         }
+                        
                     });
                 }
             }
@@ -399,9 +399,6 @@ public class UserMovement : User {
                     ChooseNextStep(type);
 
                     Debug.Log("my ui: " + ui);
-
-                    if(ui != null) 
-                        ui.RefreshDiceResult(diceResult,actualColor,false);
 
                 }
 
@@ -603,11 +600,12 @@ public class UserMovement : User {
         }
 
         GetNextStep();
-        
-        Debug.Log("next step: " + transform.gameObject.name);
+
+        actualColor = (tripleDice || useShell) ? new Color(1f,0.74f,0f,1f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                   
 
         if(ui != null) {
-            Debug.Log("refesh");
+            Debug.Log("refesh: " + ui + " " + this);
             if(beginResult == diceResult) 
                 ui.RefreshDiceResult(doubleDice ? diceResult / 2 : tripleDice ? diceResult / 3 : diceResult,actualColor,true);
             else
@@ -615,7 +613,6 @@ public class UserMovement : User {
         }
 
         finishMovement = (diceResult == 0);
-        Debug.Log("finish: " + finishMovement);
     }
 
     private void CheckPath() {

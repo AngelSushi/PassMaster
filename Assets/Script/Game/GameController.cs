@@ -408,9 +408,10 @@ public class GameController : CoroutineSystem {
             
             GameObject shell = players[actualPlayer].transform.parent.gameObject;
 
-            Debug.Log("shell: " + shell);
-
             UnityEditorInternal.ComponentUtility.CopyComponent(players[actualPlayer].transform.parent.gameObject.GetComponent<UserMovement>());
+            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(players[actualPlayer]);
+
+            UnityEditorInternal.ComponentUtility.CopyComponent(players[actualPlayer].transform.parent.gameObject.GetComponent<UserUI>());
             UnityEditorInternal.ComponentUtility.PasteComponentAsNew(players[actualPlayer]);
             
             players[actualPlayer].GetComponent<UserMovement>().useShell = false;
@@ -423,8 +424,6 @@ public class GameController : CoroutineSystem {
                 playerIndex = players.Length - 1;
 
             players[actualPlayer].transform.parent = players[playerIndex].transform.parent;
-
-            Debug.Log("parent: " + players[actualPlayer].transform.parent);
 
             players[actualPlayer].GetComponent<UserUI>().movement = players[actualPlayer].GetComponent<UserMovement>();
             players[actualPlayer].transform.GetChild(1).gameObject.SetActive(false);

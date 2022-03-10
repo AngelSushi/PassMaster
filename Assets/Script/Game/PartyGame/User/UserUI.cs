@@ -592,7 +592,7 @@ public class UserUI : User {
             if(movement.doubleDice || movement.tripleDice || movement.useShell) {
                 diceResult.transform.GetChild(0).gameObject.SetActive(true);
                 diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = (movement.tripleDice || movement.useShell) ? "x3" : movement.doubleDice ? "x2" : "";
-                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = (movement.tripleDice || movement.useShell) ? new Color(1f,0.74f,0f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f);
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = (movement.tripleDice || movement.useShell) ? new Color(1f,0.74f,0f,1f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f,1f);
             }
         }
         else 
@@ -601,10 +601,11 @@ public class UserUI : User {
         if(color == null) 
             color = new Color(0f,0.35f,1f,1.0f);
 
+        if(color.a == 0)
+            color.a = 1f;
+
         diceResult.GetComponent<Text>().color = color;
         diceResult.GetComponent<Text>().text = result + "";
-
-        Debug.Log("diiiice " + result);
     }
 
     public void ClearDiceResult() {
