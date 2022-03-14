@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using System;
+using System.Linq;
 
 public class UserInventory : CoroutineSystem {
     public int doubleDiceItem; 
@@ -137,6 +138,9 @@ public class UserInventory : CoroutineSystem {
                 action.possessPlayer = transform.gameObject;
 
                 foreach(GameObject player in GameController.Instance.players) {
+                    if(player == action.possessPlayer) 
+                        continue;
+
                     action.DoAction(player);
 
                     if(action.succeed)
@@ -148,43 +152,69 @@ public class UserInventory : CoroutineSystem {
             
             if(possessedItems.Contains(action.itemID) && action.succeed) {
                 if(!itemsPercentage.ContainsKey(action.itemID))
-                    itemsPercentage.Add(action.itemID,action.percentageToAdd);
-                else {
-                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;
-                }
+                    itemsPercentage.Add(action.itemID,action.actionPercentage + action.percentageToAdd);
+                else 
+                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;             
             } 
                 
 
             Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
         }
 
-        foreach(int itemID in possessedItems) {
-            switch(itemID) {
-                case 0:
-                    transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
-                    Debug.Log("use double dice");
-                    break;
-
-                case 1:
-                    transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
-                    Debug.Log("use triple dice");
-                    break;
-
-                case 2:
-                    transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
-                    Debug.Log("use reverse dice");
-                    break;
-
-                case 3:
-                    transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
-                    GameController.Instance.blackScreenAnim.Play();
-                    Debug.Log("use hourglass");
-                    break;
-            }
+        //itemsPercentage = itemsPercentage.OrderBy(item=> item.Value).ToDictionary(item => item.Key,item => item.Value);
+        /*foreach(int itemId in itemsPercentage.Keys) {
+            Debug.Log("itemID: " + itemId + " value: " + itemsPercentage[itemId]);
         }
 
-        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
 
+*/  
+        if(itemsPercentage.Count == 0) {
+            transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
+            transform.gameObject.GetComponent<UserMovement>().InitDice();
+            return;
+        }
+
+        float maxPercentage = itemsPercentage[itemsPercentage.Keys.ToArray()[0]];
+
+        float random = UnityEngine.Random.Range(0,100);
+
+        /*if(random <= maxPercentage) {
+
+        }*/
+
+        switch(itemsPercentage.Keys.ToArray()[0]) {
+            case 0:
+                transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
+                Debug.Log("use double dice");
+                break;
+
+            case 1:
+                transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
+                Debug.Log("use triple dice");
+                break;
+
+            case 2:
+                transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
+                Debug.Log("use reverse dice");
+                break;
+
+            case 3:
+                transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
+                GameController.Instance.blackScreenAnim.Play();
+                Debug.Log("use hourglass");
+                break;
+            
+            case 4: // lightning
+                break;
+
+            case 5: // shell
+                UseShell();
+                break;
+        }
+
+
+        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
+        transform.gameObject.GetComponent<UserMovement>().InitDice();
 
     }
 

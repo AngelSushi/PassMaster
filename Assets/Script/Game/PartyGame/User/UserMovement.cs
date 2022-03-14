@@ -79,7 +79,7 @@ public class UserMovement : User {
         point = Vector3.zero;
 
         if(waitDiceResult) {
-            if(!isPlayer) 
+            if(!isPlayer && !inventory.HasObjects()) 
                 InitDice();      
         }
     }
@@ -106,7 +106,7 @@ public class UserMovement : User {
         hasJump = false;
 
         if(!isPlayer)
-            checkObjectToUse = false;
+            checkObjectToUse = true;
     }
 
     public override void Update() {
@@ -169,9 +169,8 @@ public class UserMovement : User {
                 }            
 
                 if(!isPlayer && waitDiceResult) {
-                    if(inventory.HasObjects()) {
-                        checkObjectToUse = true;
-                      //  inventory.UseItemBot();
+                    if(inventory.HasObjects() && checkObjectToUse) {
+                        inventory.UseItemBot();
                     }
 
                     if(!checkObjectToUse) {
@@ -395,13 +394,9 @@ public class UserMovement : User {
                         }          
                 }
 
-                if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
+                if(nextStep == null && diceResult > 0)  // Le joueur/bot n'a pas encore commencé a bougé   
                     ChooseNextStep(type);
-
-                    Debug.Log("my ui: " + ui);
-
-                }
-
+                
                 else if(nextStep != null && diceResult == 0) { // Le joueur a fini son chemin
                     nextStep = null;
                     diceResult = -1;
@@ -605,7 +600,6 @@ public class UserMovement : User {
                    
 
         if(ui != null) {
-            Debug.Log("refesh: " + ui + " " + this);
             if(beginResult == diceResult) 
                 ui.RefreshDiceResult(doubleDice ? diceResult / 2 : tripleDice ? diceResult / 3 : diceResult,actualColor,true);
             else
