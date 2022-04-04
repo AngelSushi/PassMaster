@@ -8404,6 +8404,7 @@ GameObject:
   - component: {fileID: 101854036096353424}
   - component: {fileID: 3967023696157703160}
   - component: {fileID: 3967023696157703161}
+  - component: {fileID: 3967023696157703162}
   m_Layer: 0
   m_Name: CutBox
   m_TagString: CutBox
@@ -8437,6 +8438,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 6.0849833, y: 4.660091, z: 4.89525}
   m_Center: {x: 0.61443704, y: -0.00000016439033, z: -0.00000022741726}
+--- !u!114 &3967023696157703162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3967023696157703159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b64e689fadcae4f810b0d21d01ae21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boxType: 3
 --- !u!23 &3991016059757416566
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8585,6 +8599,7 @@ GameObject:
   - component: {fileID: 4845932921054210203}
   - component: {fileID: 4458714270334355448}
   - component: {fileID: 4458714270334355449}
+  - component: {fileID: 4458714270334355450}
   m_Layer: 0
   m_Name: CutBox
   m_TagString: CutBox
@@ -8618,6 +8633,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 6.0849833, y: 4.660091, z: 4.89525}
   m_Center: {x: 0.61443704, y: -0.00000016439033, z: -0.00000022741726}
+--- !u!114 &4458714270334355450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4458714270334355447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b64e689fadcae4f810b0d21d01ae21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boxType: 3
 --- !u!1 &4496287692180406977
 GameObject:
   m_ObjectHideFlags: 0
@@ -8825,6 +8853,7 @@ GameObject:
   - component: {fileID: 7803951608089776494}
   - component: {fileID: 4842945592759683124}
   - component: {fileID: 4842945592759683125}
+  - component: {fileID: 4842945592759683126}
   m_Layer: 0
   m_Name: CutBox
   m_TagString: CutBox
@@ -8858,6 +8887,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 6.0849833, y: 4.660091, z: 4.89525}
   m_Center: {x: 0.61443704, y: -0.00000016439033, z: -0.00000022741726}
+--- !u!114 &4842945592759683126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4842945592759683123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b64e689fadcae4f810b0d21d01ae21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boxType: 3
 --- !u!23 &4845932921054210203
 MeshRenderer:
   m_ObjectHideFlags: 0

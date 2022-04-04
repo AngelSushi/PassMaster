@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1850826301483909726}
+  - component: {fileID: 2479427448646472656}
   m_Layer: 0
   m_Name: TomatoPrefab
   m_TagString: Untagged
@@ -33,6 +34,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &2479427448646472656
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2455068969790804938}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.01
+  m_Center: {x: -0.000000003259629, y: 0.00015971248, z: 0.000014632937}
 --- !u!1 &3396617968029534096
 GameObject:
   m_ObjectHideFlags: 0
@@ -125,7 +139,6 @@ GameObject:
   - component: {fileID: 4046739568024197819}
   - component: {fileID: 4136108756092460536}
   - component: {fileID: 3537335239030226846}
-  - component: {fileID: 4025615653280389261}
   m_Layer: 0
   m_Name: "Sph\xE8re"
   m_TagString: Untagged
@@ -196,19 +209,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &4025615653280389261
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6785547084188927315}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.01
-  m_Center: {x: -0.000000003259629, y: 0.00015971248, z: 0.000014632937}
 --- !u!1 &8788248113716248932
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,10 +19,10 @@ public class Box : MonoBehaviour {
     public BoxType boxType;
 
     public virtual void Interact(ChefController playerController) {
-        Debug.Log("Interact");
-        
-        if(playerController.actualIngredient == null)
-            TakeIngredient(playerController);
+        if(playerController.actualIngredient == null) {
+            if(boxType == BoxType.NORMAL || boxType == BoxType.INGREDIENT)
+                TakeIngredient(playerController);
+        }
         else
             PutIngredient(playerController,transform.gameObject);
 
