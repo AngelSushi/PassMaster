@@ -9,7 +9,6 @@ public class CookAction : MonoBehaviour {
     public float seconds;
     public Slider slider;
     public GameObject plate;
-    public bool carryPlate;
     public List<GameObject> ingredients;
     public bool finish;
     private float timer,step;

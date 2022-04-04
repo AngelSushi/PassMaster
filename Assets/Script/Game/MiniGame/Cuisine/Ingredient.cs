@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ingredient : MonoBehaviour {
+
+
+[CreateAssetMenu(fileName = "Ingredient", menuName = "Cuisine/Ingredient", order = 1)]
+public class Ingredient : ScriptableObject {
 
     public bool isCuttable;
     public bool isCut;
@@ -11,4 +14,8 @@ public class Ingredient : MonoBehaviour {
     public Sprite sprite;
     public string cookTag;
     public string name;
+    public GameObject ingredientPrefab;
+    public GameObject ingredientCutPrefab;
+    public GameObject ingredientCookPrefab;
+
 }

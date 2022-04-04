@@ -11,7 +11,7 @@ public class ChefController : MonoBehaviour {
     private Vector3 move;
     public bool isMoving;
     public bool canMoove;
-    private GameObject cutBox,ingredientBox,panBox,stoveBox,box,groundIngredient,plateBox;
+    private Box actualBox;
     private CookAction action;
     private Quaternion rotation;
 
@@ -23,7 +23,7 @@ public class ChefController : MonoBehaviour {
             transform.rotation = rotation;
 
         if(action != null) {
-            if(cutBox != null && cutBox.transform.childCount > 1 &&  cutBox.transform.GetChild(1).gameObject.GetComponent<Ingredient>().cookTag == "CutBox") {
+        /*    if(cutBox != null && cutBox.transform.childCount > 1 &&  cutBox.transform.GetChild(1).gameObject.GetComponent<Ingredient>().cookTag == "CutBox") {
                 if(action.isDoingAction)
                     canMoove = false;
 
@@ -35,7 +35,7 @@ public class ChefController : MonoBehaviour {
                     canMoove = true;
                 }
             }
-            
+          */  
         }
 
     }
@@ -49,9 +49,12 @@ public class ChefController : MonoBehaviour {
 
         rotation = Quaternion.LookRotation(move, Vector3.up);
         transform.rotation = rotation;
+        
     }
 
-    private void OnCollisionStay(Collision hit) {
+
+
+  /*  private void OnCollisionStay(Collision hit) {
         if(hit.gameObject.tag == "Ingredient") 
             groundIngredient = hit.gameObject;
     }
@@ -60,35 +63,18 @@ public class ChefController : MonoBehaviour {
         if(hit.gameObject.tag == "Ingredient") 
             groundIngredient = hit.gameObject;     
     }
+*/
+
+
 
     private void OnTriggerStay(Collider hit) {
-        if(hit.gameObject.tag == "IngredientBox") 
-            ingredientBox = hit.gameObject;
-        if(hit.gameObject.tag == "CutBox") 
-            cutBox = hit.gameObject; 
-        if(hit.gameObject.tag == "PanBox")
-            panBox = hit.gameObject;
-        if(hit.gameObject.tag == "StoveBox")
-            stoveBox = hit.gameObject;
-        if(hit.gameObject.tag == "Box") 
-            box = hit.gameObject;
-        if(hit.gameObject.tag == "PlateBox") 
-            plateBox = hit.gameObject;
+        if(hit.gameObject.GetComponent<Box>() != null)
+            actualBox = hit.gameObject.GetComponent<Box>();
     }
 
     private void OnTriggerExit(Collider hit) {
-        if(hit.gameObject.tag == "IngredientBox" && ingredientBox != null) 
-            ingredientBox = null;     
-        if(hit.gameObject.tag == "CutBox" && cutBox != null) 
-            cutBox = null;  
-        if(hit.gameObject.tag == "PanBox" && panBox != null)
-            panBox = null;
-        if(hit.gameObject.tag == "StoveBox" && stoveBox != null)
-            stoveBox = null;
-        if(hit.gameObject.tag == "Box" && box != null) 
-            box = null;
-        if(hit.gameObject.tag == "PlateBox" && plateBox != null)
-            plateBox = null;
+        if(hit.gameObject.GetComponent<Box>() != null && actualBox != null)
+            actualBox = null;
     }
 
     public void OnMove(InputAction.CallbackContext e) {
@@ -97,10 +83,19 @@ public class ChefController : MonoBehaviour {
         if(e.started) isMoving = true;
         if(e.canceled)  isMoving = false;    
     }
+    
 
     public void OnInteract(InputAction.CallbackContext e) {
         if(e.started) {
-            if(ingredientBox == null && cutBox == null && box == null && panBox == null && actualIngredient != null) { // On check si le commis peut lacher l'ingrédient
+            if(actualBox != null) {
+                Box box = (Box)actualBox.GetComponent<Box>();
+
+                box.Interact(this);
+            }
+
+
+            
+           /* if(ingredientBox == null && cutBox == null && box == null && panBox == null && actualIngredient != null) { // On check si le commis peut lacher l'ingrédient
                 DropIngredient();
                 return;
             }
@@ -146,11 +141,14 @@ public class ChefController : MonoBehaviour {
                 }
 
                 
-            }        
+            }    */     
         }
+        
     }
 
-    private void CutAction() {
+    
+
+   /* private void CutAction() {
         action = cutBox.transform.GetChild(0).gameObject.GetComponent<CookAction>();
         if(!action.isDoingAction) {
             if(action.ingredients.Count == 0) {         
@@ -161,19 +159,20 @@ public class ChefController : MonoBehaviour {
                 action.isDoingAction = true;
         }
     }
+    */
 
     private void CookAction(GameObject box) {
         action = box.transform.GetChild(0).gameObject.GetComponent<CookAction>();
         if(!action.isDoingAction && action.ingredients.Count == 0) {
             actualIngredient.GetComponent<MeshRenderer>().enabled = false;
             action.ingredients.Add(actualIngredient);
-            PutIngredient(box);
+           // PutIngredient(box);
             action.isDoingAction = true;
             action.RefreshUI();
         }        
     }
 
-    private void PutIngredient(GameObject box) {
+  /*  private void PutIngredient(GameObject box) {
         actualIngredient.GetComponent<SphereCollider>().isTrigger = false;
         Vector3 actionBoxPos = box.transform.position;
         actionBoxPos.y = 4.74f; 
@@ -181,6 +180,9 @@ public class ChefController : MonoBehaviour {
         actualIngredient.transform.parent = box.transform;
         actualIngredient = null;
     }
+    */
+
+
     private void CutIngredient(GameObject cutIngredient) {
         cutIngredient.transform.localScale = new Vector3(2.05f,0.8f,2.05f);
         Vector3 ingredientPos = cutIngredient.transform.position;
@@ -198,30 +200,7 @@ public class ChefController : MonoBehaviour {
         actualIngredient = null;
     }
 
-    private void TakeIngredient() {
-        if(action != null && action.isDoingAction)
-            return;
-
-        GameObject ingredient = null;
-
-        if(ingredientBox != null)
-            ingredient = ingredientBox.transform.GetChild(0).gameObject;
-        else if(cutBox != null && cutBox.transform.childCount > 1) // Ajouter condition pour four,poele etc
-            ingredient = cutBox.transform.GetChild(cutBox.transform.childCount - 1).gameObject;
-        else if(box != null)
-            ingredient = box.transform.GetChild(0).gameObject;
-        else
-            ingredient = groundIngredient;
-
-        if(ingredient != null) {            
-            ingredient.transform.parent = transform;
-            ingredient.GetComponent<SphereCollider>().isTrigger = true;
-            ingredient.transform.localPosition = new Vector3(-0.07f,0.03f,0.8f);
-            actualIngredient = ingredient;
-        }
-    }
-
-    private void TakePlate() {
+   /* private void TakePlate() {
         GameObject plate = plateBox.transform.GetChild(0).gameObject;
 
         if(plate != null) {            
@@ -229,8 +208,9 @@ public class ChefController : MonoBehaviour {
             plate.transform.localPosition = new Vector3(-0.07f,0.03f,0.8f);
         }
     }
+    */
 
-    private void PutIngredientInPlate(GameObject ingredient) {
+ /*   private void PutIngredientInPlate(GameObject ingredient) {
         GameObject plate = plateBox.transform.GetChild(0).gameObject;
         CookAction plateAction = plate.GetComponent<CookAction>();
 
@@ -254,7 +234,7 @@ public class ChefController : MonoBehaviour {
         actualIngredient = null;
     }
 
-
+*/
 
     private List<CookController.Recipes> GetListContaining(List<GameObject> plate) {
         List<CookController.Recipes> plateRecipes = new List<CookController.Recipes>();

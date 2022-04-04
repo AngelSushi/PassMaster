@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
+  m_Name: Cheese
+  m_EditorClassIdentifier: 
+  isCuttable: 1
+  isCut: 0
+  isCookable: 0
+  isCook: 0
+  sprite: {fileID: 21300000, guid: ed76344245242f2448769be7d5c63da1, type: 3}
+  cookTag: 
+  name: Cheese
+  ingredientPrefab: {fileID: 7793588385338481782, guid: aef71da7b04ea544aa95416974b931d2,
+    type: 3}
+  ingredientCutPrefab: {fileID: 1646869202720450610, guid: e50774867de1e904f945c0167ba26e2c,
+    type: 3}
+  ingredientCookPrefab: {fileID: 0}

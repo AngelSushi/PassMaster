@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4573687055832140900
+--- !u!1 &1514714906832524204
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4573687055832140899}
-  - component: {fileID: 4573687055832140898}
-  - component: {fileID: 4573687055832140901}
-  - component: {fileID: 4573687055832140896}
-  - component: {fileID: 4573687055832140897}
+  - component: {fileID: 2183834061549439254}
+  - component: {fileID: 3017783485814441651}
+  - component: {fileID: 1010395516759077497}
+  - component: {fileID: 6283178478848203864}
   m_Layer: 0
-  m_Name: Steak
-  m_TagString: Ingredient
+  m_Name: SteakCookPrefab
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4573687055832140899
+--- !u!4 &2183834061549439254
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4573687055832140900}
-  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: 0.045091122, y: 0.19882154, z: 0.53028965}
-  m_LocalScale: {x: 1.8042064, y: 1.28762, z: 1.9567392}
+  m_GameObject: {fileID: 1514714906832524204}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: -0.5}
+  m_LocalPosition: {x: -7.550329, y: 4.6419353, z: -2.2093186}
+  m_LocalScale: {x: 40.740288, y: 40.740288, z: 40.740288}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &4573687055832140898
+--- !u!33 &3017783485814441651
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4573687055832140900}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &4573687055832140901
+  m_GameObject: {fileID: 1514714906832524204}
+  m_Mesh: {fileID: -5053925668127403250, guid: 67951b30ed6eb004492a759e253c73b7, type: 3}
+--- !u!23 &1010395516759077497
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4573687055832140900}
+  m_GameObject: {fileID: 1514714906832524204}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -61,7 +60,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9ac7f3d755dd242429d40ed5658d2589, type: 2}
+  - {fileID: 5492870714317859256, guid: 67951b30ed6eb004492a759e253c73b7, type: 3}
+  - {fileID: -8203834849867487392, guid: 67951b30ed6eb004492a759e253c73b7, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,34 +83,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4573687055832140896
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4573687055832140900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isCuttable: 1
-  isCut: 0
-  isCookable: 1
-  isCook: 0
-  sprite: {fileID: 21300000, guid: 116243b40c0c77643831d78dc8957da4, type: 3}
-  cookTag: StoveBox
---- !u!135 &4573687055832140897
+--- !u!135 &6283178478848203864
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4573687055832140900}
+  m_GameObject: {fileID: 1514714906832524204}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.50000006
-  m_Center: {x: 0.00000011920929, y: -0.00000023841858, z: 0.00000023841858}
+  m_Radius: 0.03319515
+  m_Center: {x: -0.004484491, y: -0.001016099, z: 0.016363394}

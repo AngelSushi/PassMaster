@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
+  m_Name: Tomato
+  m_EditorClassIdentifier: 
+  isCuttable: 1
+  isCut: 0
+  isCookable: 0
+  isCook: 0
+  sprite: {fileID: 21300000, guid: 83a3c0ed30454d0498f44f3864e31896, type: 3}
+  cookTag: 
+  name: Tomate
+  ingredientPrefab: {fileID: 2455068969790804938, guid: 272b3ceb753297946886aba086a2a0b5,
+    type: 3}
+  ingredientCutPrefab: {fileID: 6219982102088193290, guid: 748c212d1b3ae5d42bc75d42914fadf2,
+    type: 3}
+  ingredientCookPrefab: {fileID: 0}
