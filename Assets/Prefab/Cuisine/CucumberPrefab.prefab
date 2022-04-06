@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6219982102088193290
+--- !u!1 &7562271068251377358
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6708675044868968368}
-  - component: {fileID: 7689293820709453845}
-  - component: {fileID: 5571283367500887263}
-  - component: {fileID: 3376751810471862255}
+  - component: {fileID: 7185851460853568628}
+  - component: {fileID: 6059204353148394449}
+  - component: {fileID: 8354855743835991835}
+  - component: {fileID: 2821022030513957832}
   m_Layer: 0
-  m_Name: TomatoCutPrefab
+  m_Name: CucumberPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6708675044868968368
+--- !u!4 &7185851460853568628
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6219982102088193290}
-  m_LocalRotation: {x: -0.000000030908623, y: -0.7071068, z: -0.7071068, w: 0.000000030908623}
-  m_LocalPosition: {x: -6.5315266, y: 7.254806, z: 1.4012375}
-  m_LocalScale: {x: 6, y: 6, z: 6}
+  m_GameObject: {fileID: 7562271068251377358}
+  m_LocalRotation: {x: 1, y: -0.00000004371139, z: -0.00000004371139, w: 1.9106855e-15}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 5.6561174, y: 5.656118, z: 3.395782}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7689293820709453845
+--- !u!33 &6059204353148394449
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6219982102088193290}
-  m_Mesh: {fileID: 9218671806481826381, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
---- !u!23 &5571283367500887263
+  m_GameObject: {fileID: 7562271068251377358}
+  m_Mesh: {fileID: -8064258547083111627, guid: f228559ffb114184c9e49fed7dc28554, type: 3}
+--- !u!23 &8354855743835991835
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6219982102088193290}
+  m_GameObject: {fileID: 7562271068251377358}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -60,17 +60,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -7270983323237059626, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: 1368469627357071120, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: 5771979568864853116, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: -7111271404805428456, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: 1394057725426118550, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: -4450074576553069073, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: 171705486082538841, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: -5785782118743538025, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: -5374185815670993362, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: -5009216839144348370, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
-  - {fileID: -3102218403919940572, guid: c8636104ea2ea2943b4b173e5237ef5f, type: 3}
+  - {fileID: 5295723717278152849, guid: f228559ffb114184c9e49fed7dc28554, type: 3}
+  - {fileID: 924544865645213579, guid: f228559ffb114184c9e49fed7dc28554, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -92,16 +83,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &3376751810471862255
+--- !u!135 &2821022030513957832
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6219982102088193290}
+  m_GameObject: {fileID: 7562271068251377358}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.22500709
-  m_Center: {x: -0.06655597, y: 0.08245003, z: -0.00871228}
+  m_Radius: 0.35
+  m_Center: {x: 0.0004457086, y: -0.041051924, z: -0.57810456}

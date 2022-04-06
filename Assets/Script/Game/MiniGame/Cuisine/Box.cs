@@ -69,7 +69,7 @@ public class Box : MonoBehaviour {
         Vector3 spawnPosition = transform.position;
         spawnPosition.y += 0.5f;
 
-        GameObject ingredient = Instantiate(ingredientBox.ingredient.ingredientPrefab,spawnPosition,Quaternion.identity);
+        GameObject ingredient = Instantiate(ingredientBox.ingredient.ingredientPrefab,spawnPosition,ingredientBox.ingredient.ingredientPrefab.transform.rotation);
 
         ingredient.AddComponent<Ingredient>();
         ingredient.GetComponent<Ingredient>().ingredientModel = ingredientBox.ingredient;

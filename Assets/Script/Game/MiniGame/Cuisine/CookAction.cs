@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class CookAction : MonoBehaviour {
 
@@ -10,12 +11,19 @@ public class CookAction : MonoBehaviour {
     public Slider slider;
     public GameObject plate;
     public List<GameObject> ingredients;
-    public bool finish;
     private float timer,step;
+
+    public event EventHandler<OnActionFinishArgs> OnActionFinished;
+
+    public class OnActionFinishArgs : EventArgs {
+
+    }
 
     void Update() {
         if(isDoingAction) {
+            Debug.Log("action: " + slider);
             slider.gameObject.SetActive(true);
+
 
             timer += Time.deltaTime;
             step += Time.deltaTime;
@@ -27,15 +35,14 @@ public class CookAction : MonoBehaviour {
                 }
             }
             else {
-                finish = true;
                 isDoingAction = false;
+                slider.gameObject.SetActive(false);
+                timer = 0;
+                step = 0;
+
+                OnActionFinished?.Invoke(this,new OnActionFinishArgs());
+           //   slider.value = 0;
             }
-        }
-        else {
-            slider.gameObject.SetActive(false);
-            timer = 0;
-            step = 0;
-            slider.value = 0;
         }
     }
 
@@ -48,14 +55,21 @@ public class CookAction : MonoBehaviour {
             else 
                 plate.SetActive(false);
         }
-      }
+    }
+
+    public void StartAction() {
+        isDoingAction = true;
+        slider.gameObject.SetActive(true);
+        Debug.Log("start action");
+    }
+    
 
     public void RefreshUI() {
         for(int i = 0;i<ingredients.Count;i++) {
             GameObject ingredient = ingredients[i];
             GameObject actionPanel = slider.gameObject.transform.parent.gameObject;
 
-           // actionPanel.transform.GetChild(1 + i).gameObject.GetComponent<Image>().sprite = ingredient.GetComponent<Ingredient>().sprite;
+            actionPanel.transform.GetChild(1 + i).gameObject.GetComponent<Image>().sprite = ingredient.GetComponent<Ingredient>().ingredientModel.sprite;
         }
     }
 
@@ -63,7 +77,7 @@ public class CookAction : MonoBehaviour {
         for(int i = 0;i<ingredients.Count;i++) {
             GameObject ingredient = ingredients[i];
 
-          //  plate.transform.GetChild(i).gameObject.GetComponent<Image>().sprite = ingredient.GetComponent<Ingredient>().sprite;
+            plate.transform.GetChild(i).gameObject.GetComponent<Image>().sprite = ingredient.GetComponent<Ingredient>().ingredientModel.sprite;
         }
     }
 }

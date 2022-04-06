@@ -17,8 +17,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 996082cbfdfe68842a80f9d8d302597d, type: 3}
   cookTag: 
   name: Concombre
-  ingredientPrefab: {fileID: 919132149155446097, guid: f228559ffb114184c9e49fed7dc28554,
+  ingredientPrefab: {fileID: 7562271068251377358, guid: bf2ce3bc44300274691a59578599e63b,
     type: 3}
-  ingredientCutPrefab: {fileID: 919132149155446097, guid: abb0868f6948e104882553f8f063dc36,
+  ingredientCutPrefab: {fileID: 7493795470878542454, guid: af2faac03d3f7854291a574286d0a315,
     type: 3}
   ingredientCookPrefab: {fileID: 0}
