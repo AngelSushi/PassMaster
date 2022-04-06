@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
-  m_Name: Cheese
+  m_Name: PizzaBread
   m_EditorClassIdentifier: 
   isCuttable: 1
   isCookable: 0
-  sprite: {fileID: 21300000, guid: ed76344245242f2448769be7d5c63da1, type: 3}
+  sprite: {fileID: 21300000, guid: b63d65a8d7a5b3941a4fcf0091bc0ae2, type: 3}
   cookTag: 
-  name: Fromage
-  ingredientPrefab: {fileID: 7793588385338481782, guid: aef71da7b04ea544aa95416974b931d2,
+  name: pate a pizza
+  ingredientPrefab: {fileID: 8823572242077095163, guid: 023f6902e7a2cad4ba9b0bb754360e06,
     type: 3}
-  ingredientCutPrefab: {fileID: 1646869202720450610, guid: e50774867de1e904f945c0167ba26e2c,
+  ingredientCutPrefab: {fileID: 2361642169135540121, guid: 87a7b3064b685b84a8e04cfe54502e3e,
     type: 3}
   ingredientCookPrefab: {fileID: 0}

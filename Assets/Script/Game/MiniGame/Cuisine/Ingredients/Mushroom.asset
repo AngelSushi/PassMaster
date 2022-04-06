@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Mushroom
   m_EditorClassIdentifier: 
   isCuttable: 0
-  isCut: 0
   isCookable: 0
-  isCook: 0
   sprite: {fileID: 21300000, guid: 0b1e86ab7354c844491fc9b646693b04, type: 3}
   cookTag: 
-  name: Mushroom
+  name: Champignon
   ingredientPrefab: {fileID: 8275492628857149292, guid: 20581891decae1545864154e6ef556ef,
     type: 3}
+  ingredientCutPrefab: {fileID: 0}
+  ingredientCookPrefab: {fileID: 0}

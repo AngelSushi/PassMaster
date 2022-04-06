@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
-  m_Name: Cheese
+  m_Name: Cucumber
   m_EditorClassIdentifier: 
   isCuttable: 1
   isCookable: 0
-  sprite: {fileID: 21300000, guid: ed76344245242f2448769be7d5c63da1, type: 3}
+  sprite: {fileID: 21300000, guid: 996082cbfdfe68842a80f9d8d302597d, type: 3}
   cookTag: 
-  name: Fromage
-  ingredientPrefab: {fileID: 7793588385338481782, guid: aef71da7b04ea544aa95416974b931d2,
+  name: Concombre
+  ingredientPrefab: {fileID: 919132149155446097, guid: f228559ffb114184c9e49fed7dc28554,
     type: 3}
-  ingredientCutPrefab: {fileID: 1646869202720450610, guid: e50774867de1e904f945c0167ba26e2c,
+  ingredientCutPrefab: {fileID: 919132149155446097, guid: abb0868f6948e104882553f8f063dc36,
     type: 3}
   ingredientCookPrefab: {fileID: 0}

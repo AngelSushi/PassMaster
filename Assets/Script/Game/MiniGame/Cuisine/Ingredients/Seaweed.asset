@@ -13,12 +13,10 @@ MonoBehaviour:
   m_Name: Seaweed
   m_EditorClassIdentifier: 
   isCuttable: 0
-  isCut: 0
   isCookable: 0
-  isCook: 0
   sprite: {fileID: 21300000, guid: 4cd1ed97a0b588c4689a026435182899, type: 3}
   cookTag: 
-  name: Seaweed
+  name: Algue
   ingredientPrefab: {fileID: 1298147551246880430, guid: 6e29db18f6a2f284a9f632f3d2075a45,
     type: 3}
   ingredientCutPrefab: {fileID: 0}

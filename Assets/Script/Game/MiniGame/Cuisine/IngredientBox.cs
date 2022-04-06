@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class IngredientBox : Box {
 
-    public Ingredient ingredient;
+    public DataIngredient ingredient;
 
     public override void Interact(ChefController playerController) {
         base.Interact(playerController);
