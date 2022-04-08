@@ -8,7 +8,7 @@ public class DataIngredient : ScriptableObject {
     public bool isCuttable;
     public bool isCookable;
     public Sprite sprite;
-    public string cookTag;
+    public BoxType boxActionType;
     public string name;
     public GameObject ingredientPrefab;
     public GameObject ingredientCutPrefab;

@@ -21,7 +21,6 @@ public class CookAction : MonoBehaviour {
 
     void Update() {
         if(isDoingAction) {
-            Debug.Log("action: " + slider);
             slider.gameObject.SetActive(true);
 
 
@@ -60,7 +59,6 @@ public class CookAction : MonoBehaviour {
     public void StartAction() {
         isDoingAction = true;
         slider.gameObject.SetActive(true);
-        Debug.Log("start action");
     }
     
 

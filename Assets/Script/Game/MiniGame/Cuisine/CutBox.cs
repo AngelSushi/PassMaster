@@ -16,9 +16,10 @@ public class CutBox : Box {
 
         Debug.Log("cutted");
 
-        if(actualIngredient != null && actualIngredient.ingredientModel.isCuttable && !actualIngredient.isCook) {
+        if(actualIngredient != null && actualIngredient.ingredientModel.isCuttable && !actualIngredient.isCut) {
             action.StartAction();
             action.OnActionFinished += OnActionFinished;
+            return;
         }
 
         if(playerController.actualIngredient != null) // On pose l'ingrédient pour le couper
@@ -35,6 +36,8 @@ public class CutBox : Box {
 
         UnityEditorInternal.ComponentUtility.CopyComponent(actualIngredient); 
         UnityEditorInternal.ComponentUtility.PasteComponentAsNew(cutIngredient);
+
+        cutIngredient.transform.parent = transform;
 
         Destroy(actualIngredient.gameObject);
         

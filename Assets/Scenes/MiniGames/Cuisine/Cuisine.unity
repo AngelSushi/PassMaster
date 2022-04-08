@@ -9718,6 +9718,7 @@ GameObject:
   - component: {fileID: 5173309317279399371}
   - component: {fileID: 6257030514139528901}
   - component: {fileID: 6257030514139528902}
+  - component: {fileID: 6257030514139528903}
   m_Layer: 0
   m_Name: CookBox
   m_TagString: Untagged
@@ -9751,6 +9752,20 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.305716, y: 4.698237, z: 4.89525}
   m_Center: {x: -2.6293495, y: 0.019072894, z: 0.00000022741726}
+--- !u!114 &6257030514139528903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6257030514139528900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd5b0bac31376d14882adff31c9c5275, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boxType: 5
+  slots: []
 --- !u!4 &6329739960477558945
 Transform:
   m_ObjectHideFlags: 0
