@@ -29,7 +29,7 @@ public class Box : MonoBehaviour {
 
     }
 
-    private void TakeIngredient(ChefController playerController) {
+    protected void TakeIngredient(ChefController playerController) {
         GameObject ingredient = null;
         
         switch(boxType) {
@@ -47,9 +47,24 @@ public class Box : MonoBehaviour {
             case BoxType.NORMAL:
                 ingredient = transform.GetChild(0).gameObject;
                 break;
+
+            case BoxType.STOVE:
+                if (transform.childCount <= 1)
+                    return;
+
+                ingredient = transform.GetChild(transform.childCount - 1).gameObject;
+                break;
+
+            case BoxType.PAN:
+                if (transform.childCount <= 1)
+                    return;
+
+                ingredient = transform.GetChild(transform.childCount - 1).gameObject;
+                break;
         }
 
-        if(ingredient != null) {            
+        if(ingredient != null) {
+            ingredient.SetActive(true);
             ingredient.transform.parent = playerController.gameObject.transform;
             ingredient.GetComponent<SphereCollider>().isTrigger = true;
             ingredient.transform.localPosition = new Vector3(-0.07f,0.03f,0.8f);
@@ -57,7 +72,7 @@ public class Box : MonoBehaviour {
         }
     }
 
-    private void PutIngredient(ChefController playerController,GameObject box) {
+    protected void PutIngredient(ChefController playerController,GameObject box) {
         playerController.actualIngredient.GetComponent<SphereCollider>().isTrigger = false;
         Vector3 actionBoxPos = box.transform.position;
         actionBoxPos.y = 4.74f; 

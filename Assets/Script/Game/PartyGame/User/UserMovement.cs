@@ -112,9 +112,11 @@ public class UserMovement : User {
         base.Update();
 
         if(!gameController.freeze) {
-            
-            animatorController.SetBool("IsMooving",isMooving);
-            animatorController.SetBool("IsElectrocuted",isElectrocuted);
+
+            if(animatorController != null) {
+                animatorController.SetBool("IsMooving",isMooving);
+                animatorController.SetBool("IsElectrocuted",isElectrocuted);
+            }
 
             if(isTurn) {
                 canMoove = !stop;
@@ -226,7 +228,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 63; 
+              //  if(isPlayer) diceResult = 63; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
@@ -806,6 +808,8 @@ public class UserMovement : User {
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
         }   
+        else
+            gameController.EndUserTurn();
 
         ui.ClearDiceResult();   
 
@@ -831,6 +835,8 @@ public class UserMovement : User {
             ui.DisplayReward(false,amount,stepReward);
             gameController.ActualizePlayerClassement();
         }   
+        else
+            gameController.EndUserTurn();
 
         ui.ClearDiceResult();   
 

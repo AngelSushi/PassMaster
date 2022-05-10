@@ -15,7 +15,7 @@ MonoBehaviour:
   isCuttable: 0
   isCookable: 1
   sprite: {fileID: 21300000, guid: bd4066e355870be4989f28ddca3df36d, type: 3}
-  cookTag: 
+  boxActionType: 5
   name: Riz
   ingredientPrefab: {fileID: 4101312795883230416, guid: 9561481aed85cad4b9326d0e80f7d9c5,
     type: 3}

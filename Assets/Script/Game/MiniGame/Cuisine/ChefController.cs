@@ -163,11 +163,11 @@ public class ChefController : MonoBehaviour {
 
     private void CookAction(GameObject box) {
         action = box.transform.GetChild(0).gameObject.GetComponent<CookAction>();
-        if(!action.isDoingAction && action.ingredients.Count == 0) {
+        if(!action.isStarted && action.ingredients.Count == 0) {
             actualIngredient.GetComponent<MeshRenderer>().enabled = false;
             action.ingredients.Add(actualIngredient);
            // PutIngredient(box);
-            action.isDoingAction = true;
+            action.isStarted = true;
             action.RefreshUI();
         }        
     }

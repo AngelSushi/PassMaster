@@ -6,7 +6,7 @@ using System;
 
 public class CookAction : MonoBehaviour {
 
-    public bool isDoingAction;
+    public bool isStarted;
     public float seconds;
     public Slider slider;
     public GameObject plate;
@@ -15,12 +15,14 @@ public class CookAction : MonoBehaviour {
 
     public event EventHandler<OnActionFinishArgs> OnActionFinished;
 
-    public class OnActionFinishArgs : EventArgs {
+    public class OnActionFinishArgs : EventArgs { }
 
+    private void Start() {
+        slider.gameObject.SetActive(false);
     }
 
     void Update() {
-        if(isDoingAction) {
+        if(isStarted) {
             slider.gameObject.SetActive(true);
 
 
@@ -34,7 +36,7 @@ public class CookAction : MonoBehaviour {
                 }
             }
             else {
-                isDoingAction = false;
+                isStarted = false;
                 slider.gameObject.SetActive(false);
                 timer = 0;
                 step = 0;
@@ -57,7 +59,7 @@ public class CookAction : MonoBehaviour {
     }
 
     public void StartAction() {
-        isDoingAction = true;
+        isStarted = true;
         slider.gameObject.SetActive(true);
     }
     

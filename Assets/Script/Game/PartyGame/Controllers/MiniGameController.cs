@@ -59,8 +59,13 @@ public class MiniGameController : CoroutineSystem {
         }
         else {
             actualMiniGame = ConvertMiniGameWithName(render.transform.parent.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text);
+
+            Debug.Log("enter00");
+
             RunDelayed(1.0f,() => {
                 
+                Debug.Log("enter01");
+
                 if(!hasLoadScene) {
                     render.transform.parent.gameObject.SetActive(false);
                     gameController.part = GameController.GamePart.MINIGAME;

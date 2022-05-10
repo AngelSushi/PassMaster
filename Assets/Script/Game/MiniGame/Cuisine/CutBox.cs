@@ -10,6 +10,7 @@ public class CutBox : Box {
 
     void Start() {
         action = GetComponent<CookAction>();
+        action.OnActionFinished += OnActionFinished;
     }
 
     public override void Interact(ChefController playerController) {
@@ -18,7 +19,6 @@ public class CutBox : Box {
 
         if(actualIngredient != null && actualIngredient.ingredientModel.isCuttable && !actualIngredient.isCut) {
             action.StartAction();
-            action.OnActionFinished += OnActionFinished;
             return;
         }
 

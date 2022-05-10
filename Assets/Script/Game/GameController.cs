@@ -131,6 +131,12 @@ public class GameController : CoroutineSystem {
         if(!hasGenChest && !dialog.isInDialog)
             GenerateChest();
 
+        if(part == GamePart.CHOOSE_MINIGAME) {
+           // Debug.Log("choose my mini game");
+            mgController.RandomMiniGame();
+            //return;
+        }
+
         lastPart = part;
     }
 
@@ -154,11 +160,12 @@ public class GameController : CoroutineSystem {
             ManageTurn();
             ActualizePlayerClassement();
         }
-        if(part == GamePart.CHOOSE_MINIGAME) {
+      /*  if(part == GamePart.CHOOSE_MINIGAME) {
+            Debug.Log("choose my mini game");
             mgController.RandomMiniGame();
-            return;
+            //return;
         }
-
+*/
         
 
     }
@@ -437,6 +444,7 @@ public class GameController : CoroutineSystem {
 
         }
         else { // Le tour est fini. Lancement d'un mini jeux
+            Debug.Log("enter my mini game");    
             part = GamePart.CHOOSE_MINIGAME;
             actualPlayer = 0;
             
