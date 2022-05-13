@@ -18,12 +18,13 @@ public class Box : MonoBehaviour {
     
     public BoxType boxType;
 
+    private Plate plate;
+
+
+
     public virtual void Interact(ChefController playerController) {
-        if(playerController.actualIngredient == null) {
-           // if(boxType == BoxType.NORMAL || boxType == BoxType.INGREDIENT)
-                Debug.Log("take my ingredient");
-                TakeIngredient(playerController);
-        }
+        if(playerController.actualIngredient == null && playerController.plate == null) 
+            TakeIngredient(playerController);      
         else
             PutIngredient(playerController,transform.gameObject);
 
@@ -63,22 +64,57 @@ public class Box : MonoBehaviour {
                 break;
         }
 
-        if(ingredient != null) {
+        if (ingredient != null) {
             ingredient.SetActive(true);
             ingredient.transform.parent = playerController.gameObject.transform;
-            ingredient.GetComponent<SphereCollider>().isTrigger = true;
+
+            if (ingredient.TryGetComponent<SphereCollider>(out SphereCollider col)) {
+                col.isTrigger = true;
+                playerController.actualIngredient = ingredient;
+            }
+            else {
+                playerController.plate = ingredient.GetComponent<Plate>();
+                plate = null;
+            }
+
             ingredient.transform.localPosition = new Vector3(-0.07f,0.03f,0.8f);
-            playerController.actualIngredient = ingredient;
         }
     }
 
     protected void PutIngredient(ChefController playerController,GameObject box) {
-        playerController.actualIngredient.GetComponent<SphereCollider>().isTrigger = false;
-        Vector3 actionBoxPos = box.transform.position;
-        actionBoxPos.y = 4.74f; 
-        playerController.actualIngredient.transform.position = actionBoxPos;
-        playerController.actualIngredient.transform.parent = box.transform;
-        playerController.actualIngredient = null;
+
+        if(plate == null) {
+            Debug.Log("put ingredient on box");
+            Vector3 actionBoxPos = box.transform.position;
+            actionBoxPos.y = 4.74f;
+
+            GameObject target = playerController.actualIngredient != null ? playerController.actualIngredient : playerController.plate.gameObject;
+            target.transform.position = actionBoxPos;
+            target.transform.parent = box.transform;
+
+            if (playerController.actualIngredient != null) {
+                playerController.actualIngredient.GetComponent<SphereCollider>().isTrigger = false;
+                playerController.actualIngredient = null;
+            }
+            else {
+                playerController.plate = null;
+
+                // Vérifier que c une box simple
+                plate = box.transform.GetChild(0).gameObject.GetComponent<Plate>();
+            }
+        }
+        else {
+            Debug.Log("put ingredient in plate");
+
+            if (playerController.actualIngredient == null || playerController.actualIngredient.GetComponent<Ingredient>() == null)
+                return;
+
+            plate.ingredients.Add(playerController.actualIngredient.GetComponent<Ingredient>());
+            
+            Destroy(playerController.actualIngredient);
+            playerController.actualIngredient = null;
+
+        }
     }
 
     private GameObject CreateIngredient(IngredientBox ingredientBox) {

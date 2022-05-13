@@ -7,6 +7,8 @@ public class ChefController : MonoBehaviour {
     public float speed;
     public Rigidbody rb;
     public GameObject actualIngredient;
+    public Plate plate;
+
     private Vector2 movement;
     private Vector3 move;
     public bool isMoving;
