@@ -36,6 +36,18 @@ public class Plate : MonoBehaviour {
     }
 
     private void AddIngredientToUI() {
+        Recipe ingredientsRecipe = FindRecipeWithIngredients(ingredients);
+
+        if (ingredientsRecipe != null) {
+            for (int i = ui.transform.GetChild(0).childCount - 1; i >= 1; i--)
+                Destroy(ui.transform.GetChild(0).GetChild(i).gameObject);
+                
+            if (ui.transform.GetChild(0).GetChild(0).gameObject.TryGetComponent<Image>(out Image slot))  
+                slot.sprite = ingredientsRecipe.recipeSprite;
+                
+            return;
+        }
+
         if (ingredients.Count <= 3) {
             GameObject slotObj = ui.transform.GetChild(0).GetChild(ingredients.Count - 1).gameObject;
 
@@ -58,5 +70,29 @@ public class Plate : MonoBehaviour {
 
         }
     }
+
+    private Recipe FindRecipeWithIngredients(List<Ingredient> ingredients) {
+        Recipe findRecipe = null;
+        
+        for(int i = 0;i<CookController.instance.recipeController.recipes.Count;i++) {
+            Recipe r = CookController.instance.recipeController.recipes[i];
+
+            for(int j = 0;j<r.ingredients.Count;j++) {
+                if (r.ingredients.Count != ingredients.Count)
+                    continue;
+
+                if (r.ingredients[j] == ingredients[j].ingredientModel)
+                    findRecipe = r;
+                else {
+                    findRecipe = null;
+                    break;
+                }
+            }
+        }
+
+        return findRecipe;
+    }
+
+
 
 }

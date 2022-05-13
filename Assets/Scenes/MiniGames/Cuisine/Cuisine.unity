@@ -397,6 +397,7 @@ GameObject:
   m_Component:
   - component: {fileID: 57780301}
   - component: {fileID: 57780302}
+  - component: {fileID: 57780303}
   m_Layer: 0
   m_Name: Controller
   m_TagString: ControllerMG
@@ -440,6 +441,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5d4ab3b8bd7a15f4c8c82911057e3bed, type: 2}
   currentRecipe: {fileID: 0}
   recipeUI: {fileID: 1299430980}
+--- !u!114 &57780303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57780300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454cb66466cfd9746b2cb659c25e5270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recipeController: {fileID: 0}
 --- !u!1 &102937803
 GameObject:
   m_ObjectHideFlags: 0

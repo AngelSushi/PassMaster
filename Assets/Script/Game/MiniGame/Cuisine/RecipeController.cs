@@ -18,17 +18,20 @@ public class RecipeController : MonoBehaviour {
     private void ChooseRecipe() {
         int randomValue = Random.Range(0, 100);
 
-        if (randomValue >= difficultyRange) { 
-            List<Recipe> difficultyRecipes = recipes.FindAll(recipe => recipe.difficulty == GameController.difficulty);
-            currentRecipe = difficultyRecipes[Random.Range(0, difficultyRecipes.Count)];
-        }
-        else {
-            GameController.Difficulty[] remainingDifficulties = FindOtherDifficulties();
-            int randomDifficulty = Random.Range(0, remainingDifficulties.Length);
+        /* if (randomValue >= difficultyRange) { 
+             List<Recipe> difficultyRecipes = recipes.FindAll(recipe => recipe.difficulty == GameController.difficulty);
+             currentRecipe = difficultyRecipes[Random.Range(0, difficultyRecipes.Count)];
+         }
+         else {
+             GameController.Difficulty[] remainingDifficulties = FindOtherDifficulties();
+             int randomDifficulty = Random.Range(0, remainingDifficulties.Length);
 
-            List<Recipe> difficultyRecipes = recipes.FindAll(recipe => recipe.difficulty == remainingDifficulties[randomDifficulty]);
-            currentRecipe = difficultyRecipes[Random.Range(0, difficultyRecipes.Count)];
-        }
+             List<Recipe> difficultyRecipes = recipes.FindAll(recipe => recipe.difficulty == remainingDifficulties[randomDifficulty]);
+             currentRecipe = difficultyRecipes[Random.Range(0, difficultyRecipes.Count)];
+         }
+         */
+
+        currentRecipe = recipes[0];
 
         DisplayRecipeUI();
     }
