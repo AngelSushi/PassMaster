@@ -34,15 +34,15 @@ public class SEController : CoroutineSystem {
 
     void Start() {
         switch(GameController.difficulty) {
-            case 0:
+            case GameController.Difficulty.EASY:
                 percentageToChange = 35;
                 break;
 
-            case 1:
+            case GameController.Difficulty.MEDIUM:
                 percentageToChange = 60;
                 break;
 
-            case 2:
+            case GameController.Difficulty.HARD:
                 percentageToChange = 85;
                 break;
         }

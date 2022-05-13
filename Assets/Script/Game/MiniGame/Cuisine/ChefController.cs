@@ -185,22 +185,7 @@ public class ChefController : MonoBehaviour {
     */
 
 
-    private void CutIngredient(GameObject cutIngredient) {
-        cutIngredient.transform.localScale = new Vector3(2.05f,0.8f,2.05f);
-        Vector3 ingredientPos = cutIngredient.transform.position;
-        ingredientPos.y = 4.21f;
-        cutIngredient.transform.position = ingredientPos;
-        cutIngredient.GetComponent<Ingredient>().isCut = true;
-    }
-
-    private void DropIngredient() {
-        actualIngredient.transform.parent = CookController.instance.gameObject.transform.parent;
-        Vector3 position = actualIngredient.transform.position;
-        position.y = 1.3f;
-        actualIngredient.transform.position = position;
-        actualIngredient.GetComponent<SphereCollider>().isTrigger = false;
-        actualIngredient = null;
-    }
+   
 
    /* private void TakePlate() {
         GameObject plate = plateBox.transform.GetChild(0).gameObject;
@@ -237,24 +222,5 @@ public class ChefController : MonoBehaviour {
     }
 
 */
-
-    private List<CookController.Recipes> GetListContaining(List<GameObject> plate) {
-        List<CookController.Recipes> plateRecipes = new List<CookController.Recipes>();
-
-        for(int i = CookController.instance.recipes.Count - 1;i > 0;i--) {
-            CookController.Recipes recipe = CookController.instance.recipes[i];
-            plateRecipes.Add(recipe);
-
-            foreach(GameObject ingredient in plate) {
-                if(!recipe.ingredients.Contains(ingredient.GetComponent<Ingredient>().name)) {
-                    plateRecipes.Remove(recipe);
-                    break;
-                }
-            }
-
-        }
-
-        return plateRecipes;
-    }
 
 }

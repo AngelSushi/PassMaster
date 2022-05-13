@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54e502a59b86aa3468fe8e4e72e9cf22, type: 3}
+  m_Name: TomatoPizza
+  m_EditorClassIdentifier: 
+  ingredients:
+  - {fileID: 11400000, guid: 83bc1b3044fe5d04fa69edb9b692cc2f, type: 2}
+  - {fileID: 11400000, guid: 790566086988de945b7a2220aec3f2cc, type: 2}
+  - {fileID: 11400000, guid: 42d0903d398f1e540a4b109d28e3f063, type: 2}
+  recipeSprite: {fileID: 0}
+  reward: 1
+  difficulty: 0

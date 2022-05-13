@@ -96,7 +96,7 @@ public class HSIA : CoroutineSystem {
        // GameController.difficulty = 2;
 
         switch(GameController.difficulty) {
-            case 0:
+            case GameController.Difficulty.EASY:
                 percentageRoom = 80; 
                 percentageHidden = 15;
                 percentageInSameRoom = 45;
@@ -110,7 +110,7 @@ public class HSIA : CoroutineSystem {
                 timeToMove = 1;
                 break;
 
-            case 1:
+            case GameController.Difficulty.MEDIUM:
                 percentageRoom = 50;
                 percentageHidden = 40;
                 percentageInSameRoom = 25;
@@ -124,7 +124,7 @@ public class HSIA : CoroutineSystem {
                 timeToMove = 0.7f;
                 break;
 
-            case 2: 
+            case GameController.Difficulty.HARD: 
                 percentageRoom = 20;
                 percentageHidden = 60;
                 percentageInSameRoom = 10;
@@ -391,9 +391,9 @@ public class HSIA : CoroutineSystem {
         }
 
         private bool CheckValidityOfFurnitures(GameObject furniture) { // Cette fonction sert a ajuster si il y a plusieurs personnes dans la meme piece et/ou meuble et son la difficulté
-            if(GameController.difficulty == 0)
+            if(GameController.difficulty == GameController.Difficulty.EASY)
                 return true;
-            if(GameController.difficulty == 1) {
+            if(GameController.difficulty == GameController.Difficulty.MEDIUM) {
                 foreach(GameObject obj in controller.GetSeekersFurniture().Values) {
                     if(obj == furniture && GetKeyByValue(obj) != transform.gameObject) 
                         return false;                 
@@ -401,7 +401,7 @@ public class HSIA : CoroutineSystem {
 
                 return true;
             }
-            else if(GameController.difficulty == 2) {
+            else if(GameController.difficulty == GameController.Difficulty.HARD) {
                 foreach(GameObject obj in controller.GetSeekersFurniture().Values) {
                     if(obj == furniture && GetKeyByValue(obj) != transform.gameObject) 
                         return false;      

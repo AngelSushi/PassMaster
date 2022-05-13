@@ -65,17 +65,17 @@ public class UserInventory : MonoBehaviour {
             foreach(int itemID in possessedItems) {
                 if(action.itemID == itemID) {
                     switch(GameController.difficulty) {
-                        case 0:
+                        case GameController.Difficulty.EASY:
                             int idIndex = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
                             action.actionPercentage = GameController.Instance.itemController.easyPercentage[idIndex];
                             break;
 
-                        case 1:
+                        case GameController.Difficulty.MEDIUM:
                             int idIndexM = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
                             action.actionPercentage = GameController.Instance.itemController.mediumPercentage[idIndexM];
                             break;
 
-                        case 2:
+                        case GameController.Difficulty.HARD:
                             int idIndexH = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
                             action.actionPercentage = GameController.Instance.itemController.hardPercentage[idIndexH];
                             break;

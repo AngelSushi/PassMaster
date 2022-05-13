@@ -118,10 +118,10 @@ public class ArcheryIA : MonoBehaviour {
     }
 
     private Vector3 GetTargetArea(GameObject target) {
-            int difficulty = GameController.difficulty;
+            GameController.Difficulty difficulty = GameController.difficulty;
             int random = Random.Range(0,100);
 
-            if(difficulty == 0) { // Facile
+            if(difficulty == GameController.Difficulty.EASY) { // Facile
 
                 if(random >= 0 && random < 20)  // En dehors de la cible
                     return RandomPosition(1.05f,1.2f,target);
@@ -138,7 +138,7 @@ public class ArcheryIA : MonoBehaviour {
                 
             }
 
-            else if(difficulty == 1) { // Moyen
+            else if(difficulty == GameController.Difficulty.MEDIUM) { // Moyen
                 if(random >= 0 && random < 15) // En dehors de la cible
                     return RandomPosition(1.05f,1.2f,target);
                 else if(random >= 15 && random < 40) // Zone blanche
@@ -153,7 +153,7 @@ public class ArcheryIA : MonoBehaviour {
                     return RandomPosition(0f,0.2f,target);
             }   
 
-            else if(difficulty == 2) { // Difficile
+            else if(difficulty == GameController.Difficulty.HARD) { // Difficile
 
                 if(random >= 0 && random < 5)  // En dehors de la cible
                     return RandomPosition(1.05f,1.2f,target);

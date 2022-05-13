@@ -84,7 +84,6 @@ public class Box : MonoBehaviour {
     protected void PutIngredient(ChefController playerController,GameObject box) {
 
         if(plate == null) {
-            Debug.Log("put ingredient on box");
             Vector3 actionBoxPos = box.transform.position;
             actionBoxPos.y = 4.74f;
 
@@ -104,9 +103,12 @@ public class Box : MonoBehaviour {
             }
         }
         else {
-            Debug.Log("put ingredient in plate");
-
             if (playerController.actualIngredient == null || playerController.actualIngredient.GetComponent<Ingredient>() == null)
+                return;
+
+            Ingredient ingredient = playerController.actualIngredient.GetComponent<Ingredient>();
+
+            if ((ingredient.ingredientModel.isCookable && !ingredient.isCook) || (ingredient.ingredientModel.isCuttable && !ingredient.isCut))
                 return;
 
             plate.ingredients.Add(playerController.actualIngredient.GetComponent<Ingredient>());

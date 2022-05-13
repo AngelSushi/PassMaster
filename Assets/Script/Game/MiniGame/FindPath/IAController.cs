@@ -32,15 +32,15 @@ public class IAController : CoroutineSystem {
     void Start() {
 
         switch(GameController.difficulty) {
-            case 0:
+            case GameController.Difficulty.EASY:
                 percentage = 55;
                 break;
 
-            case 1:
+            case GameController.Difficulty.MEDIUM:
                 percentage = 70;
                 break;
 
-            case 2:
+            case GameController.Difficulty.HARD:
                 percentage = 85;
                 break;        
         }

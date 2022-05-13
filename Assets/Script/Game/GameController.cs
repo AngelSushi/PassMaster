@@ -24,6 +24,12 @@ public class GameController : CoroutineSystem {
         MINIGAME
     }
 
+    public enum Difficulty {
+        EASY,
+        MEDIUM,
+        HARD
+    }
+
     public GameObject dice; 
     public GameObject prefabInStep;
     public GameObject stepParent;
@@ -70,7 +76,7 @@ public class GameController : CoroutineSystem {
     private bool checkLastChest;
     private int randomIndex = -1;
     private bool hasBeginGame;
-    public static int difficulty;
+    public static Difficulty difficulty;
     public bool freeze;
 
     public List<Material> diceMaterials;
@@ -103,7 +109,7 @@ public class GameController : CoroutineSystem {
     }
 
     void Start() {
-        GameController.difficulty = 2;
+        GameController.difficulty = Difficulty.HARD;
 
         classedPlayers.Add(players[0],1);
         classedPlayers.Add(players[1],2);
@@ -150,11 +156,11 @@ public class GameController : CoroutineSystem {
 
             RandomSecretCode();
 
-            if(difficulty == 0)
+            if(difficulty == GameController.Difficulty.EASY)
                 nightIndex = 4;
-            if(difficulty == 1)
+            if(difficulty == GameController.Difficulty.MEDIUM)
                 nightIndex= 3;
-            if(difficulty == 2)
+            if(difficulty == GameController.Difficulty.HARD)
                 nightIndex = 2;
 
             ManageTurn();

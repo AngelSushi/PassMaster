@@ -430,15 +430,15 @@ public class UserMovement : User {
                         int percentageGoToChest = 0;
 
                         switch(GameController.difficulty) {
-                            case 0: // Facile
+                            case GameController.Difficulty.EASY: // Facile
                                 percentageGoToChest = 50;
                                 break;
 
-                            case 1: // Moyen
+                            case GameController.Difficulty.MEDIUM: // Moyen
                                 percentageGoToChest = 70;
                                 break;
 
-                            case 2: // Difficile
+                            case GameController.Difficulty.HARD: // Difficile
                                 percentageGoToChest = 90;
                                 break;
                         }
