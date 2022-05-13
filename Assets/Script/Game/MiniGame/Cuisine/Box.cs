@@ -10,7 +10,9 @@ public enum BoxType {
     CUT,
     PAN,
     STOVE,
-    PLATE
+    PLATE,
+    DELIVER,
+    BIN
 
 }
 
@@ -23,11 +25,18 @@ public class Box : MonoBehaviour {
 
 
     public virtual void Interact(ChefController playerController) {
-        if(playerController.actualIngredient == null && playerController.plate == null) 
-            TakeIngredient(playerController);      
-        else
-            PutIngredient(playerController,transform.gameObject);
+        if(boxType != BoxType.DELIVER && boxType != BoxType.BIN) {
+            if (playerController.actualIngredient == null && playerController.plate == null)
+                TakeIngredient(playerController);
+            else
+                PutIngredient(playerController, transform.gameObject);
+        }
+        else if(boxType == BoxType.DELIVER) {
 
+        }
+        else {
+
+        }
     }
 
     protected void TakeIngredient(ChefController playerController) {
@@ -38,7 +47,7 @@ public class Box : MonoBehaviour {
                 ingredient = CreateIngredient((IngredientBox)this);
                 break;
 
-            case BoxType.CUT: // Meme code pour stove et pan
+            case BoxType.CUT:
                 if(transform.childCount <= 1)
                     return;
                 
@@ -96,9 +105,10 @@ public class Box : MonoBehaviour {
                 playerController.actualIngredient = null;
             }
             else {
-                playerController.plate = null;
+                if (boxType != BoxType.NORMAL)
+                    return;
 
-                // Vérifier que c une box simple
+                playerController.plate = null;
                 plate = box.transform.GetChild(0).gameObject.GetComponent<Plate>();
             }
         }
