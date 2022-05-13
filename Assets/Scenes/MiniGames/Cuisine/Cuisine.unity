@@ -439,6 +439,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 809655fe1295a3347bb27a10fc8d9817, type: 2}
   - {fileID: 11400000, guid: 5d4ab3b8bd7a15f4c8c82911057e3bed, type: 2}
   currentRecipe: {fileID: 0}
+  recipeUI: {fileID: 1299430980}
 --- !u!1 &102937803
 GameObject:
   m_ObjectHideFlags: 0
