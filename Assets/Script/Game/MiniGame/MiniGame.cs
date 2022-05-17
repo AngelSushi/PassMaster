@@ -25,7 +25,10 @@ public abstract class MiniGame : CoroutineSystem {
     private GameController gameController;
 
     public virtual void Start() {
-        
+        if (GameObject.FindGameObjectsWithTag("Game").Length == 0)
+            Debug.Log("No GameController found in scene. It could make some errors.");
+            return;
+
         gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
     }
 

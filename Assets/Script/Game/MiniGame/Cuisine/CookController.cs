@@ -12,16 +12,26 @@ public class CookController : MiniGame {
     public Text scoreText;
 
     public int score;
+    
 
+    /*
+     * 
+     * 
+     * 
+     * 
+     */
 
-    void Start() {
+    public override void Start() {
         instance = this;
 
         recipeController = GetComponent<RecipeController>();
+        base.Start();
     }
 
-    void Update() {
+    public override void Update() {
         scoreText.text = "" + score;
+
+        base.Update();
     }
 
     public override void OnFinish() { }

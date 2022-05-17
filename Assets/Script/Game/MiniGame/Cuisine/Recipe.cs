@@ -8,6 +8,7 @@ public class Recipe : ScriptableObject {
 
     public List<DataIngredient> ingredients;
     public Sprite recipeSprite;
+    public float disapearTime;
     public int reward;
     public GameController.Difficulty difficulty;
 }

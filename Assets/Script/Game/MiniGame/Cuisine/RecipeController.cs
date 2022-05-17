@@ -9,13 +9,40 @@ public class RecipeController : MonoBehaviour {
     public Recipe currentRecipe;
     public GameObject recipeUI;
 
+    private bool hasChooseRecipe;
+    private Slider currentRecipeState;
+    private Image stateImage;
+    private float recipeTimer;
+
     private int difficultyRange = 50;
 
     void Start() {
+        hasChooseRecipe = false;
+        currentRecipeState = recipeUI.transform.GetChild(2).GetComponent<Slider>();
+        stateImage = currentRecipeState.gameObject.transform.GetChild(1).GetChild(0).GetComponent<Image>();
         ChooseRecipe();
     }
 
+    void Update() {
+        
+        if(hasChooseRecipe) {
+            recipeTimer += Time.deltaTime;
+
+            float state = recipeTimer / currentRecipe.disapearTime;
+            currentRecipeState.value = 1 - state;
+
+            stateImage.color = state < 0.3f ? Color.green : state < 0.65f ? Color.yellow : Color.red;
+
+            if(recipeTimer >= currentRecipe.disapearTime)  {
+                recipeTimer = 0;
+                ChooseRecipe();
+            }
+        }
+        
+    }
+
     private void ChooseRecipe() {
+        Debug.Log("choose new recipe");
         int randomValue = Random.Range(0, 100);
 
         /* if (randomValue >= difficultyRange) { 
@@ -34,6 +61,7 @@ public class RecipeController : MonoBehaviour {
         currentRecipe = recipes[0];
 
         DisplayRecipeUI();
+        hasChooseRecipe = true;
     }
 
     private void DisplayRecipeUI() {
@@ -48,6 +76,12 @@ public class RecipeController : MonoBehaviour {
             slotParent.GetChild(i).GetChild(0).gameObject.GetComponent<Image>().sprite = currentRecipe.ingredients[i].sprite;
         
         recipeUI.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Image>().sprite = currentRecipe.recipeSprite;
+
+        Vector3 sliderPos = slotParent.GetChild(currentRecipe.ingredients.Count - 1).position;
+        sliderPos.y -= 68;
+        sliderPos.x += 135;
+
+        currentRecipeState.transform.position = sliderPos;
     }
 
     private void AddSlot(Transform slotParent) {

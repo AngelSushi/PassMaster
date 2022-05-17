@@ -18,3 +18,4 @@ MonoBehaviour:
   recipeSprite: {fileID: 21300000, guid: 7e566d65fc0c8664c908a106d6cfb16c, type: 3}
   reward: 1
   difficulty: 0
+  disapearTime: 20
