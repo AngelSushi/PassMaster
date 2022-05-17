@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Water
-  m_Shader: {fileID: -6465566751694194690, guid: e382dcc19de4a924e984f130198c246f,
+  m_Shader: {fileID: -6465566751694194690, guid: 391a4fbe961fa3f47ad716c5a009c126,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -19,11 +19,28 @@ Material:
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _FlowTexture:
+        m_Texture: {fileID: 2800000, guid: 3d2e533578020df4fa9c37f2cf57de2a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTexture:
+        m_Texture: {fileID: 2800000, guid: e3d95119aa2f4ef48a2836740a3a973b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_6FB78356: 7
     - Vector1_982BE04D: 5
     - Vector1_BDD0C7F9: 1
+    - _Chopiness: 0.01
+    - _FlowSpeed: 0.01
+    - _FlowStrength: 0.0075
+    - _FoamDistance: 1.5
+    - _Size: 20
     m_Colors:
     - Color_CEAED571: {r: 0.3529412, g: 1.372549, b: 1.905882, a: 0}
     - Color_E087D15B: {r: 0.227451, g: 0.5803922, b: 0.9372549, a: 0}
+    - _DarkFoamColor: {r: 0.045523323, g: 0.3644977, b: 0.8773585, a: 0.6039216}
+    - _LightFoamColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WaterColor: {r: 0, g: 0.5411765, b: 1, a: 1}
+  m_BuildTextureStacks: []
