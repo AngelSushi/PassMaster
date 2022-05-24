@@ -11,4 +11,5 @@ public class Recipe : ScriptableObject {
     public float disapearTime;
     public int reward;
     public GameController.Difficulty difficulty;
+    public bool isFurnacable;
 }

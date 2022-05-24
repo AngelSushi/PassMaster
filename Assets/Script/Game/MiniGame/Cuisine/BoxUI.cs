@@ -12,16 +12,24 @@ public class BoxUI : Box {
     protected virtual void Start() => ClearUI();
     
 
-    public void AddIngredientsToUI(List<Ingredient> ingredientsToAdd) {
+    public void AddIngredientsToUI(List<DataIngredient> ingredientsToAdd) {
         if(availableSlotId >= ingredientsToAdd.Count || slots.Count == 0) 
             return;
 
         for(int i = 0;i < ingredientsToAdd.Count;i++) {
-            slots[availableSlotId].sprite = ingredientsToAdd[i].ingredientModel.sprite;
+            slots[availableSlotId].sprite = ingredientsToAdd[i].sprite;
             slots[availableSlotId].gameObject.SetActive(true);
             availableSlotId++;
         }
 
+    }
+
+    public void AddRecipeToUI(Recipe recipe) {
+        if (recipe == null)
+            return;
+
+        slots[0].sprite = recipe.recipeSprite;
+        slots[0].gameObject.SetActive(true);
     }
 
     public void ClearUI() {

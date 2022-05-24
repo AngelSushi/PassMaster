@@ -39,7 +39,7 @@ public class CookBox : BoxUI {
                     }
 
                     playerController.actualIngredient = null;
-                    AddIngredientsToUI(new List<Ingredient> { actualIngredient });
+                    AddIngredientsToUI(new List<DataIngredient> { actualIngredient.ingredientModel });
                     action.StartAction();
                 }
             }

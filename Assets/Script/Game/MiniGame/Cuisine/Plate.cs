@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class Plate : MonoBehaviour {
 
     public List<Ingredient> ingredients;
+
+    public Recipe currentRecipe { get; private set; }
     public bool displayUI;
 
     private GameObject ui;
@@ -41,9 +43,11 @@ public class Plate : MonoBehaviour {
         if (ingredientsRecipe != null) {
             for (int i = ui.transform.GetChild(0).childCount - 1; i >= 1; i--)
                 Destroy(ui.transform.GetChild(0).GetChild(i).gameObject);
-                
-            if (ui.transform.GetChild(0).GetChild(0).gameObject.TryGetComponent<Image>(out Image slot))  
+
+            if (ui.transform.GetChild(0).GetChild(0).gameObject.TryGetComponent<Image>(out Image slot)) {
                 slot.sprite = ingredientsRecipe.recipeSprite;
+                currentRecipe = ingredientsRecipe;
+            }
                 
             return;
         }
@@ -91,6 +95,11 @@ public class Plate : MonoBehaviour {
         }
 
         return findRecipe;
+    }
+
+    public void ManagePlateUI(bool active) {
+        for(int i = 0;i < ui.transform.childCount;i++)
+            ui.transform.GetChild(i).gameObject.SetActive(true);   
     }
 
 

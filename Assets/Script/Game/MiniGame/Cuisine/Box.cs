@@ -12,6 +12,7 @@ public enum BoxType {
     STOVE,
     PLATE,
     DELIVER,
+    FURNACE,
     BIN
 
 }
@@ -93,6 +94,7 @@ public class Box : MonoBehaviour {
     protected void PutIngredient(ChefController playerController,GameObject box) {
 
         if(plate == null) {
+            Debug.Log("null plate");
             Vector3 actionBoxPos = box.transform.position;
             actionBoxPos.y = 4.74f;
 
@@ -105,9 +107,10 @@ public class Box : MonoBehaviour {
                 playerController.actualIngredient = null;
             }
             else {
-                if (boxType != BoxType.NORMAL)
+                if (boxType != BoxType.NORMAL && boxType != BoxType.FURNACE)
                     return;
 
+                Debug.Log("plate");
                 playerController.plate = null;
                 plate = box.transform.GetChild(0).gameObject.GetComponent<Plate>();
             }
