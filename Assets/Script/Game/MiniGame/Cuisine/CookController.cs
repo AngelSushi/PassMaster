@@ -11,7 +11,7 @@ public class CookController : MiniGame {
     public RecipeController recipeController;
     public Text scoreText;
 
-    public int score;
+    public Dictionary<GameObject,int> playerScore;
     
 
     /*
@@ -21,15 +21,24 @@ public class CookController : MiniGame {
      * 
      */
 
-    public override void Start() {
+    public void Awake() {
+ 
         instance = this;
 
         recipeController = GetComponent<RecipeController>();
-        base.Start();
+        playerScore = new Dictionary<GameObject, int>();
+
+
+        // Ajouter les joueurs dès le lancement
     }
 
     public override void Update() {
-        scoreText.text = "" + score;
+        //scoreText.text = "" + score;
+        foreach(GameObject player in playerScore.Keys)
+        {
+            scoreText.text = "" + playerScore[player];
+        }
+
 
         base.Update();
     }

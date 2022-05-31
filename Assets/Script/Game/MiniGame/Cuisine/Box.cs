@@ -42,6 +42,7 @@ public class Box : MonoBehaviour {
 
     protected void TakeIngredient(ChefController playerController) {
         GameObject ingredient = null;
+
         
         switch(boxType) {
             case BoxType.INGREDIENT:
@@ -72,7 +73,15 @@ public class Box : MonoBehaviour {
 
                 ingredient = transform.GetChild(transform.childCount - 1).gameObject;
                 break;
+
+            case BoxType.FURNACE:
+                if (transform.childCount <= 2)
+                    return;
+
+                ingredient = transform.GetChild(transform.childCount - 1).gameObject;
+                break;
         }
+
 
         if (ingredient != null) {
             ingredient.SetActive(true);

@@ -99,7 +99,7 @@ public class Plate : MonoBehaviour {
 
     public void ManagePlateUI(bool active) {
         for(int i = 0;i < ui.transform.childCount;i++)
-            ui.transform.GetChild(i).gameObject.SetActive(true);   
+            ui.transform.GetChild(i).gameObject.SetActive(active);   
     }
 
 

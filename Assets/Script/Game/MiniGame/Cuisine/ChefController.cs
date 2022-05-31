@@ -60,6 +60,8 @@ public class ChefController : MonoBehaviour {
             if(actualBox != null) {
                 Box box = (Box)actualBox.GetComponent<Box>();
 
+                Debug.Log("box: " + box);
+
                 box.Interact(this);
             }   
         }     
