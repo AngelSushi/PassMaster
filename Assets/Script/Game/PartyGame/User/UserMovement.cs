@@ -113,8 +113,8 @@ public class UserMovement : User {
 
         if(!gameController.freeze) {
             
-            animatorController.SetBool("IsMooving",isMooving);
-            animatorController.SetBool("IsElectrocuted",isElectrocuted);
+           // animatorController.SetBool("IsMooving",isMooving);
+           // animatorController.SetBool("IsElectrocuted",isElectrocuted);
 
             if(isTurn) {
                 canMoove = !stop;
@@ -226,7 +226,7 @@ public class UserMovement : User {
                 }
                 
                 agent.enabled = true;
-                if(isPlayer) diceResult = 63; 
+                //if(isPlayer) diceResult = 63; 
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  

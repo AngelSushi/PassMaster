@@ -155,8 +155,7 @@ public class GameController : CoroutineSystem {
             ActualizePlayerClassement();
         }
         if(part == GamePart.CHOOSE_MINIGAME) {
-            mgController.RandomMiniGame();
-            return;
+            StartCoroutine(mgController.RandomMiniGame());
         }
 
         
