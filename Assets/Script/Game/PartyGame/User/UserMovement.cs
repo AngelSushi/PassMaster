@@ -806,6 +806,8 @@ public class UserMovement : User {
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
         }   
+        else 
+            gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
 
         ui.ClearDiceResult();   
 
@@ -830,7 +832,10 @@ public class UserMovement : User {
             inventory.CoinLoose(amount);
             ui.DisplayReward(false,amount,stepReward);
             gameController.ActualizePlayerClassement();
-        }   
+        }
+        else
+            gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
+        
 
         ui.ClearDiceResult();   
 

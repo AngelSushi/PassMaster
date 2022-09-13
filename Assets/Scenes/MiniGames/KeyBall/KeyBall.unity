@@ -11171,42 +11171,10 @@ MonoBehaviour:
   menuSelect: {fileID: 461887589}
   hoverButton: {fileID: 21300000, guid: 3f6fd924879e5ae4a8ff2d0babeba0d6, type: 3}
   normalButton: {fileID: 21300000, guid: 357714b16b839064dabd4b66cb11f31a, type: 3}
-  hoverControlsButton: {fileID: 21300000, guid: b7e02bd1262ed1743aed56a114a8060b,
-    type: 3}
   normalControlsButton: {fileID: 21300000, guid: 599759d9ebd72a9479dc898dcbc82029,
     type: 3}
   isMenuOpen: 0
   index: -1
-  inputs: 6100000062000000630000006400000065000000660000006700000068000000690000006a0000006b0000006c0000006d0000006e0000006f000000700000007100000072000000730000007400000075000000760000007700000078000000790000007a000000
-  overridePath:
-  - <Keyboard>/q
-  - <Keyboard>/b
-  - <Keyboard>/c
-  - <Keyboard>/d
-  - <Keyboard>/e
-  - <Keyboard>/f
-  - <Keyboard>/g
-  - <Keyboard>/h
-  - <Keyboard>/i
-  - <Keyboard>/j
-  - <Keyboard>/k
-  - <Keyboard>/l
-  - <Keyboard>/semicolon
-  - <Keyboard>/n
-  - <Keyboard>/o
-  - <Keyboard>/p
-  - <Keyboard>/a
-  - <Keyboard>/r
-  - <Keyboard>/s
-  - <Keyboard>/t
-  - <Keyboard>/u
-  - <Keyboard>/v
-  - <Keyboard>/z
-  - <Keyboard>/x
-  - <Keyboard>/y
-  - <Keyboard>/w
-  playerControls: {fileID: -944628639613478452, guid: 9d9b96fca36421f42b9f4b6af1c6a9fe,
-    type: 3}
 --- !u!114 &667250108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13267,8 +13235,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab56839f6ce62904aa44a6f1fd557f55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timer: {fileID: 1205902890}
+  finish: 0
+  begin: 1
   isTraining: 0
+  runSinceMenu: 0
+  gameTime: 100
+  winners: []
+  beginText: {fileID: 208591000}
+  timer: {fileID: 1205902890}
+  endText: {fileID: 0}
+  startSound: {fileID: 616980195}
+  timerSound: {fileID: 461491010}
+  timeSound: {fileID: 898622945}
+  mainAudio: {fileID: 177901779}
+  win: {fileID: 1474876697}
+  classementPanels:
+  - {fileID: 125077692}
+  - {fileID: 714123886}
+  - {fileID: 647782369}
+  - {fileID: 60906122}
+  confetti: {fileID: 0}
   stopwatch:
   - {fileID: 1862822476}
   - {fileID: 364399833}
@@ -13328,23 +13314,9 @@ MonoBehaviour:
   - {fileID: 1585106338}
   - {fileID: 188056122}
   - {fileID: 588739035}
-  begin: 1
-  beginText: {fileID: 208591000}
   areaDeath: {fileID: 1207849708}
-  finish: 0
-  win: {fileID: 1474876697}
-  endText: {fileID: 252027122}
   confetti: {fileID: 0}
   mainCamera: {fileID: 1586514845}
-  classementPanels:
-  - {fileID: 125077692}
-  - {fileID: 714123886}
-  - {fileID: 647782369}
-  - {fileID: 60906122}
-  mainAudio: {fileID: 177901779}
-  timerSound: {fileID: 461491010}
-  startSound: {fileID: 616980195}
-  timeSound: {fileID: 898622945}
   pointsText:
   - {fileID: 1531781701}
   - {fileID: 1139352624}
@@ -13366,7 +13338,6 @@ MonoBehaviour:
   - {x: 52, y: 47, z: 6}
   - {x: 52, y: 47, z: 26}
   portal: {fileID: 621980612}
-  runSinceMenu: 0
   skybox: {fileID: 2100000, guid: 67950864b84c5db4f9eee7ca51c85571, type: 2}
 --- !u!4 &890211618
 Transform:

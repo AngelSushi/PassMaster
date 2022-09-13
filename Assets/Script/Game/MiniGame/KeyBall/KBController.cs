@@ -27,7 +27,9 @@ public class KBController : MiniGame {
 
     public Material skybox;
 
-    void Start() {
+    public override void Start() {
+        base.Start();
+        
         playersPoint.Add(players[0],0);
         playersPoint.Add(players[1],0);
         playersPoint.Add(players[2],0);
@@ -38,9 +40,6 @@ public class KBController : MiniGame {
         ActualizePlayerPoint(players[2]);
         ActualizePlayerPoint(players[3]);
 
-    }
-
-    public override void Update() {
         RenderSettings.skybox = skybox;
     }
 

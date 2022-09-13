@@ -39,7 +39,6 @@ public class MiniGameController : CoroutineSystem {
 
         while(timer <= maxTimer) {
             yield return null;
-            Debug.Log("wait");
             
             timer += Time.deltaTime;
             step += Time.deltaTime;

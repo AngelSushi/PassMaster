@@ -90,7 +90,7 @@ public class DialogController : MonoBehaviour {
 
                             if(currentDialog.Name == "QuitGame" && !hasReturnToMainMenu) {
                                 SceneManager.LoadScene("MainMenu",LoadSceneMode.Additive);
-                                gController.ChangeStateScene("Main",false);
+                                gController.ChangeStateScene(false,"NewMain");
                                 ButtonController.relaunch = true;
                                 EndDialog();
                                 hasReturnToMainMenu = true; // Faire en sorte que quand on relance ca nous met la var en false

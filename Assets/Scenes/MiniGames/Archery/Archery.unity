@@ -7617,7 +7617,7 @@ MonoBehaviour:
   begin: 1
   isTraining: 0
   runSinceMenu: 0
-  gameTime: 0
+  gameTime: 100
   winners: []
   beginText: {fileID: 778620766}
   timer: {fileID: 1904286247}
