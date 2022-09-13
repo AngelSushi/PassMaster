@@ -26,9 +26,8 @@ public abstract class MiniGame : CoroutineSystem {
 
     public virtual void Start() {
         
-        gameController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
+        gameController = GameObject.FindGameObjectsWithTag("Game").Length > 0 ?  GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>() : null;
         
-        Debug.Log("enter");
     }
 
     public virtual void Update() {

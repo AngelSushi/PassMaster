@@ -34,6 +34,8 @@ public class KBController : MiniGame {
         playersPoint.Add(players[1],0);
         playersPoint.Add(players[2],0);
         playersPoint.Add(players[3],0);
+        
+        Debug.Log("start");
 
         ActualizePlayerPoint(players[0]);
         ActualizePlayerPoint(players[1]);
