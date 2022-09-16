@@ -100,7 +100,6 @@ public class GameController : CoroutineSystem {
 
     void Awake() {
         Instance = this;
-       // DontDestroyOnLoad(transform.gameObject);
     }
 
     void Start() {
@@ -156,7 +155,8 @@ public class GameController : CoroutineSystem {
             ActualizePlayerClassement();
         }
         if(part == GamePart.CHOOSE_MINIGAME) {
-            StartCoroutine(mgController.RandomMiniGame());
+           // StartCoroutine(mgController.RandomMiniGame());
+           BeginTurn(true);
         }
 
         
