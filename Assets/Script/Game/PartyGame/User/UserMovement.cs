@@ -91,7 +91,7 @@ public class UserMovement : User {
     }
 
     public override void OnFinishTurn() {
-        agent.enabled = false;
+    //    agent.enabled = false;
         left = false;
         front = false;
         isMooving = false;
