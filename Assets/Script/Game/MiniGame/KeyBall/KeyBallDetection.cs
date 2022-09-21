@@ -81,17 +81,6 @@ public class KeyBallDetection : CoroutineSystem {
             
         }
 
-        if(transform.gameObject.tag == "DestroyBall" && hit.gameObject.tag == "RedBall" && hit.gameObject.transform.parent.gameObject.GetComponent<KB_PlayerMovement>().isOnBall) {
-            hit.gameObject.transform.parent.gameObject.GetComponent<KB_PlayerMovement>().freeze = true;
-            hit.gameObject.GetComponent<DestroyTimer>().maxTime = hit.gameObject.transform.parent.gameObject.GetComponent<KB_PlayerMovement>().timeToDestroy;
-            hit.gameObject.GetComponent<DestroyTimer>().run = true;
-        }
-        else if(transform.gameObject.tag == "DestroyBall" && hit.gameObject.transform.parent.gameObject.tag == "Bot" && hit.gameObject.transform.parent.gameObject.GetComponent<KBIA>().isOnBall) {
-            hit.gameObject.transform.parent.gameObject.GetComponent<KBIA>().freeze = true;
-            hit.gameObject.GetComponent<DestroyTimer>().maxTime = hit.gameObject.transform.parent.gameObject.GetComponent<KBIA>().timeToDestroy;
-            hit.gameObject.GetComponent<DestroyTimer>().run = true;
-        }
-
     }
 
     private void OnTriggerExit(Collider hit) {
