@@ -158,21 +158,21 @@ public class ItemAction : MonoBehaviour {
             switch(rangeResultType) {
                 case ItemActionResult.SHOP:
                     if(actualStep.type == StepType.SHOP) {
-                        Debug.Log("is in range of " + actualStep.type);
+                       // Debug.Log("is in range of " + actualStep.type);
                         return true;
                     }
                     break;
 
                 case ItemActionResult.CHEST:
                     if(actualStep.chest != null && actualStep.chest.activeSelf) {
-                        Debug.Log("is in range of " + actualStep.chest.name);
+                      //  Debug.Log("is in range of " + actualStep.chest.name);
                         return true;
                     }
                     break;
 
                 case ItemActionResult.END:
                     if(actualStep.type == StepType.STEP_END) {
-                        Debug.Log("is in range of " + actualStep.type);
+                       // Debug.Log("is in range of " + actualStep.type);
                         return true;
                     }
                     break;

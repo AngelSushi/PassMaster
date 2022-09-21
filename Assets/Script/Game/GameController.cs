@@ -156,7 +156,7 @@ public class GameController : CoroutineSystem {
         }
         if(part == GamePart.CHOOSE_MINIGAME) {
            // StartCoroutine(mgController.RandomMiniGame());
-           BeginTurn(true);
+           BeginTurn(false);
         }
 
         

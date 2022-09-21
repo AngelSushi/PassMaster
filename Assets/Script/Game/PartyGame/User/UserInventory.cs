@@ -105,30 +105,30 @@ public class UserInventory : MonoBehaviour {
             } 
                 
 
-            Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
+//            Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
         }
 
         foreach(int itemID in possessedItems) {
             switch(itemID) {
                 case 0:
                     transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
-                    Debug.Log("use double dice");
+                   // Debug.Log("use double dice");
                     break;
 
                 case 1:
                     transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
-                    Debug.Log("use triple dice");
+                    //Debug.Log("use triple dice");
                     break;
 
                 case 2:
                     transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
-                    Debug.Log("use reverse dice");
+                    //Debug.Log("use reverse dice");
                     break;
 
                 case 3:
                     transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
                     GameController.Instance.blackScreenAnim.Play();
-                    Debug.Log("use hourglass");
+                    //Debug.Log("use hourglass");
                     break;
             }
         }

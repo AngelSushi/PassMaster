@@ -196,7 +196,8 @@ public class UserMovement : User {
                     StartCoroutine(WaitTimeToReturn());
             
                 if(stepBack) {
-                    agent.enabled = false;
+                    //agent.enabled = false;
+                    Debug.Log("je dois bouger");
                     transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
                 }
                 else 
@@ -733,6 +734,8 @@ public class UserMovement : User {
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     if(step != null && !userMovement.isTurn && userMovement.actualStep == step) {
+                        
+                        Debug.Log("nextStep: " + nextStep.gameObject + " workStep: " + step);
                         if(nextStep.gameObject == step) {
                             GameObject lastStep = steps[beginResult - 1];
                             Step targetStep = step.GetComponent<Step>();
@@ -740,13 +743,10 @@ public class UserMovement : User {
                             if(lastStep != nextStep.gameObject) { // Les joueurs vont que se croiser
                                 userMovement.stepBack = true;
                                 if(userMovement.point == Vector3.zero) {
-                                    userMovement.point = user.transform.position;
+                                    userMovement.point = targetStep.avoidPos;
+                                    userMovement.point.y = transform.position.y;
+                                    Debug.Log("je veux passer " + transform.gameObject.name + " a travers " + user.name);
                                     
-                                   /* if(step.GetComponent<Step>().xAxis) 
-                                        userMovement.point.x += targetStep.positive ? 10 : -10;
-                                    if(step.GetComponent<Step>().zAxis) 
-                                        userMovement.point.z += targetStep.positive ? 10 : -10;
-                                    */
 
                                     gameController.playerConflict.Add(user,step);
                                 }
