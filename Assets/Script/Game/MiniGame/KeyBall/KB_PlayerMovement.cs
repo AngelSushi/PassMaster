@@ -41,15 +41,13 @@ public class KB_PlayerMovement : MonoBehaviour {
     #region Unity's Functions
 
     void Start() {
+        controller = (KBController)KBController.Instance;
     }
 
     void Update() {
         
        if(!controller.begin && !controller.finish) {
-            //if(isOnBall && !isJumping) 
-           // transform.position = new Vector3(transform.position.x,59.5f,transform.position.z);
-
-            if(!dead && !freeze) {
+           if(!dead && !freeze) {
                 Movement();
 
                 if(thruster) {
@@ -65,28 +63,26 @@ public class KB_PlayerMovement : MonoBehaviour {
                     rb.velocity = Vector3.ClampMagnitude(rb.velocity, (speed + 10));
                 }
 
-            
-            // Debug.Log("magnitude: " + rb.velocity.magnitude);
 
                 timer += Time.deltaTime;
 
-                //Debug.Log("velocityZ: " + rb.velocity.z);
-
                 if(isOnBall) {
-                    if( (rb.velocity.x > 0.1 || rb.velocity.x < -0.1) || (rb.velocity.z > 0.1 || rb.velocity.z < -0.1)) {
+
+                    if (transform.childCount < 3) { // La boule vient d'être perdue ou détruite
+                        isOnBall = false;
+                        return;
+                    }
+
+                        if( (rb.velocity.x > 0.1 || rb.velocity.x < -0.1) || (rb.velocity.z > 0.1 || rb.velocity.z < -0.1)) {
                         transform.GetChild(2).Rotate(2,0,0);
                     }
                 }
                 
                 if(isOnBall && isMoving && speed < maxSpeed && timer >= 0.5 && movement.y > 0) {
-                // speed += 6;
                     timer = 0;
                     return;
                 }
-                
-                if(!isMoving) {
-                // speed = 75;
-                }
+    
             }
             else if(dead) {
                 time += Time.deltaTime;
@@ -114,12 +110,19 @@ public class KB_PlayerMovement : MonoBehaviour {
                countJump++;
            }
        }
+       
+       if (transform.position.x < controller.tpPos.x && isOnBall) {
+           transform.position = controller.portalPoints[controller.ConvertPlayerInt(transform.gameObject)];
+           controller.AddPoint(transform.gameObject);
+       }
     }
 
     private void Movement() {
         float moveX = movement.y * speed * -1;
         float moveZ = movement.x * speed;
 
+        if (moveX == 0 && moveZ == 0)
+            return;
         if(!isOnBall) rb.velocity = new Vector3(moveX, rb.velocity.y,moveZ);
         else {
            // rb.velocity = new Vector3(moveX * speed * Time.deltaTime, rb.velocity.y,rb.velocity.z);
@@ -143,10 +146,7 @@ public class KB_PlayerMovement : MonoBehaviour {
         if(hit.gameObject.tag == "Sol") {
             isJumping = false;
             jump = true;
-        }
-
-        if(hit.gameObject.tag == "Portal") 
-            transform.position = controller.portalPoints[controller.ConvertPlayerInt(transform.gameObject)];   
+        } 
    
 
         lastHit = hit.gameObject.tag; 
@@ -164,9 +164,7 @@ public class KB_PlayerMovement : MonoBehaviour {
 
         if(e.started) isMoving = true;
         if(e.canceled)  isMoving = false;
-
-            
-
+        
     }
 
     public void OnJump(InputAction.CallbackContext e) {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,7 @@ public class KBController : MiniGame {
     public GameObject[] players;
     public Transform areaDeath;
 
-    public GameObject confetti;
+    //public GameObject confetti;
     public GameObject mainCamera;
 
     public GameObject[] pointsText = new GameObject[4];
@@ -26,6 +27,10 @@ public class KBController : MiniGame {
     public GameObject portal;
 
     public Material skybox;
+
+    [HideInInspector]
+    public Vector3 tpPos;
+    
 
     public override void Start() {
         base.Start();
@@ -43,6 +48,8 @@ public class KBController : MiniGame {
         ActualizePlayerPoint(players[3]);
 
         RenderSettings.skybox = skybox;
+
+        tpPos = portal.transform.position;
     }
 
     public override void OnFinish() {
@@ -65,9 +72,14 @@ public class KBController : MiniGame {
         }       
     }
 
-    public void AddPoint(GameObject player,int point) {
+    public void AddPoint(GameObject player) {
         playersPoint[player] = playersPoint[player] + 1;
         ActualizePlayerPoint(player);
+        
+        
+        
+        
+        Destroy(player.transform.GetChild(player.transform.childCount - 1).gameObject);
     }
 
     private void ActualizePlayerPoint(GameObject player) {

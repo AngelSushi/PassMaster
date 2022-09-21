@@ -24,6 +24,12 @@ public abstract class MiniGame : CoroutineSystem {
     private string lastBeginText,lastTimeText;
     private GameController gameController;
 
+    public static MiniGame Instance;
+
+    public virtual void Awake() {
+        Instance = this;
+    }
+
     public virtual void Start() {
         
         gameController = GameObject.FindGameObjectsWithTag("Game").Length > 0 ?  GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>() : null;
