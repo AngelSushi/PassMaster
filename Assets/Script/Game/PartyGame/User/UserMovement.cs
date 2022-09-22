@@ -191,14 +191,20 @@ public class UserMovement : User {
             }
 
             else { // is not his turn
-
+                
+                
+                Debug.Log("point: " + point);
+                
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
             
                 if(stepBack) {
-                    //agent.enabled = false;
+                   // agent.enabled = false;
                     Debug.Log("je dois bouger");
-                    transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
+                    agent.CalculatePath(point, path);
+                    agent.SetPath(path);
+                    Debug.Log("status " + path.status);
+                    // transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
                 }
                 else 
                     point = Vector3.zero;
@@ -486,10 +492,15 @@ public class UserMovement : User {
                     GameObject user = gameController.GetKeyByValue(step,gameController.playerConflict);
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     Step targetStep = step.GetComponent<Step>();
-
+                    
+                    Debug.Log("hit obj " + hit.gameObject);
+                    
                     userMovement.point = hit.gameObject.transform.position;
-                    userMovement.point.y = user.transform.position.y;
+                   // userMovement.point.y = user.transform.position.y;
                     userMovement.returnStepBack = true;
+                    
+                    Debug.Log("left conflict");
+                    
                     gameController.playerConflict.Remove(user);
                 }
             }
@@ -735,7 +746,6 @@ public class UserMovement : User {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     if(step != null && !userMovement.isTurn && userMovement.actualStep == step) {
                         
-                        Debug.Log("nextStep: " + nextStep.gameObject + " workStep: " + step);
                         if(nextStep.gameObject == step) {
                             GameObject lastStep = steps[beginResult - 1];
                             Step targetStep = step.GetComponent<Step>();
@@ -744,9 +754,9 @@ public class UserMovement : User {
                                 userMovement.stepBack = true;
                                 if(userMovement.point == Vector3.zero) {
                                     userMovement.point = targetStep.avoidPos;
-                                    userMovement.point.y = transform.position.y;
+                                    userMovement.point.y = step.transform.position.y;
+                                    userMovement.agent.speed *= 3f; // try x10
                                     Debug.Log("je veux passer " + transform.gameObject.name + " a travers " + user.name);
-                                    
 
                                     gameController.playerConflict.Add(user,step);
                                 }
