@@ -73,10 +73,11 @@ public class ChestController : CoroutineSystem {
 
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
+        Debug.Log("event dialog end " + e.dialog.id);
         if(e.dialog == null) 
             return;
         
-        if(e.dialog.id == 10 && e.answerIndex == 0) {
+        if(e.dialog.id == 9 && e.answerIndex == 0) {
             if(e.actualPlayer.GetComponent<UserInventory>().coins < chestCoinsPrice) {
                 RunDelayed(0.05f,() => {
                     Dialog moneyDialog = GameController.Instance.dialog.GetDialogByName("NotEnoughMoneyChest");
@@ -93,12 +94,15 @@ public class ChestController : CoroutineSystem {
             obj = e.obj;
             chestPath = new NavMeshPath();
             goToChest = true;
-        } 
+        }
 
-        if(e.dialog.id == 11) 
+        if (e.dialog.id == 10)
+        {
+            Debug.Log("end of dialog");
             GameController.Instance.EndUserTurn();
+        }
 
-        if(e.dialog.id == 12 || e.dialog.id == 13) 
+        if(e.dialog.id == 11 || e.dialog.id == 12) 
             returnToStep = true;
     }
 

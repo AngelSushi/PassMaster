@@ -100,8 +100,8 @@ public class DialogController : MonoBehaviour {
                                 Vector3 shopVector =  gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop.transform.position;
                                 args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = shopVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().shop, answerIndex = answer};                               
                             }
-
-                            if(currentDialog.id == 10 || currentDialog.id == 11 || currentDialog.id == 12 || currentDialog.id == 13) {
+                            
+                            if(currentDialog.id == 9 || currentDialog.id == 11 || currentDialog.id == 12) {
                                 Vector3 chestVector = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.transform.position;
                                 Debug.Log("chest: " + chestVector);
                                 args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = chestVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest, answerIndex = answer};                               
@@ -115,6 +115,11 @@ public class DialogController : MonoBehaviour {
                                 gController.mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
                                 // SEND DIRECTEMENT A LORDRE DE PASSAGE
 
+                            }
+                            if(currentDialog.id == 10) {
+                                Vector3 chestVector = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.transform.position;
+                                Debug.Log("chest: " + chestVector);
+                                args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = chestVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest, answerIndex = answer};                               
                             }
 
                             break;
