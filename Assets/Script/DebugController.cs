@@ -28,6 +28,8 @@ public class DebugController : MonoBehaviour {
 
     public GameObject[] menus;
 
+    public bool skipMG;
+
     private void Start() {
         if(menus == null || menus.Length == 0)
             Debug.Log("Aucun menu n'est défini pour le mode debug");

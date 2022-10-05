@@ -76,6 +76,7 @@ public class UserMovement : User {
     public override void OnBeginTurn() {
         stepBack = false;
         point = Vector3.zero;
+        ui.enabled = true;
 
         if(waitDiceResult) {
             if(!isPlayer) 
@@ -103,6 +104,8 @@ public class UserMovement : User {
         hasCollideDice = false;
         waitDiceResult = true;
         hasJump = false;
+
+        ui.enabled = false;
 
         if(!isPlayer)
             checkObjectToUse = false;

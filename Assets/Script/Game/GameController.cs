@@ -96,6 +96,8 @@ public class GameController : CoroutineSystem {
     public EndAnimationController endAnimationController;
     public Animation blackScreenAnim;
 
+    public DebugController debugController;
+    
     public static GameController Instance { get; private set;}
 
     void Awake() {
@@ -156,6 +158,7 @@ public class GameController : CoroutineSystem {
         }
         if(part == GamePart.CHOOSE_MINIGAME) {
            // StartCoroutine(mgController.RandomMiniGame());
+           turn++;
            BeginTurn(false);
         }
 
@@ -375,7 +378,7 @@ public class GameController : CoroutineSystem {
     public void BeginTurn(bool repair) {
 
         actualPlayer = 0;
-        if(turn > 1 && !repair && !hasChangeState) {
+        if(turn > 1 && !repair && !hasChangeState && !debugController.skipMG) {
             ChangeStateScene(true,"NewMain");
             SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
             hasChangeState = true;
