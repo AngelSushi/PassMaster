@@ -6172,42 +6172,10 @@ MonoBehaviour:
   menuSelect: {fileID: 2056106934}
   hoverButton: {fileID: 21300000, guid: 3f6fd924879e5ae4a8ff2d0babeba0d6, type: 3}
   normalButton: {fileID: 21300000, guid: 357714b16b839064dabd4b66cb11f31a, type: 3}
-  hoverControlsButton: {fileID: 21300000, guid: b7e02bd1262ed1743aed56a114a8060b,
-    type: 3}
   normalControlsButton: {fileID: 21300000, guid: 599759d9ebd72a9479dc898dcbc82029,
     type: 3}
   isMenuOpen: 0
   index: -1
-  inputs: 6100000062000000630000006400000065000000660000006700000068000000690000006a0000006b0000006c0000006d0000006e0000006f000000700000007100000072000000730000007400000075000000760000007700000078000000790000007a000000
-  overridePath:
-  - <Keyboard>/q
-  - <Keyboard>/b
-  - <Keyboard>/c
-  - <Keyboard>/d
-  - <Keyboard>/e
-  - <Keyboard>/f
-  - <Keyboard>/g
-  - <Keyboard>/h
-  - <Keyboard>/i
-  - <Keyboard>/j
-  - <Keyboard>/k
-  - <Keyboard>/l
-  - <Keyboard>/semicolon
-  - <Keyboard>/n
-  - <Keyboard>/o
-  - <Keyboard>/p
-  - <Keyboard>/a
-  - <Keyboard>/r
-  - <Keyboard>/s
-  - <Keyboard>/t
-  - <Keyboard>/u
-  - <Keyboard>/v
-  - <Keyboard>/z
-  - <Keyboard>/x
-  - <Keyboard>/y
-  - <Keyboard>/w
-  playerControls: {fileID: -944628639613478452, guid: 9d9b96fca36421f42b9f4b6af1c6a9fe,
-    type: 3}
 --- !u!114 &991650122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7645,6 +7613,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b1b716736d2d43478069cc1839f32e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  finish: 0
+  begin: 1
+  isTraining: 0
+  runSinceMenu: 0
+  gameTime: 100
+  winners: []
+  beginText: {fileID: 778620766}
+  timer: {fileID: 1904286247}
+  endText: {fileID: 1129234543}
+  startSound: {fileID: 1454821323}
+  timerSound: {fileID: 969587144}
+  timeSound: {fileID: 165600721}
+  mainAudio: {fileID: 0}
+  win: {fileID: 963178408}
+  classementPanels:
+  - {fileID: 1873337442}
+  - {fileID: 551496556}
+  - {fileID: 133625315}
+  - {fileID: 1713973213}
+  confetti: {fileID: 1373931358}
   limitsBottom:
   - {fileID: 428721143}
   - {fileID: 498795706}
@@ -7663,24 +7651,7 @@ MonoBehaviour:
   - {fileID: 227703526421117095, guid: 614b8d35a7c80694a879613cdcce9fab, type: 3}
   - {fileID: 6467603947834702104, guid: d5ff7ce919e0c9f44aa0b9fbf722d91d, type: 3}
   - {fileID: 5753502002839560642, guid: d177ef997e3e01641bdf4fe98f6c85b6, type: 3}
-  timer: {fileID: 1904286247}
-  isTraining: 0
-  begin: 1
-  beginText: {fileID: 778620766}
-  finish: 0
-  classementPanels:
-  - {fileID: 1873337442}
-  - {fileID: 551496556}
-  - {fileID: 133625315}
-  - {fileID: 1713973213}
-  endText: {fileID: 1129234543}
-  confetti: {fileID: 1373931358}
-  win: {fileID: 963178408}
   mainCamera: {fileID: 1091939113}
-  timerSound: {fileID: 969587144}
-  startSound: {fileID: 1454821323}
-  timeSound: {fileID: 165600721}
-  runSinceMenu: 0
 --- !u!1 &1189758394
 GameObject:
   m_ObjectHideFlags: 0
@@ -8826,7 +8797,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!199 &1373931359
 ParticleSystemRenderer:
   serializedVersion: 6

@@ -163,6 +163,7 @@ public class ChestController : CoroutineSystem {
 <<<<<<< Updated upstream
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
+        Debug.Log("event dialog end " + e.dialog.id);
         if(e.dialog == null) 
             return;
         
@@ -183,12 +184,17 @@ public class ChestController : CoroutineSystem {
             obj = e.obj;
             chestPath = new NavMeshPath();
             goToChest = true;
-        } 
+        }
 
-        if(e.dialog.id == 11) 
+        else if (e.answerIndex == 1) 
             GameController.Instance.EndUserTurn();
 
-        if(e.dialog.id == 12 || e.dialog.id == 13) 
+        if (e.dialog.id == 11) {
+            GameController.Instance.EndUserTurn();
+        }
+        
+
+        if( e.dialog.id == 12 || e.dialog.id == 13) 
             returnToStep = true;
     }
 

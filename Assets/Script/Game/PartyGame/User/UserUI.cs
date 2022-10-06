@@ -13,19 +13,16 @@ public class UserUI : User {
     public bool showDirection;
     public bool showShop;
     public bool cameraView;
-    public bool useBomb;
-    public bool useLightning;
+    private bool showCursor;
+    public GameObject cursor;
     public GameObject infoLabel;
     public GameObject diceResult;
     public GameObject coinIconReward;
     public GameObject camera;
-    public GameObject lightning;
     public Transform[] directions; // les parents des directions
-    public Transform[] items; // les items du shoop
     public Transform[] actions; // buttons d'actions sur le menu principale du jeu
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
-    public Transform chestHUD;
     public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
     public Text coinTextReward;
     public Text itemDescription; // texte de la description d'un iutem dans le shop
@@ -64,6 +61,9 @@ public class UserUI : User {
         float directionY = cameraView ? vecMove.y * cameraSpeed * Time.deltaTime : 0;
 
         camera.transform.Translate(directionX,directionY,0);
+
+        if(showCursor) 
+            cursor.transform.position = new Vector3(camera.transform.position.x,cursor.transform.position.y,camera.transform.position.z);
     }
 
     public void OnRight(InputAction.CallbackContext e) {
@@ -142,7 +142,7 @@ public class UserUI : User {
         }
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
-            if(index < 7) 
+            if(index < 6) 
                 index++;
 
             Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
@@ -254,7 +254,6 @@ public class UserUI : User {
         if(e.started && showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
             if(index == 0) {
                 ManageInventory(true);
-                isInInventory = true;
             }
             else if(index == 1) {
                 showHUD = false;
@@ -263,7 +262,7 @@ public class UserUI : User {
                 if(isPlayer) 
                     isTurn = true;
 
-                GetComponent<NavMeshAgent>().enabled = true;
+                //GetComponent<NavMeshAgent>().enabled = true;
                 movement.waitDiceResult = true;
                 index = -1;
             }
@@ -281,14 +280,99 @@ public class UserUI : User {
             return;
         }
 
+        if(e.started && movement.useLightning && cameraView && !gameController.freeze) {
+            Debug.Log("enter lightning");
+            Vector2 cursorPos = new Vector2(cursor.transform.position.x,cursor.transform.position.z);
+
+            GameObject targetStep = null;
+
+            for(int x = -7;x <7;x++) { // Range : 7
+                for(int z = -7;z<7;z++) {
+                    Vector2 calculatePos = new Vector2(cursorPos.x + x,cursorPos.y + z);
+
+                   // Debug.Log("calculatePos: " + calculatePos);
+
+                    foreach(Step step in FindObjectsOfType(typeof(Step))) {
+                        Vector2 stepPos = new Vector2(step.gameObject.transform.position.x,step.gameObject.transform.position.z);
+
+                        if((int)calculatePos.x == (int)stepPos.x && (int)calculatePos.y == (int)stepPos.y) {
+                            targetStep = step.gameObject;
+                            break;
+                        }
+                    }
+
+                    if(targetStep != null)
+                        break;
+
+                }
+
+                if(targetStep != null)
+                    break;
+            }
+
+            if(targetStep != null) {
+                gameController.blackScreenAnim.Play();
+                cameraView = false;
+                movement.targetLightningStep = targetStep;
+            }
+            else {
+                 DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,0.0f,0.0f),"Merci de choisir une meilleure position","");
+                 
+                 RunDelayed(3.5f,() => {
+                      DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur E pour choisir où l'éclair va tomber","Echap pour quitter le mode");
+                 });               
+            }
+           
+        }
+
+
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
-            if(index <= 6 && index > -1) {
+            if(index <= 5 && index > -1) {
         
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
-
                     switch(index) {
-                        
+                        case 0: // Double dice
+                            movement.doubleDice = true;
+                            CloseActionHUD(true);
+                            break;
+
+                        case 1: // Triple Dice
+                            movement.tripleDice = true;
+                            CloseActionHUD(true);
+                            break;
+
+                        case 2: // Reverse Dice
+                            movement.reverseDice = true;
+                            CloseActionHUD(true);
+                            break;
+
+                        case 3: // Hourglass
+                            movement.useHourglass = true;
+                            gameController.blackScreenAnim.Play();
+                            break;
+
+                        case 4:  // Lightning
+                            movement.useLightning = true;
+                            cameraView = true;
+                            showCursor = true;
+                            camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
+
+                            camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
+                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
+
+                            cursor.transform.position = new Vector3(camera.transform.position.x,cursor.transform.position.y,camera.transform.position.z);
+                            CloseActionHUD(false);
+
+                            DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur E pour choisir où l'éclair va tomber","Echap pour quitter le mode");
+                            
+                            break;
+
+                        case 5: // Shell   
+                            break;
                     }
+
+                    
+
                 }
                 else { // Le joueur n'a pas l'objet
                     if(index >= 0 && hoverInventoryItem.transform.parent.gameObject.activeSelf) {
@@ -301,11 +385,8 @@ public class UserUI : User {
             else {
                 index = 0;
                 ManageInventory(false);
-                isInInventory = false;
             }
         }
-
-
     }
 
 
@@ -313,6 +394,18 @@ public class UserUI : User {
         if(cameraView && !gameController.freeze) 
             vecMove = e.ReadValue<Vector2>();
     }
+
+    public void CloseActionHUD(bool goToDice) {
+        showHUD = false;
+        showActionButton = false;
+        ManageInventory(false);
+        infoLabel.SetActive(false);
+        GetComponent<NavMeshAgent>().enabled = goToDice;
+        movement.waitDiceResult = goToDice;
+        if(goToDice)
+            index = -1;
+    }
+
 
     public void OnQuit(InputAction.CallbackContext e) {
         if(e.started && cameraView && !gameController.freeze) {
@@ -335,18 +428,24 @@ public class UserUI : User {
 
     private void ManageInventory(bool active) {
         hoverInventoryItem.transform.parent.gameObject.SetActive(active);
+        isInInventory = active;
 
         if(active)
             index = -1;
 
         if(hoverInventoryItem.transform.parent.gameObject.activeSelf) {    
-            bool[] hasItems = {inventory.hasDoubleDice,inventory.hasReverseDice,inventory.hasBomb,inventory.hasHourglass,inventory.hasLightning,inventory.hasStar,inventory.hasParachute};
+            int[] items = {inventory.doubleDiceItem,inventory.tripleDiceItem,inventory.reverseDiceItem,inventory.hourglassItem,inventory.lightningItem,inventory.shellItem};
 
-            for(int i = 0;i<hasItems.Length;i++) {
-                if(hasItems[i]) 
+            for(int i = 0;i<items.Length;i++) {
+                if(items[i] > 0) {
                     inventoryItems[i].GetChild(0).gameObject.SetActive(true);
-                else 
+                    inventoryItems[i].GetChild(1).gameObject.SetActive(true);
+                    inventoryItems[i].GetChild(1).gameObject.GetComponent<Text>().text = "" + items[i];
+                }
+                else {
                     inventoryItems[i].GetChild(0).gameObject.SetActive(false);
+                    inventoryItems[i].GetChild(1).gameObject.SetActive(false);
+                }
                 
             }
 
@@ -368,7 +467,7 @@ public class UserUI : User {
                     if(j > 3) 
                         playerIndex -= 4;
                     
-                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,gameController.players[playerIndex].GetComponent<UserMovement>().id);
+                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,gameController.players[playerIndex].GetComponent<UserMovement>().userType);
 
                     int rank = -1;
                     int rankIndex = 0;
@@ -411,6 +510,7 @@ public class UserUI : User {
         for(int i = 0;i<3;i++) {
             actions[i].gameObject.SetActive(active);
             actions[i].GetChild(0).gameObject.SetActive(active);
+            
             if(!active) 
                 actions[i].GetChild(1).gameObject.SetActive(active);
         }    
@@ -425,7 +525,7 @@ public class UserUI : User {
         if(direction != null) {
             if(direction.directions[0]) {
                 if(direction.directionsStep[0].name.Contains("front") || direction.directionsStep[0].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
                         directions[0].gameObject.SetActive(true);
                 }
                 else 
@@ -436,7 +536,7 @@ public class UserUI : User {
 
             if(direction.directions[1]) {
                 if(direction.directionsStep[1].name.Contains("front") || direction.directionsStep[1].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
                         directions[1].gameObject.SetActive(true);                  
                 }
                 else 
@@ -447,7 +547,7 @@ public class UserUI : User {
 
             if(direction.directions[2]) {
                 if(direction.directionsStep[2].name.Contains("front") || direction.directionsStep[2].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == 0 || gameController.dayController.dayPeriod == 1) 
+                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
                         directions[2].gameObject.SetActive(true);           
                 }
                 else 
@@ -473,9 +573,19 @@ public class UserUI : User {
         infoLabel.SetActive(false);
     }
 
-    public void RefreshDiceResult(int result,Color color) {
+    public void RefreshDiceResult(int result,Color color,bool begin) {
         if(!diceResult.activeSelf) 
             diceResult.SetActive(true);
+        
+        if(begin) {
+            if(movement.doubleDice || movement.tripleDice) {
+                diceResult.transform.GetChild(0).gameObject.SetActive(true);
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = movement.tripleDice ? "x3" : movement.doubleDice ? "x2" : "";
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = movement.tripleDice ? new Color(1f,0.74f,0f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f);
+            }
+        }
+        else 
+            diceResult.transform.GetChild(0).gameObject.SetActive(false);
 
         if(color == null) 
             color = new Color(0f,0.35f,1f,1.0f);
@@ -486,6 +596,7 @@ public class UserUI : User {
 
     public void ClearDiceResult() {
         diceResult.GetComponent<Text>().text = "";
+        diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
     }
 
     public void DisplayReward(bool bonus,int coins,bool stepReward) {
@@ -528,4 +639,23 @@ public class UserUI : User {
         infoLabel.SetActive(true);
     }
 
+    private void DisplayInfoTextWithSub(Vector2 pos,Color color,string text,string subText) {
+        infoLabel.transform.position = pos;
+        infoLabel.GetComponent<Text>().color = color;
+        infoLabel.GetComponent<Text>().text = text;
+        infoLabel.GetComponent<AlphaController>().actualColor = color;
+        infoLabel.GetComponent<AlphaController>().manageAlpha = true;
+        infoLabel.SetActive(true);
+
+        Vector2 subPos = pos;
+        subPos.y -= 50;
+
+        Transform subTransform = infoLabel.transform.GetChild(0);
+        subTransform.position = subPos;
+        subTransform.gameObject.GetComponent<Text>().color = color;
+        subTransform.gameObject.GetComponent<Text>().text = subText;
+        subTransform.gameObject.GetComponent<AlphaController>().actualColor = color;
+        subTransform.gameObject.GetComponent<AlphaController>().manageAlpha = true;
+
+    }
 }

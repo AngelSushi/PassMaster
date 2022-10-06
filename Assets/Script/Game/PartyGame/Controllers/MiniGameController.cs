@@ -14,24 +14,32 @@ public class MiniGameController : CoroutineSystem {
     public float step;
     private float speed = 0.08f;
     public MiniGameData actualMiniGame;
-    public GameController gameController;
+    private GameController gameController;
     private bool hasTurnChange;
     private bool hasLoadScene;
-    public bool hasClassementShow;
-    public bool displayReward;
-    public bool moove;
+    private bool hasClassementShow;
+    private bool displayReward;
+    private bool moove;
     private Dictionary<GameObject,GameObject> playerMove = new Dictionary<GameObject,GameObject>();
     private Dictionary<GameObject,Vector2> playerPositionToGo = new Dictionary<GameObject,Vector2>();
     
     private List<GameObject> classedPlayer;
 
-    public void RandomMiniGame() {
+    void Start() {
+        gameController = GameController.Instance;
+    }
+
+    public IEnumerator RandomMiniGame() {
         if(maxTimer == 0) {
-            render.transform.parent.gameObject.SetActive(true);
+            for(int i = 0;i<render.transform.parent.childCount;i++) 
+                render.transform.parent.GetChild(i).gameObject.SetActive(true);
+
             maxTimer = Random.Range(4.0f,6.0f);
         }
 
-        if(timer <= maxTimer) {
+        while(timer <= maxTimer) {
+            yield return null;
+            
             timer += Time.deltaTime;
             step += Time.deltaTime;
             if(step >= speed) {
@@ -50,51 +58,30 @@ public class MiniGameController : CoroutineSystem {
             }
 
         }
-        else {
-            actualMiniGame = ConvertMiniGameWithName(render.transform.parent.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text);
-            RunDelayed(1.0f,() => {
-                
-                if(!hasLoadScene) {
-                    render.transform.parent.gameObject.SetActive(false);
-                    gameController.part = GameController.GamePart.MINIGAME;
-
-                    hasTurnChange = false;
-                   // gameController.dayController.mainAudio.Stop();
-                    gameController.players[gameController.actualPlayer].GetComponent<UserUI>().showTurnInfo = false;
-                    gameController.loadingScene.loadScene = true;
-                    hasLoadScene = true;
-                    speed = 0.08f;
-                    timer = 0;
-                    maxTimer = 0;
-                    index = 0;
-                    step = 0;
-                    gameController.hasChangeState = false;
-                }
-
-            });
-        }
-
-
-    }
-
-    private MiniGameData ConvertMiniGameWithName(string name) {
-        switch(name) {
-            case "FindPath":
-                return minigames[0];
-                break;
+        
+        actualMiniGame = minigames.Where(minigame => minigame.minigameName == render.transform.parent.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text).First();
+        RunDelayed(1.0f,() => {
             
-            case "Archery":
-                return minigames[1];
-                break;
+            if(!hasLoadScene) {
+                render.transform.parent.gameObject.SetActive(false);
+                gameController.part = GameController.GamePart.MINIGAME;
 
-            case "KeyBall":
-                return minigames[2];
-                break;
-        }
+                hasTurnChange = false;
+               // gameController.dayController.mainAudio.Stop();
+                gameController.players[gameController.actualPlayer].GetComponent<UserUI>().showTurnInfo = false;
+                gameController.loadingScene.loadScene = true;
+                hasLoadScene = true;
+                speed = 0.08f;
+                timer = 0;
+                maxTimer = 0;
+                index = 0;
+                step = 0;
+                gameController.hasChangeState = false;
+            }
 
-        return null;
+        });
     }
-
+    
     public void EndMiniGame(GameObject[] classementPanels,List<GameObject> winners,GameObject endText) {
         hasLoadScene = false;
 
@@ -360,20 +347,20 @@ public class MiniGameController : CoroutineSystem {
         return false;
     }
     private GameObject ConvertPlayer(GameObject player) {
-        switch(player.name) {
-            case "User":
+        switch(player.GetComponent<UserMovement>().userType) {
+            case UserType.PLAYER:
                 return gameController.players[0];
                 break;
 
-            case "Bot_001":
+            case UserType.BOT_001:
                 return gameController.players[1];
                 break;
 
-            case "Bot_002":
+            case UserType.BOT_002:
                 return gameController.players[2];
                 break;
 
-            case "Bot_003":
+            case UserType.BOT_003:
                 return gameController.players[3];
                 break;            
         }
@@ -382,20 +369,20 @@ public class MiniGameController : CoroutineSystem {
     }
 
     private int ConvertPlayerIndex(GameObject player) {
-        switch(player.name) {
-            case "User":
+        switch(player.GetComponent<UserMovement>().userType) {
+            case UserType.PLAYER:
                 return 0;
                 break;
 
-            case "Bot_001":
+            case UserType.BOT_001:
                 return 1;
                 break;
 
-            case "Bot_002":
+            case UserType.BOT_002:
                 return 2;
                 break;
 
-            case "Bot_003":
+            case UserType.BOT_003:
                 return 3;
                 break;            
         }
@@ -404,20 +391,20 @@ public class MiniGameController : CoroutineSystem {
     }
     
     private Sprite GetPlayerSprite(GameObject player) {
-        switch(player.name) {
-            case "User":
+        switch(player.GetComponent<UserMovement>().userType) {
+            case UserType.PLAYER:
                 return gameController.smallSprites[0];
                 break;
 
-            case "Bot_001":
+            case UserType.BOT_001:
                 return gameController.smallSprites[1];
                 break;
 
-            case "Bot_002":
+            case UserType.BOT_002:
                 return gameController.smallSprites[2];
                 break;
 
-            case "Bot_003":
+            case UserType.BOT_003:
                 return gameController.smallSprites[3];
                 break;            
         }

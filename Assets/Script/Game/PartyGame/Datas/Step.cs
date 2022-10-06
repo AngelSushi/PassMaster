@@ -11,5 +11,8 @@ public class Step : MonoBehaviour {
     public GameObject chest;
     public GameObject shop;
     public bool skipIA;
+    public Vector3 avoidPos; // position of players to avoid other player on path
+
+    public Dictionary<ItemType,int> itemsInStep = new Dictionary<ItemType, int>();
 
 }

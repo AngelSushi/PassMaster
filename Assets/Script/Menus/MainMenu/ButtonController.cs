@@ -246,7 +246,7 @@ public class ButtonController : MonoBehaviour {
     }
 
     public void RelaunchGame() {
-        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().ChangeStateScene("Main",true);
+        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().ChangeStateScene(true,"NewMain");
         SceneManager.UnloadSceneAsync("MainMenu");
     }
 }

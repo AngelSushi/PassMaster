@@ -1,36 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TestScript : MonoBehaviour {
 
-    public GameObject[] list;
+    public Rigidbody rb;
+    public float speed;
 
-    private GameObject f;
+    private bool curve;
+
+    void Start() {
+       // rb.velocity = transform.forward * speed;
+    }
+
     void Update() {
 
-        Debug.Log(transform.forward);
-
-
-        for(int i = 0;i<100;i++) {
-           Vector3 newVec = transform.position + transform.forward * i;
-
-            f = IsObj((int)newVec.x,(int)newVec.z);
-            if(f != null) {
-                break;
-            } 
+        if(curve) {
+           // rb.AddForce(100f * Vector3.up,ForceMode.Impulse);
+           // Debug.Log("add force");
         }
 
-        Debug.Log("forwardStep: " + f);
     }
 
-    private GameObject IsObj(int x,int z) {
-        foreach(GameObject obj in list) {
-            if(x >= obj.transform.position.x - 10 && x <= obj.transform.position.x + 10 && z >= obj.transform.position.z - 10 && z <= obj.transform.position.z + 10) 
-                    return obj;
+    public void OnInteract(InputAction.CallbackContext e) {
+        if(e.started) {
+            rb.AddForce(40 * Vector3.up,ForceMode.Impulse);
+            rb.AddForce(20 * Vector3.forward,ForceMode.Impulse);
+            curve = !curve;
+            Debug.Log("change curve value");
+        }
+    }
+
    
-        }
-
-        return null;
-    }
 }
