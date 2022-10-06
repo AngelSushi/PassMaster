@@ -232,7 +232,10 @@ public class UserMovement : User {
                     if(doubleDice) 
                         diceResult *= 2;
                     if(tripleDice)
-                        diceResult *= 3;           
+                        diceResult *= 3;
+
+                    if (isPlayer)
+                        diceResult = 41;
                 }
                 
                 agent.enabled = true;
@@ -616,8 +619,6 @@ public class UserMovement : User {
             int index = 0;
             for(int i = 0;i<result;i++) {
                 index = i;
-
-
                 if(stepIndex + i + 1 < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
                     stepPaths[i] = stepParent.GetChild(stepIndex + i + 1).gameObject;
                 else  // Le calcul du prochain index de la prochaine step est supérieur au nombre de step max, on retire donc le nombre de step max au calcul

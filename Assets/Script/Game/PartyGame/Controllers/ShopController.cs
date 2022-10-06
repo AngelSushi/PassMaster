@@ -118,6 +118,8 @@ public class ShopController : CoroutineSystem {
     }
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
+        Debug.Log("event dialog end " + e.dialog.id + " answer " + e.answerIndex);
+        
         if(e.dialog == null)
             return;
 
@@ -129,7 +131,7 @@ public class ShopController : CoroutineSystem {
             shopObject = e.obj;
             shopPosition = e.position;
             shopPath = new NavMeshPath();
-          //  mooveToShop = true;
+            mooveToShop = true;
         }
 
         if(e.dialog.id == 7 && e.answerIndex == 0) { // Fin du dialogue BuyItem
@@ -147,10 +149,14 @@ public class ShopController : CoroutineSystem {
 
             shopDialogs.isInDialog = true;
             shopDialogs.currentDialog = stateDialog;
-            StartCoroutine(stateDialog.Content[0],stateDialog.Content.Length);
+            StartCoroutine(shopDialogs.ShowText(stateDialog.Content[0],stateDialog.Content.Length));
         }
 
+        
+        
         if(e.dialog.id == 9) {  
+            
+            Debug.Log("enter dialog 9");
             returnToStep = true;
             e.actualPlayer.GetComponent<UserUI>().showShop = false;
             gameController.mainCamera.SetActive(false); 

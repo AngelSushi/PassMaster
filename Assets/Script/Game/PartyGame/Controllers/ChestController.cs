@@ -73,7 +73,6 @@ public class ChestController : CoroutineSystem {
 
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
-        Debug.Log("event dialog end " + e.dialog.id);
         if(e.dialog == null) 
             return;
         

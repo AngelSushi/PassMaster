@@ -75,6 +75,8 @@ public class DialogController : MonoBehaviour {
             if(finish) {
                 OnDialogEndArgs args = new OnDialogEndArgs{ dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer],position = Vector3.zero, obj = null,answerIndex = -1};
                 
+                Debug.Log("currentDialog " + currentDialog.Name + " id " + currentDialog.id);
+                
                 if(currentDialog.Answers.Length > 0 && answer >= 0) { // LE JOUEUR A UN CHOIX A FAIRE
                     switch(answer) {
                         case 0:
