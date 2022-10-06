@@ -21,8 +21,11 @@ public class UserMovement : User {
     public bool returnStepBack;
     public bool reverseCount;
     public bool doubleDice;
+    public bool tripleDice;
+    public bool useHourglass;
+    public bool useLightning;
+    public GameObject targetLightningStep;
     public bool reverseDice;    
-    public bool hasBotBuyItem;
     public GameObject lastStep;
     public bool isMooving;
     public GameObject giveUI;
@@ -54,18 +57,18 @@ public class UserMovement : User {
     private Vector3 parachuteMovement;
     private bool bypassDirection;
     public bool canMoove;
-
     private bool hasFindChest;
     private List<GameObject> iaDirectionPath;
-
     [HideInInspector]
     public int currentTabIndex;
-
     private NavMeshPath path;
-
-    
     public GameObject userCam;
+    public bool constantJump;
+    public UserType userType;
+    public bool checkObjectToUse;
+    public Animator animatorController;
 
+    public bool isElectrocuted;
     void Start() {
         path = new NavMeshPath();
     }
@@ -73,24 +76,23 @@ public class UserMovement : User {
     public override void OnBeginTurn() {
         stepBack = false;
         point = Vector3.zero;
+        ui.enabled = true;
 
         if(waitDiceResult) {
-            isMooving = true;
             if(!isPlayer) 
                 InitDice();      
         }
     }
 
-    public override void OnDiceAction() { // Call when a physical user (not a IA) choose the dice action on hud
+    public override void OnDiceAction() { // Call when a physical user (not an IA) choose the dice action on hud
         if(waitDiceResult) {
-            isMooving = true;
             if(isPlayer) 
                 InitDice();      
         }
     }
 
     public override void OnFinishTurn() {
-        agent.enabled = false;
+    //    agent.enabled = false;
         left = false;
         front = false;
         isMooving = false;
@@ -102,14 +104,26 @@ public class UserMovement : User {
         hasCollideDice = false;
         waitDiceResult = true;
         hasJump = false;
+
+        ui.enabled = false;
+
+        if(!isPlayer)
+            checkObjectToUse = false;
     }
 
     public override void Update() {
         base.Update();
 
         if(!gameController.freeze) {
+            
+           // animatorController.SetBool("IsMooving",isMooving);
+           // animatorController.SetBool("IsElectrocuted",isElectrocuted);
+
             if(isTurn) {
-                canMoove = !stop;  
+                canMoove = !stop;
+
+                if(stop)
+                    isMooving = false;  
 
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
@@ -133,17 +147,19 @@ public class UserMovement : User {
                     
                     if(lastStep == nextStep.gameObject) 
                         ChooseNextStep(StepType.NONE);
-                     
-                    agent.CalculatePath(nextStep.position,path);
-                    ShowPath(Color.magenta,path);
-                    CheckPath();
 
-                    if(canMoove) 
+                    if(canMoove) {
+                        agent.CalculatePath(nextStep.position,path);
+                        ShowPath(Color.magenta,path);
+                        CheckPath();
                         agent.SetPath(path);   
+                    }
+
                 }
 
                 if(finishMovement) {
                     StepType type = actualStep.GetComponent<Step>().type;
+                    isMooving = false;
                     if(type == StepType.BONUS)  
                         StartCoroutine(WaitBonus(true));
                     if(type == StepType.MALUS) 
@@ -155,47 +171,47 @@ public class UserMovement : User {
                 }            
 
                 if(!isPlayer && waitDiceResult) {
-                    if(random == -1) 
-                        random = Random.Range(1,5);           
-
-                    timer += Time.deltaTime;
-
-                    if(timer >= random && !hasJump) {
-                        Jump();
-                        hasJump = true;
-                        ui.showHUD = false;
+                    if(inventory.HasObjects()) {
+                        checkObjectToUse = true;
+                        inventory.UseItemBot();
                     }
-                    else 
-                        ui.showHUD = true;          
-                }    
 
-            /*    if(finishTurn && (actualStep.GetComponent<Step>().chest != null && !actualStep.GetComponent<Step>().chest.activeSelf) && actualStep.GetComponent<Step>().type != StepType.SHOP) {
-                    gameController.EndUserTurn();
-                }
-              */         
+                    if(!checkObjectToUse) {
+                        if(random == -1) 
+                            random = Random.Range(1,5);           
+
+                        timer += Time.deltaTime;
+
+                        if(timer >= random && !hasJump) {
+                            Jump();
+                            hasJump = true;
+                            ui.showHUD = false;
+                        }
+                        else 
+                            ui.showHUD = true;
+                    }          
+                }         
             }
 
-            else {
-
+            else { // is not his turn
+                
+                
+                Debug.Log("point: " + point);
+                
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
             
                 if(stepBack) {
-                    agent.enabled = false;
-                    transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
+                   // agent.enabled = false;
+                    Debug.Log("je dois bouger");
+                    agent.CalculatePath(point, path);
+                    agent.SetPath(path);
+                    Debug.Log("status " + path.status);
+                    // transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
                 }
                 else 
                     point = Vector3.zero;
                 
-
-                if(stack) { // Pb jaune vert interchangé
-                    transform.gameObject.SetActive(false);
-                    if(actualStep.GetComponent<Step>().type != StepType.FIX_DIRECTION && !actualStep.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
-                        actualStep.GetComponent<Step>().playerInStep.Add(transform.gameObject);
-                        gameController.ActualPlayersInStep(actualStep,transform.gameObject);
-                    }
-                    
-                }
             }
         }
     }
@@ -203,8 +219,9 @@ public class UserMovement : User {
 
     private void OnCollisionEnter(Collision hit) {
        if(isTurn) {
-           if(hit.gameObject.tag == "Chest") 
-                canMooveToChest = false;
+           if(hit.gameObject.tag == "Chest") {
+               gameController.endAnimationController.checkCode = true;
+           }
 
             if(hit.gameObject.tag == "Dice") {
                 if(diceResult == 0 || diceResult == -1) {
@@ -213,10 +230,13 @@ public class UserMovement : User {
                     if(diceResult == 0) 
                         diceResult = 6;
                     if(doubleDice) 
-                        diceResult *= 2;           
+                        diceResult *= 2;
+                    if(tripleDice)
+                        diceResult *= 3;           
                 }
                 
                 agent.enabled = true;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
                 if(isPlayer) diceResult = 7; 
@@ -232,20 +252,32 @@ public class UserMovement : User {
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+                //if(isPlayer) diceResult = 63; 
+>>>>>>> main
                 beginResult = diceResult; 
                 stepPaths = new GameObject[beginResult]; 
                 hasCollideDice = true;  
-
-                if(ui != null) 
-                    actualColor = doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
                 
-                ui.RefreshDiceResult(diceResult, actualColor);
+                actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                ui.RefreshDiceResult(diceResult, actualColor,true);
+
                 GameObject hitObj = hit.gameObject;
                 hitObj.GetComponent<MeshRenderer>().enabled = false;
 
                 ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
 
                 RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
+            }
+
+            if(hit.gameObject.tag == "Sol") {
+                if(isJumping) 
+                    isJumping = false;
+
+                if(constantJump) {
+                    Jump();
+                }
+
             }
        } 
     }
@@ -264,6 +296,7 @@ public class UserMovement : User {
                         if(gameController.shopController.returnToStep) {
                             gameController.shopController.returnToStep = false;
                             gameController.EndUserTurn();
+                            Debug.Log("return to step end turn");
                         }
                         else {
                             gameController.chestController.returnToStep = false;
@@ -288,6 +321,14 @@ public class UserMovement : User {
                     }
                 }
 
+                if(type == StepType.STEP_END && gameController.endAnimationController.isInEndAnimation) {
+                     RunDelayed(1.5f,() => {
+                        gameController.endAnimationController.isInEndAnimation = false;
+                        gameController.endAnimationController.checkCode = false;
+                        gameController.EndUserTurn(); // Ne pas end tout de suite faire blackscreen + récompense de la step
+                     });
+                }
+
                 if(diceResult < 0 && nextStep != null) 
                     finishMovement = true;
 
@@ -302,20 +343,34 @@ public class UserMovement : User {
                     }
                 }
 
+<<<<<<< HEAD
                 if(type == StepType.SHOP && diceResult == 0) {
                     RunDelayed(0.5f,() => {
                         if(isPlayer) {
+=======
+                if(type == StepType.SHOP && diceResult == 0) { // Faire en sorte qu'on puisse y aller sans que ca soit la dernière step 
+                    if(isPlayer) {
+                        RunDelayed(0.5f,() => {
+>>>>>>> main
                             Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
                             if(gameController.dialog.currentDialog != shopDialog) {
                                 gameController.dialog.isInDialog = true;
                                 gameController.dialog.currentDialog = shopDialog;
                                 StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
                             }
+<<<<<<< HEAD
                         }
                         else {
                             gameController.shopController.AskShopBot(inventory);
                         }
                     });
+=======
+                        });
+                    }
+                    else {
+                        gameController.shopController.AskShopBot(inventory,actualStep.GetComponent<Step>().shop);
+                    }
+>>>>>>> main
                 }
             }
 
@@ -349,20 +404,25 @@ public class UserMovement : User {
                }
 
                 if(type == StepType.STEP_END) {
-                    RunDelayed(0.1f,() => {
-                        if(diceResult > 0) {
-                            if(diceResult == 1) {} 
-                            else 
-                                reverseCount = true;
-                        }
-                    });              
+                        if(diceResult == 0) {
+                            if(!gameController.endAnimationController.isInEndAnimation) {
+                                Debug.Log("play anim");
+                                stop = true;
+                                gameController.blackScreenAnim.Play();
+                                gameController.endAnimationController.isInEndAnimation = true;
+                            }
+                        } 
+                        else {
+                            reverseCount = true;
+                            Debug.Log("my count");
+                        }          
                 }
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
                     ChooseNextStep(type);
 
                     if(ui != null) 
-                        ui.RefreshDiceResult(diceResult,actualColor);
+                        ui.RefreshDiceResult(diceResult,actualColor,false);
 
                 }
 
@@ -447,7 +507,9 @@ public class UserMovement : User {
 
                         Debug.Log("current direction: " + gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections));
                         RunDelayed(0.1f,() => {
-                            nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
+                         //   nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
+
+                            nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
                             stop = false;
                         });
                     }
@@ -465,10 +527,15 @@ public class UserMovement : User {
                     GameObject user = gameController.GetKeyByValue(step,gameController.playerConflict);
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     Step targetStep = step.GetComponent<Step>();
-
+                    
+                    Debug.Log("hit obj " + hit.gameObject);
+                    
                     userMovement.point = hit.gameObject.transform.position;
-                    userMovement.point.y = user.transform.position.y;
+                   // userMovement.point.y = user.transform.position.y;
                     userMovement.returnStepBack = true;
+                    
+                    Debug.Log("left conflict");
+                    
                     gameController.playerConflict.Remove(user);
                 }
             }
@@ -488,9 +555,9 @@ public class UserMovement : User {
             else 
                 lastStepIsArrow = false;   
 
-            if(type == StepType.STEP_END) 
+        /*    if(type == StepType.STEP_END) 
                 ChooseNextStep(type); 
-
+*/
             left = false;
             front = false;
             right = false;
@@ -540,21 +607,27 @@ public class UserMovement : User {
         dice.GetComponent<DiceController>().lastLockDice = true;
         dice.GetComponent<MeshRenderer>().enabled = true;
 
-        int matIndex = doubleDice ? 1 : reverseDice ? 2 : 0;
+        int matIndex = tripleDice ? 3 : doubleDice ? 1 : reverseDice ? 2 : 0;
         dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
 
         stack = false;
     }
 
     private void ChooseNextStep(StepType type) {
+        isMooving = true;
+
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) {
             diceResult--;
         }
 
         GetNextStep();
 
-        if(ui != null) 
-            ui.RefreshDiceResult(diceResult,actualColor);
+        if(ui != null) {
+            if(beginResult == diceResult) 
+                ui.RefreshDiceResult(doubleDice ? diceResult / 2 : tripleDice ? diceResult / 3 : diceResult,actualColor,true);
+            else
+                ui.RefreshDiceResult(diceResult,actualColor,false);
+        }
 
         finishMovement = (diceResult == 0);
     }
@@ -566,7 +639,7 @@ public class UserMovement : User {
                 beginStep = nextStep.gameObject;
 
             Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
-            int stepIndex = actualStep != null ? FindIndexInParent(stepParent.gameObject,actualStep) : FindIndexInParent(stepParent.gameObject,beginStep);
+            int stepIndex = actualStep != null ? gameController.FindIndexInParent(stepParent.gameObject,actualStep) : gameController.FindIndexInParent(stepParent.gameObject,beginStep);
             int result = actualStep != null ? diceResult : beginResult;
 
             if(stepIndex == -1) 
@@ -590,7 +663,7 @@ public class UserMovement : User {
 
     private void GetNextStep() {
         GameObject actualParent = actualStep != null ? actualStep.transform.parent.gameObject : gameController.firstStep.transform.parent.gameObject;
-        int stepIndex = FindIndexInParent(actualParent,actualStep);
+        int stepIndex = gameController.FindIndexInParent(actualParent,actualStep);
 
         if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
             if(stepIndex + 1 < actualParent.transform.childCount) 
@@ -605,17 +678,7 @@ public class UserMovement : User {
                 nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);    
         }                 
     }
-
-    private int FindIndexInParent(GameObject parent,GameObject targetStep) {
-        for(int i = 0;i<parent.transform.childCount;i++){
-            if(parent.transform.GetChild(i).gameObject == targetStep) 
-                return i;    
-        }
-
-        return -1;
-    }
-
-        
+     
     private void GenerateIAPaths(Dictionary<GameObject,int> iaPathDirections) {
         for(int i = 0;i < ui.direction.directionsStep.Length;i++) {
             GameObject end = ui.direction.gameObject;
@@ -638,12 +701,12 @@ public class UserMovement : User {
     }
 
     private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
-        int indexEnd = FindIndexInParent(end.transform.parent.gameObject,end);
+        int indexEnd = gameController.FindIndexInParent(end.transform.parent.gameObject,end);
 
         if(end.GetComponent<Direction>() != null && !sameParent)
             indexEnd++;
 
-        for(int i = FindIndexInParent(begin.transform.parent.gameObject,begin); i != indexEnd;) {
+        for(int i = gameController.FindIndexInParent(begin.transform.parent.gameObject,begin); i != indexEnd;) {
             if(i >= begin.transform.parent.childCount) 
                 i -= begin.transform.parent.childCount;
             
@@ -717,6 +780,7 @@ public class UserMovement : User {
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     if(step != null && !userMovement.isTurn && userMovement.actualStep == step) {
+                        
                         if(nextStep.gameObject == step) {
                             GameObject lastStep = steps[beginResult - 1];
                             Step targetStep = step.GetComponent<Step>();
@@ -724,13 +788,10 @@ public class UserMovement : User {
                             if(lastStep != nextStep.gameObject) { // Les joueurs vont que se croiser
                                 userMovement.stepBack = true;
                                 if(userMovement.point == Vector3.zero) {
-                                    userMovement.point = user.transform.position;
-                                    
-                                   /* if(step.GetComponent<Step>().xAxis) 
-                                        userMovement.point.x += targetStep.positive ? 10 : -10;
-                                    if(step.GetComponent<Step>().zAxis) 
-                                        userMovement.point.z += targetStep.positive ? 10 : -10;
-                                    */
+                                    userMovement.point = targetStep.avoidPos;
+                                    userMovement.point.y = step.transform.position.y;
+                                    userMovement.agent.speed *= 3f; // try x10
+                                    Debug.Log("je veux passer " + transform.gameObject.name + " a travers " + user.name);
 
                                     gameController.playerConflict.Add(user,step);
                                 }
@@ -746,7 +807,7 @@ public class UserMovement : User {
         }
     }
 
-    private void Jump() {
+    public void Jump() {
         rb.AddForce(jumpSpeed * Vector3.up,ForceMode.Impulse);    
     }
 
@@ -771,7 +832,7 @@ public class UserMovement : User {
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog) {
                 if(isPlayer) 
                     DisplayChestDialog();
@@ -792,6 +853,7 @@ public class UserMovement : User {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
         }   
+<<<<<<< HEAD
 =======
 <<<<<<< Updated upstream
 =======
@@ -808,13 +870,17 @@ public class UserMovement : User {
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+        else 
+            gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
+>>>>>>> main
 
         ui.ClearDiceResult();   
 
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog) {
                 if(isPlayer) 
                     DisplayChestDialog();
@@ -834,6 +900,7 @@ public class UserMovement : User {
             inventory.CoinLoose(amount);
             ui.DisplayReward(false,amount,stepReward);
             gameController.ActualizePlayerClassement();
+<<<<<<< HEAD
         }   
 =======
 <<<<<<< Updated upstream
@@ -863,13 +930,19 @@ public class UserMovement : User {
         int targetCode = secretCode[random];
         bool finishCode = true;
 >>>>>>> Stashed changes
+=======
+        }
+        else
+            gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
+        
+>>>>>>> main
 
         ui.ClearDiceResult();   
 
         random = -1;
         timer = 0f;
 
-        if(actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
+        if(actualStep != null && actualStep.GetComponent<Step>() != null && actualStep.GetComponent<Step>().chest != null && actualStep.GetComponent<Step>().chest.activeSelf) { 
             if(!gameController.dialog.isInDialog) {
                 if(isPlayer) 
                     DisplayChestDialog();

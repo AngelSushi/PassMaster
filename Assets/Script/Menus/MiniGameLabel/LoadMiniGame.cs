@@ -8,6 +8,7 @@ public class LoadMiniGame : MonoBehaviour {
     private bool hasClick;
 
     public void RunMiniGame(bool training) {
+        Debug.Log("run mg");
         StartCoroutine(LoadScene(training));
     }
 

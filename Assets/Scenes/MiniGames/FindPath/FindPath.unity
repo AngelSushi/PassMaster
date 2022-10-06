@@ -13319,42 +13319,10 @@ MonoBehaviour:
   menuSelect: {fileID: 1476685531}
   hoverButton: {fileID: 21300000, guid: 3f6fd924879e5ae4a8ff2d0babeba0d6, type: 3}
   normalButton: {fileID: 21300000, guid: 357714b16b839064dabd4b66cb11f31a, type: 3}
-  hoverControlsButton: {fileID: 21300000, guid: b7e02bd1262ed1743aed56a114a8060b,
-    type: 3}
   normalControlsButton: {fileID: 21300000, guid: 599759d9ebd72a9479dc898dcbc82029,
     type: 3}
   isMenuOpen: 0
   index: -1
-  inputs: 6100000062000000630000006400000065000000660000006700000068000000690000006a0000006b0000006c0000006d0000006e0000006f000000700000007100000072000000730000007400000075000000760000007700000078000000790000007a000000
-  overridePath:
-  - <Keyboard>/q
-  - <Keyboard>/b
-  - <Keyboard>/c
-  - <Keyboard>/d
-  - <Keyboard>/e
-  - <Keyboard>/f
-  - <Keyboard>/g
-  - <Keyboard>/h
-  - <Keyboard>/i
-  - <Keyboard>/j
-  - <Keyboard>/k
-  - <Keyboard>/l
-  - <Keyboard>/semicolon
-  - <Keyboard>/n
-  - <Keyboard>/o
-  - <Keyboard>/p
-  - <Keyboard>/a
-  - <Keyboard>/r
-  - <Keyboard>/s
-  - <Keyboard>/t
-  - <Keyboard>/u
-  - <Keyboard>/v
-  - <Keyboard>/z
-  - <Keyboard>/x
-  - <Keyboard>/y
-  - <Keyboard>/w
-  playerControls: {fileID: -944628639613478452, guid: 9d9b96fca36421f42b9f4b6af1c6a9fe,
-    type: 3}
 --- !u!114 &1250167281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16690,14 +16658,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f428a684575f86419f5e28924c743fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  steps: []
-  path: []
-  clearPath: []
+  finish: 0
+  begin: 1
+  isTraining: 0
+  runSinceMenu: 0
+  gameTime: 100
+  winners: []
+  beginText: {fileID: 394832850}
+  timer: {fileID: 1614691028}
+  endText: {fileID: 1682088700}
+  startSound: {fileID: 0}
+  timerSound: {fileID: 0}
+  timeSound: {fileID: 0}
+  mainAudio: {fileID: 0}
+  win: {fileID: 2111808036}
   classementPanels:
   - {fileID: 698464292}
   - {fileID: 971458537}
   - {fileID: 638185719}
   - {fileID: 567812550}
+  confetti: {fileID: 0}
+  steps: []
+  path: []
+  clearPath: []
   spawnPoints:
   - {fileID: 1571799910}
   - {fileID: 1404056779}
@@ -16709,7 +16692,6 @@ MonoBehaviour:
   - {fileID: 1659325129}
   - {fileID: 1505100821}
   decor: {fileID: 2077213720273853742}
-  confettis: {fileID: 457938528}
   winPlayer: {fileID: 0}
   surface: {fileID: 66203802}
   mainCamera: {fileID: 1688411532}
@@ -16717,16 +16699,8 @@ MonoBehaviour:
   direction: 0
   pathMaterial: {fileID: 2100000, guid: dee024f76294ceb42b0ef1b5d9ce2f91, type: 2}
   normalMat: {fileID: 2100000, guid: bc0f36afc416d7248844dc26c4aeb6f3, type: 2}
-  endText: {fileID: 1682088700}
-  timer: {fileID: 1614691028}
-  win: {fileID: 2111808036}
   gameController: {fileID: 0}
-  isTraining: 0
   hasGenPath: 0
-  finish: 0
-  begin: 1
-  beginText: {fileID: 394832850}
-  runSinceMenu: 0
 --- !u!4 &1945411504
 Transform:
   m_ObjectHideFlags: 0

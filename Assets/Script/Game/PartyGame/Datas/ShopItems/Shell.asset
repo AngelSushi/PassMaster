@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Shell
   m_EditorClassIdentifier: 
   name: Carapace
+<<<<<<< HEAD
   sprite: {fileID: 21300000, guid: 05fde66110c1ba247b320087c936ec36, type: 3}
+=======
+  sprite: {fileID: 21300000, guid: 0d75ac1120ef4c04b9505a41a10dba90, type: 3}
+>>>>>>> main
   price: 70
   maxQuantity: 1
