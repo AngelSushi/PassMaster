@@ -385,7 +385,6 @@ public class UserMovement : User {
                         } 
                         else {
                             reverseCount = true;
-                            Debug.Log("my count");
                         }          
                 }
 
