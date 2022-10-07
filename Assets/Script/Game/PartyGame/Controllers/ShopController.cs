@@ -104,16 +104,18 @@ public class ShopController : CoroutineSystem {
                 returnToStep = true;
             }
 
-            if(returnToStep) {
-                if(!actualPlayer.GetComponent<NavMeshAgent>().enabled)
-                    return;
+            
+        }
+        
+        if(returnToStep) {
+            if(!actualPlayer.GetComponent<NavMeshAgent>().enabled)
+                return;
 
-                actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,shopPath);
-                actualPlayer.GetComponent<NavMeshAgent>().SetPath(shopPath);
+            actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,shopPath);
+            actualPlayer.GetComponent<NavMeshAgent>().SetPath(shopPath);
 
-                if(shopObject != null && shopObject.transform.GetChild(0).gameObject.activeSelf)   
-                    shopObject.transform.GetChild(0).gameObject.SetActive(false);
-            }
+            if(shopObject != null && shopObject.transform.GetChild(0).gameObject.activeSelf)   
+                shopObject.transform.GetChild(0).gameObject.SetActive(false);
         }
     }
 
@@ -156,10 +158,8 @@ public class ShopController : CoroutineSystem {
         
         if(e.dialog.id == 9) {  
             
-            Debug.Log("enter dialog 9");
             returnToStep = true;
             e.actualPlayer.GetComponent<UserUI>().showShop = false;
-            gameController.mainCamera.SetActive(false); 
             actualPlayer.transform.GetChild(1).gameObject.SetActive(true);
         }
     }

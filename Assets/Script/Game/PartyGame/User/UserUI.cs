@@ -420,7 +420,7 @@ public class UserUI : User {
         if(e.started && showShop && !gameController.freeze) {
             showShop = false;
             gameController.shopController.returnToStep = true;
-            gameController.mainCamera.SetActive(false); 
+          //  gameController.mainCamera.SetActive(false); 
             transform.GetChild(1).gameObject.SetActive(true);
             index = -1;
         }

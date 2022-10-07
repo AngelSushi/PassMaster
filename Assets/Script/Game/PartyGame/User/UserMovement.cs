@@ -235,7 +235,7 @@ public class UserMovement : User {
                         diceResult *= 3;
 
                     if (isPlayer)
-                        diceResult = 41;
+                        diceResult = 63;
                 }
                 
                 agent.enabled = true;
