@@ -105,94 +105,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
-                },
-                {
-                    ""name"": ""Action"",
-                    ""type"": ""Button"",
-                    ""id"": ""10766fa5-6fad-43aa-84d3-f1fa3795713c"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Cheat"",
-                    ""type"": ""Button"",
-                    ""id"": ""9f5d2940-bc1b-4ad2-8b1b-76ff894c3453"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Cheat02"",
-                    ""type"": ""Button"",
-                    ""id"": ""7d2887c9-5090-428f-8d19-7b169198a5ba"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Note1"",
-                    ""type"": ""Button"",
-                    ""id"": ""5cef8b94-c0e5-47a2-9e13-3102426dd8c0"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Note2"",
-                    ""type"": ""Button"",
-                    ""id"": ""899c6f6e-c65d-4198-a1bb-b43d73ecb843"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Note3"",
-                    ""type"": ""Button"",
-                    ""id"": ""cde7cc1b-a2e5-48c3-a6fc-bc391ddb4fea"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Note4"",
-                    ""type"": ""Button"",
-                    ""id"": ""6c545339-b207-4b3d-9b07-d13a7ab45e4c"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Note5"",
-                    ""type"": ""Button"",
-                    ""id"": ""6c6bf679-6f29-4fb8-8eae-7cdb5dafa132"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Note6"",
-                    ""type"": ""Button"",
-                    ""id"": ""2b9c358e-5067-482d-9b7a-577f4e87b5c8"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Note7"",
-                    ""type"": ""Button"",
-                    ""id"": ""1d8ea626-f477-4aed-83d8-f1e224cf450b"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Sneak"",
-                    ""type"": ""Button"",
-                    ""id"": ""7a2b2021-45ed-48fa-b50a-4c652441d9fd"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -213,7 +125,7 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -231,6 +143,17 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""519c2c4a-e9b2-42c0-8661-58bc1f775667"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""9db33898-66f8-4b02-9da7-dfdc7b02dc20"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
@@ -242,11 +165,33 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""03cb01f6-2713-46b1-8beb-cb8e3e9ce8ef"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Next"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""0f50b201-82d6-4634-93d6-0a12eadb0e82"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Previous"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46310c7f-3f57-43b2-9190-ec1e1a2460ab"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Previous"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -302,6 +247,61 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""a126c9cc-2a57-4004-9fbc-cd79c07be480"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""f62536b5-0cb3-427c-ba85-b61f4bab7cd8"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""f3a66ccc-1b18-4a8c-8661-fd71c1395701"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""c547a6f1-08a2-40f7-8721-5e5a1bdc95d0"",
+                    ""path"": ""<Gamepad>/leftStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""4d88a030-18ef-4dcf-b862-fc5dd39c1086"",
+                    ""path"": ""<Gamepad>/leftStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -364,7 +364,7 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""262b730b-334f-46c2-b1a5-2bb077882beb"",
-                    ""path"": ""<Keyboard>/escape"",
+                    ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -391,127 +391,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""Reload"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b0d12116-5971-409d-b600-77f5edc62450"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Action"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""13342581-e7b2-42e7-823a-8f0531cf4cdf"",
-                    ""path"": ""<Keyboard>/numpad1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Cheat"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""4b47480b-325c-49d0-983c-cd2d851abc32"",
-                    ""path"": ""<Keyboard>/numpad2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Cheat02"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""17c4d585-6a50-4bc1-90ea-65a46ddd8f7b"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Note1"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""cc301960-45fd-4bce-872d-dfb2bb7088b4"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Note2"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""eead6830-b882-42a6-9e54-5febb6809a21"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Note3"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7410ed8f-6ae4-42f6-825e-6b45c417d6d9"",
-                    ""path"": ""<Keyboard>/4"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Note4"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7a04b356-3f88-429d-a4cf-d7941e27ced3"",
-                    ""path"": ""<Keyboard>/5"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Note5"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""70fb4825-97c6-44ab-99e5-9742a7247d23"",
-                    ""path"": ""<Keyboard>/6"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Note6"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e21ca426-5dc0-4ab0-9101-47a278478e58"",
-                    ""path"": ""<Keyboard>/7"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Note7"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8e453c85-e5ed-49e8-a620-9bdd703820eb"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Sneak"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -561,17 +440,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         m_Player_Quit = m_Player.FindAction("Quit", throwIfNotFound: true);
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
-        m_Player_Action = m_Player.FindAction("Action", throwIfNotFound: true);
-        m_Player_Cheat = m_Player.FindAction("Cheat", throwIfNotFound: true);
-        m_Player_Cheat02 = m_Player.FindAction("Cheat02", throwIfNotFound: true);
-        m_Player_Note1 = m_Player.FindAction("Note1", throwIfNotFound: true);
-        m_Player_Note2 = m_Player.FindAction("Note2", throwIfNotFound: true);
-        m_Player_Note3 = m_Player.FindAction("Note3", throwIfNotFound: true);
-        m_Player_Note4 = m_Player.FindAction("Note4", throwIfNotFound: true);
-        m_Player_Note5 = m_Player.FindAction("Note5", throwIfNotFound: true);
-        m_Player_Note6 = m_Player.FindAction("Note6", throwIfNotFound: true);
-        m_Player_Note7 = m_Player.FindAction("Note7", throwIfNotFound: true);
-        m_Player_Sneak = m_Player.FindAction("Sneak", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -632,17 +500,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Quit;
     private readonly InputAction m_Player_Shoot;
     private readonly InputAction m_Player_Reload;
-    private readonly InputAction m_Player_Action;
-    private readonly InputAction m_Player_Cheat;
-    private readonly InputAction m_Player_Cheat02;
-    private readonly InputAction m_Player_Note1;
-    private readonly InputAction m_Player_Note2;
-    private readonly InputAction m_Player_Note3;
-    private readonly InputAction m_Player_Note4;
-    private readonly InputAction m_Player_Note5;
-    private readonly InputAction m_Player_Note6;
-    private readonly InputAction m_Player_Note7;
-    private readonly InputAction m_Player_Sneak;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -658,17 +515,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         public InputAction @Quit => m_Wrapper.m_Player_Quit;
         public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
-        public InputAction @Action => m_Wrapper.m_Player_Action;
-        public InputAction @Cheat => m_Wrapper.m_Player_Cheat;
-        public InputAction @Cheat02 => m_Wrapper.m_Player_Cheat02;
-        public InputAction @Note1 => m_Wrapper.m_Player_Note1;
-        public InputAction @Note2 => m_Wrapper.m_Player_Note2;
-        public InputAction @Note3 => m_Wrapper.m_Player_Note3;
-        public InputAction @Note4 => m_Wrapper.m_Player_Note4;
-        public InputAction @Note5 => m_Wrapper.m_Player_Note5;
-        public InputAction @Note6 => m_Wrapper.m_Player_Note6;
-        public InputAction @Note7 => m_Wrapper.m_Player_Note7;
-        public InputAction @Sneak => m_Wrapper.m_Player_Sneak;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -711,39 +557,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Reload.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
                 @Reload.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
                 @Reload.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
-                @Action.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAction;
-                @Action.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAction;
-                @Action.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAction;
-                @Cheat.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCheat;
-                @Cheat.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCheat;
-                @Cheat.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCheat;
-                @Cheat02.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCheat02;
-                @Cheat02.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCheat02;
-                @Cheat02.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCheat02;
-                @Note1.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote1;
-                @Note1.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote1;
-                @Note1.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote1;
-                @Note2.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote2;
-                @Note2.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote2;
-                @Note2.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote2;
-                @Note3.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote3;
-                @Note3.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote3;
-                @Note3.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote3;
-                @Note4.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote4;
-                @Note4.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote4;
-                @Note4.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote4;
-                @Note5.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote5;
-                @Note5.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote5;
-                @Note5.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote5;
-                @Note6.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote6;
-                @Note6.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote6;
-                @Note6.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote6;
-                @Note7.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote7;
-                @Note7.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote7;
-                @Note7.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNote7;
-                @Sneak.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSneak;
-                @Sneak.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSneak;
-                @Sneak.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSneak;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -781,39 +594,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Reload.started += instance.OnReload;
                 @Reload.performed += instance.OnReload;
                 @Reload.canceled += instance.OnReload;
-                @Action.started += instance.OnAction;
-                @Action.performed += instance.OnAction;
-                @Action.canceled += instance.OnAction;
-                @Cheat.started += instance.OnCheat;
-                @Cheat.performed += instance.OnCheat;
-                @Cheat.canceled += instance.OnCheat;
-                @Cheat02.started += instance.OnCheat02;
-                @Cheat02.performed += instance.OnCheat02;
-                @Cheat02.canceled += instance.OnCheat02;
-                @Note1.started += instance.OnNote1;
-                @Note1.performed += instance.OnNote1;
-                @Note1.canceled += instance.OnNote1;
-                @Note2.started += instance.OnNote2;
-                @Note2.performed += instance.OnNote2;
-                @Note2.canceled += instance.OnNote2;
-                @Note3.started += instance.OnNote3;
-                @Note3.performed += instance.OnNote3;
-                @Note3.canceled += instance.OnNote3;
-                @Note4.started += instance.OnNote4;
-                @Note4.performed += instance.OnNote4;
-                @Note4.canceled += instance.OnNote4;
-                @Note5.started += instance.OnNote5;
-                @Note5.performed += instance.OnNote5;
-                @Note5.canceled += instance.OnNote5;
-                @Note6.started += instance.OnNote6;
-                @Note6.performed += instance.OnNote6;
-                @Note6.canceled += instance.OnNote6;
-                @Note7.started += instance.OnNote7;
-                @Note7.performed += instance.OnNote7;
-                @Note7.canceled += instance.OnNote7;
-                @Sneak.started += instance.OnSneak;
-                @Sneak.performed += instance.OnSneak;
-                @Sneak.canceled += instance.OnSneak;
             }
         }
     }
@@ -849,16 +629,5 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         void OnQuit(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
-        void OnAction(InputAction.CallbackContext context);
-        void OnCheat(InputAction.CallbackContext context);
-        void OnCheat02(InputAction.CallbackContext context);
-        void OnNote1(InputAction.CallbackContext context);
-        void OnNote2(InputAction.CallbackContext context);
-        void OnNote3(InputAction.CallbackContext context);
-        void OnNote4(InputAction.CallbackContext context);
-        void OnNote5(InputAction.CallbackContext context);
-        void OnNote6(InputAction.CallbackContext context);
-        void OnNote7(InputAction.CallbackContext context);
-        void OnSneak(InputAction.CallbackContext context);
     }
 }
