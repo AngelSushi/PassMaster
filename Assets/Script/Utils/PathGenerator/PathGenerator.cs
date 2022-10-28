@@ -55,6 +55,7 @@ public class PathGenerator : MonoBehaviour {
             chest.GetComponent<BoxCollider>().center = new Vector3(-0.325f,-0.283f,-0.235f);
             chest.GetComponent<BoxCollider>().size = new Vector3(9.072f,10.917f,14.796f);
             step.chest = chest;
+            step.avoidPos = chest.transform.position - ((chest.transform.position - step.transform.position).normalized * 5);
             
             position.y -= 2.5f;
             GameObject plane = Instantiate(planePrefab,position,Quaternion.identity,target.transform);
@@ -84,18 +85,18 @@ public class PathGenerator : MonoBehaviour {
             if(forward) {
                 if(right && !left) 
                     return obj.transform.forward * 9.5f + obj.transform.right * 9.5f;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * 9.5f + obj.transform.right * -1 * 9.5f;
-                else 
-                    return obj.transform.forward * 13;
+                 
+                return obj.transform.forward * 13;
             }
-            else if(back) {
+            if(back) {
                 if(right && !left) 
                     return obj.transform.forward * -1 * 9.5f + obj.transform.right * 9.5f;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * -1 *  9.5f + obj.transform.right * -1 * 9.5f;
-                else 
-                    return obj.transform.forward * -1 * 13;
+                 
+                return obj.transform.forward * -1 * 13;
             }
             else if(right) 
                 return obj.transform.right * 13;

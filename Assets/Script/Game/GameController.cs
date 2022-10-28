@@ -76,7 +76,7 @@ public class GameController : CoroutineSystem {
     public List<Material> diceMaterials;
 
     public LoadingScene loadingScene;
-    public List<GameObject> allMainObjects;
+    private GameObject[] objects;
     public int nightIndex;
     private  List<int> points = new List<int>();
     public Dictionary<GameObject,int> playerPoint = new Dictionary<GameObject,int>();
@@ -96,8 +96,8 @@ public class GameController : CoroutineSystem {
     public EndAnimationController endAnimationController;
     public Animation blackScreenAnim;
 
-    public GameObject shellPrefab;
-
+    public DebugController debugController;
+    
     public static GameController Instance { get; private set;}
 
     void Awake() {
@@ -105,7 +105,7 @@ public class GameController : CoroutineSystem {
     }
 
     void Start() {
-        GameController.difficulty = 2;
+        difficulty = 2;
 
         classedPlayers.Add(players[0],1);
         classedPlayers.Add(players[1],2);
@@ -157,8 +157,9 @@ public class GameController : CoroutineSystem {
             ActualizePlayerClassement();
         }
         if(part == GamePart.CHOOSE_MINIGAME) {
-            mgController.RandomMiniGame();
-            return;
+           // StartCoroutine(mgController.RandomMiniGame());
+           turn++;
+           BeginTurn(false);
         }
 
         
@@ -377,8 +378,8 @@ public class GameController : CoroutineSystem {
     public void BeginTurn(bool repair) {
 
         actualPlayer = 0;
-        if(turn > 1 && !repair && !hasChangeState) {
-            ChangeStateScene("Main",true);
+        if(turn > 1 && !repair && !hasChangeState && !debugController.skipMG) {
+            ChangeStateScene(true,"NewMain");
             SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
             hasChangeState = true;
         }
@@ -661,16 +662,18 @@ public class GameController : CoroutineSystem {
         
     }
 
-    public void ChangeStateScene(string sceneName,bool state) {
-        GameObject[] objects = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
-
-        foreach(GameObject obj in allMainObjects) {
-            if(obj.name == "SFX" && sceneName == "Main")
-                return;
+    public void ChangeStateScene(bool state,string sceneName = "") {
+        
+        objects = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
+        
+        foreach(GameObject obj in objects) {
+            if ((obj.name == "SFX" && sceneName == "NewMain") || obj.GetComponent<GameController>() != null || obj.name == "EventSystem") {
+                obj.SetActive(true);
+                continue;
+            }
             
             obj.SetActive(state);
         }
     }
 
-    
 }

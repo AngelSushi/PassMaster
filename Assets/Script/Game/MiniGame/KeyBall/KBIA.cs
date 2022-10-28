@@ -319,27 +319,35 @@ public class KBIA : CoroutineSystem {
 
                     if(!gotoDestroy && !goToPortal) {
                         if(direction == IADirection.FRONT) {
-                        // Debug.Log("direction01");
                             rb.AddForce(new Vector3(moveX,0,moveZ));
                         }
                         else if(direction == IADirection.RIGHT) {
-                        //  Debug.Log("direction02");
                             rb.AddForce(new Vector3(moveZ,0,-moveX));
                         }
                         else if(direction == IADirection.LEFT) {
-                        //  Debug.Log("direction03");
                             rb.AddForce(new Vector3(moveZ,0,moveX));
                         }
                     }
                     else if(gotoDestroy) {
-                       // if(transform.position.x != destroyPos.x && transform.position.z != destroyPos.z) {
                             Debug.Log("mooove");
                             transform.position = Vector3.MoveTowards(transform.position,destroyPos,speed * Time.deltaTime);
-                       // }
                     }
                     else if(goToPortal) {
                         Vector3 portalPos = controller.portal.transform.position;
                         transform.position = Vector3.MoveTowards(transform.position,new Vector3(portalPos.x + 10,portalPos.y,portalPos.z),speed * Time.deltaTime);
+
+                        if (transform.position.x < controller.tpPos.x && isOnBall) {
+                            controller.AddPoint(transform.gameObject);
+                            percentage = beginPercentage;
+                            transform.position = controller.portalPoints[controller.ConvertPlayerInt(transform.gameObject)];
+                            hasCheckPos = false;
+                            area = Area.NONE;  
+                            gotoDestroy = false;
+                            hasGenPosition = false;
+                            finishMove = false;
+                            isOnBall = false;
+                            goToPortal = false;
+                        }
                     }
 
 
@@ -434,17 +442,6 @@ public class KBIA : CoroutineSystem {
         if(hit.gameObject.tag == "Sol") {
             isJumping = false;
             lastHit = hit.gameObject;
-        }
-        if(hit.gameObject.tag == "Portal") { // Mettre les bonnes coords
-            percentage = beginPercentage;
-            transform.position = controller.portalPoints[controller.ConvertPlayerInt(transform.gameObject)];
-            hasCheckPos = false;
-            area = Area.NONE;  
-            gotoDestroy = false;
-            hasGenPosition = false;
-            finishMove = false;
-            isOnBall = false;
-            goToPortal = false;
         }
 
         if(hit.gameObject.tag == "BlueBall" || hit.gameObject.tag == "GreenBall" || hit.gameObject.tag == "YellowBall") {

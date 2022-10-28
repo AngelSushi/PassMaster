@@ -93,12 +93,17 @@ public class ChestController : CoroutineSystem {
             obj = e.obj;
             chestPath = new NavMeshPath();
             goToChest = true;
-        } 
+        }
 
-        if(e.dialog.id == 11) 
+        else if (e.answerIndex == 1) 
             GameController.Instance.EndUserTurn();
 
-        if(e.dialog.id == 12 || e.dialog.id == 13) 
+        if (e.dialog.id == 11) {
+            GameController.Instance.EndUserTurn();
+        }
+        
+
+        if( e.dialog.id == 12 || e.dialog.id == 13) 
             returnToStep = true;
     }
 

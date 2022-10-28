@@ -264,7 +264,7 @@ public class UserUI : User {
                 if(isPlayer) 
                     isTurn = true;
 
-                GetComponent<NavMeshAgent>().enabled = true;
+                //GetComponent<NavMeshAgent>().enabled = true;
                 movement.waitDiceResult = true;
                 index = -1;
             }
@@ -426,7 +426,7 @@ public class UserUI : User {
         if(e.started && showShop && !gameController.freeze) {
             showShop = false;
             gameController.shopController.returnToStep = true;
-            gameController.mainCamera.SetActive(false); 
+          //  gameController.mainCamera.SetActive(false); 
             transform.GetChild(1).gameObject.SetActive(true);
             index = -1;
         }
@@ -522,6 +522,7 @@ public class UserUI : User {
         for(int i = 0;i<3;i++) {
             actions[i].gameObject.SetActive(active);
             actions[i].GetChild(0).gameObject.SetActive(active);
+            
             if(!active) 
                 actions[i].GetChild(1).gameObject.SetActive(active);
         }    

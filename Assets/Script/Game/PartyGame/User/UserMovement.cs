@@ -77,6 +77,7 @@ public class UserMovement : User {
     public override void OnBeginTurn() {
         stepBack = false;
         point = Vector3.zero;
+        ui.enabled = true;
 
         if(waitDiceResult) {
             if(!isPlayer && !inventory.HasObjects()) 
@@ -92,7 +93,7 @@ public class UserMovement : User {
     }
 
     public override void OnFinishTurn() {
-        agent.enabled = false;
+    //    agent.enabled = false;
         left = false;
         front = false;
         isMooving = false;
@@ -105,6 +106,8 @@ public class UserMovement : User {
         waitDiceResult = true;
         hasJump = false;
 
+        ui.enabled = false;
+
         if(!isPlayer)
             checkObjectToUse = true;
     }
@@ -113,6 +116,10 @@ public class UserMovement : User {
         base.Update();
 
         if(!gameController.freeze) {
+            
+           // animatorController.SetBool("IsMooving",isMooving);
+           // animatorController.SetBool("IsElectrocuted",isElectrocuted);
+
             if(isTurn) {
                 canMoove = !stop;
 
@@ -191,13 +198,20 @@ public class UserMovement : User {
             }
 
             else { // is not his turn
-
+                
+                
+                Debug.Log("point: " + point);
+                
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
             
                 if(stepBack) {
-                    agent.enabled = false;
-                    transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
+                   // agent.enabled = false;
+                    Debug.Log("je dois bouger");
+                    agent.CalculatePath(point, path);
+                    agent.SetPath(path);
+                    Debug.Log("status " + path.status);
+                    // transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
                 }
                 else 
                     point = Vector3.zero;
@@ -221,17 +235,21 @@ public class UserMovement : User {
                         diceResult = 6;
                     if(doubleDice) 
                         diceResult *= 2;
-                    if(tripleDice || useShell)
-                        diceResult *= 3;           
-                    
-                    agent.enabled = true;
-                  //  if(isPlayer) diceResult = 63; 
-                    beginResult = diceResult; 
-                    stepPaths = new GameObject[beginResult]; 
-                    hasCollideDice = true;  
-                    
-                    actualColor = (tripleDice || useShell) ? new Color(1f,0.74f,0f,1f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
-                    ui.RefreshDiceResult(diceResult,actualColor,true);
+                    if(tripleDice)
+                        diceResult *= 3;
+
+                    if (isPlayer)
+                        diceResult = 63;
+                }
+                
+                agent.enabled = true;
+                //if(isPlayer) diceResult = 63; 
+                beginResult = diceResult; 
+                stepPaths = new GameObject[beginResult]; 
+                hasCollideDice = true;  
+                
+                actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+                ui.RefreshDiceResult(diceResult, actualColor,true);
 
                     GameObject hitObj = hit.gameObject;
                     hitObj.GetComponent<MeshRenderer>().enabled = false;
@@ -390,7 +408,6 @@ public class UserMovement : User {
                         } 
                         else {
                             reverseCount = true;
-                            Debug.Log("my count");
                         }          
                 }
 
@@ -498,10 +515,15 @@ public class UserMovement : User {
                     GameObject user = gameController.GetKeyByValue(step,gameController.playerConflict);
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     Step targetStep = step.GetComponent<Step>();
-
+                    
+                    Debug.Log("hit obj " + hit.gameObject);
+                    
                     userMovement.point = hit.gameObject.transform.position;
-                    userMovement.point.y = user.transform.position.y;
+                   // userMovement.point.y = user.transform.position.y;
                     userMovement.returnStepBack = true;
+                    
+                    Debug.Log("left conflict");
+                    
                     gameController.playerConflict.Remove(user);
                 }
             }
@@ -625,8 +647,6 @@ public class UserMovement : User {
             int index = 0;
             for(int i = 0;i<result;i++) {
                 index = i;
-
-
                 if(stepIndex + i + 1 < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
                     stepPaths[i] = stepParent.GetChild(stepIndex + i + 1).gameObject;
                 else  // Le calcul du prochain index de la prochaine step est supérieur au nombre de step max, on retire donc le nombre de step max au calcul
@@ -757,6 +777,7 @@ public class UserMovement : User {
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     if(step != null && !userMovement.isTurn && userMovement.actualStep == step) {
+                        
                         if(nextStep.gameObject == step) {
                             GameObject lastStep = steps[beginResult - 1];
                             Step targetStep = step.GetComponent<Step>();
@@ -764,13 +785,10 @@ public class UserMovement : User {
                             if(lastStep != nextStep.gameObject) { // Les joueurs vont que se croiser
                                 userMovement.stepBack = true;
                                 if(userMovement.point == Vector3.zero) {
-                                    userMovement.point = user.transform.position;
-                                    
-                                   /* if(step.GetComponent<Step>().xAxis) 
-                                        userMovement.point.x += targetStep.positive ? 10 : -10;
-                                    if(step.GetComponent<Step>().zAxis) 
-                                        userMovement.point.z += targetStep.positive ? 10 : -10;
-                                    */
+                                    userMovement.point = targetStep.avoidPos;
+                                    userMovement.point.y = step.transform.position.y;
+                                    userMovement.agent.speed *= 3f; // try x10
+                                    Debug.Log("je veux passer " + transform.gameObject.name + " a travers " + user.name);
 
                                     gameController.playerConflict.Add(user,step);
                                 }
@@ -830,6 +848,8 @@ public class UserMovement : User {
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
         }   
+        else 
+            gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
 
         ui.ClearDiceResult();   
 
@@ -854,7 +874,10 @@ public class UserMovement : User {
             inventory.CoinLoose(amount);
             ui.DisplayReward(false,amount,stepReward);
             gameController.ActualizePlayerClassement();
-        }   
+        }
+        else
+            gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
+        
 
         ui.ClearDiceResult();   
 

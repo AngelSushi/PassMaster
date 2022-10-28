@@ -104,20 +104,24 @@ public class ShopController : CoroutineSystem {
                 returnToStep = true;
             }
 
-            if(returnToStep) {
-                if(!actualPlayer.GetComponent<NavMeshAgent>().enabled)
-                    return;
+            
+        }
+        
+        if(returnToStep) {
+            if(!actualPlayer.GetComponent<NavMeshAgent>().enabled)
+                return;
 
-                actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,shopPath);
-                actualPlayer.GetComponent<NavMeshAgent>().SetPath(shopPath);
+            actualPlayer.GetComponent<NavMeshAgent>().CalculatePath(actualPlayer.GetComponent<UserMovement>().actualStep.transform.position,shopPath);
+            actualPlayer.GetComponent<NavMeshAgent>().SetPath(shopPath);
 
-                if(shopObject != null && shopObject.transform.GetChild(0).gameObject.activeSelf)   
-                    shopObject.transform.GetChild(0).gameObject.SetActive(false);
-            }
+            if(shopObject != null && shopObject.transform.GetChild(0).gameObject.activeSelf)   
+                shopObject.transform.GetChild(0).gameObject.SetActive(false);
         }
     }
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
+        Debug.Log("event dialog end " + e.dialog.id + " answer " + e.answerIndex);
+        
         if(e.dialog == null)
             return;
 
@@ -129,7 +133,7 @@ public class ShopController : CoroutineSystem {
             shopObject = e.obj;
             shopPosition = e.position;
             shopPath = new NavMeshPath();
-          //  mooveToShop = true;
+            mooveToShop = true;
         }
 
         if(e.dialog.id == 7 && e.answerIndex == 0) { // Fin du dialogue BuyItem
@@ -147,13 +151,15 @@ public class ShopController : CoroutineSystem {
 
             shopDialogs.isInDialog = true;
             shopDialogs.currentDialog = stateDialog;
-            StartCoroutine(stateDialog.Content[0],stateDialog.Content.Length);
+            StartCoroutine(shopDialogs.ShowText(stateDialog.Content[0],stateDialog.Content.Length));
         }
 
+        
+        
         if(e.dialog.id == 9) {  
+            
             returnToStep = true;
             e.actualPlayer.GetComponent<UserUI>().showShop = false;
-            gameController.mainCamera.SetActive(false); 
             actualPlayer.transform.GetChild(1).gameObject.SetActive(true);
         }
     }

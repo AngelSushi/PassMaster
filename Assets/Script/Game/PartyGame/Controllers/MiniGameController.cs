@@ -29,16 +29,17 @@ public class MiniGameController : CoroutineSystem {
         gameController = GameController.Instance;
     }
 
-    public async void RandomMiniGame() {
+    public IEnumerator RandomMiniGame() {
         if(maxTimer == 0) {
-            for(int i = 0;i<render.transform.parent.childCount;i++) {
+            for(int i = 0;i<render.transform.parent.childCount;i++) 
                 render.transform.parent.GetChild(i).gameObject.SetActive(true);
-            }
 
             maxTimer = Random.Range(4.0f,6.0f);
         }
 
-        if(timer <= maxTimer) {
+        while(timer <= maxTimer) {
+            yield return null;
+            
             timer += Time.deltaTime;
             step += Time.deltaTime;
             if(step >= speed) {
@@ -57,51 +58,30 @@ public class MiniGameController : CoroutineSystem {
             }
 
         }
-        else {
-            actualMiniGame = ConvertMiniGameWithName(render.transform.parent.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text);
-            RunDelayed(1.0f,() => {
-                
-                if(!hasLoadScene) {
-                    render.transform.parent.gameObject.SetActive(false);
-                    gameController.part = GameController.GamePart.MINIGAME;
-
-                    hasTurnChange = false;
-                   // gameController.dayController.mainAudio.Stop();
-                    gameController.players[gameController.actualPlayer].GetComponent<UserUI>().showTurnInfo = false;
-                    gameController.loadingScene.loadScene = true;
-                    hasLoadScene = true;
-                    speed = 0.08f;
-                    timer = 0;
-                    maxTimer = 0;
-                    index = 0;
-                    step = 0;
-                    gameController.hasChangeState = false;
-                }
-
-            });
-        }
-
-
-    }
-
-    private MiniGameData ConvertMiniGameWithName(string name) {
-        switch(name) {
-            case "FindPath":
-                return minigames[0];
-                break;
+        
+        actualMiniGame = minigames.Where(minigame => minigame.minigameName == render.transform.parent.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text).First();
+        RunDelayed(1.0f,() => {
             
-            case "Archery":
-                return minigames[1];
-                break;
+            if(!hasLoadScene) {
+                render.transform.parent.gameObject.SetActive(false);
+                gameController.part = GameController.GamePart.MINIGAME;
 
-            case "KeyBall":
-                return minigames[2];
-                break;
-        }
+                hasTurnChange = false;
+               // gameController.dayController.mainAudio.Stop();
+                gameController.players[gameController.actualPlayer].GetComponent<UserUI>().showTurnInfo = false;
+                gameController.loadingScene.loadScene = true;
+                hasLoadScene = true;
+                speed = 0.08f;
+                timer = 0;
+                maxTimer = 0;
+                index = 0;
+                step = 0;
+                gameController.hasChangeState = false;
+            }
 
-        return null;
+        });
     }
-
+    
     public void EndMiniGame(GameObject[] classementPanels,List<GameObject> winners,GameObject endText) {
         hasLoadScene = false;
 
