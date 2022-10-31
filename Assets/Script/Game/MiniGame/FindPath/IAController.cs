@@ -31,16 +31,16 @@ public class IAController : CoroutineSystem {
     #region Unity's Functions
     void Start() {
 
-        switch(GameController.difficulty) {
-            case 0:
+        switch(GameController.Instance.difficulty) {
+            case GameController.Difficulty.EASY:
                 percentage = 55;
                 break;
 
-            case 1:
+            case GameController.Difficulty.MEDIUM:
                 percentage = 70;
                 break;
 
-            case 2:
+            case GameController.Difficulty.HARD:
                 percentage = 85;
                 break;        
         }

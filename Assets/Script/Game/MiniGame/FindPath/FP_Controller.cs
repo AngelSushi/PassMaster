@@ -66,23 +66,23 @@ public class FP_Controller : MiniGame {
         if(!hasGenPath) {
             if(!ContainsWithTag()) {
 
-                switch(GameController.difficulty) {
-                    case 0: // Facile
+                switch(GameController.Instance.difficulty) {
+                    case GameController.Difficulty.EASY:
                         segmentLength = Random.Range(4,7);
                         break;
 
-                    case 1: // Moyen
+                    case GameController.Difficulty.MEDIUM:
                         segmentLength = Random.Range(2,4);
                         break;
 
-                    case 2: // Difficile
+                    case GameController.Difficulty.HARD: 
                         segmentLength = Random.Range(2,4);
                         break;        
                 }
 
                 if(path.Count == 0) { // Il n'y a encore aucun segment de fait, la direction est donc tt droite
                     direction = 1;
-                    if(GameController.difficulty == 2 && segmentLength == 1) segmentLength = 2;
+                    if(GameController.Instance.difficulty == GameController.Difficulty.HARD && segmentLength == 1) segmentLength = 2;
                 }
                 
                 else {

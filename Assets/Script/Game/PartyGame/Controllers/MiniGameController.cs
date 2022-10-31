@@ -312,9 +312,9 @@ public class MiniGameController : CoroutineSystem {
                         gameController.turn++;
                         gameController.nightIndex--;
                         if(gameController.nightIndex < 0) {
-                            if(GameController.difficulty == 0)
+                            if(GameController.Instance.difficulty == 0)
                                 gameController.nightIndex = 4;
-                            if(GameController.difficulty == 1)
+                            if(GameController.Instance.difficulty == 1)
                                 gameController.nightIndex= 3;
                             if(GameController.difficulty == 2)
                                 gameController.nightIndex = 2;

@@ -60,7 +60,7 @@ public class DayController : MonoBehaviour {
     }
 
 
-    public void ChangeNaturalDayPeriod(int difficulty,int nightIndex) {
+    public void ChangeNaturalDayPeriod(GameController.Difficulty difficulty,int nightIndex) {
 
         if(dayPeriod == DayPeriod.RAIN) {
             dayPeriod = lastDayPeriod; // Faire en sorte que s'il y a que 1 période de crépuscule et que c de la pluie ca va en nuit
@@ -68,7 +68,7 @@ public class DayController : MonoBehaviour {
         }
 
         switch(difficulty) {
-            case 0: // Facile 2 jour ; 2 crépuscule ; 1 nuit
+            case GameController.Difficulty.EASY: // Facile 2 jour ; 2 crépuscule ; 1 nuit
                 if(nightIndex == 4 || nightIndex == 3)
                     dayPeriod = DayController.DayPeriod.DAY;
                 if(nightIndex == 2 || nightIndex == 1)
@@ -78,7 +78,7 @@ public class DayController : MonoBehaviour {
 
                 break;
 
-            case 1: // Medium 2 jour ; 1 crépuscule ; 1 nuit
+            case GameController.Difficulty.MEDIUM: // Medium 2 jour ; 1 crépuscule ; 1 nuit
                 if(nightIndex == 3 || nightIndex == 2)
                     dayPeriod = DayController.DayPeriod.DAY;
                 if(nightIndex == 1)
@@ -88,7 +88,7 @@ public class DayController : MonoBehaviour {
 
                 break;
 
-            case 2: // Hard 1 jour ; 1 crépuscule ; 1 nuit
+            case GameController.Difficulty.HARD: // Hard 1 jour ; 1 crépuscule ; 1 nuit
                 if(nightIndex == 2)
                     dayPeriod = DayController.DayPeriod.DAY;
                 if(nightIndex == 1)

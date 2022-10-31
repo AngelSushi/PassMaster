@@ -24,15 +24,19 @@ public class GameController : CoroutineSystem {
         MINIGAME
     }
 
+    public enum Difficulty
+    {
+        EASY,
+        MEDIUM,
+        HARD
+    }
+
     public GameObject dice; 
     public GameObject prefabInStep;
     public GameObject stepParent;
 
     public GameObject firstStep;
-    //public GamePart partOfGame = GamePart.TUTORIEL;
     public GameObject light;
-    public GameObject[] diceResultObj = new GameObject[4];
-    public Text[] diceResultText = new Text[4];
     
 
 
@@ -41,12 +45,9 @@ public class GameController : CoroutineSystem {
 
     public Dictionary<GameObject,int> classedPlayers = new Dictionary<GameObject,int>();
 
-    private SortedDictionary<int,int> results = new SortedDictionary<int,int>();
-    
-    public int[] turnOrder = new int[4];
-
     public GameObject mainCamera;
     public TextAsset dialogsFile,stepFile; 
+    public JsonExcelArray excelArray;
 
     public GamePart part;
 
@@ -63,6 +64,8 @@ public class GameController : CoroutineSystem {
 
     public Sprite[] smallSprites = new Sprite[4];
     public Color[] classedColors = new Color[4];
+    
+    
     public int turn;
     public int[] secretCode;
 
@@ -70,7 +73,7 @@ public class GameController : CoroutineSystem {
     private bool checkLastChest;
     private int randomIndex = -1;
     private bool hasBeginGame;
-    public static int difficulty;
+    public Difficulty difficulty;
     public bool freeze;
 
     public List<Material> diceMaterials;
@@ -83,22 +86,29 @@ public class GameController : CoroutineSystem {
     private GamePart lastPart;
     public bool hasChangeState;
     private bool isFirstChest = true;
+    public Animation blackScreenAnim;
+    
+    public Transform stackPlayersParent;
+    public GameObject stepChest;
+    
+    
+    
     public DayController dayController;
     public DialogController dialog;
     public MiniGameController mgController;
     public OrderController orderController;
-    public Transform stackPlayersParent;
-    public JsonExcelArray excelArray;
-    public GameObject stepChest;
     public ShopController shopController;
     public ChestController chestController;
     public ItemController itemController;
     public EndAnimationController endAnimationController;
-    public Animation blackScreenAnim;
 
     public DebugController debugController;
 
     public GameObject shellPrefab;
+    
+    
+    [HideInInspector]
+    public int currentTabIndex;
     
     public static GameController Instance { get; private set;}
 
@@ -107,7 +117,7 @@ public class GameController : CoroutineSystem {
     }
 
     void Start() {
-        difficulty = 2;
+        difficulty = Difficulty.HARD;
 
         classedPlayers.Add(players[0],1);
         classedPlayers.Add(players[1],2);

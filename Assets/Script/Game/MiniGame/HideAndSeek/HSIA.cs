@@ -95,8 +95,8 @@ public class HSIA : CoroutineSystem {
     void Start() {
        // GameController.difficulty = 2;
 
-        switch(GameController.difficulty) {
-            case 0:
+        switch(GameController.Instance.difficulty) {
+            case GameController.Difficulty.EASY:
                 percentageRoom = 80; 
                 percentageHidden = 15;
                 percentageInSameRoom = 45;
@@ -110,7 +110,7 @@ public class HSIA : CoroutineSystem {
                 timeToMove = 1;
                 break;
 
-            case 1:
+            case GameController.Difficulty.MEDIUM:
                 percentageRoom = 50;
                 percentageHidden = 40;
                 percentageInSameRoom = 25;
@@ -124,7 +124,7 @@ public class HSIA : CoroutineSystem {
                 timeToMove = 0.7f;
                 break;
 
-            case 2: 
+            case GameController.Difficulty.HARD: 
                 percentageRoom = 20;
                 percentageHidden = 60;
                 percentageInSameRoom = 10;
