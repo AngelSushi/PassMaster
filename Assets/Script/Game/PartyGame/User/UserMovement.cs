@@ -24,6 +24,7 @@ public class UserMovement : User {
     public bool tripleDice;
     public bool useHourglass;
     public bool useLightning;
+    public bool useShell;
     public GameObject targetLightningStep;
     public bool reverseDice;    
     public GameObject lastStep;
@@ -567,7 +568,7 @@ public class UserMovement : User {
 
     #region Customs Functions
 
-    private void InitDice() {
+    public void InitDice() {
         canJump = true;
         dice = gameController.dice;
         dice.SetActive(true);
