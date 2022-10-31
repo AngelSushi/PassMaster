@@ -18,7 +18,7 @@ public class UserMovementEditor : Editor {
     private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,returnStepBack,reverseCount,diceResult,actualStep,beginStep,nextStep,stack,beginResult,stepPaths,stepBack;
 
     // Object tab;
-    private SerializedProperty doubleDice,tripleDice,reverseDice,useHourglass,useLightning,targetLightningStep,checkObjectToUse,hasBotBuyItem,isParachuting;
+    private SerializedProperty doubleDice,tripleDice,reverseDice,useHourglass,useLightning,isElectrocuted,useShell,targetLightningStep,checkObjectToUse;
     // UI Tab
     private SerializedProperty giveUI,changeUI,stepMaterial;
     
@@ -76,10 +76,10 @@ public class UserMovementEditor : Editor {
         reverseDice = serializedClass.FindProperty("reverseDice");
         useHourglass = serializedClass.FindProperty("useHourglass");
         useLightning = serializedClass.FindProperty("useLightning");
+        isElectrocuted = serializedClass.FindProperty("isElectrocuted");
         targetLightningStep = serializedClass.FindProperty("targetLightningStep");
         checkObjectToUse = serializedClass.FindProperty("checkObjectToUse");
-        hasBotBuyItem = serializedClass.FindProperty("hasBotBuyItem");
-        isParachuting = serializedClass.FindProperty("isParachuting");
+        useShell = serializedClass.FindProperty("useShell");
 
         // UI Tab
         giveUI = serializedClass.FindProperty("giveUI");
@@ -142,12 +142,11 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(reverseDice);
                 EditorGUILayout.PropertyField(useHourglass);
                 EditorGUILayout.PropertyField(useLightning);
+                EditorGUILayout.PropertyField(isElectrocuted);
                 EditorGUILayout.PropertyField(targetLightningStep);
                 if(!isPlayer.boolValue)
                     EditorGUILayout.PropertyField(checkObjectToUse);
-
-                //EditorGUILayout.PropertyField(hasBotBuyItem);
-                //EditorGUILayout.PropertyField(isParachuting);
+                EditorGUILayout.PropertyField(useShell);
                 break;
             case 4:
                 EditorGUILayout.PropertyField(giveUI);

@@ -97,6 +97,8 @@ public class GameController : CoroutineSystem {
     public Animation blackScreenAnim;
 
     public DebugController debugController;
+
+    public GameObject shellPrefab;
     
     public static GameController Instance { get; private set;}
 
@@ -404,6 +406,34 @@ public class GameController : CoroutineSystem {
     }
 
     public void EndUserTurn() {
+
+        if(players[actualPlayer].transform.parent.tag == "Shell") {
+            
+            GameObject shell = players[actualPlayer].transform.parent.gameObject;
+
+            UnityEditorInternal.ComponentUtility.CopyComponent(players[actualPlayer].transform.parent.gameObject.GetComponent<UserMovement>());
+            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(players[actualPlayer]);
+
+            UnityEditorInternal.ComponentUtility.CopyComponent(players[actualPlayer].transform.parent.gameObject.GetComponent<UserUI>());
+            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(players[actualPlayer]);
+            
+            players[actualPlayer].GetComponent<UserMovement>().useShell = false;
+            players[actualPlayer].GetComponent<UserMovement>().agent.radius = 0.5f;
+            players[actualPlayer].GetComponent<UserMovement>().agent.height = 1.57f;
+
+            int playerIndex = actualPlayer - 1;
+
+            if(playerIndex < 0)
+                playerIndex = players.Length - 1;
+
+            players[actualPlayer].transform.parent = players[playerIndex].transform.parent;
+
+            players[actualPlayer].GetComponent<UserUI>().movement = players[actualPlayer].GetComponent<UserMovement>();
+            players[actualPlayer].transform.GetChild(1).gameObject.SetActive(false);
+
+            Destroy(shell);
+        }
+
         players[actualPlayer].GetComponent<UserMovement>().finishTurn = false;
         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
 

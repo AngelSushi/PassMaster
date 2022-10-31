@@ -67,11 +67,18 @@ public class ItemAction : MonoBehaviour {
         classedPlayers = classedPlayers.OrderBy(player=>player.GetComponent<UserInventory>().points).ToList();
         classedPlayers.Reverse();
 
-        succeedActions.Add(classedPlayers[0] == targetPlayer);    
+        bool result = classedPlayers[0] == targetPlayer;
+
+        if(differentPlayerToTarget)
+            result = classedPlayers[0] != targetPlayer;
+
+        succeedActions.Add(result);
     }
 
     public void CheckCoinsAndCards() {
         succeedActions.Add(targetPlayer.GetComponent<UserInventory>().cards == possessPlayer.GetComponent<UserInventory>().cards && targetPlayer.GetComponent<UserInventory>().coins >= possessPlayer.GetComponent<UserInventory>().coins);
+    
+        Debug.Log("check: " + targetPlayer.name + "with " + possessPlayer.name);
     }
 
     public void CheckCoinsAndObjects() {
@@ -134,7 +141,6 @@ public class ItemAction : MonoBehaviour {
 
         }
 
-        Debug.Log("is not in range");
         return false;
     }
 
@@ -157,24 +163,22 @@ public class ItemAction : MonoBehaviour {
         if(!differentPlayerToTarget) {
             switch(rangeResultType) {
                 case ItemActionResult.SHOP:
-                    if(actualStep.type == StepType.SHOP) {
+                    if(actualStep.type == StepType.SHOP) 
                        // Debug.Log("is in range of " + actualStep.type);
                         return true;
-                    }
                     break;
 
                 case ItemActionResult.CHEST:
-                    if(actualStep.chest != null && actualStep.chest.activeSelf) {
+                    if(actualStep.chest != null && actualStep.chest.activeSelf) 
                       //  Debug.Log("is in range of " + actualStep.chest.name);
                         return true;
-                    }
                     break;
+                    
 
                 case ItemActionResult.END:
-                    if(actualStep.type == StepType.STEP_END) {
+                    if(actualStep.type == StepType.STEP_END) 
                        // Debug.Log("is in range of " + actualStep.type);
                         return true;
-                    }
                     break;
             }
         }

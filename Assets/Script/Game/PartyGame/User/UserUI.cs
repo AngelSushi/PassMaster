@@ -37,6 +37,8 @@ public class UserUI : User {
     private float cameraSpeed = 90f;
     private Vector2 vecMove;
 
+    public ParticleSystem smokeEffect;
+
 // Check que quand c'est pas le tour d'un joueur tt soit désactiver
 
     void Update() {  
@@ -368,6 +370,8 @@ public class UserUI : User {
                             break;
 
                         case 5: // Shell   
+                            inventory.UseShell();
+                            CloseActionHUD(true);
                             break;
                     }
 
@@ -402,6 +406,8 @@ public class UserUI : User {
         infoLabel.SetActive(false);
         GetComponent<NavMeshAgent>().enabled = goToDice;
         movement.waitDiceResult = goToDice;
+
+        
         if(goToDice)
             index = -1;
     }
@@ -466,8 +472,14 @@ public class UserUI : User {
                     int playerIndex = j;
                     if(j > 3) 
                         playerIndex -= 4;
+
+                    UserMovement userMovement = gameController.players[playerIndex].GetComponent<UserMovement>();
+
+                    if(userMovement == null && GameObject.FindGameObjectsWithTag("Shell").Length > 0) 
+                        userMovement = transform.gameObject.GetComponent<UserMovement>();
                     
-                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,gameController.players[playerIndex].GetComponent<UserMovement>().userType);
+
+                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,userMovement.userType);
 
                     int rank = -1;
                     int rankIndex = 0;
@@ -578,10 +590,10 @@ public class UserUI : User {
             diceResult.SetActive(true);
         
         if(begin) {
-            if(movement.doubleDice || movement.tripleDice) {
+            if(movement.doubleDice || movement.tripleDice || movement.useShell) {
                 diceResult.transform.GetChild(0).gameObject.SetActive(true);
-                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = movement.tripleDice ? "x3" : movement.doubleDice ? "x2" : "";
-                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = movement.tripleDice ? new Color(1f,0.74f,0f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f);
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = (movement.tripleDice || movement.useShell) ? "x3" : movement.doubleDice ? "x2" : "";
+                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = (movement.tripleDice || movement.useShell) ? new Color(1f,0.74f,0f,1f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f,1f);
             }
         }
         else 
@@ -589,6 +601,9 @@ public class UserUI : User {
 
         if(color == null) 
             color = new Color(0f,0.35f,1f,1.0f);
+
+        if(color.a == 0)
+            color.a = 1f;
 
         diceResult.GetComponent<Text>().color = color;
         diceResult.GetComponent<Text>().text = result + "";

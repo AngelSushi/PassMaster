@@ -29,9 +29,15 @@ public class CoinsReward : MonoBehaviour {
                     changePos = false;
                     
                     if(stepReward) {
-                        controller.players[controller.actualPlayer].GetComponent<UserMovement>().finishTurn = true;
+                        UserMovement movement = controller.players[controller.actualPlayer].GetComponent<UserMovement>();
+                        if(movement == null && controller.players[controller.actualPlayer].transform.parent.tag == "Shell") 
+                            movement = controller.players[controller.actualPlayer].transform.parent.gameObject.GetComponent<UserMovement>();
+
+                        movement.finishTurn = true;
+
                         if(!controller.dialog.isInDialog) 
                             controller.EndUserTurn();
+                    
                         
                     }
                     else { // reward is in shop

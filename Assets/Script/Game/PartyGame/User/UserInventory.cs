@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using System;
+using System.Linq;
 
-public class UserInventory : MonoBehaviour {
+public class UserInventory : CoroutineSystem {
     public int doubleDiceItem; 
     public int tripleDiceItem;
     public int reverseDiceItem; 
@@ -55,6 +57,55 @@ public class UserInventory : MonoBehaviour {
         return doubleDiceItem != 0 || tripleDiceItem != 0 || reverseDiceItem != 0 || hourglassItem != 0 || lightningItem != 0 || shellItem != 0;
     } 
 
+    public void UseShell() {
+        Vector3 smokePos = new Vector3(transform.position.x, transform.position.y + 3,transform.position.z);
+
+        GameObject smoke = Instantiate(transform.gameObject.GetComponent<UserUI>().smokeEffect.gameObject,smokePos,Quaternion.identity);
+        transform.gameObject.GetComponent<UserUI>().smokeEffect.Play();
+
+        transform.gameObject.GetComponent<UserMovement>().Jump();
+        GameObject shell = Instantiate(GameController.Instance.shellPrefab,transform.position,Quaternion.Euler(90,0,0));
+
+        shell.transform.GetChild(0).gameObject.SetActive(false);
+        shell.transform.GetChild(1).gameObject.SetActive(false);
+
+        transform.parent = shell.transform;
+        Debug.Log("rot: " + shell.transform.eulerAngles);
+
+        transform.gameObject.GetComponent<UserMovement>().useShell = true;
+
+        NavMeshAgent actualAgent = transform.gameObject.GetComponent<NavMeshAgent>();
+
+        shell.AddComponent<NavMeshAgent>();
+        shell.GetComponent<NavMeshAgent>().speed = actualAgent.speed;
+        shell.GetComponent<NavMeshAgent>().angularSpeed = actualAgent.angularSpeed;
+        shell.GetComponent<NavMeshAgent>().acceleration = actualAgent.acceleration;
+        shell.GetComponent<NavMeshAgent>().radius = 0.1f;
+        shell.GetComponent<NavMeshAgent>().height = 0.12f;
+
+        transform.gameObject.GetComponent<UserMovement>().agent = shell.GetComponent<NavMeshAgent>();
+
+        UnityEditorInternal.ComponentUtility.CopyComponent(transform.gameObject.GetComponent<UserMovement>());
+        UnityEditorInternal.ComponentUtility.PasteComponentAsNew(shell);
+        
+        transform.gameObject.GetComponent<UserUI>().movement = shell.GetComponent<UserMovement>();
+
+        Destroy(actualAgent);
+
+        RunDelayed(0.8f,() => {
+            shell.transform.GetChild(0).gameObject.SetActive(true);
+            shell.transform.GetChild(1).gameObject.SetActive(true);
+            shell.GetComponent<UserMovement>().InitDice();
+        });
+
+        RunDelayed(2f,() => {
+            Destroy(smoke);
+        });
+        
+    }
+
+
+
     public void UseItemBot() {
         Dictionary<int,float> itemsPercentage = new Dictionary<int, float>();
         
@@ -87,6 +138,9 @@ public class UserInventory : MonoBehaviour {
                 action.possessPlayer = transform.gameObject;
 
                 foreach(GameObject player in GameController.Instance.players) {
+                    if(player == action.possessPlayer) 
+                        continue;
+
                     action.DoAction(player);
 
                     if(action.succeed)
@@ -98,10 +152,9 @@ public class UserInventory : MonoBehaviour {
             
             if(possessedItems.Contains(action.itemID) && action.succeed) {
                 if(!itemsPercentage.ContainsKey(action.itemID))
-                    itemsPercentage.Add(action.itemID,action.percentageToAdd);
-                else {
-                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;
-                }
+                    itemsPercentage.Add(action.itemID,action.actionPercentage + action.percentageToAdd);
+                else 
+                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;             
             } 
                 
 
@@ -133,8 +186,9 @@ public class UserInventory : MonoBehaviour {
             }
         }
 
-        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
 
+        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
+        transform.gameObject.GetComponent<UserMovement>().InitDice();
 
     }
 
