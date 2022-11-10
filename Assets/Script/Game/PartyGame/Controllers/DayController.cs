@@ -32,7 +32,7 @@ public class DayController : MonoBehaviour {
 
         switch(dayPeriod) {
             case DayPeriod.DAY: // Day
-                RenderSettings.skybox = nightMat;
+                RenderSettings.skybox = dayMat;
                 light.intensity = 1.5f;
                 mainAudio.clip = AudioController.Instance.mainAudioClip;
                 if(!mainAudio.isPlaying) 

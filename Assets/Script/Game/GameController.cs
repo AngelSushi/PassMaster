@@ -9,6 +9,7 @@ using System.Linq;
 using Random=UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameController : CoroutineSystem {
 
@@ -32,20 +33,16 @@ public class GameController : CoroutineSystem {
     }
 
     public GameObject dice; 
-    public GameObject prefabInStep;
-    public GameObject stepParent;
+    public GameObject stepStackPrefab;
 
     public GameObject firstStep;
-    public GameObject light;
     
-
-
     public int actualPlayer;
     public GameObject[] players = new GameObject[4];
 
     public Dictionary<GameObject,int> classedPlayers = new Dictionary<GameObject,int>();
 
-    public GameObject mainCamera;
+    [HideInInspector] public GameObject mainCamera;
     public TextAsset dialogsFile,stepFile; 
     public JsonExcelArray excelArray;
 
@@ -114,6 +111,7 @@ public class GameController : CoroutineSystem {
 
     void Awake() {
         Instance = this;
+        mainCamera = Camera.main.gameObject;
     }
 
     void Start() {
@@ -410,7 +408,7 @@ public class GameController : CoroutineSystem {
 
         ManageCameraPosition();       
 
-        light.transform.rotation = Quaternion.Euler(58.809f,174.994f,294.254f);
+        
     }
 
     public void EndUserTurn() {
@@ -543,7 +541,7 @@ public class GameController : CoroutineSystem {
         Step targetStep = step.GetComponent<Step>();
         if(targetStep.stack == null) {
             
-            targetStep.stack = Instantiate(prefabInStep,new Vector3(step.transform.position.x,step.transform.position.y + 10,step.transform.position.z),prefabInStep.transform.rotation);
+            targetStep.stack = Instantiate(stepStackPrefab,new Vector3(step.transform.position.x,step.transform.position.y + 10,step.transform.position.z),stepStackPrefab.transform.rotation);
 
             targetStep.stack.transform.parent = stackPlayersParent;
 
@@ -634,42 +632,6 @@ public class GameController : CoroutineSystem {
             if(players[i].GetComponent<UserUI>().userSprite != smallSprites[i])
                 smallSprites[i] = players[i].GetComponent<UserUI>().userSprite;
         }
-    }
-
-
-    private void ChangeStepName() {
-        GameObject isleOneBeach = stepParent.transform.GetChild(0).GetChild(0).gameObject;
-
-        for(int i = 0;i<isleOneBeach.transform.childCount;i++) {
-            isleOneBeach.transform.GetChild(i).gameObject.name = "step_beach_00" + i;
-        }
-
-        GameObject isleOneInterior = stepParent.transform.GetChild(0).GetChild(1).gameObject;
-
-        for(int i = 0;i<isleOneInterior.transform.childCount;i++) {
-            isleOneInterior.transform.GetChild(i).gameObject.name = "step_interior_00" + i;
-        }
-
-        GameObject isleTwo = stepParent.transform.GetChild(1).gameObject;
-
-        for(int i = 0;i<isleTwo.transform.childCount;i++) 
-            isleTwo.transform.GetChild(i).gameObject.name = "step_00" + i;
-
-        GameObject isleThreeFront = stepParent.transform.GetChild(2).GetChild(1).gameObject;
-
-        for(int i = 0;i<isleThreeFront.transform.childCount;i++)
-            isleThreeFront.transform.GetChild(i).gameObject.name = "step_front_00" + i;       
-
-        GameObject isleThreeLeft = stepParent.transform.GetChild(2).GetChild(2).gameObject;
-
-        for(int i = 0;i<isleThreeLeft.transform.childCount;i++) 
-            isleThreeLeft.transform.GetChild(i).gameObject.name = "step_left_00" + i;        
-
-        GameObject isleThreeRight = stepParent.transform.GetChild(2).GetChild(3).gameObject;
-
-        for(int i = 0;i<isleThreeRight.transform.childCount;i++) 
-            isleThreeRight.transform.GetChild(i).gameObject.name = "step_right_00" + i;
-        
     }
 
     public void ChangeStateScene(bool state,string sceneName = "") {

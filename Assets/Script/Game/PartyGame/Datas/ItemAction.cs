@@ -52,10 +52,9 @@ public class ItemAction : MonoBehaviour {
         if(beginStep == null)
             beginStep = controller.firstStep;
 
-        int beginIndex = controller.FindIndexInParent(beginStep.transform.parent.gameObject,beginStep);
         stepsActionPath.Clear();
 
-        succeedActions.Add(FindSmallestPathTo(beginStep,stepsActionPath,itemID == 2 ? true : false,true));         
+        succeedActions.Add(FindSmallestPathTo(beginStep,stepsActionPath,itemID == 2,true));         
     }
 
     public void CheckHasCoinsAction() { 
