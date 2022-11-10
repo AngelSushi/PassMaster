@@ -157,14 +157,12 @@ public class GameController : CoroutineSystem {
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
             RandomSecretCode();
-
-            if(difficulty == 0)
-                nightIndex = 4;
-            if(difficulty == 1)
-                nightIndex= 3;
-            if(difficulty == 2)
-                nightIndex = 2;
-
+            
+            nightIndex =
+                difficulty == Difficulty.EASY ? 4 :
+                difficulty == Difficulty.MEDIUM ? 3 :
+                difficulty == Difficulty.HARD ? 2 : 4;
+            
             ManageTurn();
             ActualizePlayerClassement();
         }

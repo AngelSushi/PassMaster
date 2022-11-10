@@ -391,9 +391,9 @@ public class HSIA : CoroutineSystem {
         }
 
         private bool CheckValidityOfFurnitures(GameObject furniture) { // Cette fonction sert a ajuster si il y a plusieurs personnes dans la meme piece et/ou meuble et son la difficulté
-            if(GameController.difficulty == 0)
+            if(GameController.Instance.difficulty == GameController.Difficulty.EASY)
                 return true;
-            if(GameController.difficulty == 1) {
+            if(GameController.Instance.difficulty == GameController.Difficulty.MEDIUM) {
                 foreach(GameObject obj in controller.GetSeekersFurniture().Values) {
                     if(obj == furniture && GetKeyByValue(obj) != transform.gameObject) 
                         return false;                 
@@ -401,7 +401,7 @@ public class HSIA : CoroutineSystem {
 
                 return true;
             }
-            else if(GameController.difficulty == 2) {
+            else if(GameController.Instance.difficulty == GameController.Difficulty.HARD) {
                 foreach(GameObject obj in controller.GetSeekersFurniture().Values) {
                     if(obj == furniture && GetKeyByValue(obj) != transform.gameObject) 
                         return false;      

@@ -54,8 +54,8 @@ public class ButtonController : MonoBehaviour {
                 break;
 
             case 1: // Menu Difficulté
-            
-                GameController.difficulty = button;
+                
+                GameController.Instance.difficulty = button == 0 ? GameController.Difficulty.EASY : button == 1 ? GameController.Difficulty.MEDIUM : button == 2 ? GameController.Difficulty.HARD : GameController.Difficulty.EASY;
 
                 if(menuName == "JDP") 
                     menu = 3;

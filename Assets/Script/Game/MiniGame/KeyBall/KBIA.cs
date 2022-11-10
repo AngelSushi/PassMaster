@@ -88,20 +88,20 @@ public class KBIA : CoroutineSystem {
 
     #region Unity's Function
     void Start() {
-        switch(GameController.difficulty) {
-            case 0:
+        switch(GameController.Instance.difficulty) {
+            case GameController.Difficulty.EASY:
                 percentage = 65;
                 stopWatchPercentage = 45;
                 wallTimeWait = 1.25f;
                 break;
 
-            case 1:
+            case GameController.Difficulty.MEDIUM:
                 percentage = 40;
                 stopWatchPercentage = 65;
                 wallTimeWait = 0.75f;
                 break;
 
-            case 2:
+            case GameController.Difficulty.HARD:
                 percentage = 30;
                 stopWatchPercentage = 80;
                 break;

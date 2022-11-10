@@ -15,16 +15,16 @@ public class SEIA : CoroutineSystem {
     private SEController controller;
 
     void Start() {
-        switch(GameController.difficulty) {
-            case 0:
+        switch(GameController.Instance.difficulty) {
+            case GameController.Difficulty.EASY:
                 suceedActionPercentage = 65;
                 break;
 
-            case 1:
+            case GameController.Difficulty.MEDIUM:
                 suceedActionPercentage = 80;
                 break;
 
-            case 2:
+            case GameController.Difficulty.HARD:
                 suceedActionPercentage = 90;
                 break;
         }

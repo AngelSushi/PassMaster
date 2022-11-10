@@ -440,16 +440,16 @@ public class UserMovement : User {
                         Dictionary<GameObject,int> iaPathDirections = new Dictionary<GameObject, int>();
                         int percentageGoToChest = 0;
 
-                        switch(GameController.difficulty) {
-                            case 0: // Facile
+                        switch(gameController.difficulty) {
+                            case GameController.Difficulty.EASY: // Facile
                                 percentageGoToChest = 50;
                                 break;
 
-                            case 1: // Moyen
+                            case GameController.Difficulty.MEDIUM: // Moyen
                                 percentageGoToChest = 70;
                                 break;
 
-                            case 2: // Difficile
+                            case GameController.Difficulty.HARD: // Difficile
                                 percentageGoToChest = 90;
                                 break;
                         }
