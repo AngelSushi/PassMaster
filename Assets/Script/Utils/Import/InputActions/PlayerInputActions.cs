@@ -35,22 +35,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Next"",
-                    ""type"": ""Button"",
-                    ""id"": ""41355d94-a912-42a6-a0be-064270848aaa"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Previous"",
-                    ""type"": ""Button"",
-                    ""id"": ""44b8b1d1-c104-4b80-8d55-d6123b596434"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""Left"",
                     ""type"": ""Button"",
                     ""id"": ""4b20e247-f723-4f80-a095-937260a7a35d"",
@@ -75,33 +59,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Sprint"",
-                    ""type"": ""Button"",
-                    ""id"": ""b6dbd3de-2d70-4970-a822-5b5463338397"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""Quit"",
                     ""type"": ""Button"",
                     ""id"": ""df265a42-cc61-4e89-a167-d114218e4c90"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Shoot"",
-                    ""type"": ""Button"",
-                    ""id"": ""379b56b0-dcdf-4c88-b27d-4ea3103792eb"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
-                    ""name"": ""Reload"",
-                    ""type"": ""Button"",
-                    ""id"": ""1b90f237-b381-42e0-aee3-0a6e155017e8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -149,50 +109,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Interact"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9db33898-66f8-4b02-9da7-dfdc7b02dc20"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard & Mouse"",
-                    ""action"": ""Next"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""03cb01f6-2713-46b1-8beb-cb8e3e9ce8ef"",
-                    ""path"": ""<Gamepad>/leftStick/down"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Next"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0f50b201-82d6-4634-93d6-0a12eadb0e82"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard & Mouse"",
-                    ""action"": ""Previous"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""46310c7f-3f57-43b2-9190-ec1e1a2460ab"",
-                    ""path"": ""<Gamepad>/leftStick/up"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Previous"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -308,17 +224,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0a002bf0-560a-47fc-ad29-919f1dbf92c1"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard & Mouse"",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""900b8ec7-2c2e-479e-84a9-02d39da5f0e7"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
@@ -371,10 +276,102 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""action"": ""Quit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""System"",
+            ""id"": ""7108fbfd-065f-4952-abb0-24e8895ce92f"",
+            ""actions"": [
+                {
+                    ""name"": ""Next"",
+                    ""type"": ""Button"",
+                    ""id"": ""905eee79-fc1e-422e-9927-5e18be9078f5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Previous"",
+                    ""type"": ""Button"",
+                    ""id"": ""c2ed31d9-c53d-4482-aa12-d2be925823ec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""3ddc4146-8253-4d6d-89f4-48f11a81bc75"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Previous"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""bd351471-e70f-4d4d-8119-69519ecd0e07"",
+                    ""id"": ""cdea20d3-67a2-4c7d-9fb3-c67ba5be7ead"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Previous"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6b35a999-d5c5-4254-9907-8dd158960206"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Next"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""165b4830-54d7-44b8-baec-1c5806a3bf25"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Next"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Archery"",
+            ""id"": ""4003dde2-97b9-4c7a-be84-62de659cce13"",
+            ""actions"": [
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""48b9b0b5-7260-4bc1-b8a0-975e979b4c6b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""e04735fc-5910-48df-be5b-c965a8ad599c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""be0c62fd-5905-47e6-a6d7-e4e7c4fd61a3"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -385,7 +382,7 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0c03185e-948d-4665-a6aa-81e3353fa659"",
+                    ""id"": ""86b6f906-461d-49fb-afe6-f94f0ead9162"",
                     ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -431,15 +428,18 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
-        m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
-        m_Player_Previous = m_Player.FindAction("Previous", throwIfNotFound: true);
         m_Player_Left = m_Player.FindAction("Left", throwIfNotFound: true);
         m_Player_Right = m_Player.FindAction("Right", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
-        m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Quit = m_Player.FindAction("Quit", throwIfNotFound: true);
-        m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
-        m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+        // System
+        m_System = asset.FindActionMap("System", throwIfNotFound: true);
+        m_System_Next = m_System.FindAction("Next", throwIfNotFound: true);
+        m_System_Previous = m_System.FindAction("Previous", throwIfNotFound: true);
+        // Archery
+        m_Archery = asset.FindActionMap("Archery", throwIfNotFound: true);
+        m_Archery_Reload = m_Archery.FindAction("Reload", throwIfNotFound: true);
+        m_Archery_Shoot = m_Archery.FindAction("Shoot", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -491,30 +491,20 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact;
-    private readonly InputAction m_Player_Next;
-    private readonly InputAction m_Player_Previous;
     private readonly InputAction m_Player_Left;
     private readonly InputAction m_Player_Right;
     private readonly InputAction m_Player_Movement;
-    private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Quit;
-    private readonly InputAction m_Player_Shoot;
-    private readonly InputAction m_Player_Reload;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
         public PlayerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
-        public InputAction @Next => m_Wrapper.m_Player_Next;
-        public InputAction @Previous => m_Wrapper.m_Player_Previous;
         public InputAction @Left => m_Wrapper.m_Player_Left;
         public InputAction @Right => m_Wrapper.m_Player_Right;
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
-        public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @Quit => m_Wrapper.m_Player_Quit;
-        public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
-        public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -530,12 +520,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
-                @Next.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNext;
-                @Next.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNext;
-                @Next.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnNext;
-                @Previous.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPrevious;
-                @Previous.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPrevious;
-                @Previous.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPrevious;
                 @Left.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeft;
                 @Left.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeft;
                 @Left.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLeft;
@@ -545,18 +529,9 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Movement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
-                @Sprint.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
-                @Sprint.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
-                @Sprint.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
                 @Quit.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnQuit;
                 @Quit.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnQuit;
                 @Quit.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnQuit;
-                @Shoot.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
-                @Shoot.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
-                @Shoot.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
-                @Reload.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
-                @Reload.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
-                @Reload.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -567,12 +542,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
-                @Next.started += instance.OnNext;
-                @Next.performed += instance.OnNext;
-                @Next.canceled += instance.OnNext;
-                @Previous.started += instance.OnPrevious;
-                @Previous.performed += instance.OnPrevious;
-                @Previous.canceled += instance.OnPrevious;
                 @Left.started += instance.OnLeft;
                 @Left.performed += instance.OnLeft;
                 @Left.canceled += instance.OnLeft;
@@ -582,22 +551,95 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
-                @Sprint.started += instance.OnSprint;
-                @Sprint.performed += instance.OnSprint;
-                @Sprint.canceled += instance.OnSprint;
                 @Quit.started += instance.OnQuit;
                 @Quit.performed += instance.OnQuit;
                 @Quit.canceled += instance.OnQuit;
-                @Shoot.started += instance.OnShoot;
-                @Shoot.performed += instance.OnShoot;
-                @Shoot.canceled += instance.OnShoot;
-                @Reload.started += instance.OnReload;
-                @Reload.performed += instance.OnReload;
-                @Reload.canceled += instance.OnReload;
             }
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // System
+    private readonly InputActionMap m_System;
+    private ISystemActions m_SystemActionsCallbackInterface;
+    private readonly InputAction m_System_Next;
+    private readonly InputAction m_System_Previous;
+    public struct SystemActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public SystemActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Next => m_Wrapper.m_System_Next;
+        public InputAction @Previous => m_Wrapper.m_System_Previous;
+        public InputActionMap Get() { return m_Wrapper.m_System; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(SystemActions set) { return set.Get(); }
+        public void SetCallbacks(ISystemActions instance)
+        {
+            if (m_Wrapper.m_SystemActionsCallbackInterface != null)
+            {
+                @Next.started -= m_Wrapper.m_SystemActionsCallbackInterface.OnNext;
+                @Next.performed -= m_Wrapper.m_SystemActionsCallbackInterface.OnNext;
+                @Next.canceled -= m_Wrapper.m_SystemActionsCallbackInterface.OnNext;
+                @Previous.started -= m_Wrapper.m_SystemActionsCallbackInterface.OnPrevious;
+                @Previous.performed -= m_Wrapper.m_SystemActionsCallbackInterface.OnPrevious;
+                @Previous.canceled -= m_Wrapper.m_SystemActionsCallbackInterface.OnPrevious;
+            }
+            m_Wrapper.m_SystemActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Next.started += instance.OnNext;
+                @Next.performed += instance.OnNext;
+                @Next.canceled += instance.OnNext;
+                @Previous.started += instance.OnPrevious;
+                @Previous.performed += instance.OnPrevious;
+                @Previous.canceled += instance.OnPrevious;
+            }
+        }
+    }
+    public SystemActions @System => new SystemActions(this);
+
+    // Archery
+    private readonly InputActionMap m_Archery;
+    private IArcheryActions m_ArcheryActionsCallbackInterface;
+    private readonly InputAction m_Archery_Reload;
+    private readonly InputAction m_Archery_Shoot;
+    public struct ArcheryActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public ArcheryActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Reload => m_Wrapper.m_Archery_Reload;
+        public InputAction @Shoot => m_Wrapper.m_Archery_Shoot;
+        public InputActionMap Get() { return m_Wrapper.m_Archery; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ArcheryActions set) { return set.Get(); }
+        public void SetCallbacks(IArcheryActions instance)
+        {
+            if (m_Wrapper.m_ArcheryActionsCallbackInterface != null)
+            {
+                @Reload.started -= m_Wrapper.m_ArcheryActionsCallbackInterface.OnReload;
+                @Reload.performed -= m_Wrapper.m_ArcheryActionsCallbackInterface.OnReload;
+                @Reload.canceled -= m_Wrapper.m_ArcheryActionsCallbackInterface.OnReload;
+                @Shoot.started -= m_Wrapper.m_ArcheryActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_ArcheryActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_ArcheryActionsCallbackInterface.OnShoot;
+            }
+            m_Wrapper.m_ArcheryActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Reload.started += instance.OnReload;
+                @Reload.performed += instance.OnReload;
+                @Reload.canceled += instance.OnReload;
+                @Shoot.started += instance.OnShoot;
+                @Shoot.performed += instance.OnShoot;
+                @Shoot.canceled += instance.OnShoot;
+            }
+        }
+    }
+    public ArcheryActions @Archery => new ArcheryActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -620,14 +662,19 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     {
         void OnJump(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
-        void OnNext(InputAction.CallbackContext context);
-        void OnPrevious(InputAction.CallbackContext context);
         void OnLeft(InputAction.CallbackContext context);
         void OnRight(InputAction.CallbackContext context);
         void OnMovement(InputAction.CallbackContext context);
-        void OnSprint(InputAction.CallbackContext context);
         void OnQuit(InputAction.CallbackContext context);
-        void OnShoot(InputAction.CallbackContext context);
+    }
+    public interface ISystemActions
+    {
+        void OnNext(InputAction.CallbackContext context);
+        void OnPrevious(InputAction.CallbackContext context);
+    }
+    public interface IArcheryActions
+    {
         void OnReload(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
     }
 }

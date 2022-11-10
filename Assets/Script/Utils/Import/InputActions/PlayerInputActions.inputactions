@@ -22,22 +22,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Next",
-                    "type": "Button",
-                    "id": "41355d94-a912-42a6-a0be-064270848aaa",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "Previous",
-                    "type": "Button",
-                    "id": "44b8b1d1-c104-4b80-8d55-d6123b596434",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Left",
                     "type": "Button",
                     "id": "4b20e247-f723-4f80-a095-937260a7a35d",
@@ -62,33 +46,9 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Sprint",
-                    "type": "Button",
-                    "id": "b6dbd3de-2d70-4970-a822-5b5463338397",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Quit",
                     "type": "Button",
                     "id": "df265a42-cc61-4e89-a167-d114218e4c90",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "Shoot",
-                    "type": "Button",
-                    "id": "379b56b0-dcdf-4c88-b27d-4ea3103792eb",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
-                    "name": "Reload",
-                    "type": "Button",
-                    "id": "1b90f237-b381-42e0-aee3-0a6e155017e8",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -136,50 +96,6 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9db33898-66f8-4b02-9da7-dfdc7b02dc20",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard & Mouse",
-                    "action": "Next",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "03cb01f6-2713-46b1-8beb-cb8e3e9ce8ef",
-                    "path": "<Gamepad>/leftStick/down",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Next",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0f50b201-82d6-4634-93d6-0a12eadb0e82",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard & Mouse",
-                    "action": "Previous",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "46310c7f-3f57-43b2-9190-ec1e1a2460ab",
-                    "path": "<Gamepad>/leftStick/up",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Previous",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -295,17 +211,6 @@
                 },
                 {
                     "name": "",
-                    "id": "0a002bf0-560a-47fc-ad29-919f1dbf92c1",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard & Mouse",
-                    "action": "Sprint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "900b8ec7-2c2e-479e-84a9-02d39da5f0e7",
                     "path": "<Keyboard>/a",
                     "interactions": "",
@@ -358,10 +263,102 @@
                     "action": "Quit",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "System",
+            "id": "7108fbfd-065f-4952-abb0-24e8895ce92f",
+            "actions": [
+                {
+                    "name": "Next",
+                    "type": "Button",
+                    "id": "905eee79-fc1e-422e-9927-5e18be9078f5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Previous",
+                    "type": "Button",
+                    "id": "c2ed31d9-c53d-4482-aa12-d2be925823ec",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "3ddc4146-8253-4d6d-89f4-48f11a81bc75",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Previous",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "bd351471-e70f-4d4d-8119-69519ecd0e07",
+                    "id": "cdea20d3-67a2-4c7d-9fb3-c67ba5be7ead",
+                    "path": "<Gamepad>/leftStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Previous",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6b35a999-d5c5-4254-9907-8dd158960206",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "165b4830-54d7-44b8-baec-1c5806a3bf25",
+                    "path": "<Gamepad>/leftStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Archery",
+            "id": "4003dde2-97b9-4c7a-be84-62de659cce13",
+            "actions": [
+                {
+                    "name": "Reload",
+                    "type": "Button",
+                    "id": "48b9b0b5-7260-4bc1-b8a0-975e979b4c6b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "e04735fc-5910-48df-be5b-c965a8ad599c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "be0c62fd-5905-47e6-a6d7-e4e7c4fd61a3",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
@@ -372,7 +369,7 @@
                 },
                 {
                     "name": "",
-                    "id": "0c03185e-948d-4665-a6aa-81e3353fa659",
+                    "id": "86b6f906-461d-49fb-afe6-f94f0ead9162",
                     "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
