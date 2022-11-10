@@ -78,6 +78,8 @@ public class UserMovement : User {
         stepBack = false;
         point = Vector3.zero;
         ui.enabled = true;
+        
+        transform.LookAt(gameController.mainCamera.transform);
 
         if(waitDiceResult) {
             if(!isPlayer) 
@@ -117,7 +119,9 @@ public class UserMovement : User {
 
         if(!gameController.freeze) {
             
-           // animatorController.SetBool("IsMooving",isMooving);
+           // Debug.DrawLine(transform.position,transform.position + Vector3.forward * 50 * -1,Color.red);
+            
+            animatorController.SetBool("IsMooving",isMooving);
            // animatorController.SetBool("IsElectrocuted",isElectrocuted);
 
             if(isTurn) {
@@ -153,7 +157,10 @@ public class UserMovement : User {
                         agent.CalculatePath(nextStep.position,path);
                         ShowPath(Color.magenta,path);
                         CheckPath();
-                        agent.SetPath(path);   
+                        agent.SetPath(path);
+                        
+                        Quaternion targetRotation = Quaternion.LookRotation(nextStep.position - transform.position);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.5f * Time.deltaTime);
                     }
 
                 }
