@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using System;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 public class DayController : MonoBehaviour {
 
     public enum DayPeriod {
@@ -27,9 +30,16 @@ public class DayController : MonoBehaviour {
 
     private AudioSource mainAudio;
 
+    public event EventHandler<OnChangeStateOfDayArgs> OnChangeStateOfDay;
+
+    public class OnChangeStateOfDayArgs : EventArgs {
+        public DayPeriod newPeriod;
+    }
+    
     void Start() {
         light = GetComponent<Light>();
         mainAudio = AudioController.Instance.mainSource;
+        lastDayPeriod = dayPeriod;
     }
 
     void Update() {
@@ -60,6 +70,11 @@ public class DayController : MonoBehaviour {
             case DayPeriod.RAIN: // Pluie
                 RenderSettings.skybox = rainMat;     
                 break;          
+        }
+
+        if (dayPeriod != lastDayPeriod) {
+            OnChangeStateOfDayArgs args = new OnChangeStateOfDayArgs { newPeriod = dayPeriod };
+            OnChangeStateOfDay?.Invoke(this,args);
         }
     }
 
