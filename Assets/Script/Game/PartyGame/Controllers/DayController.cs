@@ -76,6 +76,8 @@ public class DayController : MonoBehaviour {
             OnChangeStateOfDayArgs args = new OnChangeStateOfDayArgs { newPeriod = dayPeriod };
             OnChangeStateOfDay?.Invoke(this,args);
         }
+        
+        lastDayPeriod = dayPeriod;
     }
 
 
