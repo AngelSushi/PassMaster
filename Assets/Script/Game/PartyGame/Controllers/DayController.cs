@@ -33,7 +33,7 @@ public class DayController : MonoBehaviour {
         switch(dayPeriod) {
             case DayPeriod.DAY: // Day
                 RenderSettings.skybox = dayMat;
-                light.intensity = 1.5f;
+               // light.intensity = 1.5f;
                 mainAudio.clip = AudioController.Instance.mainAudioClip;
                 if(!mainAudio.isPlaying) 
                     mainAudio.Play();
@@ -41,14 +41,14 @@ public class DayController : MonoBehaviour {
 
             case DayPeriod.DUSK: // Crepuscule
                 RenderSettings.skybox = duskMat;
-                light.intensity = 1f;
+                //light.intensity = 1f;
                 mainAudio.clip = AudioController.Instance.duskAudioClip;
                 if(!mainAudio.isPlaying)
                      mainAudio.Play();
                 break;
 
             case DayPeriod.NIGHT: // Night
-                light.intensity = 0.3f;
+              //  light.intensity = 0.3f;
                 RenderSettings.skybox = nightMat;
                 mainAudio.clip = null;
                 break;  
