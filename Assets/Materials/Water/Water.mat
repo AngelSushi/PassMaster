@@ -25,5 +25,7 @@ Material:
     - Vector1_982BE04D: 5
     - Vector1_BDD0C7F9: 1
     m_Colors:
+    - Color_69A7C9D4: {r: 0, g: 0, b: 0, a: 0}
     - Color_CEAED571: {r: 0.3529412, g: 1.372549, b: 1.905882, a: 0}
-    - Color_E087D15B: {r: 0.227451, g: 0.5803922, b: 0.9372549, a: 0}
+    - Color_E087D15B: {r: 0.227451, g: 0.58431375, b: 0.93725497, a: 1}
+  m_BuildTextureStacks: []
