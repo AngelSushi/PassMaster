@@ -33,7 +33,6 @@ public class GameController : CoroutineSystem {
     }
 
     public GameObject dice; 
-    public GameObject stepStackPrefab;
 
     public GameObject firstStep;
     
@@ -85,7 +84,6 @@ public class GameController : CoroutineSystem {
     private bool isFirstChest = true;
     public Animation blackScreenAnim;
     
-    public Transform stackPlayersParent;
     public GameObject stepChest;
     
     
@@ -392,9 +390,7 @@ public class GameController : CoroutineSystem {
             hasChangeState = true;
         }
 
-        part = GameController.GamePart.PARTYGAME;
-
-        List<GameObject> playersInStack = GetPlayersInStack();
+        part = GamePart.PARTYGAME;
 
         players[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
         players[0].GetComponent<UserMovement>().isTurn = true;
@@ -454,10 +450,6 @@ public class GameController : CoroutineSystem {
             if(!players[actualPlayer].activeSelf) {
                 players[actualPlayer].SetActive(true);
 
-                if(players[actualPlayer].GetComponent<UserMovement>().actualStep != null) {        
-                    players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[actualPlayer]);
-                    ActualPlayersInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep,players[actualPlayer]);
-                }
             }
 
             if(turn == 1) {
@@ -495,25 +487,8 @@ public class GameController : CoroutineSystem {
         transform.position = new Vector3(transform.position.x,transform.position.y + 5f,transform.position.z);
         mainCamera.transform.LookAt(transform);
     }
-
-    private List<GameObject> GetPlayersInStack() {
-        List<GameObject> localPlayersInStep = new List<GameObject>();
-
-        foreach(Step step in FindObjectsOfType(typeof(Step))) {
-            if(step.playerInStep.Count > 0) {
-                foreach(GameObject user in step.playerInStep) {
-                    if(!localPlayersInStep.Contains(user)) 
-                        localPlayersInStep.Add(user);
-                }
-            }
-        }
-
-        return localPlayersInStep;
-    }
-
-
+    
     public GameObject GetKeyByValue<Key, Value>(Value value,Dictionary<Key,Value> dict) {
-
         foreach(Key key in dict.Keys) {
             if(dict[key].Equals(value)) {
                 return key as GameObject;
@@ -537,71 +512,6 @@ public class GameController : CoroutineSystem {
         return null;
     }
 
-    public void ActualPlayersInStep(GameObject step,GameObject user) {
-        Step targetStep = step.GetComponent<Step>();
-        if(targetStep.stack == null) {
-            
-            targetStep.stack = Instantiate(stepStackPrefab,new Vector3(step.transform.position.x,step.transform.position.y + 10,step.transform.position.z),stepStackPrefab.transform.rotation);
-
-            targetStep.stack.transform.parent = stackPlayersParent;
-
-            int length = targetStep.playerInStep.Count;
-
-            if(length > 0) {
-                targetStep.stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
-                targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
-
-                targetStep.stack.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-             //   ChangeStackSpritePlayer(step,0,user.GetComponent<UserMovement>().id);
-            }
-            else 
-                Destroy(targetStep.stack);        
-        }
-        else { // Il y a plusieurs joueurs dans la step
-            int length = targetStep.playerInStep.Count;
-
-            if(length == 0) {
-                Destroy(targetStep.stack);
-                return;
-            }
-
-            targetStep.stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
-            targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
-
-            for(int i = 0;i<length;i++) {
-                targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(true);
-           //     ChangeStackSpritePlayer(step,i,targetStep.playerInStep[i].GetComponent<UserMovement>().id);
-            }
-
-            for(int i = length;i<4;i++) 
-                targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);      
-        }
-    }
-
-    public void ChangeStackSpritePlayer(GameObject step,int index,int id) {
-        // A REFAIRE SANS LE NOM
-        switch(id) {
-            case 0:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[0];
-                break;
-
-            case 1:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[1];
-                break;
-
-            case 2:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[2];
-                break;
-
-            case 3:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[3];
-                break;            
-        }
-
-        
-        step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(8.940888f,9.624872f,8.940888f);
-    }
-
     public void ChangeHUDSpritePlayer(Transform[] panels,int index,UserType type) {
         // A check si on peut pas tt concaténer en 1 ligne . A REFAIRE SANS LE NOM
         switch(type) {
@@ -621,10 +531,6 @@ public class GameController : CoroutineSystem {
                 panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
                 break;            
         }
-    }
-
-    public Sprite GetSpriteByUser(int user) {
-        return smallSprites[user];
     }
 
     public void SortUserSprite() {

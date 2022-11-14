@@ -12,7 +12,7 @@ public class GameControllerEditor : Editor {
     private SerializedObject serializedClass;
     
     // General
-    private SerializedProperty stepStackPrefab,firstStep,actualPlayer,players,part,posBegin,stackPos,stackSize,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,stackPlayersParent,shellPrefab;
+    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,stackPos,stackSize,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -29,7 +29,6 @@ public class GameControllerEditor : Editor {
 
         // General
         
-        stepStackPrefab = serializedClass.FindProperty("stepStackPrefab");
         firstStep = serializedClass.FindProperty("firstStep");
         actualPlayer = serializedClass.FindProperty("actualPlayer");
         players = serializedClass.FindProperty("players");
@@ -46,7 +45,6 @@ public class GameControllerEditor : Editor {
         nightIndex = serializedClass.FindProperty("nightIndex");
         hasChangeState = serializedClass.FindProperty("hasChangeState");
         blackScreenAnim = serializedClass.FindProperty("blackScreenAnim");
-        stackPlayersParent = serializedClass.FindProperty("stackPlayersParent");
         shellPrefab = serializedClass.FindProperty("shellPrefab");
         
         // Controllers 
@@ -83,7 +81,6 @@ public class GameControllerEditor : Editor {
         
         switch (classTarget.currentTabIndex) {
             case 0:
-                EditorGUILayout.PropertyField(stepStackPrefab);
                 EditorGUILayout.PropertyField(firstStep);
                 EditorGUILayout.PropertyField(actualPlayer);
                 EditorGUILayout.PropertyField(players);
@@ -100,7 +97,6 @@ public class GameControllerEditor : Editor {
                 EditorGUILayout.PropertyField(nightIndex);
                 EditorGUILayout.PropertyField(hasChangeState);
                 EditorGUILayout.PropertyField(blackScreenAnim);
-                EditorGUILayout.PropertyField(stackPlayersParent);
                 EditorGUILayout.PropertyField(shellPrefab);
                 break;
             

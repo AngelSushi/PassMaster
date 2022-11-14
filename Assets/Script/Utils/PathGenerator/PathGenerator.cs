@@ -75,6 +75,21 @@ public class PathGenerator : MonoBehaviour {
         }
     }
 
+    public void GenerateStackPositions() {
+        for (int i = 0; i < target.transform.childCount; i++) {
+            GameObject step = target.transform.GetChild(i).gameObject;
+
+            Vector3 first = new Vector3(5.5f,0,4.9f);
+            Vector3 second = new Vector3(6.6f,0,-4.6f);
+            
+            for (int j = 0; j < 2; j++) {
+                GameObject stack = Instantiate(new GameObject(),Vector3.zero,Quaternion.identity,step.transform);
+                stack.transform.localPosition = j == 0 ? first : second;
+                stack.name = "stackPos_" + j;
+            }
+        }
+    }
+
     private Vector3 GetChestDirection(GameObject obj,Step step) {
         if(step.useVectors.Length > 0) {
             bool forward = step.useVectors[0];

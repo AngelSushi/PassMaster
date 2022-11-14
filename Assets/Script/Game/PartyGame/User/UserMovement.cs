@@ -38,7 +38,6 @@ public class UserMovement : User {
     public bool isJumping;
     public Transform nextStep;
     public float jumpSpeed;
-    public bool stack;
     public int beginResult;
     public GameObject[] stepPaths;
     public bool stepBack;
@@ -121,7 +120,10 @@ public class UserMovement : User {
             
            // Debug.DrawLine(transform.position,transform.position + Vector3.forward * 50 * -1,Color.red);
             
-            animatorController.SetBool("IsMooving",isMooving);
+           if(animatorController != null) 
+               animatorController.SetBool("IsMooving",isMooving);
+           
+           
            // animatorController.SetBool("IsElectrocuted",isElectrocuted);
 
             if(isTurn) {
@@ -202,10 +204,6 @@ public class UserMovement : User {
             }
 
             else { // is not his turn
-                
-                
-                Debug.Log("point: " + point);
-                
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
             
@@ -220,6 +218,9 @@ public class UserMovement : User {
                 else 
                     point = Vector3.zero;
                 
+                
+                if(!returnStepBack && !stepBack)
+                    actualStep.GetComponent<Step>().ManagePlayerInStep(gameObject); 
             }
         }
     }
@@ -241,9 +242,6 @@ public class UserMovement : User {
                         diceResult *= 2;
                     if(tripleDice)
                         diceResult *= 3;
-
-                    if (isPlayer)
-                        diceResult = 63;
                 }
                 
                 agent.enabled = true;
@@ -369,18 +367,10 @@ public class UserMovement : User {
         if(isTurn) {
             StepType type = hit.gameObject.GetComponent<Step>() != null ? hit.gameObject.GetComponent<Step>().type : hit.gameObject.GetComponent<Direction>().type;
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
-               if(transform.gameObject.activeSelf) {
-                   if(hit.gameObject.GetComponent<Step>() != null && hit.gameObject.GetComponent<Step>().playerInStep.Contains(transform.gameObject)) {
-                       hit.gameObject.GetComponent<Step>().playerInStep.Remove(transform.gameObject);
-                       gameController.ActualPlayersInStep(hit.gameObject,transform.gameObject);
-                   }
 
-                   
-               }
-
-               if(actualStep != null && nextStep != null && actualStep == nextStep.gameObject) {
+                if(actualStep != null && nextStep != null && actualStep == nextStep.gameObject) 
                   ChooseNextStep(StepType.NONE);
-               }
+               
 
                 if(type == StepType.STEP_END) {
                         if(diceResult == 0) {
@@ -391,9 +381,8 @@ public class UserMovement : User {
                                 gameController.endAnimationController.isInEndAnimation = true;
                             }
                         } 
-                        else {
+                        else 
                             reverseCount = true;
-                        }          
                 }
 
                 if(nextStep == null && diceResult > 0) { // Le joueur/bot n'a pas encore commencé a bougé   
@@ -587,8 +576,6 @@ public class UserMovement : User {
 
         int matIndex = tripleDice ? 3 : doubleDice ? 1 : reverseDice ? 2 : 0;
         dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
-
-        stack = false;
     }
 
     private void ChooseNextStep(StepType type) {
@@ -767,14 +754,12 @@ public class UserMovement : User {
                                     userMovement.point = targetStep.avoidPos;
                                     userMovement.point.y = step.transform.position.y;
                                     userMovement.agent.speed *= 3f; // try x10
-                                    Debug.Log("je veux passer " + transform.gameObject.name + " a travers " + user.name);
-
                                     gameController.playerConflict.Add(user,step);
                                 }
                             }
                             else { // Il va y avoir plusieurs joueurs sur la même case
-                                userMovement.stack = true;
-                                stack = true;
+                                // CODE HERE
+                                step.GetComponent<Step>().AddPlayerInStep(user);
                             }
                         }
                     }
