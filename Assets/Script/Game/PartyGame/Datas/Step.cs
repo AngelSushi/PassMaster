@@ -15,7 +15,6 @@ public class Step : MonoBehaviour {
     public Vector3 avoidPos; // position of players to avoid other player on path
 
     private bool mooveToStack;
-
     private Vector3 targetPosition;
     private GameObject targetPlayer;
 

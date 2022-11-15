@@ -102,7 +102,7 @@ TagManager:
   - Wall
   - Player
   - Chest_Path
-  - Floor_002
+  - Ground
   - Floor_003
   - Floor_004
   - Floor_005

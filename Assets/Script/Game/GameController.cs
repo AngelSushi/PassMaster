@@ -384,10 +384,14 @@ public class GameController : CoroutineSystem {
     public void BeginTurn(bool repair) {
 
         actualPlayer = 0;
-        if(turn > 1 && !repair && !hasChangeState && !debugController.skipMG) {
-            ChangeStateScene(true,"NewMain");
-            SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
-            hasChangeState = true;
+        if(turn > 1) {
+            ManagePlayerInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>(),players[actualPlayer]);
+            
+            if (!repair && !hasChangeState && !debugController.skipMG) {
+                ChangeStateScene(true,"NewMain");
+                SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
+                hasChangeState = true; 
+            }
         }
 
         part = GamePart.PARTYGAME;
@@ -401,15 +405,14 @@ public class GameController : CoroutineSystem {
         players[0].GetComponent<UserUI>().showHUD = players[0].GetComponent<UserMovement>().isPlayer;
         players[0].GetComponent<UserUI>().showTurnInfo = players[0].GetComponent<UserMovement>().isPlayer;
         players[0].GetComponent<UserUI>().showActionButton = players[0].GetComponent<UserMovement>().isPlayer;
-
-        ManageCameraPosition();       
-
         
+
+        ManageCameraPosition();
     }
 
     public void EndUserTurn() {
 
-        if(players[actualPlayer].transform.parent.tag == "Shell") {
+        if(players[actualPlayer].transform.parent.CompareTag("Shell")) {
             
             GameObject shell = players[actualPlayer].transform.parent.gameObject;
 
@@ -446,6 +449,9 @@ public class GameController : CoroutineSystem {
         if(actualPlayer < 3) {
             actualPlayer++;
             players[actualPlayer].GetComponent<UserMovement>().isTurn = true;
+            
+            if(players[actualPlayer].GetComponent<UserMovement>().actualStep != null)
+                ManagePlayerInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>(),players[actualPlayer]);
 
             if(!players[actualPlayer].activeSelf) {
                 players[actualPlayer].SetActive(true);
@@ -475,6 +481,23 @@ public class GameController : CoroutineSystem {
         }
     }
 
+    public void ManagePlayerInStep(Step actualStep,GameObject playerIsTurn) {
+
+        for (int i = 0; i < actualStep.playerInStep.Count; i++) {
+            Vector3 stackPosition = i == 1 ? actualStep.gameObject.transform.GetChild(3).position : actualStep.gameObject.transform.GetChild(2).position;
+            
+            if (Vector3Int.FloorToInt(stackPosition) == Vector3Int.FloorToInt(playerIsTurn.transform.position)) {
+                GameObject playerOnStep = players.Where(player => player.GetComponent<UserMovement>().actualStep == actualStep.gameObject && !actualStep.playerInStep.Contains(player)).ToList()[0];
+                
+                playerIsTurn.transform.position = playerOnStep.transform.position;
+                playerOnStep.transform.position = stackPosition;
+                
+                Debug.Log("position " + stackPosition);
+                Debug.Log("myPos " + playerOnStep.transform.position);
+            }
+        }
+    }
+
     private void ManageCameraPosition() {
         if(turn == 1) 
             mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetDirection(firstStep,firstStep.GetComponent<Step>(),25f) * 2.25f);
@@ -483,9 +506,12 @@ public class GameController : CoroutineSystem {
             mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
         }
 
-        Transform transform = players[actualPlayer].transform;
-        transform.position = new Vector3(transform.position.x,transform.position.y + 5f,transform.position.z);
-        mainCamera.transform.LookAt(transform);
+
+        Vector3 playerPosition = players[actualPlayer].transform.position;
+        playerPosition.y += 5f;
+
+        Vector3 direction = playerPosition - mainCamera.transform.position;
+        mainCamera.transform.rotation = Quaternion.LookRotation(direction);
     }
     
     public GameObject GetKeyByValue<Key, Value>(Value value,Dictionary<Key,Value> dict) {

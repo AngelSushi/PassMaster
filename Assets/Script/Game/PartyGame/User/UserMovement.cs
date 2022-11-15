@@ -158,7 +158,7 @@ public class UserMovement : User {
                     if(canMoove) {
                         agent.CalculatePath(nextStep.position,path);
                         ShowPath(Color.magenta,path);
-                        CheckPath();
+                        CheckPath(false);
                         agent.SetPath(path);
                         
                         Quaternion targetRotation = Quaternion.LookRotation(nextStep.position - transform.position);
@@ -204,6 +204,8 @@ public class UserMovement : User {
             }
 
             else { // is not his turn
+                agent.enabled = returnStepBack || stepBack;
+                
                 if(returnStepBack) 
                     StartCoroutine(WaitTimeToReturn());
             
@@ -250,7 +252,7 @@ public class UserMovement : User {
                GameObject hitObj = hit.gameObject;
                hitObj.GetComponent<MeshRenderer>().enabled = false;
 
-               CheckPath();
+               CheckPath(true);
                ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
 
                RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
@@ -592,7 +594,7 @@ public class UserMovement : User {
         finishMovement = (diceResult == 0);
     }
 
-    private void CheckPath() {
+    private void CheckPath(bool atStart) {
         if(!hasCheckPath && stepPaths != null) { 
 
             if(beginStep == null)
@@ -612,10 +614,7 @@ public class UserMovement : User {
                     stepPaths[i] = stepParent.GetChild(stepIndex + i /*+ 1*/ - stepParent.childCount).gameObject;    
             }
             hasCheckPath = true;
-            
-            Debug.Log("begin " + beginResult + " actual " + diceResult);
-            Debug.Log("go " + stepPaths[stepPaths.Length - 1]  + " value " + stepPaths[stepPaths.Length - 1].GetComponent<Step>().playerInStep.Count);
-
+           
             if (stepPaths[stepPaths.Length - 1].GetComponent<Step>().playerInStep.Count == 2) {
                 GameObject[] stepsCopy = new GameObject[stepPaths.Length - 1];
 
@@ -623,7 +622,12 @@ public class UserMovement : User {
                     stepsCopy[i] = stepPaths[i];
 
                 stepPaths = stepsCopy;
-                diceResult--;
+                int amplifier = doubleDice ? 2 : tripleDice ? 3 : 1;
+                
+                diceResult -= 1 * amplifier;
+
+                if (atStart && diceResult == 0)
+                    diceResult = 1;
             }
             
         }
