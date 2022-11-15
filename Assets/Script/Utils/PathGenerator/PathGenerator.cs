@@ -79,8 +79,8 @@ public class PathGenerator : MonoBehaviour {
         for (int i = 0; i < target.transform.childCount; i++) {
             GameObject step = target.transform.GetChild(i).gameObject;
 
-            Vector3 first = new Vector3(5.5f,0,4.9f);
-            Vector3 second = new Vector3(6.6f,0,-4.6f);
+            Vector3 first = new Vector3(10f,0,2f);
+            Vector3 second = new Vector3(7,0,-7f);
             
             for (int j = 0; j < 2; j++) {
                 GameObject stack = Instantiate(new GameObject(),Vector3.zero,Quaternion.identity,step.transform);

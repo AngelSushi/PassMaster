@@ -208,19 +208,11 @@ public class UserMovement : User {
                     StartCoroutine(WaitTimeToReturn());
             
                 if(stepBack) {
-                   // agent.enabled = false;
-                    Debug.Log("je dois bouger");
                     agent.CalculatePath(point, path);
                     agent.SetPath(path);
-                    Debug.Log("status " + path.status);
-                    // transform.position = Vector3.MoveTowards(transform.position,point,agent.speed * Time.deltaTime);
                 }
                 else 
                     point = Vector3.zero;
-                
-                
-                if(!returnStepBack && !stepBack)
-                    actualStep.GetComponent<Step>().ManagePlayerInStep(gameObject); 
             }
         }
     }
@@ -228,48 +220,51 @@ public class UserMovement : User {
 
     private void OnCollisionEnter(Collision hit) {
        if(isTurn) {
-           if(hit.gameObject.tag == "Chest") {
+           if(hit.gameObject.CompareTag("Chest")) {
                gameController.endAnimationController.checkCode = true;
            }
 
-            if(hit.gameObject.tag == "Dice") {
-                if(diceResult == 0 || diceResult == -1) {
-                    diceResult = hit.gameObject.GetComponent<DiceController>().index;
+           if(hit.gameObject.CompareTag("Dice")) { 
+               if(diceResult == 0 || diceResult == -1) { 
+                   diceResult = hit.gameObject.GetComponent<DiceController>().index;
 
-                    if(diceResult == 0) 
-                        diceResult = 6;
-                    if(doubleDice) 
-                        diceResult *= 2;
-                    if(tripleDice)
-                        diceResult *= 3;
-                }
+                   if(diceResult == 0)
+                       diceResult = 6;
+                   if(doubleDice) 
+                       diceResult *= 2;
+                   if(tripleDice)
+                       diceResult *= 3; 
+               }
                 
-                agent.enabled = true;
-                //if(isPlayer) diceResult = 63; 
-                beginResult = diceResult; 
-                stepPaths = new GameObject[beginResult]; 
-                hasCollideDice = true;  
+               agent.enabled = true;
+
+               diceResult = 4;
                 
-                actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
-                ui.RefreshDiceResult(diceResult, actualColor,true);
+               beginResult = diceResult; 
+               stepPaths = new GameObject[beginResult]; 
+               hasCollideDice = true;  
+                
+               actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
+               ui.RefreshDiceResult(diceResult, actualColor,true);
 
-                GameObject hitObj = hit.gameObject;
-                hitObj.GetComponent<MeshRenderer>().enabled = false;
+               GameObject hitObj = hit.gameObject;
+               hitObj.GetComponent<MeshRenderer>().enabled = false;
 
-                ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
+               CheckPath();
+               ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
 
-                RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
-            }
+               RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
+           }
 
-            if(hit.gameObject.tag == "Sol") {
-                if(isJumping) 
-                    isJumping = false;
+           if(hit.gameObject.CompareTag("Sol")) { 
+               if(isJumping) 
+                   isJumping = false;
+               
+               if(constantJump) 
+                Jump();
+                
 
-                if(constantJump) {
-                    Jump();
-                }
-
-            }
+           }
        } 
     }
 
@@ -601,7 +596,7 @@ public class UserMovement : User {
         if(!hasCheckPath && stepPaths != null) { 
 
             if(beginStep == null)
-                beginStep = nextStep.gameObject;
+                beginStep = nextStep != null ? nextStep.gameObject : gameController.firstStep;
 
             Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
             int stepIndex = actualStep != null ? gameController.FindIndexInParent(stepParent.gameObject,actualStep) : gameController.FindIndexInParent(stepParent.gameObject,beginStep);
@@ -610,15 +605,27 @@ public class UserMovement : User {
             if(stepIndex == -1) 
                 stepIndex = 0;
 
-            int index = 0;
             for(int i = 0;i<result;i++) {
-                index = i;
-                if(stepIndex + i + 1 < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
-                    stepPaths[i] = stepParent.GetChild(stepIndex + i + 1).gameObject;
+                if(stepIndex + i /*+ 1*/ < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
+                    stepPaths[i] = stepParent.GetChild(stepIndex + i /*+ 1*/).gameObject;
                 else  // Le calcul du prochain index de la prochaine step est supérieur au nombre de step max, on retire donc le nombre de step max au calcul
-                    stepPaths[i] = stepParent.GetChild(stepIndex + i + 1 - stepParent.childCount).gameObject;    
+                    stepPaths[i] = stepParent.GetChild(stepIndex + i /*+ 1*/ - stepParent.childCount).gameObject;    
             }
             hasCheckPath = true;
+            
+            Debug.Log("begin " + beginResult + " actual " + diceResult);
+            Debug.Log("go " + stepPaths[stepPaths.Length - 1]  + " value " + stepPaths[stepPaths.Length - 1].GetComponent<Step>().playerInStep.Count);
+
+            if (stepPaths[stepPaths.Length - 1].GetComponent<Step>().playerInStep.Count == 2) {
+                GameObject[] stepsCopy = new GameObject[stepPaths.Length - 1];
+
+                for (int i = 0; i < stepsCopy.Length; i++)
+                    stepsCopy[i] = stepPaths[i];
+
+                stepPaths = stepsCopy;
+                diceResult--;
+            }
+            
         }
 
         StepBackMovement(stepPaths);
@@ -743,24 +750,21 @@ public class UserMovement : User {
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     if(step != null && !userMovement.isTurn && userMovement.actualStep == step) {
-                        
-                        if(nextStep.gameObject == step) {
-                            GameObject lastStep = steps[beginResult - 1];
+
+                        if (nextStep != null && nextStep.gameObject == step) {
                             Step targetStep = step.GetComponent<Step>();
 
-                            if(lastStep != nextStep.gameObject) { // Les joueurs vont que se croiser
+                            if (diceResult > 1) { // Les joueurs vont que se croiser
                                 userMovement.stepBack = true;
-                                if(userMovement.point == Vector3.zero) {
+                                if (userMovement.point == Vector3.zero) {
                                     userMovement.point = targetStep.avoidPos;
                                     userMovement.point.y = step.transform.position.y;
                                     userMovement.agent.speed *= 3f; // try x10
-                                    gameController.playerConflict.Add(user,step);
+                                    gameController.playerConflict.Add(user, step);
                                 }
                             }
-                            else { // Il va y avoir plusieurs joueurs sur la même case
-                                // CODE HERE
+                            else // Il va y avoir plusieurs joueurs sur la même case
                                 step.GetComponent<Step>().AddPlayerInStep(user);
-                            }
                         }
                     }
                 }

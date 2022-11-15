@@ -14,51 +14,52 @@ public class Step : MonoBehaviour {
     public bool skipIA;
     public Vector3 avoidPos; // position of players to avoid other player on path
 
-    public Dictionary<ItemType,int> itemsInStep = new Dictionary<ItemType, int>();
+    private bool mooveToStack;
+
+    private Vector3 targetPosition;
+    private GameObject targetPlayer;
 
 
-    private void Update()
-    {
-        Debug.DrawLine(transform.position,transform.position + Vector3.right * 6f, Color.red); // HAut
-        Debug.DrawLine(transform.position,transform.position + Vector3.forward * 6f * -1, Color.magenta);
-        Debug.DrawLine(transform.position,transform.position + Vector3.right * 6f + Vector3.forward * 6f * -1, Color.cyan); 
-        
-        
+    private void Update() {
+        if (mooveToStack) {
+            targetPlayer.transform.position = Vector3.MoveTowards(targetPlayer.transform.position,targetPosition,30 * Time.deltaTime);
+
+            if (Vector3Int.FloorToInt(targetPlayer.transform.position) == Vector3Int.FloorToInt(targetPosition))
+                mooveToStack = false;
+        }
     }
 
     public void AddPlayerInStep(GameObject player) {
-        if (playerInStep.Count == 3) {
+        if (playerInStep.Count == 3 ) {
             Debug.Log("Step can't have more than 3 players");
             return;
         }
-        
-        playerInStep.Add(player);
+
+        if (!playerInStep.Contains(player)) {
+            playerInStep.Add(player);
+
+            if (!mooveToStack) {
+                ManagePlayerInStep(player);
+                mooveToStack = true;
+            }
+        }
     }
     
     public void ManagePlayerInStep(GameObject player) {
-
+        targetPlayer = player;
+        player.GetComponent<NavMeshAgent>().enabled = false;
+        
         for (int i = 0; i < playerInStep.Count; i++) {
             GameObject playerStep = playerInStep[i];
 
             if (player != playerStep)
                 continue;
 
-            Vector3Int playerPosition = Vector3Int.FloorToInt(player.transform.position);
-            Vector3Int targetPos = Vector3Int.FloorToInt(i == 1 ? transform.GetChild(3).position : transform.GetChild(2).position);
-
-            StartCoroutine(MoveToStackPosition(player, playerPosition, targetPos));
+            targetPosition = i == 1 ? transform.GetChild(3).position : transform.GetChild(2).position;
+            targetPosition.y = player.transform.position.y;
         }
         
     }
-
-    private IEnumerator MoveToStackPosition(GameObject player, Vector3Int playerPosition, Vector3Int targetPosition) {
-        while (playerPosition != targetPosition) {
-            yield return new WaitForEndOfFrame();
-            Vector3.MoveTowards(playerPosition,targetPosition,player.GetComponent<NavMeshAgent>().speed);
-            playerPosition = Vector3Int.FloorToInt(player.transform.position);
-        }
-
-        yield return null;
-    }
+    
     
 }
