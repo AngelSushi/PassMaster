@@ -69,8 +69,10 @@ public class UserMovement : User {
     public Animator animatorController;
 
     public bool isElectrocuted;
+    private Vector3 lastPosition;
     void Start() {
         path = new NavMeshPath();
+        lastPosition = transform.position;
     }
 
     public override void OnBeginTurn() {
@@ -120,15 +122,16 @@ public class UserMovement : User {
 
            if(animatorController != null) 
                animatorController.SetBool("IsMooving",isMooving);
-
+           
            if(isTurn) {
                 canMoove = !stop;
 
-                if (stop) {
-                   // RunDelayed(0.3f, () => {
+              /*  if (stop) {
+                    RunDelayed(0.3f, () => {
                         isMooving = false;
-                    //});
+                    });
                 }
+                */
 
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
@@ -203,9 +206,14 @@ public class UserMovement : User {
            else { // is not his turn
                 agent.enabled = returnStepBack || stepBack;
                 
-                if(returnStepBack) 
-                    StartCoroutine(WaitTimeToReturn());
-            
+                Debug.Log("return " + returnStepBack + " step " + stepBack);
+
+                if (returnStepBack) {
+                    RunDelayed(0.25f, () => {
+                        returnStepBack = false;
+                    });
+                }
+
                 if(stepBack) {
                     agent.CalculatePath(point, path);
                     agent.SetPath(path);
@@ -214,6 +222,9 @@ public class UserMovement : User {
                     point = Vector3.zero;
            }
         }
+
+        isMooving = lastPosition.x != transform.position.x || lastPosition.z != transform.position.z;
+        lastPosition = transform.position;
     }
 
 
@@ -237,7 +248,8 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-               diceResult = 24;
+               if (!isPlayer)
+                   diceResult = 15;
                 
                beginResult = diceResult; 
                stepPaths = new GameObject[beginResult]; 
@@ -273,6 +285,7 @@ public class UserMovement : User {
 
             if(type == StepType.NONE) 
                 return;
+            
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
                 if(gameController.shopController.returnToStep || gameController.chestController.returnToStep) {
@@ -324,7 +337,8 @@ public class UserMovement : User {
                     if(lastStep.GetComponent<Direction>() == null) {
                         bypassDirection = true;
                         GetNextStep();
-                        nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
+                        if(nextStep.GetComponent<Direction>() != null)
+                            nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
                     }
                 }
 
@@ -354,6 +368,14 @@ public class UserMovement : User {
                     reverseCount = false;
                 }
             }
+        }
+        else {
+            Debug.Log("enter " + hit.gameObject);
+            RunDelayed(0.35f, () => {
+
+                if (stepBack)
+                    stepBack = false;
+            });
         }
     }
 
@@ -462,15 +484,11 @@ public class UserMovement : User {
                             }
                         }
 
-                        Debug.Log("value: " + goToSmallest);
                         Debug.Log("go to " + (goToSmallest ? " smallest " : " far"));
-                        
-
-                        Debug.Log("current direction: " + gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections));
                         RunDelayed(0.1f,() => {
-                         //   nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
+                            nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
 
-                            nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
+                         //   nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
                             stop = false;
                         });
                     }
@@ -573,7 +591,7 @@ public class UserMovement : User {
     }
 
     private void ChooseNextStep(StepType type) {
-        isMooving = true;
+        //isMooving = true;
 
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) {
             diceResult--;
@@ -612,8 +630,6 @@ public class UserMovement : User {
             }
             hasCheckPath = true;
            
-            Debug.Log("path " + stepPaths);
-            Debug.Log("step " + stepPaths[stepPaths.Length - 1].GetComponent<Step>());
             if (stepPaths[stepPaths.Length - 1].TryGetComponent<Step>(out Step step)) {
                 if (step.playerInStep.Count == 2) {
                     GameObject[] stepsCopy = new GameObject[stepPaths.Length - 1];
@@ -795,7 +811,7 @@ public class UserMovement : User {
     private IEnumerator WaitBonus(bool stepReward) {
         yield return new WaitForSeconds(0.5f);
 
-        isMooving = false;
+      //  isMooving = false;
         inventory.CoinGain(3);
         audio.CoinsGain();
         ui.DisplayReward(true,3,stepReward);
@@ -819,7 +835,7 @@ public class UserMovement : User {
         yield return new WaitForSeconds(0.5f);
         
         
-        isMooving = false;
+      //  isMooving = false;
         if(inventory.coins > 0) {
             audio.CoinsLoose();
             inventory.CoinLoose(3);
@@ -848,7 +864,7 @@ public class UserMovement : User {
         yield return new WaitForSeconds(0.5f);
         
         
-        isMooving = false;
+       // isMooving = false;
         if(inventory.coins > 0) {
             audio.CoinsLoose();
             inventory.CoinLoose(amount);
@@ -879,13 +895,6 @@ public class UserMovement : User {
         gameController.dialog.isInDialog = true;
         gameController.dialog.currentDialog = askChest;
         StartCoroutine(gameController.dialog.ShowText(askChest.Content[0],askChest.Content.Length));
-    }
-
-    private IEnumerator WaitTimeToReturn() {
-        yield return new WaitForSeconds(0.25f);
-
-        stepBack = false;
-        returnStepBack = false;
     }
 
     #endregion

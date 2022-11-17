@@ -231,6 +231,7 @@ public class UserUI : User {
         if(e.started && showDirection && !gameController.freeze) {
             if(directions[0].GetChild(1).gameObject.activeSelf) {
                 movement.left = true;
+                Debug.Log("moove to left " + movement.isMooving);
                 movement.reverseCount = direction.reverseCountDirections[0];
                 directions[0].GetChild(0).gameObject.SetActive(true);
                 directions[0].GetChild(1).gameObject.SetActive(false); 
