@@ -1328,8 +1328,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   hoverInventoryItem: {fileID: 0}
   coinTextReward: {fileID: 0}
   itemDescription: {fileID: 0}
@@ -1388,7 +1386,6 @@ MonoBehaviour:
   isJumping: 0
   nextStep: {fileID: 0}
   jumpSpeed: 80
-  stack: 0
   beginResult: 0
   stepPaths: []
   stepBack: 0

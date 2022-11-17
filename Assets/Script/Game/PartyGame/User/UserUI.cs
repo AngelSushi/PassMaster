@@ -144,13 +144,13 @@ public class UserUI : User {
         }
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
-            if(index < 6) 
+            if(index < inventoryItems.Length) 
                 index++;
 
             Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
             
             hoverInventoryItem.gameObject.SetActive(true);
-            hoverInventoryItem.localPosition = hoverPos[index];       
+            hoverInventoryItem.localPosition = index == inventoryItems.Length ? hoverPos[hoverPos.Length - 2] : hoverPos[index];       
         }
     }
 
@@ -329,7 +329,8 @@ public class UserUI : User {
 
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
-            if(index <= 5 && index > -1) {
+            Debug.Log("index " + index);
+            if(index < inventoryItems.Length && index > -1) {
         
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
                     switch(index) {
@@ -444,11 +445,17 @@ public class UserUI : User {
 
             for(int i = 0;i<items.Length;i++) {
                 if(items[i] > 0) {
+                    if (i >= inventoryItems.Length)
+                        return;
+                    
                     inventoryItems[i].GetChild(0).gameObject.SetActive(true);
                     inventoryItems[i].GetChild(1).gameObject.SetActive(true);
                     inventoryItems[i].GetChild(1).gameObject.GetComponent<Text>().text = "" + items[i];
                 }
                 else {
+                    if (i >= inventoryItems.Length)
+                        return;
+                    
                     inventoryItems[i].GetChild(0).gameObject.SetActive(false);
                     inventoryItems[i].GetChild(1).gameObject.SetActive(false);
                 }
@@ -598,9 +605,6 @@ public class UserUI : User {
         }
         else 
             diceResult.transform.GetChild(0).gameObject.SetActive(false);
-
-        if(color == null) 
-            color = new Color(0f,0.35f,1f,1.0f);
 
         if(color.a == 0)
             color.a = 1f;
