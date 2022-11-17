@@ -117,20 +117,18 @@ public class UserMovement : User {
         base.Update();
 
         if(!gameController.freeze) {
-            
-           // Debug.DrawLine(transform.position,transform.position + Vector3.forward * 50 * -1,Color.red);
-            
+
            if(animatorController != null) 
                animatorController.SetBool("IsMooving",isMooving);
-           
-           
-           // animatorController.SetBool("IsElectrocuted",isElectrocuted);
 
-            if(isTurn) {
+           if(isTurn) {
                 canMoove = !stop;
 
-                if(stop)
-                    isMooving = false;  
+                if (stop) {
+                   // RunDelayed(0.3f, () => {
+                        isMooving = false;
+                    //});
+                }
 
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
@@ -169,7 +167,6 @@ public class UserMovement : User {
 
                 if(finishMovement) {
                     StepType type = actualStep.GetComponent<Step>().type;
-                    isMooving = false;
                     if(type == StepType.BONUS)  
                         StartCoroutine(WaitBonus(true));
                     if(type == StepType.MALUS) 
@@ -201,9 +198,9 @@ public class UserMovement : User {
                             ui.showHUD = true;
                     }          
                 }         
-            }
+           }
 
-            else { // is not his turn
+           else { // is not his turn
                 agent.enabled = returnStepBack || stepBack;
                 
                 if(returnStepBack) 
@@ -215,7 +212,7 @@ public class UserMovement : User {
                 }
                 else 
                     point = Vector3.zero;
-            }
+           }
         }
     }
 
@@ -240,7 +237,7 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-               diceResult = 4;
+               diceResult = 24;
                 
                beginResult = diceResult; 
                stepPaths = new GameObject[beginResult]; 
@@ -615,19 +612,25 @@ public class UserMovement : User {
             }
             hasCheckPath = true;
            
-            if (stepPaths[stepPaths.Length - 1].GetComponent<Step>().playerInStep.Count == 2) {
-                GameObject[] stepsCopy = new GameObject[stepPaths.Length - 1];
+            Debug.Log("path " + stepPaths);
+            Debug.Log("step " + stepPaths[stepPaths.Length - 1].GetComponent<Step>());
+            if (stepPaths[stepPaths.Length - 1].TryGetComponent<Step>(out Step step)) {
+                if (step.playerInStep.Count == 2) {
+                    GameObject[] stepsCopy = new GameObject[stepPaths.Length - 1];
 
-                for (int i = 0; i < stepsCopy.Length; i++)
-                    stepsCopy[i] = stepPaths[i];
+                    for (int i = 0; i < stepsCopy.Length; i++)
+                        stepsCopy[i] = stepPaths[i];
 
-                stepPaths = stepsCopy;
-                int amplifier = doubleDice ? 2 : tripleDice ? 3 : 1;
+                    stepPaths = stepsCopy;
+                    int amplifier = doubleDice ? 2 : tripleDice ? 3 : 1;
                 
-                diceResult -= 1 * amplifier;
+                    diceResult -= 1 * amplifier;
 
-                if (atStart && diceResult == 0)
-                    diceResult = 1;
+                    if (atStart && diceResult == 0)
+                        diceResult = 1;
+                }
+
+                
             }
             
         }
@@ -792,6 +795,7 @@ public class UserMovement : User {
     private IEnumerator WaitBonus(bool stepReward) {
         yield return new WaitForSeconds(0.5f);
 
+        isMooving = false;
         inventory.CoinGain(3);
         audio.CoinsGain();
         ui.DisplayReward(true,3,stepReward);
@@ -814,6 +818,8 @@ public class UserMovement : User {
     private IEnumerator WaitMalus(bool stepReward) {
         yield return new WaitForSeconds(0.5f);
         
+        
+        isMooving = false;
         if(inventory.coins > 0) {
             audio.CoinsLoose();
             inventory.CoinLoose(3);
@@ -841,6 +847,8 @@ public class UserMovement : User {
     public IEnumerator WaitMalus(bool stepReward,int amount) {
         yield return new WaitForSeconds(0.5f);
         
+        
+        isMooving = false;
         if(inventory.coins > 0) {
             audio.CoinsLoose();
             inventory.CoinLoose(amount);
