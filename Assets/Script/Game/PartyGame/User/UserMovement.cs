@@ -248,8 +248,8 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-               if (!isPlayer)
-                   diceResult = 15;
+             //  if (!isPlayer)
+               diceResult = 70;
                 
                beginResult = diceResult; 
                stepPaths = new GameObject[beginResult]; 
@@ -370,9 +370,7 @@ public class UserMovement : User {
             }
         }
         else {
-            Debug.Log("enter " + hit.gameObject);
             RunDelayed(0.35f, () => {
-
                 if (stepBack)
                     stepBack = false;
             });
