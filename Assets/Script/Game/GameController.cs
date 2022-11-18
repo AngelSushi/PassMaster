@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PathCreation;
+using UnityEditor.AI;
 using UnityEngine.AI;
 using System.Linq;
 using Random=UnityEngine.Random;
@@ -100,7 +101,7 @@ public class GameController : CoroutineSystem {
     public DebugController debugController;
 
     public GameObject shellPrefab;
-    
+    public NavMeshSurface subPath;
     
     [HideInInspector]
     public int currentTabIndex;
@@ -130,8 +131,7 @@ public class GameController : CoroutineSystem {
         for(int i = 0;i<dialog.dialogArray.dialogs.Length;i++) 
             dialog.dialogArray.dialogs[i].id = i;
 
-            
-        
+        subPath.enabled = false;
     }
     
     void Update() {
@@ -384,15 +384,19 @@ public class GameController : CoroutineSystem {
     public void BeginTurn(bool repair) {
 
         actualPlayer = 0;
-        if(turn > 1) {
-            ManagePlayerInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>(),players[actualPlayer]);
-            
-            if (!repair && !hasChangeState && !debugController.skipMG) {
-                ChangeStateScene(true,"NewMain");
+        if (turn > 1)
+        {
+            ManagePlayerInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>(),
+                players[actualPlayer]);
+
+            if (!repair && !hasChangeState && !debugController.skipMG)
+            {
+                ChangeStateScene(true, "NewMain");
                 SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
-                hasChangeState = true; 
+                hasChangeState = true;
             }
         }
+        
 
         part = GamePart.PARTYGAME;
 
@@ -476,6 +480,13 @@ public class GameController : CoroutineSystem {
         else { // Le tour est fini. Lancement d'un mini jeux
             part = GamePart.CHOOSE_MINIGAME;
             actualPlayer = 0;
+
+            if (turn == 1) {
+                subPath.gameObject.transform.GetChild(0).gameObject.layer = 0;
+                NavMeshSurface mainPath = subPath.transform.parent.gameObject.GetComponent<NavMeshSurface>();
+
+                mainPath.BuildNavMesh();
+            }
             
             ActualizePlayerClassement();
         }

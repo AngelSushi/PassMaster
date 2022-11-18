@@ -93,6 +93,8 @@ public class ChestController : CoroutineSystem {
             obj = e.obj;
             chestPath = new NavMeshPath();
             goToChest = true;
+
+            GameController.Instance.subPath.enabled = true;
         }
 
         else if (e.answerIndex == 1) 

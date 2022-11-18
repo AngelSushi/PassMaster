@@ -86,6 +86,7 @@ public class UserMovement : User {
             if(!isPlayer) 
                 InitDice();      
         }
+
     }
 
     public override void OnDiceAction() { // Call when a physical user (not an IA) choose the dice action on hud
@@ -113,6 +114,8 @@ public class UserMovement : User {
 
         if(!isPlayer)
             checkObjectToUse = false;
+        
+        
     }
 
     public override void Update() {
@@ -162,6 +165,8 @@ public class UserMovement : User {
                         CheckPath(false);
                         agent.SetPath(path);
                         
+                        Debug.Log("status " + path.status);
+                        
                         Quaternion targetRotation = Quaternion.LookRotation(nextStep.position - transform.position);
                         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.5f * Time.deltaTime);
                     }
@@ -205,8 +210,11 @@ public class UserMovement : User {
 
            else { // is not his turn
                 agent.enabled = returnStepBack || stepBack;
-                
-                Debug.Log("return " + returnStepBack + " step " + stepBack);
+
+                if (returnStepBack || stepBack && !gameController.subPath.enabled)
+                {
+                    gameController.subPath.enabled = true;
+                }
 
                 if (returnStepBack) {
                     RunDelayed(0.25f, () => {
@@ -217,6 +225,8 @@ public class UserMovement : User {
                 if(stepBack) {
                     agent.CalculatePath(point, path);
                     agent.SetPath(path);
+
+                    Debug.Log("return status " + path.status);
                 }
                 else 
                     point = Vector3.zero;
@@ -249,7 +259,9 @@ public class UserMovement : User {
                agent.enabled = true;
 
              //  if (!isPlayer)
-               diceResult = 70;
+              // diceResult = 70;
+
+              diceResult = isPlayer ? 5 : 6;
                 
                beginResult = diceResult; 
                stepPaths = new GameObject[beginResult]; 
@@ -285,12 +297,12 @@ public class UserMovement : User {
 
             if(type == StepType.NONE) 
                 return;
-            
+
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
                 if(gameController.shopController.returnToStep || gameController.chestController.returnToStep) {
                     RunDelayed(0.35f,() => {
-
+                        
                         if(gameController.shopController.returnToStep) {
                             gameController.shopController.returnToStep = false;
                             gameController.EndUserTurn();
@@ -300,6 +312,8 @@ public class UserMovement : User {
                             gameController.chestController.returnToStep = false;
                             gameController.hasGenChest = false;
                         }
+
+                        gameController.subPath.enabled = false;
         
                         return;
                     });
@@ -317,6 +331,8 @@ public class UserMovement : User {
                         if(diceResult > 0) 
                             ChooseNextStep(type);
                     }
+
+                    
                 }
 
                 if(type == StepType.STEP_END && gameController.endAnimationController.isInEndAnimation) {
