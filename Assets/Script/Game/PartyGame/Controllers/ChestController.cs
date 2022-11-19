@@ -94,7 +94,7 @@ public class ChestController : CoroutineSystem {
             chestPath = new NavMeshPath();
             goToChest = true;
 
-            GameController.Instance.subPath.enabled = true;
+            GameController.Instance.UpdateSubPath(actualPlayer.GetComponent<UserMovement>(),true);
         }
 
         else if (e.answerIndex == 1) 

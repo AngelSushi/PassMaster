@@ -101,13 +101,14 @@ public class GameController : CoroutineSystem {
     public DebugController debugController;
 
     public GameObject shellPrefab;
-    public NavMeshSurface subPath;
+    public NavMeshSurface mainPath;
     
     [HideInInspector]
     public int currentTabIndex;
     
     public static GameController Instance { get; private set;}
 
+    private bool isAlreadyBaked;
     void Awake() {
         Instance = this;
         mainCamera = Camera.main.gameObject;
@@ -130,8 +131,8 @@ public class GameController : CoroutineSystem {
 
         for(int i = 0;i<dialog.dialogArray.dialogs.Length;i++) 
             dialog.dialogArray.dialogs[i].id = i;
-
-        subPath.enabled = false;
+        
+        UpdateSubPath(null,false);
     }
     
     void Update() {
@@ -396,7 +397,8 @@ public class GameController : CoroutineSystem {
                 hasChangeState = true;
             }
         }
-        
+        else 
+            UpdateSubPath(players[0].GetComponent<UserMovement>(),false);
 
         part = GamePart.PARTYGAME;
 
@@ -482,9 +484,7 @@ public class GameController : CoroutineSystem {
             actualPlayer = 0;
 
             if (turn == 1) {
-                subPath.gameObject.transform.GetChild(0).gameObject.layer = 0;
-                NavMeshSurface mainPath = subPath.transform.parent.gameObject.GetComponent<NavMeshSurface>();
-
+                mainPath.transform.GetChild(mainPath.transform.childCount - 1).gameObject.layer = 0;
                 mainPath.BuildNavMesh();
             }
             
@@ -588,6 +588,36 @@ public class GameController : CoroutineSystem {
             }
             
             obj.SetActive(state);
+        }
+    }
+
+    public void UpdateSubPath(UserMovement user,bool add) {
+
+        if (add) { // The Path must have more locations
+
+            if (isAlreadyBaked)
+                return;
+            
+            Debug.Log("enter add locations");
+            GameObject stepChest = user.actualStep.GetComponent<Step>().chest;
+            
+            
+            stepChest.SetActive(true);
+            bool isAlreadyActive = actualChest == stepChest;
+            if(stepChest.transform.childCount > 1)
+                stepChest.transform.GetChild(0).gameObject.SetActive(false);
+            
+            mainPath.BuildNavMesh();
+
+            stepChest.SetActive(false);
+            if(stepChest.transform.childCount > 1)
+                stepChest.transform.GetChild(0).gameObject.SetActive(isAlreadyActive);
+
+            isAlreadyBaked = true;
+        }
+        else {
+            mainPath.BuildNavMesh();
+            isAlreadyBaked = false;
         }
     }
 

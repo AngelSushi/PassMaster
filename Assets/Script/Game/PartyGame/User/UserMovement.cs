@@ -18,7 +18,6 @@ public class UserMovement : User {
     public bool stop;
     public bool lastStepIsArrow;
     public bool waitChest;
-    public bool returnStepBack;
     public bool reverseCount;
     public bool doubleDice;
     public bool tripleDice;
@@ -209,24 +208,22 @@ public class UserMovement : User {
            }
 
            else { // is not his turn
-                agent.enabled = returnStepBack || stepBack;
+                //if(!agent.enabled)
+                  //  agent.enabled = returnStepBack || stepBack;
 
-                if (returnStepBack || stepBack && !gameController.subPath.enabled)
-                {
-                    gameController.subPath.enabled = true;
-                }
 
-                if (returnStepBack) {
+               /*   if (returnStepBack) {
                     RunDelayed(0.25f, () => {
                         returnStepBack = false;
+                        Debug.Log("enter");
                     });
                 }
+                */
 
                 if(stepBack) {
                     agent.CalculatePath(point, path);
                     agent.SetPath(path);
-
-                    Debug.Log("return status " + path.status);
+                    ShowPath(Color.yellow,path);
                 }
                 else 
                     point = Vector3.zero;
@@ -288,7 +285,7 @@ public class UserMovement : User {
                 
 
            }
-       } 
+       }
     }
 
     private void OnTriggerEnter(Collider hit) {
@@ -313,8 +310,7 @@ public class UserMovement : User {
                             gameController.hasGenChest = false;
                         }
 
-                        gameController.subPath.enabled = false;
-        
+                        gameController.UpdateSubPath(this,false);
                         return;
                     });
                 }
@@ -387,8 +383,14 @@ public class UserMovement : User {
         }
         else {
             RunDelayed(0.35f, () => {
-                if (stepBack)
+                if (stepBack) {
                     stepBack = false;
+                    gameController.UpdateSubPath(this,false);
+                    agent.speed /= 2f;
+                    agent.angularSpeed /= 2f;
+                    agent.acceleration /= 2f;
+                }
+
             });
         }
     }
@@ -525,7 +527,6 @@ public class UserMovement : User {
                     
                     userMovement.point = hit.gameObject.transform.position;
                    // userMovement.point.y = user.transform.position.y;
-                    userMovement.returnStepBack = true;
                     
                     Debug.Log("left conflict");
                     
@@ -793,10 +794,14 @@ public class UserMovement : User {
 
                             if (diceResult > 1) { // Les joueurs vont que se croiser
                                 userMovement.stepBack = true;
+                                agent.enabled = true;
+                                gameController.UpdateSubPath(userMovement,true);
                                 if (userMovement.point == Vector3.zero) {
                                     userMovement.point = targetStep.avoidPos;
                                     userMovement.point.y = step.transform.position.y;
-                                    userMovement.agent.speed *= 3f; // try x10
+                                    userMovement.agent.speed *= 2f; // remake /= 3f at the end of stepback
+                                    userMovement.agent.angularSpeed *= 2f;
+                                    userMovement.agent.acceleration *= 2f;
                                     gameController.playerConflict.Add(user, step);
                                 }
                             }

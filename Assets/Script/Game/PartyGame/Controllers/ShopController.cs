@@ -134,8 +134,8 @@ public class ShopController : CoroutineSystem {
             shopPosition = e.position;
             shopPath = new NavMeshPath();
             mooveToShop = true;
-
-            gameController.subPath.enabled = true;
+            
+            gameController.UpdateSubPath(actualPlayer.GetComponent<UserMovement>(),true);
         }
 
         if(e.dialog.id == 7 && e.answerIndex == 0) { // Fin du dialogue BuyItem

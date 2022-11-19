@@ -12,7 +12,7 @@ public class GameControllerEditor : Editor {
     private SerializedObject serializedClass;
     
     // General
-    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,stackPos,stackSize,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,subPath;
+    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,stackPos,stackSize,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -46,7 +46,7 @@ public class GameControllerEditor : Editor {
         hasChangeState = serializedClass.FindProperty("hasChangeState");
         blackScreenAnim = serializedClass.FindProperty("blackScreenAnim");
         shellPrefab = serializedClass.FindProperty("shellPrefab");
-        subPath = serializedClass.FindProperty("subPath");
+        mainPath = serializedClass.FindProperty("mainPath");
         
         // Controllers 
         day = serializedClass.FindProperty("dayController");
@@ -99,7 +99,7 @@ public class GameControllerEditor : Editor {
                 EditorGUILayout.PropertyField(hasChangeState);
                 EditorGUILayout.PropertyField(blackScreenAnim);
                 EditorGUILayout.PropertyField(shellPrefab);
-                EditorGUILayout.PropertyField(subPath);
+                EditorGUILayout.PropertyField(mainPath);
                 break;
             
             case 1:
