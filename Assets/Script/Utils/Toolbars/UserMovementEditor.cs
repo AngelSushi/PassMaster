@@ -15,7 +15,7 @@ public class UserMovementEditor : Editor {
     private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed,animatorController;
 
     // Movement tab
-    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,lastStepIsArrow,waitChest,reverseCount,diceResult,actualStep,beginStep,nextStep,beginResult,stepPaths,stepBack;
+    private SerializedProperty waitDiceResult,finishMovement,finishTurn,left,front,right,stop,bypassDirection,waitChest,reverseCount,diceResult,actualStep,beginStep,nextStep,beginResult,stepPaths,stepBack;
 
     // Object tab;
     private SerializedProperty doubleDice,tripleDice,reverseDice,useHourglass,useLightning,isElectrocuted,useShell,targetLightningStep,checkObjectToUse;
@@ -57,7 +57,7 @@ public class UserMovementEditor : Editor {
         front = serializedClass.FindProperty("front");
         right = serializedClass.FindProperty("right");
         stop = serializedClass.FindProperty("stop");
-        lastStepIsArrow = serializedClass.FindProperty("lastStepIsArrow");
+        bypassDirection = serializedClass.FindProperty("bypassDirection");
         waitChest = serializedClass.FindProperty("waitChest");
         reverseCount = serializedClass.FindProperty("reverseCount");
         diceResult = serializedClass.FindProperty("diceResult");
@@ -121,7 +121,7 @@ public class UserMovementEditor : Editor {
                 EditorGUILayout.PropertyField(front);
                 EditorGUILayout.PropertyField(right);
                 EditorGUILayout.PropertyField(stop);
-                EditorGUILayout.PropertyField(lastStepIsArrow);
+                EditorGUILayout.PropertyField(bypassDirection);
                 EditorGUILayout.PropertyField(waitChest);
                 EditorGUILayout.PropertyField(reverseCount);
                 EditorGUILayout.PropertyField(diceResult);

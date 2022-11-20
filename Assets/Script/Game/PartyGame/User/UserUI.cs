@@ -353,6 +353,8 @@ public class UserUI : User {
                         case 3: // Hourglass
                             movement.useHourglass = true;
                             gameController.blackScreenAnim.Play();
+                            // ANIM OU IL MET AU DESSUS DE SA TETE LE SALIER A LA ZELDA
+                            //CloseActionHUD(true);
                             break;
 
                         case 4:  // Lightning

@@ -16,7 +16,6 @@ public class UserMovement : User {
     public bool front;
     public bool right;
     public bool stop;
-    public bool lastStepIsArrow;
     public bool waitChest;
     public bool reverseCount;
     public bool doubleDice;
@@ -54,7 +53,7 @@ public class UserMovement : User {
     private Color actualColor;
     public bool isParachuting;
     private Vector3 parachuteMovement;
-    private bool bypassDirection;
+    public bool bypassDirection;
     public bool canMoove;
     private bool hasFindChest;
     private List<GameObject> iaDirectionPath;
@@ -132,13 +131,6 @@ public class UserMovement : User {
            if(isTurn) {
                 canMoove = !stop;
 
-              /*  if (stop) {
-                    RunDelayed(0.3f, () => {
-                        isMooving = false;
-                    });
-                }
-                */
-
                 if(nextStep != null && !jump && !stop) {
                     if(!transform.GetChild(1).gameObject.activeSelf) {
                         RunDelayed(0.2f,() => {
@@ -167,6 +159,8 @@ public class UserMovement : User {
                         ShowPath(Color.magenta,path);
                         CheckPath(false);
                         agent.SetPath(path);
+                        
+                        Debug.Log("nextStep " + nextStep);
                         
                         Quaternion targetRotation = Quaternion.LookRotation(nextStep.position - transform.position);
                         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.5f * Time.deltaTime);
@@ -210,25 +204,21 @@ public class UserMovement : User {
            }
 
            else { // is not his turn
-                //if(!agent.enabled)
-                  //  agent.enabled = returnStepBack || stepBack;
+               if(stepBack) {
+                   if (actualStep.TryGetComponent<Step>(out Step step)) { // Only stepback on player who is not in step stack 
+                       if (step.playerInStep.Contains(transform.gameObject)) {
+                           stepBack = false;
+                           return;
+                       }
+                   }
 
-
-               /*   if (returnStepBack) {
-                    RunDelayed(0.25f, () => {
-                        returnStepBack = false;
-                        Debug.Log("enter");
-                    });
-                }
-                */
-
-                if(stepBack) {
-                    agent.CalculatePath(point, path);
-                    agent.SetPath(path);
-                    ShowPath(Color.yellow,path);
-                }
-                else 
-                    point = Vector3.zero;
+                   Debug.Log("need to stepback");
+                   agent.CalculatePath(point, path);
+                   agent.SetPath(path); 
+                   ShowPath(Color.yellow,path);
+               }
+               else 
+                   point = Vector3.zero;
            }
         }
 
@@ -257,8 +247,7 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-              // if (isPlayer)
-               // diceResult = 25;
+               diceResult = isPlayer ? 75 : 76;
 
                 
                beginResult = diceResult; 
@@ -295,9 +284,6 @@ public class UserMovement : User {
 
             if(type == StepType.NONE) 
                 return;
-
-    
-            Debug.Log("value " + reverseCount);
             
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
                 if(gameController.shopController.returnToStep || gameController.chestController.returnToStep) {
@@ -379,8 +365,14 @@ public class UserMovement : User {
                 if(ui.direction == null) 
                     ui.direction = hit.gameObject.GetComponent<Direction>();
 
-                if(bypassDirection && reverseCount) {
+                if(bypassDirection && reverseCount) 
                     reverseCount = false;
+
+                if (lastStep.TryGetComponent<Direction>(out Direction direction)) { // IL Y A DEUX DIRECTIONS QUI SE SUCCEDE
+                    Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
+                    int directionStepIndex = actualStep != null ? gameController.FindIndexInParent(stepParent.gameObject,actualStep) : gameController.FindIndexInParent(stepParent.gameObject,beginStep);
+
+                    nextStep = reverseDice ? stepParent.GetChild(Mathf.Abs(directionStepIndex - (stepParent.childCount - 1))) : actualStep.GetComponent<Direction>().directionsStep[1].transform;
                 }
             }
         }
@@ -434,10 +426,8 @@ public class UserMovement : User {
                 }
             }
 
-            if(type == StepType.FIX_DIRECTION && lastStepIsArrow && isPlayer) {
-                Debug.Log("actualStep: " + actualStep);
-                nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
-                lastStepIsArrow = false;
+            if(type == StepType.FIX_DIRECTION && bypassDirection) {
+                nextStep =  actualStep.GetComponent<Direction>().directionsStep[1].transform;
                 return;
             }
 
@@ -460,6 +450,7 @@ public class UserMovement : User {
                         if(right) 
                             nextStep = reverseDice ? ui.direction.directionsStep[0].transform : ui.direction.directionsStep[2].transform;
 
+                        
                         stop = !(left || front || right);
                     }
                 }
@@ -487,6 +478,9 @@ public class UserMovement : User {
 
                         int randomGoToChest = Random.Range(0,100);
 
+                        // a modifier
+                        percentageGoToChest = 100;
+                        
                         GenerateIAPaths(iaPathDirections);
 
                         bool goToSmallest = randomGoToChest <= percentageGoToChest;
@@ -538,8 +532,7 @@ public class UserMovement : User {
             }
 
             if(type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION) {
-                if(!isJumping) 
-                    lastStepIsArrow = true;
+
                 if(bypassDirection) 
                     bypassDirection = false;
 
@@ -549,8 +542,6 @@ public class UserMovement : User {
                 if(!isPlayer && hasFindChest)
                     hasFindChest = false;
             }
-            else 
-                lastStepIsArrow = false;   
 
         /*    if(type == StepType.STEP_END) 
                 ChooseNextStep(type); 
@@ -635,16 +626,23 @@ public class UserMovement : User {
                 stepIndex = 0;
 
             for (int i = 0; i < result; i++) {
-                if (stepIndex + i < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
-                    stepPaths[i] = stepParent.GetChild(stepIndex + i).gameObject;
-                else { 
-                    stepPaths[i] = stepParent.GetChild(stepIndex + i - stepParent.childCount).gameObject;
+                if (!reverseDice) {
+                    if (stepIndex + i < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
+                        stepPaths[i] = stepParent.GetChild(stepIndex + i).gameObject;
+                    else  
+                        stepPaths[i] = stepParent.GetChild(stepIndex + i - stepParent.childCount).gameObject;
+                }
+                else {
+                    if (stepIndex - i >= 0)
+                        stepPaths[i] = stepParent.GetChild(stepIndex - i).gameObject;
+                    else
+                        stepPaths[i] = stepParent.GetChild(stepIndex - i + stepParent.childCount).gameObject;
                 }
             }
 
             hasCheckPath = true;
            
-            if (stepPaths[stepPaths.Length - 1].TryGetComponent<Step>(out Step step)) {
+            if (stepPaths[stepPaths.Length - 1].TryGetComponent<Step>(out Step step)) { // Si il y a deja 3 joueurs sur une mm case on retire pour eviter qu'il y en ai 4 
                 if (step.playerInStep.Count == 2) {
                     GameObject[] stepsCopy = new GameObject[stepPaths.Length - 1];
 
@@ -683,17 +681,19 @@ public class UserMovement : User {
                 nextStep = actualParent.transform.GetChild(stepIndex - 1);
             }
             else {
-                if (reverseCount) {
+                if (reverseCount) { // Si on est a la fin et qu'on veut revenir
                     Direction targetDirection = FindObjectsOfType<Direction>().Where(dir => dir.directionsStep.Contains(actualStep)).ToList()[0];
 
                     if (targetDirection != null) {
                         nextStep = targetDirection.directionsStep.Where(step => step != null && step != actualStep).ToList()[0].transform;
                         bypassDirection = true;
+                        Debug.Log("entered");
                         return;
                     }
                 }
                 
                 nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);
+                // ERROR A TESTER
             }
         }
     }
@@ -795,12 +795,18 @@ public class UserMovement : User {
 
     private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
         if(stepPaths != null) {
+
             foreach(GameObject step in stepPaths) {
+              //  Debug.Log("path " + step);
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
-                    if(step != null && !userMovement.isTurn && userMovement.actualStep == step) {
-
-                        if (nextStep != null && nextStep.gameObject == step) {
+                    
+                   // Debug.Log("value " + (step != null) + " value2 " + (!userMovement.isTurn) + " value3 " + (userMovement.actualStep == step));
+                   // Debug.Log("actualStep " + userMovement.actualStep + " step " + step);
+                    
+                    if(step != null && !userMovement.isTurn && userMovement.actualStep == step) { // Si un des joueurs est sur l'un des step du chemin
+                        Debug.Log("entered");
+                        if (nextStep != null && nextStep.gameObject == step) { // Si la prochaine step du user dont c'est le tour est la step target
                             Step targetStep = step.GetComponent<Step>();
 
                             if (diceResult > 1) { // Les joueurs vont que se croiser
