@@ -543,44 +543,23 @@ public class UserUI : User {
 
     private void ManageHudDirection(bool active) { // front ou interior
         if(direction != null) {
-            if(direction.directions[0]) {
-                if(direction.directionsStep[0].name.Contains("front") || direction.directionsStep[0].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
-                        directions[0].gameObject.SetActive(true);
-                }
-                else 
-                    directions[0].gameObject.SetActive(true);        
+            for (int i = 0; i < direction.directions.Length; i++) {
+                
+                // i == 1 ==> direction is front 
+                // i == 0 ==> direction is left
+                // i == 2 ==> direction is right 
+                
+                bool activeDirection = i == 1 ? direction.directions[i] : movement.reverseDice ? i == 0 ? direction.directions[2] : direction.directions[0] : direction.directions[i];
+                directions[i].gameObject.SetActive(activeDirection);
             }
-            else 
-                directions[0].gameObject.SetActive(false);
 
-            if(direction.directions[1]) {
-                if(direction.directionsStep[1].name.Contains("front") || direction.directionsStep[1].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
-                        directions[1].gameObject.SetActive(true);                  
-                }
-                else 
-                    directions[1].gameObject.SetActive(true); 
+            if(!active) {
+                foreach(Transform direction in directions)
+                    direction.gameObject.SetActive(false);
             }
-            else 
-                directions[1].gameObject.SetActive(false);
-
-            if(direction.directions[2]) {
-                if(direction.directionsStep[2].name.Contains("front") || direction.directionsStep[2].name.Contains("interior")) {
-                    if(gameController.dayController.dayPeriod == DayController.DayPeriod.DAY || gameController.dayController.dayPeriod == DayController.DayPeriod.DUSK) 
-                        directions[2].gameObject.SetActive(true);           
-                }
-                else 
-                    directions[2].gameObject.SetActive(true);         
-            }
-            else 
-                directions[2].gameObject.SetActive(false);
         }
 
-        if(!active) {
-            foreach(Transform direction in directions)
-                direction.gameObject.SetActive(false);
-        }
+        
     }
 
     private void ManageShop(bool active) {
@@ -593,20 +572,10 @@ public class UserUI : User {
         infoLabel.SetActive(false);
     }
 
-    public void RefreshDiceResult(int result,Color color,bool begin) {
+    public void RefreshDiceResult(int result,Color color) {
         if(!diceResult.activeSelf) 
             diceResult.SetActive(true);
         
-        if(begin) {
-            if(movement.doubleDice || movement.tripleDice || movement.useShell) {
-                diceResult.transform.GetChild(0).gameObject.SetActive(true);
-                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = (movement.tripleDice || movement.useShell) ? "x3" : movement.doubleDice ? "x2" : "";
-                diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().color = (movement.tripleDice || movement.useShell) ? new Color(1f,0.74f,0f,1f) : movement.doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : new Color(0f,0f,0f,1f);
-            }
-        }
-        else 
-            diceResult.transform.GetChild(0).gameObject.SetActive(false);
-
         if(color.a == 0)
             color.a = 1f;
 
@@ -616,7 +585,6 @@ public class UserUI : User {
 
     public void ClearDiceResult() {
         diceResult.GetComponent<Text>().text = "";
-        diceResult.transform.GetChild(0).gameObject.GetComponent<Text>().text = "";
     }
 
     public void DisplayReward(bool bonus,int coins,bool stepReward) {

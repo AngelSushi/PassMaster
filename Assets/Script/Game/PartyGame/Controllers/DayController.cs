@@ -36,6 +36,9 @@ public class DayController : MonoBehaviour {
         public DayPeriod newPeriod;
     }
     
+    
+    
+    
     void Start() {
         light = GetComponent<Light>();
         mainAudio = AudioController.Instance.mainSource;
@@ -43,7 +46,6 @@ public class DayController : MonoBehaviour {
     }
 
     void Update() {
-
         switch(dayPeriod) {
             case DayPeriod.DAY: // Day
                 RenderSettings.skybox = dayMat;
