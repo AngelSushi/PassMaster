@@ -160,8 +160,6 @@ public class UserMovement : User {
                         CheckPath(false);
                         agent.SetPath(path);
                         
-                        Debug.Log("nextStep " + nextStep);
-                        
                         Quaternion targetRotation = Quaternion.LookRotation(nextStep.position - transform.position);
                         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.5f * Time.deltaTime);
                     }
@@ -247,7 +245,7 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-               diceResult = isPlayer ? 75 : 76;
+               diceResult = isPlayer ? 6 : 76;
 
                 
                beginResult = diceResult; 
@@ -498,6 +496,17 @@ public class UserMovement : User {
                         }
 
                         Debug.Log("go to " + (goToSmallest ? " smallest " : " far"));
+                        
+                        foreach (GameObject step in iaDirectionPath) {
+                            if (step.transform.childCount >= 2) {
+                                for (int i = 0; i < step.transform.childCount; i++) {
+                                    if (step.transform.GetChild(i).gameObject.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer)) {
+                                        meshRenderer.material.color = Color.magenta;
+                                    }
+                                }
+                            }
+                        }
+                        
                         RunDelayed(0.1f,() => {
                             nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
 
@@ -719,25 +728,44 @@ public class UserMovement : User {
         }
     }
 
+    
+    
+    
     private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
         int indexEnd = gameController.FindIndexInParent(end.transform.parent.gameObject,end);
 
         if(end.GetComponent<Direction>() != null && !sameParent)
             indexEnd++;
 
+        if (end.GetComponent<Step>() != null && end.GetComponent<Step>().type == StepType.STEP_END) // Error on board isle at the end the indexEnd is 1 should be 2 
+            indexEnd++;
+
         for(int i = gameController.FindIndexInParent(begin.transform.parent.gameObject,begin); i != indexEnd;) {
-            if(i >= begin.transform.parent.childCount) 
+            if (i >= begin.transform.parent.childCount) 
                 i -= begin.transform.parent.childCount;
-            
+
             GameObject actualObj = begin.transform.parent.GetChild(i).gameObject;
 
-            if(!iaDirectionPath.Contains(actualObj))
+
+            if (!iaDirectionPath.Contains(actualObj)) 
                 iaDirectionPath.Add(actualObj);
 
-            if(actualObj == gameController.stepChest) {
-                hasFindChest = true;
-                return true;
+            if (inventory.cards < gameController.secretCode.Length) {
+                if(actualObj == gameController.stepChest) {
+                    Debug.Log("find chest begin " + begin + " end " + end);
+                    hasFindChest = true;
+                    return true;
+                }
             }
+            else {
+                GameObject stepEnd = FindObjectsOfType<Step>().Where(step => step.type == StepType.STEP_END).ToList()[0].gameObject;
+                if (actualObj == stepEnd) {
+                    Debug.Log("find end");
+                    hasFindChest = true;
+                    return true;
+                }
+            }
+            
 
             if(actualObj.GetComponent<Direction>() != null) {
                 for(int j = 0;j<actualObj.GetComponent<Direction>().directionsStep.Length;j++) {
@@ -746,24 +774,37 @@ public class UserMovement : User {
                         Direction nextDir = actualObj.GetComponent<Direction>().directionsStep[j].GetComponent<Direction>();
 
                         GameObject beginObj = beginDirection;
-                        GameObject endObj = null;
-
+                        GameObject endObj;
+ 
                         if(nextDir != null) {
                             beginObj = nextDir.directionsStep[1].gameObject;
                             endObj = nextDir.directionsStep[1].gameObject.transform.parent.GetChild(nextDir.directionsStep[1].gameObject.transform.parent.childCount- 1).gameObject;
                         }
                         else {
-                            if(beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject) // -2 ici car on ne veut pas prendre en compte la direction
-                                endObj = beginObj.transform.parent.GetChild(0).gameObject;              
-                            else 
+                            
+                            if (beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject) { // -2 ici car on ne veut pas prendre en compte la direction
+                                endObj = beginObj.transform.parent.GetChild(0).gameObject;
+                                decrement = true;
+                            }
+                            else {
                                 endObj = beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount - 1).gameObject;
+                                decrement = false;
+                            }
+
+                            if (beginObj == endObj) { // FOr Isle Board At The 3 ISle BeginObj = EndObj
+                                Debug.Log("end is same than begin");
+                                endObj = beginObj.transform.parent.GetChild(beginObj.transform.parent.childCount - 1).gameObject;
+                                decrement = false;
+                            }
+
+                           
                         }
-
-                        decrement = beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject;
-
+                        
                         int beginSize = iaDirectionPath.Count;
                         bool result = FindSmallestChestPath(beginObj,endObj,iaDirectionSteps,decrement,beginObj.transform.parent == endObj.transform.parent);
                         int size = iaDirectionPath.Count - beginSize;
+                        
+                        Debug.Log("result " + result + " begin " + beginObj + " end " + endObj);
 
                         if(!result)  
                             EraseSteps(beginSize,size,iaDirectionSteps);   
@@ -795,17 +836,11 @@ public class UserMovement : User {
 
     private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
         if(stepPaths != null) {
-
             foreach(GameObject step in stepPaths) {
-              //  Debug.Log("path " + step);
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
-                    
-                   // Debug.Log("value " + (step != null) + " value2 " + (!userMovement.isTurn) + " value3 " + (userMovement.actualStep == step));
-                   // Debug.Log("actualStep " + userMovement.actualStep + " step " + step);
-                    
+              
                     if(step != null && !userMovement.isTurn && userMovement.actualStep == step) { // Si un des joueurs est sur l'un des step du chemin
-                        Debug.Log("entered");
                         if (nextStep != null && nextStep.gameObject == step) { // Si la prochaine step du user dont c'est le tour est la step target
                             Step targetStep = step.GetComponent<Step>();
 

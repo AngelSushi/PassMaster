@@ -7,6 +7,7 @@ using PathCreation;
 using UnityEditor.AI;
 using UnityEngine.AI;
 using System.Linq;
+using UnityEditor;
 using Random=UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
@@ -143,6 +144,14 @@ public class GameController : CoroutineSystem {
             GenerateChest();
 
         lastPart = part;
+    }
+
+    private void OnDrawGizmos() {
+        foreach (Step step in FindObjectsOfType<Step>())
+        {
+            GUI.color = Color.black;
+            Handles.Label(step.transform.position + Vector3.up * 10,step.name);
+        }
     }
 
     private void ChangePart() {
