@@ -29,8 +29,8 @@ public class ExcelReader : MonoBehaviour {
                 GameObject step = GameObject.Find(excelClass.name);
                 if(step != null) {
                     if(step.GetComponent<Step>() != null) {
-                        step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column4 == 1 ? true : false,excelClass.Column5 == 1 ? true : false,excelClass.Column6 == 1 ? true : false,excelClass.Column7 == 1 ? true : false};
-                        step.GetComponent<Step>().positive = excelClass.Column8 == 1 ? true : false;
+                        step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column4 == 1,excelClass.Column5 == 1,excelClass.Column6 == 1,excelClass.Column7 == 1};
+                        step.GetComponent<Step>().positive = excelClass.Column8 == 1;
                         Debug.Log("initialize " + excelClass.name + " parameters");
                     }
                 }
@@ -40,8 +40,8 @@ public class ExcelReader : MonoBehaviour {
                 GameObject step = GameObject.Find(excelClass.Column11);
                 if(step != null) {
                     if(step.GetComponent<Step>() != null) {
-                        step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column13 == 1 ? true : false,excelClass.Column14 == 1 ? true : false,excelClass.Column15 == 1 ? true : false,excelClass.Column16 == 1 ? true : false};
-                        step.GetComponent<Step>().positive = excelClass.Column17 == 1 ? true : false;
+                        step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column13 == 1,excelClass.Column14 == 1,excelClass.Column15 == 1,excelClass.Column16 == 1};
+                        step.GetComponent<Step>().positive = excelClass.Column17 == 1;
                         Debug.Log("initialize " + excelClass.Column11 + " parameters");
                     }
                 }
@@ -51,8 +51,8 @@ public class ExcelReader : MonoBehaviour {
                 GameObject step = GameObject.Find(excelClass.Column20);
                 if(step != null) {
                     if(step.GetComponent<Step>() != null) {
-                        step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column22 == 1 ? true : false,excelClass.Column23 == 1 ? true : false,excelClass.Column24 == 1 ? true : false,excelClass.Column25 == 1 ? true : false};
-                        step.GetComponent<Step>().positive = excelClass.Column26 == 1 ? true : false;
+                        step.GetComponent<Step>().useVectors = new bool[]{excelClass.Column22 == 1,excelClass.Column23 == 1,excelClass.Column24 == 1,excelClass.Column25 == 1};
+                        step.GetComponent<Step>().positive = excelClass.Column26 == 1;
                         Debug.Log("initialize " + excelClass.Column20 + " parameters");
                     }
                 }
