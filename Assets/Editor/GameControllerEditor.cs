@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Rendering;
 
 [CustomEditor(typeof(GameController))]
-public class GameControllerEditor : Editor {
+public class GameControllerEditor : CustomFieldInspector<GameController> {
     
-    private GameController classTarget;
-    private SerializedObject serializedClass;
     
     // General
     private SerializedProperty firstStep,actualPlayer,players,part,posBegin,stackPos,stackSize,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath;
@@ -22,10 +21,10 @@ public class GameControllerEditor : Editor {
     
     // Chest&Code
     private SerializedProperty chestParent, actualChest,secretCode,hasGenChest,stepChest;
-    
-    private void OnEnable() {
-        classTarget = (GameController)target;
-        serializedClass = new SerializedObject(classTarget);
+
+    private SerializedProperty showStepNames, showStepDirections;
+    protected override void OnEnable() {
+        base.OnEnable();
 
         // General
         
@@ -71,13 +70,17 @@ public class GameControllerEditor : Editor {
         secretCode = serializedClass.FindProperty("secretCode");
         hasGenChest = serializedClass.FindProperty("hasGenChest");
         stepChest = serializedClass.FindProperty("stepChest");
+        
+        // Debug
+        showStepNames = serializedClass.FindProperty("showStepNames");
+        showStepDirections = serializedClass.FindProperty("showStepDirections");
     }
 
     public override void OnInspectorGUI() {
         serializedClass.Update();
         EditorGUI.BeginChangeCheck();
 
-        classTarget.currentTabIndex = GUILayout.Toolbar(classTarget.currentTabIndex,new string[] {"General","Controller","Files","Chest&Code"});
+        classTarget.currentTabIndex = GUILayout.Toolbar(classTarget.currentTabIndex,new string[] {"General","Controller","Files","Chest&Code","Debug"});
         //DrawDefaultInspector();
         
         switch (classTarget.currentTabIndex) {
@@ -127,6 +130,11 @@ public class GameControllerEditor : Editor {
                 EditorGUILayout.PropertyField(secretCode);
                 EditorGUILayout.PropertyField(hasGenChest);
                 EditorGUILayout.PropertyField(stepChest);
+                break;
+            
+            case 4:
+                EditorGUILayout.PropertyField(showStepNames);
+                EditorGUILayout.PropertyField(showStepDirections);
                 break;
         }
         

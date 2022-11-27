@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
+[SelectionBase]
 public class Step : MonoBehaviour {
     public bool[] useVectors; // size 4 : forward , back , right , left
     public bool positive;
@@ -11,7 +13,6 @@ public class Step : MonoBehaviour {
     public List<GameObject> playerInStep = new List<GameObject>();
     public GameObject chest;
     public GameObject shop;
-    public bool skipIA;
     public Vector3 avoidPos; // position of players to avoid other player on path
 
     private bool mooveToStack;
@@ -59,6 +60,6 @@ public class Step : MonoBehaviour {
         }
         
     }
-    
-    
+
+
 }

@@ -13,6 +13,7 @@ using Random=UnityEngine.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
+[ExecuteInEditMode]
 public class GameController : CoroutineSystem {
 
     // Refaire la bombe qu'elle se pose la ou est le joueur plutot que de détruire le pont . Le pont est inaccessible la nuit
@@ -110,9 +111,17 @@ public class GameController : CoroutineSystem {
     public static GameController Instance { get; private set;}
 
     private bool isAlreadyBaked;
+
+    public bool showStepNames;
+    public bool showStepDirections;
+
+    private void OnEnable() => Instance = this;
+    
+
     void Awake() {
         Instance = this;
         mainCamera = Camera.main.gameObject;
+        Debug.Log("this awake");
     }
 
     void Start() {
@@ -147,12 +156,22 @@ public class GameController : CoroutineSystem {
     }
 
     private void OnDrawGizmos() {
-        foreach (Step step in FindObjectsOfType<Step>())
-        {
-            GUI.color = Color.black;
-            Handles.Label(step.transform.position + Vector3.up * 10,step.name);
+        foreach (Step step in FindObjectsOfType<Step>()) {
+            if (showStepNames) {
+                GUI.color = Color.black;
+                Handles.Label(step.transform.position + Vector3.up * 10, step.name);
+            }
+
+            if (showStepDirections) {
+                Debug.DrawRay(step.transform.position,Vector3.forward * 20,Color.magenta,2f);
+                Debug.DrawRay(step.transform.position,Vector3.right * 20,Color.green,2f);
+            }
         }
     }
+    
+    
+    
+    
 
     private void ChangePart() {
         if(part == GamePart.CHOOSE_ORDER) 

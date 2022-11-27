@@ -8,7 +8,7 @@ public enum StepType {
     MALUS,
     SHOP,
     FIX_DIRECTION,
-    FLEX_DIRECTION,
+    FLEX_DIRECTION, // is for double arrow 
     BONUS_END,
     MALUS_END,
     STEP_END,

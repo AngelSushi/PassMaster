@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(UserMovement))]
-public class UserMovementEditor : Editor {
-    private UserMovement classTarget;
-    private SerializedObject serializedClass;
+public class UserMovementEditor : CustomFieldInspector<UserMovement> {
+
 
     // Controller Tab
     private SerializedProperty movement,ui,inventory,audio,gameController,userType,userCam;
@@ -23,10 +22,9 @@ public class UserMovementEditor : Editor {
     private SerializedProperty giveUI,changeUI,stepMaterial;
     
 
-    private void OnEnable() {
-        classTarget = (UserMovement)target;
-        serializedClass = new SerializedObject(classTarget);
-
+    protected override void OnEnable() {
+        base.OnEnable();
+        
         // Controller tab
         movement = serializedClass.FindProperty("movement");
         ui = serializedClass.FindProperty("ui");
