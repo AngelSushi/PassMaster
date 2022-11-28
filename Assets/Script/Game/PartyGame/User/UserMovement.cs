@@ -479,7 +479,7 @@ public class UserMovement : User {
                         // a modifier
                         percentageGoToChest = 100;
                         
-                        GenerateIAPaths(iaPathDirections);
+                        GenerateIAPaths(ui.direction,gameController.stepChest);
 
                         bool goToSmallest = randomGoToChest <= percentageGoToChest;
                         int lastSize = 0;
@@ -706,32 +706,50 @@ public class UserMovement : User {
             }
         }
     }
+
+    private List<Direction> checkedDirections = new List<Direction>();
      
-    private void GenerateIAPaths(Dictionary<GameObject,int> iaPathDirections) {
-        for(int i = 0;i < ui.direction.directionsStep.Length;i++) {
-            GameObject end = ui.direction.gameObject;
-            
-            if(ui.direction.directionsStep[i] == null)
-                continue;
+    private void GenerateIAPaths(Direction targetDirection,GameObject target) {
+          checkedDirections.Add(targetDirection);
 
-            iaDirectionPath.Clear();
+          for(int i = 0;i < targetDirection.directionsStep.Length;i++) {
+              if (targetDirection.directionsStep[i] == null)
+                  continue;
 
-            bool sameParent = true;
-            if(ui.direction.directionsStep[i].transform.parent != end.transform.parent) { // Le parent de la step de début est différent du parent de la step de fin
-                end = ui.direction.directionsStep[i].transform.parent.GetChild(ui.direction.directionsStep[i].transform.parent.childCount - 1).gameObject;
-                sameParent = false;
-            }
-
-            FindSmallestChestPath(ui.direction.directionsStep[i],end,iaDirectionPath,false,sameParent);
-
-            iaPathDirections.Add(ui.direction.directionsStep[i],iaDirectionPath.Count);
-        }
+              List<GameObject> allPaths = new List<GameObject>();
+              
+              foreach(Direction.AIPath aiPath in targetDirection.aiPaths) {
+                  allPaths.Add(aiPath.path);
+                  if (aiPath.end.TryGetComponent<Direction>(out Direction dir)) {
+                      if(!checkedDirections.Contains(dir))
+                          GenerateIAPaths(dir,target);
+                  }
+              }
+                
+              Debug.Log("0 " + allPaths[0] + " 1 " + allPaths[1]);
+              foreach (GameObject path in allPaths) {
+                  path.SetActive(true);
+                  
+                  
+                  
+              }
+              
+              // Une fois que tt les aiPath de la directionStep sont activés  ==> on va check si la target ou on veut aller est sur le path
+              
+              // Si il est sur le path alors on va calculer la distance et la stocker
+              // sinon on passe au directionStep Suivant 
+              
+              
+          }
+          
+          
+        
     }
 
     
     
     
-    private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
+   /* private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
         int indexEnd = gameController.FindIndexInParent(end.transform.parent.gameObject,end);
 
         if(end.GetComponent<Direction>() != null && !sameParent)
@@ -833,6 +851,8 @@ public class UserMovement : User {
         foreach(GameObject eraseObj in erase) 
             iaDirectionPath.Remove(eraseObj);
     }
+    
+    */
 
     private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
         if(stepPaths != null) {
