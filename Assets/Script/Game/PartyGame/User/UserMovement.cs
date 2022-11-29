@@ -210,7 +210,7 @@ public class UserMovement : User {
                        }
                    }
 
-                   Debug.Log("need to stepback");
+//                   Debug.Log("need to stepback");
                    agent.CalculatePath(point, path);
                    agent.SetPath(path); 
                    ShowPath(Color.yellow,path);
@@ -479,7 +479,9 @@ public class UserMovement : User {
                         // a modifier
                         percentageGoToChest = 100;
                         
-                        GenerateIAPaths(ui.direction,gameController.stepChest);
+                        Debug.Log("direction " + ui.direction);
+                        
+                        GenerateIAPaths(ui.direction,gameController.stepChest,new List<GameObject>(),new List<Direction>());
 
                         bool goToSmallest = randomGoToChest <= percentageGoToChest;
                         int lastSize = 0;
@@ -496,7 +498,7 @@ public class UserMovement : User {
                         }
 
                         Debug.Log("go to " + (goToSmallest ? " smallest " : " far"));
-                        
+
                         foreach (GameObject step in iaDirectionPath) {
                             if (step.transform.childCount >= 2) {
                                 for (int i = 0; i < step.transform.childCount; i++) {
@@ -707,45 +709,57 @@ public class UserMovement : User {
         }
     }
 
-    private List<Direction> checkedDirections = new List<Direction>();
-     
-    private void GenerateIAPaths(Direction targetDirection,GameObject target) {
-          checkedDirections.Add(targetDirection);
+   // private List<Direction> checkedDirections = new List<Direction>();
+    //private  List<GameObject> allPaths = new List<GameObject>();
+    
+    private void GenerateIAPaths(Direction targetDirection,GameObject target,List<GameObject> allPaths,List<Direction> checkedDirections) {
+        checkedDirections.Add(targetDirection);
 
-          for(int i = 0;i < targetDirection.directionsStep.Length;i++) {
-              if (targetDirection.directionsStep[i] == null)
-                  continue;
-
-              List<GameObject> allPaths = new List<GameObject>();
-              
-              foreach(Direction.AIPath aiPath in targetDirection.aiPaths) {
+          foreach(Direction.AIPath aiPath in targetDirection.aiPaths) {
+              if(!allPaths.Contains(aiPath.path))
                   allPaths.Add(aiPath.path);
-                  if (aiPath.end.TryGetComponent<Direction>(out Direction dir)) {
-                      if(!checkedDirections.Contains(dir))
-                          GenerateIAPaths(dir,target);
-                  }
-              }
-                
-              Debug.Log("0 " + allPaths[0] + " 1 " + allPaths[1]);
-              foreach (GameObject path in allPaths) {
-                  path.SetActive(true);
+              
+              if (aiPath.end.TryGetComponent<Direction>(out Direction dir)) {
                   
                   
-                  
+                  if(!checkedDirections.Contains(dir)) 
+                      GenerateIAPaths(dir,target,allPaths,checkedDirections);
               }
               
-              // Une fois que tt les aiPath de la directionStep sont activés  ==> on va check si la target ou on veut aller est sur le path
               
-              // Si il est sur le path alors on va calculer la distance et la stocker
-              // sinon on passe au directionStep Suivant 
+              foreach(GameObject path in allPaths)
+                  Debug.Log( "name " + path.name);
               
               
+              allPaths.Clear();
+              checkedDirections.Clear();
+              hasFindChest = true;
+              Debug.Log("=====================");
           }
           
+          //checkedDirections.Clear();
+
+          // Une fois que tt les aiPath de la directionStep sont activés  ==> on va check si la target ou on veut aller est sur le path
           
-        
+          // Si il est sur le path alors on va calculer la distance et la stocker
+          // sinon on passe au directionStep Suivant 
+
+
+
+
+
+
     }
 
+
+    private bool IsOnPath(GameObject path, GameObject target) {
+        foreach (MeshRenderer meshRenderer in path.GetComponentsInChildren<MeshRenderer>()) {
+            if (meshRenderer.bounds.Contains(target.transform.position))
+                return true;
+        }
+        
+        return false;
+    }
     
     
     
