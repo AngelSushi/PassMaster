@@ -710,36 +710,29 @@ public class UserMovement : User {
     }
 
    // private List<Direction> checkedDirections = new List<Direction>();
-    //private  List<GameObject> allPaths = new List<GameObject>();
+    private  List<Direction.AIPath> pendingPaths = new List<Direction.AIPath>();
     
-    private void GenerateIAPaths(Direction targetDirection,GameObject target,List<GameObject> allPaths,List<Direction> checkedDirections) {
-        checkedDirections.Add(targetDirection);
+    public void GenerateIAPaths(Direction targetDirection,GameObject target,List<GameObject> allPaths,List<Direction> checkedDirections) {
 
-          foreach(Direction.AIPath aiPath in targetDirection.aiPaths) {
-              if(!allPaths.Contains(aiPath.path))
-                  allPaths.Add(aiPath.path);
-              
-              if (aiPath.end.TryGetComponent<Direction>(out Direction dir)) {
-                  
-                  
-                  if(!checkedDirections.Contains(dir)) 
-                      GenerateIAPaths(dir,target,allPaths,checkedDirections);
-              }
-              
-              
-              foreach(GameObject path in allPaths)
-                  Debug.Log( "name " + path.name);
-              
-              
-              allPaths.Clear();
-              checkedDirections.Clear();
-              hasFindChest = true;
-              Debug.Log("=====================");
-          }
-          
-          //checkedDirections.Clear();
+        foreach (Direction.AIPath aiPath in targetDirection.aiPaths) {
+            pendingPaths.Add(aiPath);
 
-          // Une fois que tt les aiPath de la directionStep sont activés  ==> on va check si la target ou on veut aller est sur le path
+            foreach (Direction.AIPath p_Path in pendingPaths) {
+
+                if (p_Path.end.TryGetComponent<Direction>(out Direction direction)) {
+                    //foreach()
+                }
+            }
+            
+            
+            pendingPaths.Clear();
+        }
+
+        
+        
+        
+        
+        // Une fois que tt les aiPath de la directionStep sont activés  ==> on va check si la target ou on veut aller est sur le path
           
           // Si il est sur le path alors on va calculer la distance et la stocker
           // sinon on passe au directionStep Suivant 

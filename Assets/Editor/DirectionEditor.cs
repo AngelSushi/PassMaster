@@ -39,7 +39,7 @@ public class DirectionEditor : CustomFieldInspector<Direction> {
         EditorGUILayout.LabelField("AI", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(aiPaths);
         EditorGUILayout.PropertyField(reversePath);
-        
+            
         if(EditorGUI.EndChangeCheck()) 
             serializedClass.ApplyModifiedProperties();
         
