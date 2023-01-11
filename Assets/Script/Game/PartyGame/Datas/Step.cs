@@ -15,11 +15,16 @@ public class Step : MonoBehaviour {
     public GameObject shop;
     public Vector3 avoidPos; // position of players to avoid other player on path
 
+    public NodeAI node;
+    
     private bool mooveToStack;
     private Vector3 targetPosition;
     private GameObject targetPlayer;
 
-
+    private void Start() {
+        node.SetupConnections(gameObject);
+    }
+    
     private void Update() {
         if (mooveToStack) {
             targetPlayer.transform.position = Vector3.MoveTowards(targetPlayer.transform.position,targetPosition,30 * Time.deltaTime);

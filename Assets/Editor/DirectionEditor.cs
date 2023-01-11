@@ -9,7 +9,7 @@ using UnityEngine;
 [CustomEditor(typeof(Direction))]
 public class DirectionEditor : CustomFieldInspector<Direction> {
 
-    private SerializedProperty directions, step, directionsStep,aiPaths,reversePath;
+    private SerializedProperty directions, step, directionsStep,node;
     
     protected override void OnEnable() {
         base.OnEnable();
@@ -17,8 +17,7 @@ public class DirectionEditor : CustomFieldInspector<Direction> {
         directions = serializedClass.FindProperty("directions");
         step = serializedClass.FindProperty("type");
         directionsStep = serializedClass.FindProperty("directionsStep");
-        aiPaths = serializedClass.FindProperty("aiPaths");
-        reversePath = serializedClass.FindProperty("reversePaths");
+        node = serializedClass.FindProperty("node");
     }
 
     public override void OnInspectorGUI() { 
@@ -37,8 +36,7 @@ public class DirectionEditor : CustomFieldInspector<Direction> {
         
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("AI", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(aiPaths);
-        EditorGUILayout.PropertyField(reversePath);
+        EditorGUILayout.PropertyField(node);
             
         if(EditorGUI.EndChangeCheck()) 
             serializedClass.ApplyModifiedProperties();

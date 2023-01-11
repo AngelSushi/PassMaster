@@ -709,39 +709,11 @@ public class UserMovement : User {
         }
     }
 
-   // private List<Direction> checkedDirections = new List<Direction>();
-    private  List<Direction.AIPath> pendingPaths = new List<Direction.AIPath>();
-    
+
     public void GenerateIAPaths(Direction targetDirection,GameObject target,List<GameObject> allPaths,List<Direction> checkedDirections) {
 
-        foreach (Direction.AIPath aiPath in targetDirection.aiPaths) {
-            pendingPaths.Add(aiPath);
-
-            foreach (Direction.AIPath p_Path in pendingPaths) {
-
-                if (p_Path.end.TryGetComponent<Direction>(out Direction direction)) {
-                    //foreach()
-                }
-            }
-            
-            
-            pendingPaths.Clear();
-        }
 
         
-        
-        
-        
-        // Une fois que tt les aiPath de la directionStep sont activés  ==> on va check si la target ou on veut aller est sur le path
-          
-          // Si il est sur le path alors on va calculer la distance et la stocker
-          // sinon on passe au directionStep Suivant 
-
-
-
-
-
-
     }
 
 
