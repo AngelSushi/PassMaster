@@ -7,7 +7,7 @@ using UnityEngine;
 [CustomEditor(typeof(Step))]
 public class StepEditor : CustomFieldInspector<Step> {
 
-private SerializedProperty useVectors,positive,type,chest,shop,avoidPos,node;
+private SerializedProperty useVectors,positive,type,chest,shop,avoidPos;
     
     
     protected override void OnEnable() {
@@ -21,7 +21,6 @@ private SerializedProperty useVectors,positive,type,chest,shop,avoidPos,node;
         shop = serializedClass.FindProperty("shop");
 
         avoidPos = serializedClass.FindProperty("avoidPos");
-        node = serializedClass.FindProperty("node");
     }
 
     public override void OnInspectorGUI() {
@@ -42,14 +41,10 @@ private SerializedProperty useVectors,positive,type,chest,shop,avoidPos,node;
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("AI",EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(avoidPos);
-        EditorGUILayout.PropertyField(node);
         
 
         if(EditorGUI.EndChangeCheck()) 
             serializedClass.ApplyModifiedProperties();
     }
-
-    private void OnSceneGUI() {
-        Debug.Log("scene see");
-    }
+    
 }

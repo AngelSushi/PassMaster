@@ -20,8 +20,9 @@ public class GUIExtended {
 
         GUI.backgroundColor = GameController.Instance.showStepDirections ? Color.green : Color.red;
         if (GUILayout.Button("Enable/Disable Step Directions")) {
-            GameController.Instance.showStepDirections = !GameController.Instance.showStepDirections;
-            // Need To Recompile Script to Disable it 
+            GameController.Instance.showStepDirections = !GameController.Instance.showStepDirections; // Need To recompile
         }
+      
+      
     }
 }

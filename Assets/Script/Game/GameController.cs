@@ -1,17 +1,13 @@
-using System.Collections;
-using System;
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using PathCreation;
-using UnityEditor.AI;
 using UnityEngine.AI;
 using System.Linq;
 using UnityEditor;
 using Random=UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 [ExecuteInEditMode]
 public class GameController : CoroutineSystem {
@@ -58,8 +54,6 @@ public class GameController : CoroutineSystem {
 
     public Dictionary<GameObject,GameObject> playerConflict = new Dictionary<GameObject,GameObject>();
 
-    public Vector3[] stackPos = new Vector3[4];
-    public Vector3[] stackSize = new Vector3[4];
 
     public Sprite[] smallSprites = new Sprite[4];
     public Color[] classedColors = new Color[4];
@@ -121,7 +115,6 @@ public class GameController : CoroutineSystem {
     void Awake() {
         Instance = this;
         mainCamera = Camera.main.gameObject;
-        Debug.Log("this awake");
     }
 
     void Start() {
@@ -148,9 +141,11 @@ public class GameController : CoroutineSystem {
     void Update() {
         if(part != lastPart) 
             ChangePart();
-
-        if(!hasGenChest && !dialog.isInDialog)
+    
+        if (!hasGenChest && !dialog.isInDialog)
+        {
             GenerateChest();
+        }
 
         lastPart = part;
     }
@@ -209,6 +204,7 @@ public class GameController : CoroutineSystem {
     private void GenerateChest() {
         actualChest = null;
         freeze = true;
+        
         if(chestParent.transform.childCount == 0) {
             Debug.Log("There is no chest on the map. Please put someone");
             return;
@@ -424,6 +420,27 @@ public class GameController : CoroutineSystem {
                 SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
                 hasChangeState = true;
             }
+            
+            Debug.Log("length " + players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Count);
+
+            List<GameObject> playersInStep = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep;
+
+            if (playersInStep.Count == 2)
+            {
+                GameObject playerToAdd = null;
+
+                UserMovement userToAdd = GameObject.FindObjectsOfType<UserMovement>().Where(user => user.actualStep == players[0].GetComponent<UserMovement>().actualStep && !playersInStep.Contains(user.gameObject)).ToArray()[0];
+
+                Debug.Log("user to add " + userToAdd + " start " + players[0]);
+                playersInStep.Remove(players[0]);
+                playersInStep.Add(userToAdd.gameObject);
+
+                userToAdd.agent.enabled = false;
+                players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().SwitchPlayerInStep(userToAdd.gameObject);
+                
+
+            }
+            
         }
         else 
             UpdateSubPath(players[0].GetComponent<UserMovement>(),false);
@@ -504,7 +521,28 @@ public class GameController : CoroutineSystem {
             players[actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
             players[actualPlayer].SetActive(true);
 
-            ManageCameraPosition();    
+            ManageCameraPosition();  
+            
+            if (players[actualPlayer].GetComponent<UserMovement>().actualStep == null)
+                return;
+            
+            Debug.Log("length02 " + players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Count);
+
+            List<GameObject> playersInStep = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep;
+            
+            if (playersInStep.Count > 0) {
+                GameObject playerToAdd = null;
+
+                float y = playersInStep[0].transform.position.y;
+                
+                playersInStep.Remove(players[actualPlayer]);
+
+                Vector3 stepPosition = players[actualPlayer].GetComponent<UserMovement>().actualStep.transform.position;
+                stepPosition.y = y;
+                players[actualPlayer].transform.position = stepPosition;
+                
+
+            }
 
         }
         else { // Le tour est fini. Lancement d'un mini jeux

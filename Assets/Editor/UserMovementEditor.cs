@@ -81,6 +81,7 @@ public class UserMovementEditor : CustomFieldInspector<UserMovement> {
         giveUI = serializedClass.FindProperty("giveUI");
         changeUI = serializedClass.FindProperty("changeUI");
         stepMaterial = serializedClass.FindProperty("stepMaterial");
+
     }
     public override void OnInspectorGUI() {
         serializedClass.Update();

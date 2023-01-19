@@ -11,7 +11,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
     
     
     // General
-    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,stackPos,stackSize,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath;
+    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -33,8 +33,6 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
         players = serializedClass.FindProperty("players");
         part = serializedClass.FindProperty("part");
         posBegin = serializedClass.FindProperty("posBegin");
-        stackPos = serializedClass.FindProperty("stackPos");
-        stackSize = serializedClass.FindProperty("stackSize");
         smallSprites = serializedClass.FindProperty("smallSprites");
         classedColors = serializedClass.FindProperty("classedColors");
         turn = serializedClass.FindProperty("turn");
@@ -90,8 +88,6 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
                 EditorGUILayout.PropertyField(players);
                 EditorGUILayout.PropertyField(part);
                 EditorGUILayout.PropertyField(posBegin);
-                EditorGUILayout.PropertyField(stackPos);
-                EditorGUILayout.PropertyField(stackSize);
                 EditorGUILayout.PropertyField(smallSprites);
                 EditorGUILayout.PropertyField(classedColors);
                 EditorGUILayout.PropertyField(turn);

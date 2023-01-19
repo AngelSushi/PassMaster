@@ -5,15 +5,18 @@ using System;
 
 public class Direction : MonoBehaviour {
 
+    [System.Serializable]
+    public class DirectionInfos {
+        public GameObject directionTarget;
+        public List<GameObject> mustContains;
+    }
     
     public bool[] directions; // size : 3 ; left ; front ; right
     public StepType type;
     public GameObject[] directionsStep; // size : 3 ; left ; front ; right 
     public bool[] reverseCountDirections; // size 3 ; left ; front ; right
 
-    public NodeAI node;
+    public DirectionInfos[] directionInfos;
 
-    private void Start() {
-        node.SetupConnections(this.gameObject);
-    }
+
 }

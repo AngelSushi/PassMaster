@@ -68,6 +68,7 @@ public class UserMovement : User {
 
     public bool isElectrocuted;
     private Vector3 lastPosition;
+
     void Start() {
         path = new NavMeshPath();
         lastPosition = transform.position;
@@ -159,6 +160,8 @@ public class UserMovement : User {
                         ShowPath(Color.magenta,path);
                         CheckPath(false);
                         agent.SetPath(path);
+                        agent.velocity = agent.desiredVelocity;
+                        
                         
                         Quaternion targetRotation = Quaternion.LookRotation(nextStep.position - transform.position);
                         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1.5f * Time.deltaTime);
@@ -245,7 +248,7 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-               diceResult = isPlayer ? 6 : 76;
+               diceResult = 6;
 
                 
                beginResult = diceResult; 
@@ -456,64 +459,24 @@ public class UserMovement : User {
                 else { // Bot Facile = 50 ; Moyen = 70 ; Difficile  = 90 de chance d'aller vers le coffre
                     if(!hasFindChest) {
                         stop = true;
-                        iaDirectionPath = new List<GameObject>();
-                        Dictionary<GameObject,int> iaPathDirections = new Dictionary<GameObject, int>();
-                        int percentageGoToChest = 0;
-
-                        switch(gameController.difficulty) {
-                            case GameController.Difficulty.EASY: // Facile
-                                percentageGoToChest = 50;
-                                break;
-
-                            case GameController.Difficulty.MEDIUM: // Moyen
-                                percentageGoToChest = 70;
-                                break;
-
-                            case GameController.Difficulty.HARD: // Difficile
-                                percentageGoToChest = 90;
-                                break;
-                        }
-
-                        int randomGoToChest = Random.Range(0,100);
-
-                        // a modifier
-                        percentageGoToChest = 100;
-                        
-                        Debug.Log("direction " + ui.direction);
-                        
-                        GenerateIAPaths(ui.direction,gameController.stepChest,new List<GameObject>(),new List<Direction>());
-
-                        bool goToSmallest = randomGoToChest <= percentageGoToChest;
-                        int lastSize = 0;
-
-                        foreach(GameObject direction in iaPathDirections.Keys) {
-                            if(goToSmallest) {
-                                if(lastSize == 0 || lastSize >= iaPathDirections[direction]) 
-                                    lastSize = iaPathDirections[direction];
-                            }
-                            else { 
-                                if(lastSize == 0 || lastSize <= iaPathDirections[direction])
-                                    lastSize = iaPathDirections[direction];
-                            }
-                        }
-
-                        Debug.Log("go to " + (goToSmallest ? " smallest " : " far"));
-
-                        foreach (GameObject step in iaDirectionPath) {
-                            if (step.transform.childCount >= 2) {
-                                for (int i = 0; i < step.transform.childCount; i++) {
-                                    if (step.transform.GetChild(i).gameObject.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer)) {
-                                        meshRenderer.material.color = Color.magenta;
-                                    }
-                                }
-                            }
-                        }
                         
                         RunDelayed(0.1f,() => {
-                            nextStep = gameController.GetKeyByValue<GameObject,int>(lastSize,iaPathDirections).transform;
+                            GameObject target = inventory.cards < gameController.secretCode.Length
+                                ? gameController.stepChest
+                                : FindObjectsOfType<Step>().Where(step => step.type == StepType.STEP_END).ToList()[0].gameObject;
 
-                         //   nextStep = actualStep.GetComponent<Direction>().directionsStep[1].transform;
+                            Direction direction = ui.direction;
+
+                            if (direction == null || direction.directionInfos == null)
+                                return;
+                            
+                            Direction.DirectionInfos targetInfo = reverseCount || reverseDice ? direction.directionInfos[1] : direction.directionInfos[0];
+
+                            nextStep = targetInfo.mustContains.Contains(target) ? targetInfo.directionTarget.transform : direction.directionsStep.Where(obj => obj != null && obj != targetInfo.directionTarget).ToList()[0].transform;
+    
+                            Debug.Log("next : " + nextStep.name);
                             stop = false;
+                            hasFindChest = true;
                         });
                     }
                 }
@@ -531,12 +494,8 @@ public class UserMovement : User {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
                     Step targetStep = step.GetComponent<Step>();
                     
-                    Debug.Log("hit obj " + hit.gameObject);
-                    
                     userMovement.point = hit.gameObject.transform.position;
                    // userMovement.point.y = user.transform.position.y;
-                    
-                    Debug.Log("left conflict");
                     
                     gameController.playerConflict.Remove(user);
                 }

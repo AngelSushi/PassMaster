@@ -15,15 +15,10 @@ public class Step : MonoBehaviour {
     public GameObject shop;
     public Vector3 avoidPos; // position of players to avoid other player on path
 
-    public NodeAI node;
-    
     private bool mooveToStack;
     private Vector3 targetPosition;
     private GameObject targetPlayer;
-
-    private void Start() {
-        node.SetupConnections(gameObject);
-    }
+    
     
     private void Update() {
         if (mooveToStack) {
@@ -60,10 +55,28 @@ public class Step : MonoBehaviour {
             if (player != playerStep)
                 continue;
 
-            targetPosition = i == 1 ? transform.GetChild(3).position : transform.GetChild(2).position;
+            targetPosition = i == 1 ? transform.GetChild(2).position : transform.GetChild(3).position;
             targetPosition.y = player.transform.position.y;
         }
         
+    }
+    
+    public void SwitchPlayerInStep(GameObject player) {
+        targetPlayer = player;
+        player.GetComponent<NavMeshAgent>().enabled = false;
+        Vector3 positionToGo = Vector3.zero;
+        for (int i = 0; i < playerInStep.Count; i++) {
+            GameObject playerStep = playerInStep[i];
+
+            if (player != playerStep)
+                continue;
+
+            positionToGo = i == 1 ? transform.GetChild(3).position : transform.GetChild(2).position;
+            positionToGo.y = i == 1 ? playerInStep[0].transform.position.y : playerInStep[1].transform.position.y;
+        }
+
+        targetPlayer.transform.position = positionToGo;
+
     }
 
 
