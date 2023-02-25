@@ -14,9 +14,8 @@ public class Direction : MonoBehaviour {
     public bool[] directions; // size : 3 ; left ; front ; right
     public StepType type;
     public GameObject[] directionsStep; // size : 3 ; left ; front ; right 
-    public bool[] reverseCountDirections; // size 3 ; left ; front ; right
+    public bool[] bypassReverse = new bool[3]; // size 3 ; left ; front ; right
 
     public DirectionInfos[] directionInfos;
-
 
 }

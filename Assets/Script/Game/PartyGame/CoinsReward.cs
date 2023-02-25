@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using EnvDTE;
 using UnityEngine;
 
 public class CoinsReward : MonoBehaviour {
@@ -35,10 +36,19 @@ public class CoinsReward : MonoBehaviour {
 
                         movement.finishTurn = true;
 
-                        if(!controller.dialog.isInDialog) 
-                            controller.EndUserTurn();
-                    
                         
+                        if (!controller.dialog.isInDialog) {
+                            if (!movement.finishMovement) {
+                               // changePos = false;
+                                transform.gameObject.SetActive(false);
+                              //  hasFinishAnimation = true;
+                                yield break;
+                            }
+
+                            controller.EndUserTurn();
+                        }
+
+
                     }
                     else { // reward is in shop
                         controller.shopController.hasFinishBuy = true;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -9,9 +10,9 @@ public class UserUI : User {
 
     public bool showHUD;
     public bool showTurnInfo;
-    public bool showActionButton;
-    public bool showDirection;
-    public bool showShop;
+    public BVar showActionButton = new BVar();
+    public BVar showDirection = new BVar();
+    public BVar showShop = new BVar();
     public bool cameraView;
     private bool showCursor;
     public GameObject cursor;
@@ -41,17 +42,46 @@ public class UserUI : User {
 
 // Check que quand c'est pas le tour d'un joueur tt soit désactiver
 
-    void Update() {  
+    public override void Start() {
+        base.Start();
+
+        gameController.inputs.FindAction("Menus/Right").started += OnRight;
+        gameController.inputs.FindAction("Menus/Left").started += OnLeft;
+        gameController.inputs.FindAction("Menus/Interact").started += OnInteract;
+
+        showDirection.switchValuePositive += SwitchValuePositive;
+        showDirection.switchValueNegative += SwitchValueNegative;
+        
+        showActionButton.switchValuePositive += SwitchValuePositive;
+        showActionButton.switchValueNegative += SwitchValueNegative;
+        
+        showShop.switchValuePositive += SwitchValuePositive;
+        showShop.switchValueNegative += SwitchValueNegative;
+    }
+
+    public override void Update() {  
+        base.Update();
+        
         if(!gameController.freeze) {
-            ManageHudState(showHUD);
             ManageCameraPosition();
+            ManageHudState(showHUD);
             ManagerHudTurnState(showTurnInfo && gameController.part == GameController.GamePart.PARTYGAME);
-            ManageActionButtonState(showActionButton);
-            ManageHudDirection(showDirection);
-            ManageShop(showShop);
+            ManageActionButtonState(showActionButton.value);
+            ManageHudDirection(showDirection.value);
+            ManageShop(showShop.value);
+            
         } 
     }
 
+    public void SwitchValuePositive() {
+        if (showShop | showDirection | showActionButton) 
+            gameController.playerInput.SwitchCurrentActionMap("Menus");
+    }
+
+    public void SwitchValueNegative() {
+        if(!showShop & !showDirection && !showActionButton)
+            gameController.playerInput.SwitchCurrentActionMap("Player");
+    }
     
     public override void OnBeginTurn() {}
     public override void OnFinishTurn() {}
@@ -93,9 +123,11 @@ public class UserUI : User {
                     actions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
+
+            return;
         }
 
-        if(e.started && !cameraView && !showHUD && showDirection && !gameController.freeze) {
+        if(e.started && !cameraView && !showHUD & showDirection && !gameController.freeze) {
             int max = -1;
 
             if(directions[0].gameObject.activeSelf) 
@@ -152,6 +184,10 @@ public class UserUI : User {
             hoverInventoryItem.gameObject.SetActive(true);
             hoverInventoryItem.localPosition = index == inventoryItems.Length ? hoverPos[hoverPos.Length - 2] : hoverPos[index];       
         }
+
+
+        
+
     }
 
     public void OnLeft(InputAction.CallbackContext e) {
@@ -181,7 +217,7 @@ public class UserUI : User {
             }
         }
 
-        if(e.started && !cameraView && !showHUD && showDirection && !gameController.freeze) {
+        if(e.started && !cameraView && !showHUD & showDirection && !gameController.freeze) {
             int min = -1;
 
             if(directions[0].gameObject.activeSelf) 
@@ -228,44 +264,45 @@ public class UserUI : User {
     }
 
     public void OnInteract(InputAction.CallbackContext e) {       
-        if(e.started && showDirection && !gameController.freeze) {
+        if(e.started & showDirection && !gameController.freeze) {
             if(directions[0].GetChild(1).gameObject.activeSelf) {
                 movement.left = true;
                 Debug.Log("moove to left " + movement.isMooving);
-                movement.reverseCount = direction.reverseCountDirections[0];
                 directions[0].GetChild(0).gameObject.SetActive(true);
                 directions[0].GetChild(1).gameObject.SetActive(false); 
             }
             else if(directions[1].GetChild(1).gameObject.activeSelf) {
+                Debug.Log("moove to front " + movement.isMooving);
                 movement.front = true;
-                movement.reverseCount = direction.reverseCountDirections[1];
                 directions[1].GetChild(0).gameObject.SetActive(true);
                 directions[1].GetChild(1).gameObject.SetActive(false);
             }
             else if(directions[2].GetChild(1).gameObject.activeSelf) {
+                
+                Debug.Log("moove to right " + movement.isMooving);
                 movement.right = true;
-                movement.reverseCount = direction.reverseCountDirections[2];
                 directions[2].GetChild(0).gameObject.SetActive(true);
                 directions[2].GetChild(1).gameObject.SetActive(false);
             }
 
            // movement.reverseCount = direction.reverseCount;
-            showDirection = false;
+            showDirection.value = false;
             index = -1;
         }
 
-        if(e.started && showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
+        if(e.started & showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
             if(index == 0) {
                 ManageInventory(true);
             }
             else if(index == 1) {
                 showHUD = false;
-                showActionButton = false;
+                showActionButton.value = false;
                 infoLabel.SetActive(false);
                 if(isPlayer) 
                     isTurn = true;
 
                 //GetComponent<NavMeshAgent>().enabled = true;
+                gameController.playerInput.SwitchCurrentActionMap("Player");
                 movement.waitDiceResult = true;
                 index = -1;
             }
@@ -405,7 +442,7 @@ public class UserUI : User {
 
     public void CloseActionHUD(bool goToDice) {
         showHUD = false;
-        showActionButton = false;
+        showActionButton.value = false;
         ManageInventory(false);
         infoLabel.SetActive(false);
         GetComponent<NavMeshAgent>().enabled = goToDice;
@@ -427,8 +464,8 @@ public class UserUI : User {
             return;
         }
 
-        if(e.started && showShop && !gameController.freeze) {
-            showShop = false;
+        if(e.started & showShop && !gameController.freeze) {
+            showShop.value = false;
             gameController.shopController.returnToStep = true;
           //  gameController.mainCamera.SetActive(false); 
             transform.GetChild(1).gameObject.SetActive(true);
@@ -474,8 +511,8 @@ public class UserUI : User {
             int actualPlayer = gameController.actualPlayer;
             int hudIndex = 0;
 
-            for(int i = 0;i<4;i++) {
-                playersPanels[i].gameObject.SetActive(active);
+           // for(int i = 0;i<4;i++) {
+              //  playersPanels[i].gameObject.SetActive(active);
 
                 for(int j = actualPlayer;j<actualPlayer + 4;j++) {
                 
@@ -483,49 +520,36 @@ public class UserUI : User {
                     if(j > 3) 
                         playerIndex -= 4;
 
-                    UserMovement userMovement = gameController.players[playerIndex].GetComponent<UserMovement>();
+                    UserMovement targetUser = gameController.players[playerIndex].GetComponent<UserMovement>();
 
-                    if(userMovement == null && GameObject.FindGameObjectsWithTag("Shell").Length > 0) 
-                        userMovement = transform.gameObject.GetComponent<UserMovement>();
-                    
-
-                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,userMovement.userType);
-
-                    int rank = -1;
-                    int rankIndex = 0;
-                    foreach(GameObject player in gameController.classedPlayers.Keys) {
-                        if(GameObject.ReferenceEquals(player,gameController.players[playerIndex])) 
-                            rank = rankIndex;
-
-                        rankIndex++;
+                    int rank = 0;
+                    for (int k = 0;k < gameController.classedPlayers.Keys.Count;k++) {
+                        GameObject player = gameController.classedPlayers.Keys.ToArray()[k];
+                        
+                        if (player.GetComponent<UserMovement>() == targetUser) {
+                            rank = k;
+                            break;
+                        }
                     }
 
-                    if(rank >= 0 && rank < gameController.classedColors.Length && rank < gameController.classedPlayers.Keys.Count) { 
-                        playersPanels[playerIndex].GetChild(4).gameObject.GetComponent<Text>().text = gameController.players[playerIndex].GetComponent<UserInventory>().coins + "";
-                        playersPanels[playerIndex].GetChild(6).gameObject.GetComponent<Text>().text = gameController.players[playerIndex].GetComponent<UserInventory>().cards + "";
-                        playersPanels[playerIndex].GetChild(2).gameObject.GetComponent<Text>().text = rank + 1 + "";
-                        playersPanels[playerIndex].GetChild(2).gameObject.GetComponent<Text>().color = gameController.classedColors[rank];   
-                        playersPanels[playerIndex].GetChild(1).gameObject.GetComponent<Text>().text = gameController.players[playerIndex].name;
-                    }
+                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,targetUser.userType);
+
+                    playersPanels[hudIndex].gameObject.SetActive(active);
+                    playersPanels[hudIndex].GetChild(2).GetComponent<Text>().text = (rank + 1) + "";
+                    playersPanels[hudIndex].GetChild(2).GetComponent<Text>().color = gameController.classedColors[rank];
                     
+                    playersPanels[hudIndex].GetChild(4).GetComponent<Text>().text = targetUser.inventory.coins.ToString();
+                    playersPanels[hudIndex].GetChild(6).GetComponent<Text>().text = targetUser.inventory.cards.ToString();
+                    playersPanels[hudIndex].GetChild(1).GetComponent<Text>().text = targetUser.name;
+
+
+
                     hudIndex += 1;
-                    if(hudIndex == 4) 
-                        hudIndex = 0;
+                    if (hudIndex == 4) 
+                        break;
                 }            
             }
-        }
-    }
-
-    private int HasSamePoint(GameObject player) {
-        int playerPoint = gameController.GetPlayerPoints(player);
-        int playersIndex = 0;
-
-        foreach(GameObject p in gameController.playerPoint.Keys) {
-            if(p != player && gameController.playerPoint[p] == playerPoint) 
-                playersIndex++;        
-        }
-
-        return playersIndex;
+      //  }
     }
 
     private void ManageActionButtonState(bool active) {
@@ -536,11 +560,12 @@ public class UserUI : User {
             if(!active) 
                 actions[i].GetChild(1).gameObject.SetActive(active);
         }    
+        
     }
 
     private void ManagerHudTurnState(bool active) {
-        turnText.gameObject.SetActive(false);
-        nightText.gameObject.SetActive(false);     
+        turnText.gameObject.SetActive(active);
+        nightText.gameObject.SetActive(active);     
     }
 
     private void ManageHudDirection(bool active) { // front ou interior
@@ -560,7 +585,6 @@ public class UserUI : User {
                     direction.gameObject.SetActive(false);
             }
         }
-
         
     }
 
@@ -608,17 +632,9 @@ public class UserUI : User {
         }
     }
 
-    public int ReturnDiceResult() {
-        return int.Parse(diceResult.GetComponent<Text>().text);
-    }
-
-    public bool IsDisplayingReward() {
-        return coinIconReward.activeSelf;
-    }
-
     public void ChangeTurnValue(int turn,int night) {
         turnText.text = "Tour: " + turn;
-        nightText.text = "Nuit dans " + night + " tour(s)";
+        nightText.text = night > 1 ? "Nuit dans " + night + " tours" : "Nuit dans 1 tour";
     }
 
     private void DisplayInfoText(Vector2 pos,Color color,string text) {

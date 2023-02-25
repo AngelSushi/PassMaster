@@ -11,7 +11,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
     
     
     // General
-    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath;
+    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath,inputs;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -44,6 +44,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
         blackScreenAnim = serializedClass.FindProperty("blackScreenAnim");
         shellPrefab = serializedClass.FindProperty("shellPrefab");
         mainPath = serializedClass.FindProperty("mainPath");
+        inputs = serializedClass.FindProperty("inputs");
         
         // Controllers 
         day = serializedClass.FindProperty("dayController");
@@ -99,6 +100,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
                 EditorGUILayout.PropertyField(blackScreenAnim);
                 EditorGUILayout.PropertyField(shellPrefab);
                 EditorGUILayout.PropertyField(mainPath);
+                EditorGUILayout.PropertyField(inputs);
                 break;
             
             case 1:

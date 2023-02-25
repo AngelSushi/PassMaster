@@ -44,6 +44,20 @@ public class Step : MonoBehaviour {
             }
         }
     }
+
+    public void RemovePlayerInStep(GameObject player) {
+        if (playerInStep.Contains(player)) {
+
+            float y = player.transform.position.y;
+            Vector3 stepPosition = transform.position;
+            stepPosition.y = y;
+
+            player.transform.position = stepPosition;
+            playerInStep.Remove(player);
+        }
+        else 
+            Debug.Log("this step doesn't contains " + player.name);
+    }
     
     public void ManagePlayerInStep(GameObject player) {
         targetPlayer = player;
@@ -65,6 +79,7 @@ public class Step : MonoBehaviour {
         targetPlayer = player;
         player.GetComponent<NavMeshAgent>().enabled = false;
         Vector3 positionToGo = Vector3.zero;
+        
         for (int i = 0; i < playerInStep.Count; i++) {
             GameObject playerStep = playerInStep[i];
 
@@ -72,11 +87,10 @@ public class Step : MonoBehaviour {
                 continue;
 
             positionToGo = i == 1 ? transform.GetChild(3).position : transform.GetChild(2).position;
-            positionToGo.y = i == 1 ? playerInStep[0].transform.position.y : playerInStep[1].transform.position.y;
+            positionToGo.y = playerInStep[i].transform.position.y;
         }
 
         targetPlayer.transform.position = positionToGo;
-
     }
 
 

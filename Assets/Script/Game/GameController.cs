@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.AI;
 using System.Linq;
 using UnityEditor;
+using UnityEngine.InputSystem;
 using Random=UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
@@ -109,12 +110,22 @@ public class GameController : CoroutineSystem {
     public bool showStepNames;
     public bool showStepDirections;
 
+    public InputActionAsset inputs;
+    [HideInInspector]
+    public PlayerInput playerInput;
+    
+    
+    private InputActionMap lastAction;
+    
+    
+
     private void OnEnable() => Instance = this;
     
 
     void Awake() {
         Instance = this;
         mainCamera = Camera.main.gameObject;
+        playerInput = GetComponent<PlayerInput>();
     }
 
     void Start() {
@@ -142,11 +153,15 @@ public class GameController : CoroutineSystem {
         if(part != lastPart) 
             ChangePart();
     
-        if (!hasGenChest && !dialog.isInDialog)
-        {
+        if (!hasGenChest && !dialog.isInDialog) {
             GenerateChest();
         }
-
+        
+        if (lastAction != null && playerInput != null && playerInput.currentActionMap != null && lastAction.name != playerInput.currentActionMap.name)
+            Debug.Log("current action map " + playerInput.currentActionMap);
+            
+        lastAction = playerInput.currentActionMap;
+        
         lastPart = part;
     }
 
@@ -218,7 +233,6 @@ public class GameController : CoroutineSystem {
         bool hasLastChest = (lastIndex != -1);
  
         if(hasLastChest && !checkLastChest) {
-            chestParent.transform.GetChild(lastIndex).gameObject.SetActive(false);
             while(randomIndex >= (lastIndex - 3) && randomIndex <= (lastIndex + 3)) {
                 randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
             }
@@ -234,7 +248,6 @@ public class GameController : CoroutineSystem {
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
        // chest.SetActive(true);
 
-        
 
         chest.GetComponent<Animation>().clip = chestController.chestAnimations[0];
 
@@ -245,6 +258,9 @@ public class GameController : CoroutineSystem {
                 blackScreenAnim["BSAnim"].time = 1f;
                 timeToWait = 1.1f;
                 isFirstChest = false;
+            }
+            else {
+                
             }
 
             blackScreenAnim.Play();
@@ -263,10 +279,17 @@ public class GameController : CoroutineSystem {
                 mainCamera.transform.LookAt(chest.transform);
             }
             else { 
+                
+                players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(true);
+                players[actualPlayer].GetComponent<UserMovement>().agent.enabled = false;
                 RunDelayed(0.8f,() => {
-                    
-                    if(players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) 
+
+                    if (players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) {
                         players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(false);
+                    }
+                    
+                    players[actualPlayer].GetComponent<UserMovement>().agent.enabled = true;
+                    chestParent.transform.GetChild(lastIndex).gameObject.SetActive(false);
 
                     mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
                     mainCamera.transform.LookAt(chest.transform);
@@ -299,13 +322,13 @@ public class GameController : CoroutineSystem {
                         players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
                         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
                         
-                        mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                        mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+                        //mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
+                       // mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+
                         mainCamera.SetActive(true);
                         mainCamera.GetComponent<Camera>().enabled = true;
 
                         EndUserTurn();
-
                         freeze = false;
                     }
                 });
@@ -323,22 +346,22 @@ public class GameController : CoroutineSystem {
             if(forward) {
                 if(right && !left) 
                     return obj.transform.forward * distance + obj.transform.right * distance;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * distance + obj.transform.right * -1 * distance;
-                else 
-                    return obj.transform.forward * distance;
+                 
+                return obj.transform.forward * distance;
             }
-            else if(back) {
+            if(back) {
                 if(right && !left) 
                     return obj.transform.forward * -1 * distance + obj.transform.right * distance;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * -1 *  distance + obj.transform.right * -1 * distance;
-                else 
-                    return obj.transform.forward * -1 * distance;
+                 
+                return obj.transform.forward * -1 * distance;
             }
-            else if(right) 
+            if(right) 
                 return obj.transform.right * distance;
-            else if(left)
+            if(left)
                 return obj.transform.right * -1 * distance;
 
         }
@@ -401,9 +424,13 @@ public class GameController : CoroutineSystem {
         points.Sort();
         points.Reverse();
 
-        
-        for(int i = 0;i<points.Count;i++) 
-            GetKeyByValue(points[i],playerPoint,classedPlayers);   
+
+        for (int i = 0; i < points.Count; i++) {
+            GetKeyByValue(points[i], playerPoint, classedPlayers);
+        }
+
+        for (int i = 0; i < classedPlayers.Count; i++) 
+            classedPlayers.Keys.ToArray()[i].transform.SetSiblingIndex(i);
     }
 
     public void BeginTurn(bool repair) {
@@ -421,8 +448,6 @@ public class GameController : CoroutineSystem {
                 hasChangeState = true;
             }
             
-            Debug.Log("length " + players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Count);
-
             List<GameObject> playersInStep = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep;
 
             if (playersInStep.Count == 2)
@@ -455,7 +480,7 @@ public class GameController : CoroutineSystem {
         players[0].GetComponent<UserInventory>().enabled = true;
         players[0].GetComponent<UserUI>().showHUD = players[0].GetComponent<UserMovement>().isPlayer;
         players[0].GetComponent<UserUI>().showTurnInfo = players[0].GetComponent<UserMovement>().isPlayer;
-        players[0].GetComponent<UserUI>().showActionButton = players[0].GetComponent<UserMovement>().isPlayer;
+        players[0].GetComponent<UserUI>().showActionButton.value = players[0].GetComponent<UserMovement>().isPlayer;
         
 
         ManageCameraPosition();
@@ -463,6 +488,8 @@ public class GameController : CoroutineSystem {
 
     public void EndUserTurn() {
 
+        Debug.Log("end turn of " + players[actualPlayer].name);
+        
         if(players[actualPlayer].transform.parent.CompareTag("Shell")) {
             
             GameObject shell = players[actualPlayer].transform.parent.gameObject;
@@ -521,12 +548,10 @@ public class GameController : CoroutineSystem {
             players[actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
             players[actualPlayer].SetActive(true);
 
-            ManageCameraPosition();  
-            
+            ManageCameraPosition();
+
             if (players[actualPlayer].GetComponent<UserMovement>().actualStep == null)
                 return;
-            
-            Debug.Log("length02 " + players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Count);
 
             List<GameObject> playersInStep = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep;
             
@@ -559,19 +584,17 @@ public class GameController : CoroutineSystem {
     }
 
     public void ManagePlayerInStep(Step actualStep,GameObject playerIsTurn) {
+        Collider[] colliders = Physics.OverlapSphere(actualStep.transform.position,5,1 << 9);
 
-        for (int i = 0; i < actualStep.playerInStep.Count; i++) {
-            Vector3 stackPosition = i == 1 ? actualStep.gameObject.transform.GetChild(3).position : actualStep.gameObject.transform.GetChild(2).position;
-            
-            if (Vector3Int.FloorToInt(stackPosition) == Vector3Int.FloorToInt(playerIsTurn.transform.position)) {
-                GameObject playerOnStep = players.Where(player => player.GetComponent<UserMovement>().actualStep == actualStep.gameObject && !actualStep.playerInStep.Contains(player)).ToList()[0];
-                
-                playerIsTurn.transform.position = playerOnStep.transform.position;
-                playerOnStep.transform.position = stackPosition;
-                
-                Debug.Log("position " + stackPosition);
-                Debug.Log("myPos " + playerOnStep.transform.position);
+        actualStep.RemovePlayerInStep(playerIsTurn);
+        
+        foreach (Collider collider in colliders) {
+            if (collider.gameObject != playerIsTurn) {
+                Debug.Log(collider.name + " is not correctly placed !");
+                actualStep.playerInStep.Add(collider.gameObject);
+                actualStep.SwitchPlayerInStep(collider.gameObject);
             }
+            
         }
     }
 
@@ -657,34 +680,59 @@ public class GameController : CoroutineSystem {
         }
     }
 
+    private UserMovement lastBake;
+    
     public void UpdateSubPath(UserMovement user,bool add) {
 
         if (add) { // The Path must have more locations
-
-            if (isAlreadyBaked)
+            if (isAlreadyBaked && (lastBake == null || lastBake == user))
                 return;
             
-            Debug.Log("enter add locations");
-            GameObject stepChest = user.actualStep.GetComponent<Step>().chest;
             
+            Debug.Log("update my path");
+            
+            GameObject stepChest = user.actualStep.GetComponent<Step>().chest;
+
+            UpdateOtherSubPath(user,true);
             
             stepChest.SetActive(true);
             bool isAlreadyActive = actualChest == stepChest;
             if(stepChest.transform.childCount > 1)
                 stepChest.transform.GetChild(0).gameObject.SetActive(false);
-            
+
             mainPath.BuildNavMesh();
 
             stepChest.SetActive(false);
+            
+            UpdateOtherSubPath(user,false);
+            
             if(stepChest.transform.childCount > 1)
                 stepChest.transform.GetChild(0).gameObject.SetActive(isAlreadyActive);
 
             isAlreadyBaked = true;
+            lastBake = user;
         }
         else {
+            UpdateOtherSubPath(user,true);
             mainPath.BuildNavMesh();
+            UpdateOtherSubPath(user,false);
+            
             isAlreadyBaked = false;
         }
     }
 
+    private void UpdateOtherSubPath(UserMovement user,bool active) {
+        foreach (GameObject player in players) {
+            
+            if (player != players[actualPlayer] && player.GetComponent<UserMovement>() != user) { // If there is two players to stepback between
+                // activer les path vers les chest des players qui ne sont pas sur la step
+
+                UserMovement userMovement = player.GetComponent<UserMovement>();
+                
+                if (userMovement.point != Vector3.zero) {
+                    userMovement.actualStep.GetComponent<Step>().chest.SetActive(active);
+                }
+            }
+        }
+    }
 }

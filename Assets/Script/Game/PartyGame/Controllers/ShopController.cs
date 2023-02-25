@@ -64,7 +64,7 @@ public class ShopController : CoroutineSystem {
                 shopPosition = Vector3.zero;
                 mooveToShop = false;
                 if(actualPlayer.GetComponent<UserMovement>().isPlayer) {
-                    actualPlayer.GetComponent<UserUI>().showShop = true;
+                    actualPlayer.GetComponent<UserUI>().showShop.value = true;
 
                     shopObject.transform.GetChild(0).gameObject.SetActive(true);
                     gameController.mainCamera.SetActive(true); 
@@ -120,7 +120,6 @@ public class ShopController : CoroutineSystem {
     }
 
     private void EventOnDialogEnd(object sender,DialogController.OnDialogEndArgs e) {
-        Debug.Log("event dialog end " + e.dialog.id + " answer " + e.answerIndex);
         
         if(e.dialog == null)
             return;
@@ -151,7 +150,7 @@ public class ShopController : CoroutineSystem {
 
             Dialog stateDialog = inventory.coins <= amount * price ? shopDialogs.GetDialogByName("NotEnoughMoneyShop") : shopDialogs.GetDialogByName("EndShop");
 
-            shopDialogs.isInDialog = true;
+            shopDialogs.isInDialog.value = true;
             shopDialogs.currentDialog = stateDialog;
             StartCoroutine(shopDialogs.ShowText(stateDialog.Content[0],stateDialog.Content.Length));
         }
@@ -161,7 +160,7 @@ public class ShopController : CoroutineSystem {
         if(e.dialog.id == 9) {  
             
             returnToStep = true;
-            e.actualPlayer.GetComponent<UserUI>().showShop = false;
+            e.actualPlayer.GetComponent<UserUI>().showShop.value = false;
             actualPlayer.transform.GetChild(1).gameObject.SetActive(true);
         }
     }
@@ -173,7 +172,7 @@ public class ShopController : CoroutineSystem {
         if(askBuy)
             return;
 
-        shopDialogs.isInDialog = true;
+        shopDialogs.isInDialog.value = true;
         Dialog hoverDialog = shopDialogs.GetDialogByName("HoverItem_" + ConvertSlotToItem(slot));
         shopDialogs.currentDialog = hoverDialog;
         StartCoroutine(shopDialogs.ShowText(hoverDialog.Content[0],hoverDialog.Content.Length));
@@ -235,7 +234,7 @@ public class ShopController : CoroutineSystem {
         int amount = int.Parse(transform.GetChild(1).GetChild(slot).GetChild(3).GetChild(1).gameObject.GetComponent<Text>().text);
         String content = buyItem.Content[0] + "x" + amount + " " + TranslateItem(ConvertSlotToItem(slot)) + " ? ";
 
-        shopDialogs.isInDialog = true;
+        shopDialogs.isInDialog.value = true;
         shopDialogs.currentDialog = buyItem;
         askBuy = true;
         lastSlot = slot;
@@ -269,12 +268,14 @@ public class ShopController : CoroutineSystem {
         ShopItem cheapestItem = FindCheapestItem();
 
         if(cheapestItem == null) {
+            Debug.Log("enter here 10");
             gameController.EndUserTurn();
             return;
         }
 
-        if(inv.coins < cheapestItem.price) 
-          gameController.EndUserTurn();
+        if (inv.coins < cheapestItem.price) {
+            gameController.EndUserTurn();
+        }
         else {
             RunDelayed(0.1f,() => {
                 actualPlayer = inv.gameObject;

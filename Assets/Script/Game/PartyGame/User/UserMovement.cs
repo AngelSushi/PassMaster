@@ -11,6 +11,7 @@ public class UserMovement : User {
     public NavMeshAgent agent;
     public bool waitDiceResult;
     public bool finishMovement;
+    public bool startCoroutine;
     public bool finishTurn;
     public bool left;
     public bool front;
@@ -42,7 +43,7 @@ public class UserMovement : User {
     private bool jump;
     private int random = -1;
     private float timer;
-    private Vector3 point;
+    public Vector3 point;
     private bool hasCheckPath;
     private bool hasShowChestHUD;
     private bool canMooveToChest = true;
@@ -69,9 +70,14 @@ public class UserMovement : User {
     public bool isElectrocuted;
     private Vector3 lastPosition;
 
+    public bool bypassReverse;
+
     void Start() {
         path = new NavMeshPath();
         lastPosition = transform.position;
+
+        gameController.inputs.FindAction("Player/Jump").started += OnJump;
+        userCam = transform.GetChild(1).gameObject;
     }
 
     public override void OnBeginTurn() {
@@ -108,6 +114,8 @@ public class UserMovement : User {
         hasCollideDice = false;
         waitDiceResult = true;
         hasJump = false;
+        finishMovement = false;
+        startCoroutine = false;
 
         reverseDice = false;
         tripleDice = false;
@@ -158,7 +166,11 @@ public class UserMovement : User {
                     if(canMoove) {
                         agent.CalculatePath(nextStep.position,path);
                         ShowPath(Color.magenta,path);
-                        CheckPath(false);
+                        //CheckPath(false);
+                        
+                        if(!finishMovement)
+                            StepBackMovement(stepPaths);
+                        
                         agent.SetPath(path);
                         agent.velocity = agent.desiredVelocity;
                         
@@ -169,7 +181,7 @@ public class UserMovement : User {
 
                 }
 
-                if(finishMovement) {
+                if(finishMovement && !startCoroutine) {
                     StepType type = actualStep.GetComponent<Step>().type;
                     if(type == StepType.BONUS)  
                         StartCoroutine(WaitBonus(true));
@@ -178,7 +190,7 @@ public class UserMovement : User {
 
                     ui.ClearDiceResult();
                     hasCheckPath = false;
-                    finishMovement = false;
+                    startCoroutine = true;
                 }            
 
                 if(!isPlayer && waitDiceResult) {
@@ -248,9 +260,15 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-               diceResult = 6;
 
-                
+               diceResult = 3;
+              //  diceResult = gameController.turn == 1 && isPlayer ? 23 : gameController.turn == 1 ? 22 : isPlayer ? 2 : 4;
+               
+               
+               //diceResult = gameController.actualPlayer == 0 ? 4 : gameController.actualPlayer == 1 || gameController.actualPlayer == 2 ? 5 : 6; //For checking stack on turn 2 
+               //diceResult = isPlayer ? 4 : 5;
+               
+               
                beginResult = diceResult; 
                stepPaths = new GameObject[beginResult]; 
                hasCollideDice = true;  
@@ -299,7 +317,7 @@ public class UserMovement : User {
                             gameController.chestController.returnToStep = false;
                             gameController.hasGenChest = false;
                         }
-
+                        
                         gameController.UpdateSubPath(this,false);
                         return;
                     });
@@ -339,8 +357,13 @@ public class UserMovement : User {
                     if(lastStep.GetComponent<Direction>() == null) {
                         bypassDirection = true;
                         GetNextStep();
-                        if(nextStep.GetComponent<Direction>() != null)
-                            nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
+                        if (nextStep.GetComponent<Direction>() != null) {
+                            
+                            if (!reverseDice && !reverseCount) {
+                                nextStep = nextStep.GetComponent<Direction>().directionsStep[1].transform;
+                                Debug.Log("go to second element of directions step");
+                            }
+                        }
                     }
                 }
 
@@ -349,7 +372,7 @@ public class UserMovement : User {
                         RunDelayed(0.5f,() => {
                             Dialog shopDialog = gameController.dialog.GetDialogByName("AskShop");
                             if(gameController.dialog.currentDialog != shopDialog) {
-                                gameController.dialog.isInDialog = true;
+                                gameController.dialog.isInDialog.value = true;
                                 gameController.dialog.currentDialog = shopDialog;
                                 StartCoroutine(gameController.dialog.ShowText(shopDialog.Content[0],shopDialog.Content.Length));
                             }
@@ -366,14 +389,26 @@ public class UserMovement : User {
                 if(ui.direction == null) 
                     ui.direction = hit.gameObject.GetComponent<Direction>();
 
-                if(bypassDirection && reverseCount) 
+                if (bypassDirection && reverseCount) 
                     reverseCount = false;
-
+                
                 if (lastStep.TryGetComponent<Direction>(out Direction direction)) { // IL Y A DEUX DIRECTIONS QUI SE SUCCEDE
                     Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
                     int directionStepIndex = actualStep != null ? gameController.FindIndexInParent(stepParent.gameObject,actualStep) : gameController.FindIndexInParent(stepParent.gameObject,beginStep);
 
                     nextStep = reverseDice ? stepParent.GetChild(Mathf.Abs(directionStepIndex - (stepParent.childCount - 1))) : actualStep.GetComponent<Direction>().directionsStep[1].transform;
+                }
+                
+                if(bypassDirection) {
+                    if (bypassReverse) {
+                        bypassReverse = false;
+                        GetNextStep();
+                        Debug.Log("bypass my reverse");
+                        return;
+                    }
+                
+                    nextStep =  actualStep.GetComponent<Direction>().directionsStep[1].transform;
+                    Debug.Log("choose my nextStep");
                 }
             }
         }
@@ -427,31 +462,34 @@ public class UserMovement : User {
                 }
             }
 
-            if(type == StepType.FIX_DIRECTION && bypassDirection) {
-                nextStep =  actualStep.GetComponent<Direction>().directionsStep[1].transform;
-                return;
-            }
-
             if(type == StepType.FIX_DIRECTION && (lastStep != null && lastStep.GetComponent<Step>() != null && (lastStep.GetComponent<Step>().type != StepType.BONUS_END || lastStep.GetComponent<Step>().type != StepType.MALUS_END)) && !bypassDirection && isTurn) {
                 if(isPlayer) { // Joueur
                     if(!left && !right && !front) {
                         if(!ui.showDirection) 
-                            ui.showDirection = true;
+                            ui.showDirection.value = true;
                         stop = true; 
                         return;
                     }
                     else {
                         agent.enabled = true;
-                        if(left) 
-                            nextStep = reverseDice ?  ui.direction.directionsStep[2].transform : ui.direction.directionsStep[0].transform;
+                        if (left) {
+                            nextStep = reverseDice ? ui.direction.directionsStep[2].transform : ui.direction.directionsStep[0].transform;
+                            bypassReverse = reverseDice ? ui.direction.bypassReverse[0] : ui.direction.bypassReverse[2];
+                        }
+
                         if(front) {
                             nextStep = ui.direction.directionsStep[1].transform;
-                        // front = false;
+                            bypassReverse = ui.direction.bypassReverse[1];
+                            // front = false;
                         }
-                        if(right) 
-                            nextStep = reverseDice ? ui.direction.directionsStep[0].transform : ui.direction.directionsStep[2].transform;
 
-                        
+                        if (right) {
+                            nextStep = reverseDice ? ui.direction.directionsStep[0].transform : ui.direction.directionsStep[2].transform;
+                            bypassReverse = reverseDice ? ui.direction.bypassReverse[2] : ui.direction.bypassReverse[0];
+                            
+                            Debug.Log("go to Right");
+                        }
+
                         stop = !(left || front || right);
                     }
                 }
@@ -503,8 +541,9 @@ public class UserMovement : User {
 
             if(type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION) {
 
-                if(bypassDirection) 
+                if (bypassDirection) {
                     bypassDirection = false;
+                }
 
                 hasCheckPath = false;
                 ui.direction = null;
@@ -512,13 +551,15 @@ public class UserMovement : User {
                 if(!isPlayer && hasFindChest)
                     hasFindChest = false;
             }
-
-        /*    if(type == StepType.STEP_END) 
-                ChooseNextStep(type); 
-*/
+            
+            
             left = false;
             front = false;
             right = false;
+            
+            // Code Here
+            hasCheckPath = false;
+            CheckPath(false);
 
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.FIX_DIRECTION || type == StepType.FLEX_DIRECTION || type == StepType.BONUS_END  || type == StepType.MALUS_END || type == StepType.STEP_END) 
                 lastStep = hit.gameObject;
@@ -528,7 +569,7 @@ public class UserMovement : User {
     #region Inputs Functions
 
     public void OnJump(InputAction.CallbackContext e) {
-        if(e.started && canJump) 
+        if(e.started && canJump && isPlayer) 
             Jump();       
     } 
 
@@ -573,7 +614,6 @@ public class UserMovement : User {
         if(type != StepType.FIX_DIRECTION && type != StepType.FLEX_DIRECTION && type != StepType.NONE && nextStep != null) 
             diceResult--;
         
-
         GetNextStep();
 
         if(ui != null) 
@@ -589,14 +629,19 @@ public class UserMovement : User {
                 beginStep = nextStep != null ? nextStep.gameObject : gameController.firstStep;
 
             Transform stepParent = actualStep != null ? actualStep.transform.parent : beginStep.transform.parent;
-            int stepIndex = actualStep != null ? gameController.FindIndexInParent(stepParent.gameObject,actualStep) : gameController.FindIndexInParent(stepParent.gameObject,beginStep);
+            int stepIndex = actualStep != null ? gameController.FindIndexInParent(stepParent.gameObject,actualStep) + 1 : gameController.FindIndexInParent(stepParent.gameObject,beginStep);
             int result = actualStep != null ? diceResult : beginResult;
+
+            if (!atStart) { // called when leave direction
+                stepParent = nextStep.transform.parent;
+                stepIndex = gameController.FindIndexInParent(stepParent.gameObject, nextStep.gameObject);
+            }
 
             if(stepIndex == -1) 
                 stepIndex = 0;
-
+            
             for (int i = 0; i < result; i++) {
-                if (!reverseDice) {
+                if (!reverseDice && !reverseCount) {
                     if (stepIndex + i < stepParent.childCount) // On vérifie que le calcul du prochain index de la prochaine step est bien inférieur au nombre de step max
                         stepPaths[i] = stepParent.GetChild(stepIndex + i).gameObject;
                     else  
@@ -612,7 +657,7 @@ public class UserMovement : User {
 
             hasCheckPath = true;
            
-            if (stepPaths[stepPaths.Length - 1].TryGetComponent<Step>(out Step step)) { // Si il y a deja 3 joueurs sur une mm case on retire pour eviter qu'il y en ai 4 
+            if (atStart && stepPaths[stepPaths.Length - 1].TryGetComponent<Step>(out Step step)) { // Si il y a deja 3 joueurs sur une mm case on retire pour eviter qu'il y en ai 4 
                 if (step.playerInStep.Count == 2) {
                     GameObject[] stepsCopy = new GameObject[stepPaths.Length - 1];
 
@@ -624,8 +669,8 @@ public class UserMovement : User {
                 
                     diceResult -= 1 * amplifier;
 
-                    if (atStart && diceResult == 0)
-                        diceResult = 1;
+                    if (diceResult <= 0)
+                        diceResult = 1 * amplifier;
                 }
 
                 
@@ -633,176 +678,65 @@ public class UserMovement : User {
             
         }
 
-        StepBackMovement(stepPaths);
     }
 
     private void GetNextStep() {
         GameObject actualParent = actualStep != null ? actualStep.transform.parent.gameObject : gameController.firstStep.transform.parent.gameObject;
         int stepIndex = gameController.FindIndexInParent(actualParent,actualStep);
 
-        if(!reverseDice && !reverseCount) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
+        if(!reverseDice && !reverseCount && !bypassReverse) { // Si le joueur n'utilise pas le dé inverse ou qu'il n'est pas en reverseCount
             if(stepIndex + 1 < actualParent.transform.childCount) 
                 nextStep = actualParent.transform.GetChild(stepIndex + 1);
             else 
                 nextStep = actualParent.transform.GetChild(0);
         }
         else { // Le joueur utilise le dé inverse ou est en reverseCount
-            if (stepIndex - 1 >= 0) {
-                nextStep = actualParent.transform.GetChild(stepIndex - 1);
+            Debug.Log("00");
+            if (bypassReverse) {
+                Debug.Log("01");
+                if(stepIndex + 1 < actualParent.transform.childCount) 
+                    nextStep = actualParent.transform.GetChild(stepIndex + 1);
+                else 
+                    nextStep = actualParent.transform.GetChild(0);
             }
             else {
-                if (reverseCount) { // Si on est a la fin et qu'on veut revenir
-                    Direction targetDirection = FindObjectsOfType<Direction>().Where(dir => dir.directionsStep.Contains(actualStep)).ToList()[0];
-
-                    if (targetDirection != null) {
-                        nextStep = targetDirection.directionsStep.Where(step => step != null && step != actualStep).ToList()[0].transform;
-                        bypassDirection = true;
-                        Debug.Log("entered");
-                        return;
-                    }
+                Debug.Log("02");
+                if (stepIndex -  1 >= 0) {
+                    nextStep = actualParent.transform.GetChild(stepIndex - 1);
                 }
+                else {
+                    if (reverseCount) { // Si on est a la fin et qu'on veut revenir
+                        Direction targetDirection = FindObjectsOfType<Direction>().Where(dir => dir.directionsStep.Contains(actualStep)).ToList()[0];
+                        Debug.Log("enter here ");
+                        if (targetDirection != null) {
+                            nextStep = targetDirection.directionsStep.Where(step => step != null && step != actualStep).ToList()[0].transform;
+                            bypassDirection = true;
+                            return;
+                        }
+                    }
                 
-                nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);
-                // ERROR A TESTER
+                    nextStep = actualParent.transform.GetChild(actualParent.transform.childCount - 1);
+                    // ERROR A TESTER
+                }
             }
-        }
-    }
-
-
-    public void GenerateIAPaths(Direction targetDirection,GameObject target,List<GameObject> allPaths,List<Direction> checkedDirections) {
-
-
-        
-    }
-
-
-    private bool IsOnPath(GameObject path, GameObject target) {
-        foreach (MeshRenderer meshRenderer in path.GetComponentsInChildren<MeshRenderer>()) {
-            if (meshRenderer.bounds.Contains(target.transform.position))
-                return true;
         }
         
-        return false;
+//        Debug.Log("nextStep " + nextStep);
     }
-    
-    
-    
-   /* private bool FindSmallestChestPath(GameObject begin,GameObject end,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
-        int indexEnd = gameController.FindIndexInParent(end.transform.parent.gameObject,end);
-
-        if(end.GetComponent<Direction>() != null && !sameParent)
-            indexEnd++;
-
-        if (end.GetComponent<Step>() != null && end.GetComponent<Step>().type == StepType.STEP_END) // Error on board isle at the end the indexEnd is 1 should be 2 
-            indexEnd++;
-
-        for(int i = gameController.FindIndexInParent(begin.transform.parent.gameObject,begin); i != indexEnd;) {
-            if (i >= begin.transform.parent.childCount) 
-                i -= begin.transform.parent.childCount;
-
-            GameObject actualObj = begin.transform.parent.GetChild(i).gameObject;
-
-
-            if (!iaDirectionPath.Contains(actualObj)) 
-                iaDirectionPath.Add(actualObj);
-
-            if (inventory.cards < gameController.secretCode.Length) {
-                if(actualObj == gameController.stepChest) {
-                    Debug.Log("find chest begin " + begin + " end " + end);
-                    hasFindChest = true;
-                    return true;
-                }
-            }
-            else {
-                GameObject stepEnd = FindObjectsOfType<Step>().Where(step => step.type == StepType.STEP_END).ToList()[0].gameObject;
-                if (actualObj == stepEnd) {
-                    Debug.Log("find end");
-                    hasFindChest = true;
-                    return true;
-                }
-            }
-            
-
-            if(actualObj.GetComponent<Direction>() != null) {
-                for(int j = 0;j<actualObj.GetComponent<Direction>().directionsStep.Length;j++) {
-                    GameObject beginDirection = actualObj.GetComponent<Direction>().directionsStep[j];
-                    if(beginDirection != null) { 
-                        Direction nextDir = actualObj.GetComponent<Direction>().directionsStep[j].GetComponent<Direction>();
-
-                        GameObject beginObj = beginDirection;
-                        GameObject endObj;
- 
-                        if(nextDir != null) {
-                            beginObj = nextDir.directionsStep[1].gameObject;
-                            endObj = nextDir.directionsStep[1].gameObject.transform.parent.GetChild(nextDir.directionsStep[1].gameObject.transform.parent.childCount- 1).gameObject;
-                        }
-                        else {
-                            
-                            if (beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject) { // -2 ici car on ne veut pas prendre en compte la direction
-                                endObj = beginObj.transform.parent.GetChild(0).gameObject;
-                                decrement = true;
-                            }
-                            else {
-                                endObj = beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount - 1).gameObject;
-                                decrement = false;
-                            }
-
-                            if (beginObj == endObj) { // FOr Isle Board At The 3 ISle BeginObj = EndObj
-                                Debug.Log("end is same than begin");
-                                endObj = beginObj.transform.parent.GetChild(beginObj.transform.parent.childCount - 1).gameObject;
-                                decrement = false;
-                            }
-
-                           
-                        }
-                        
-                        int beginSize = iaDirectionPath.Count;
-                        bool result = FindSmallestChestPath(beginObj,endObj,iaDirectionSteps,decrement,beginObj.transform.parent == endObj.transform.parent);
-                        int size = iaDirectionPath.Count - beginSize;
-                        
-                        Debug.Log("result " + result + " begin " + beginObj + " end " + endObj);
-
-                        if(!result)  
-                            EraseSteps(beginSize,size,iaDirectionSteps);   
-                    }
-                }
-            }
-
-            if(decrement)
-                i--;
-            else
-                i++;
-
-        }
-
-        return false;
-    }
-
-    private void EraseSteps(int beginIndex,int size,List<GameObject> iaDirectionSteps) {
-        List<GameObject> erase = new List<GameObject>();
-
-        for(int i = 0;i<iaDirectionSteps.Count;i++) {
-            if(i >= beginIndex && i <= beginIndex + size) 
-                erase.Add(iaDirectionSteps[i]);
-        }
-
-        foreach(GameObject eraseObj in erase) 
-            iaDirectionPath.Remove(eraseObj);
-    }
-    
-    */
 
     private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
-        if(stepPaths != null) {
-            foreach(GameObject step in stepPaths) {
+        if(steps != null) {
+            foreach(GameObject step in steps) {
                 foreach(GameObject user in gameController.players) {
                     UserMovement userMovement = user.GetComponent<UserMovement>();
-              
-                    if(step != null && !userMovement.isTurn && userMovement.actualStep == step) { // Si un des joueurs est sur l'un des step du chemin
+                    if(step != null && !userMovement.isTurn && userMovement.actualStep == step && !step.GetComponent<Step>().playerInStep.Contains(userMovement.gameObject)) { // Si un des joueurs est sur l'un des step du chemin
                         if (nextStep != null && nextStep.gameObject == step) { // Si la prochaine step du user dont c'est le tour est la step target
                             Step targetStep = step.GetComponent<Step>();
-
+                            
                             if (diceResult > 1) { // Les joueurs vont que se croiser
+                                
+                                Debug.Log("there is stepback between " + userMovement.name + " and " + agent.name);
+                                
                                 userMovement.stepBack = true;
                                 agent.enabled = true;
                                 gameController.UpdateSubPath(userMovement,true);
@@ -870,8 +804,8 @@ public class UserMovement : User {
             inventory.CoinLoose(3);
             ui.DisplayReward(false,3,stepReward);
             gameController.ActualizePlayerClassement();
-        }   
-        else 
+        }
+        else
             gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
 
         ui.ClearDiceResult();   
@@ -903,7 +837,6 @@ public class UserMovement : User {
         else
             gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
         
-
         ui.ClearDiceResult();   
 
         random = -1;
@@ -920,8 +853,14 @@ public class UserMovement : User {
     }
 
     private void DisplayChestDialog() {
+        if (inventory.cards >= gameController.secretCode.Length) {
+            gameController.EndUserTurn();
+            return;
+        }
+
+
         Dialog askChest = gameController.dialog.GetDialogByName("AskChestBuy");
-        gameController.dialog.isInDialog = true;
+        gameController.dialog.isInDialog.value = true;
         gameController.dialog.currentDialog = askChest;
         StartCoroutine(gameController.dialog.ShowText(askChest.Content[0],askChest.Content.Length));
     }

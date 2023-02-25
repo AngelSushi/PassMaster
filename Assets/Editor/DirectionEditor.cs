@@ -9,7 +9,7 @@ using UnityEngine;
 [CustomEditor(typeof(Direction))]
 public class DirectionEditor : CustomFieldInspector<Direction> {
 
-    private SerializedProperty directions, step, directionsStep,directionsInfos,reverseCountDirections;
+    private SerializedProperty directions, step, directionsStep,directionsInfos,bypassReverse;
     
     protected override void OnEnable() {
         base.OnEnable();
@@ -17,7 +17,7 @@ public class DirectionEditor : CustomFieldInspector<Direction> {
         directions = serializedClass.FindProperty("directions");
         step = serializedClass.FindProperty("type");
         directionsStep = serializedClass.FindProperty("directionsStep");
-        reverseCountDirections = serializedClass.FindProperty("reverseCountDirections");
+        bypassReverse = serializedClass.FindProperty("bypassReverse");
 
         directionsInfos = serializedClass.FindProperty("directionInfos");
     }
@@ -35,7 +35,7 @@ public class DirectionEditor : CustomFieldInspector<Direction> {
         EditorGUILayout.LabelField("Directions Info", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(directions);
         EditorGUILayout.PropertyField(directionsStep);
-        EditorGUILayout.PropertyField(reverseCountDirections);
+        EditorGUILayout.PropertyField(bypassReverse);
         EditorGUILayout.PropertyField(directionsInfos);
         
         EditorGUILayout.Space(10);

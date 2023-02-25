@@ -14,6 +14,7 @@ public class ChestController : CoroutineSystem {
     public bool returnToStep;
     private NavMeshPath chestPath;
     public AnimationClip[] chestAnimations;
+    private bool hasPlayedAnim;
 
     void Start() {
         GameController.Instance.dialog.OnDialogEnd += EventOnDialogEnd;
@@ -26,9 +27,10 @@ public class ChestController : CoroutineSystem {
             RunDelayed(0.65f,() => {
                 goToChest = false;
                 
-                if(!obj.GetComponent<Animation>().isPlaying) {
+                if(!obj.GetComponent<Animation>().isPlaying && !hasPlayedAnim) {
                     obj.GetComponent<Animation>().clip = chestAnimations[1];
                     obj.GetComponent<Animation>().Play();
+                    hasPlayedAnim = true;
                 }
 
                 bool hasFullSecretCode = actualPlayer.GetComponent<UserInventory>().cards == GameController.Instance.secretCode.Length;
@@ -53,7 +55,7 @@ public class ChestController : CoroutineSystem {
                                 content = content.Replace("%b","" + (GameController.Instance.secretCode.Length - actualPlayer.GetComponent<UserInventory>().cards));
                             }
 
-                            GameController.Instance.dialog.isInDialog = true;
+                            GameController.Instance.dialog.isInDialog.value = true;
                             GameController.Instance.dialog.currentDialog = chestDialog;
                             StartCoroutine(GameController.Instance.dialog.ShowText(content,chestDialog.Content.Length));
                             StartCoroutine(actualPlayer.GetComponent<UserMovement>().WaitMalus(true,chestCoinsPrice));
@@ -76,11 +78,13 @@ public class ChestController : CoroutineSystem {
         if(e.dialog == null) 
             return;
         
+        Debug.Log("my id " + e.dialog.id);
+        
         if(e.dialog.id == 10 && e.answerIndex == 0) {
             if(e.actualPlayer.GetComponent<UserInventory>().coins < chestCoinsPrice) {
                 RunDelayed(0.05f,() => {
                     Dialog moneyDialog = GameController.Instance.dialog.GetDialogByName("NotEnoughMoneyChest");
-                    GameController.Instance.dialog.isInDialog = true;
+                    GameController.Instance.dialog.isInDialog.value = true;
                     GameController.Instance.dialog.currentDialog = moneyDialog;
                     StartCoroutine(GameController.Instance.dialog.ShowText(moneyDialog.Content[0],moneyDialog.Content.Length));
                 });
@@ -90,23 +94,29 @@ public class ChestController : CoroutineSystem {
 
             chestPosition = e.position - GetDirection(e.actualPlayer.GetComponent<UserMovement>().actualStep,e.actualPlayer.GetComponent<UserMovement>().actualStep.GetComponent<Step>());
             actualPlayer = e.actualPlayer;
+            
+            Debug.Log("Object " + e.obj);
+            
             obj = e.obj;
             chestPath = new NavMeshPath();
             goToChest = true;
 
             GameController.Instance.UpdateSubPath(actualPlayer.GetComponent<UserMovement>(),true);
+            GameController.Instance.actualChest.SetActive(true);
         }
 
         else if (e.answerIndex == 1) 
             GameController.Instance.EndUserTurn();
 
-        if (e.dialog.id == 11) {
-            GameController.Instance.EndUserTurn();
-        }
-        
 
-        if( e.dialog.id == 12 || e.dialog.id == 13) 
+        if (e.dialog.id == 11)
+            GameController.Instance.EndUserTurn();
+
+
+
+        if (e.dialog.id == 12 || e.dialog.id == 13) {
             returnToStep = true;
+        }
     }
 
     public void CheckChestBot(UserInventory inventory) { // Check if bot can go to chest 
@@ -119,7 +129,7 @@ public class ChestController : CoroutineSystem {
 
         chestPosition = actualBot.GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.transform.position - GetDirection(actualBot.GetComponent<UserMovement>().actualStep,actualBot.GetComponent<UserMovement>().actualStep.GetComponent<Step>());
         actualPlayer = actualBot;
-        obj = actualBot.GetComponent<UserMovement>().actualStep;
+        obj = GameController.Instance.actualChest;
         chestPath = new NavMeshPath();
         goToChest = true;
     }

@@ -106,7 +106,7 @@ public class PMController : CoroutineSystem {
                                 DialogController dialogController = controller.dialog;
                                 Dialog currentDialog = dialogController.GetDialogByName("QuitGame");
                                 dialogController.currentDialog = currentDialog;
-                                dialogController.isInDialog = true;
+                                dialogController.isInDialog.value = true;
                                 dialogController.finish = false;
                                 StartCoroutine(dialogController.ShowText(currentDialog.Content[0],currentDialog.Content.Length));
                             }

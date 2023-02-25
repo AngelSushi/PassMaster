@@ -41,8 +41,6 @@ public class UserInventory : CoroutineSystem {
 
         while(secretCode[rand] != -1 || rand >= secretCode.Length) 
             rand = UnityEngine.Random.Range(0,secretCode.Length);
-
-        Debug.Log("rand: "+ rand);
         
         secretCode[rand] = GameController.Instance.secretCode[rand];
 

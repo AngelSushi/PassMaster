@@ -26,7 +26,7 @@ public class Dialog {
 public class DialogController : MonoBehaviour {
 
     public float speed;    
-    public bool isInDialog;
+    public BVar isInDialog = new BVar();
     public Text text;
     public GameObject nextObj;
     public GameObject dialogObj;
@@ -56,16 +56,38 @@ public class DialogController : MonoBehaviour {
     }
 
     void Start() {
+
+        isInDialog = new BVar();
+        
         gController = GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>();
+
+        isInDialog.switchValuePositive += EnterDialog;
+        isInDialog.switchValueNegative += LeaveDialog;
+
+        gController.inputs.FindAction("Menus/Interact").started += OnInteract;
+        gController.inputs.FindAction("Menus/Previous").started += OnPrevious;
+        gController.inputs.FindAction("Menus/Right").started += OnPrevious;
+        gController.inputs.FindAction("Menus/Next").started += OnNext;
     }
+
+    private void Update() {
+        isInDialog.UpdateValues();
+    }
+
+    public void EnterDialog() => gController.playerInput.SwitchCurrentActionMap("Menus");
+    
+
+    public void LeaveDialog() => gController.playerInput.SwitchCurrentActionMap("Player");
+    
 
     public void OnInteract(InputAction.CallbackContext e) { // APPELEZ QUAND LE JOUEUR APPUIE SUR E
 
         if(e.started) {
+            
             if(isInDialog) 
                 AccelerateDialog(0.01f); // Faire en sorte de décelerrer   
 
-            if(nextPage && isInDialog && !finish) {
+            if(nextPage & isInDialog && !finish) {
                 nextPage = false;
                 nextObj.SetActive(false);
                 StartCoroutine(ShowText(currentDialog.Content[index],currentDialog.Content.Length));
@@ -74,9 +96,7 @@ public class DialogController : MonoBehaviour {
             
             if(finish) {
                 OnDialogEndArgs args = new OnDialogEndArgs{ dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer],position = Vector3.zero, obj = null,answerIndex = -1};
-                
-                Debug.Log("currentDialog " + currentDialog.Name + " id " + currentDialog.id);
-                
+
                 if(currentDialog.Answers.Length > 0 && answer >= 0) { // LE JOUEUR A UN CHOIX A FAIRE
                     switch(answer) {
                         case 0:
@@ -87,7 +107,7 @@ public class DialogController : MonoBehaviour {
 
                                 EndDialog();
 
-                                isInDialog = true;
+                                isInDialog.value = true;
                                 currentDialog = GetDialogByName("StartTextTutorial");
                                 StartCoroutine(ShowText(currentDialog.Content[0],currentDialog.Content.Length));
                             }
@@ -138,7 +158,7 @@ public class DialogController : MonoBehaviour {
 
                         if(gController.part  == GameController.GamePart.DIALOG_START_ALPHA) {
                             gController.part = GameController.GamePart.DIALOG_TUTORIAL;
-                            isInDialog = true;
+                            isInDialog.value = true;
 
                             currentDialog = GetDialogByName("AskTextTutorial");
                             StartCoroutine(ShowText(currentDialog.Content[0],currentDialog.Content.Length));
@@ -171,19 +191,19 @@ public class DialogController : MonoBehaviour {
 
     public void OnNext(InputAction.CallbackContext e) { // Appelé quand le joueur change vers le bas de choix de réponse
        if(e.started) {
-            if(answerObj.activeSelf && isInDialog) {
+            if(answerObj.activeSelf & isInDialog) {
                 if(answer < currentDialog.Answers[0].Split('\n').Length ) {
                     arrowObj.SetActive(true);
                     arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,15 ,0);
                     answer++;
                 }
             }
-        }
+       }
     }
 
     public void OnPrevious(InputAction.CallbackContext e) { // Appelé quand le joueur change vers le haut de choix de réponse 
         if(e.started) {
-            if(answerObj.activeSelf && isInDialog) {
+            if(answerObj.activeSelf & isInDialog) {
                 if(answer >= 1){
                     arrowObj.SetActive(true);
                     arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,66,0);
@@ -193,9 +213,8 @@ public class DialogController : MonoBehaviour {
         }
     }
 
-    void AccelerateDialog(float accelerate) {
-        this.speed = accelerate;
-    }
+    void AccelerateDialog(float accelerate) => speed = accelerate;
+    
 
     public IEnumerator ShowText(string displayText,int length) {
         nextPage = false;
@@ -208,7 +227,7 @@ public class DialogController : MonoBehaviour {
         for(int i = 1;i<displayText.Length;i++) {
            yield return new WaitForSeconds(speed);
            text.text = displayText.Substring(0,i);
-       }
+        }
 
         if(length > 1 && index < length) {
             nextPage = true;
@@ -225,7 +244,7 @@ public class DialogController : MonoBehaviour {
                 textAnswer.text = currentDialog.Answers[0];
             }
 
-             finish = true;
+            finish = true;
 
         }
 
@@ -244,7 +263,7 @@ public class DialogController : MonoBehaviour {
         index = 0;
         answer = 0;
         text.text = "";
-        isInDialog = false;
+        isInDialog.value = false;
         finish = false;
         currentDialog.isFinish = true;
 
@@ -254,9 +273,9 @@ public class DialogController : MonoBehaviour {
          foreach (var dialog in dialogArray.dialogs) {
             if(dialog.Name == name) 
                 return dialog;    
-        }       
-
-        return null;  
+         }
+         
+         return null;  
     }
 
 }
