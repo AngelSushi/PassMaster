@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 public class DayController : MonoBehaviour {
@@ -14,7 +15,6 @@ public class DayController : MonoBehaviour {
         RAIN
     }
 
-    private Light light;
 
     public Material dayMat;
     public Material duskMat;
@@ -26,8 +26,9 @@ public class DayController : MonoBehaviour {
     public Color nightAmbient;
 
     public DayPeriod dayPeriod;
-    private DayPeriod lastDayPeriod;
 
+    [Tooltip("The steps that are deactivated when changing the period of the day")] public List<GameObject> deactivatedSteps;
+    private DayPeriod lastDayPeriod;
     private AudioSource mainAudio;
 
     public event EventHandler<OnChangeStateOfDayArgs> OnChangeStateOfDay;
@@ -35,15 +36,15 @@ public class DayController : MonoBehaviour {
     public class OnChangeStateOfDayArgs : EventArgs {
         public DayPeriod newPeriod;
     }
-    
-    
-    
-    
+
+    public UnityEvent changeDayPeriodAction;
+
+
     void Start() {
-        light = GetComponent<Light>();
         mainAudio = AudioController.Instance.mainSource;
         lastDayPeriod = dayPeriod;
     }
+
 
     void Update() {
         switch(dayPeriod) {

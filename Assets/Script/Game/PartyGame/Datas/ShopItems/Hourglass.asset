@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Sablier
   sprite: {fileID: 21300000, guid: 5ad253968ea48b9449939150f85b37dd, type: 3}
+  spriteScale: {x: 81, y: 123}
   price: 15
   maxQuantity: 99

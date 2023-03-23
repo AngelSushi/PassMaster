@@ -40,6 +40,8 @@ public class MenuController : MonoBehaviour {
 
     private GameObject _currentMenu;
 
+    private bool isInMenu;
+
     private void Start() {
         inputs.FindAction("Menus/Next").started += OnNext;
         inputs.FindAction("Menus/Previous").started += OnPrevious;
@@ -51,8 +53,10 @@ public class MenuController : MonoBehaviour {
     }
 
     public void OnShowMenu(InputAction.CallbackContext e) {
-        if (e.started)
+        if (e.started) {
+            isInMenu = true;
             startAction.Invoke();
+        }
     }
 
     public void OnNext(InputAction.CallbackContext e) {
@@ -78,7 +82,7 @@ public class MenuController : MonoBehaviour {
     }
 
     public void OnSelectButton(InputAction.CallbackContext e) {
-        if (e.started && !GameController.Instance.dialog.isInDialog) {
+        if (e.started && !GameController.Instance.dialog.isInDialog && isInMenu) {
             SwitchButton(_buttonIndex,false);
             _currentButtons[_buttonIndex].action.Invoke();
         }

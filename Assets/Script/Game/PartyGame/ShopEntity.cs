@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[SelectionBase]
 public class ShopEntity : MonoBehaviour {
 
     public Animator controller;
@@ -21,8 +22,15 @@ public class ShopEntity : MonoBehaviour {
         dayController.OnChangeStateOfDay += OnChangeStateOfDay;
         transform.position = idlePosition;
         transform.eulerAngles = idleRotation;
-    } 
-    
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        
+        if (collision.gameObject.CompareTag("Player")) 
+            GameController.Instance.shopController.EnterShop();
+        
+    }
+
 
     private void OnChangeStateOfDay(object sender, DayController.OnChangeStateOfDayArgs e) {
 

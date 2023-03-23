@@ -16,12 +16,11 @@ public class PathGeneratorWindow : Editor {
             instance.GenerateChest();
         if (GUILayout.Button("Generate Stack Positions"))
             instance.GenerateStackPositions();
-        if (GUILayout.Button("Clear")) {
-            for (int i = 0; i < instance.target.transform.childCount; i++) {
-                for (int j = 0; j < instance.target.transform.GetChild(i).childCount; j++) {
-                    Debug.Log(instance.target.transform.GetChild(i).GetChild(j).gameObject + " j " + j);
-                    if(j == 2 ||j == 3) 
-                      DestroyImmediate(instance.target.transform.GetChild(i).GetChild(j).gameObject);
+        if (GUILayout.Button("Clear Path Mesh")) {
+            foreach (GameObject path in FindObjectsOfType<GameObject>()) {
+                if (path != null && path.GetComponentInChildren<MeshRenderer>() != null && path.layer == 31) {
+                    path.GetComponentInChildren<MeshRenderer>().enabled = true;
+                    path.GetComponentInChildren<MeshRenderer>().material = instance.pathMat;
                 }
             }
         }

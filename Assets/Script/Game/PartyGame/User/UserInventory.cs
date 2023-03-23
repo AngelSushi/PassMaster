@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 using System.Linq;
+using VSLangProj80;
 
 public class UserInventory : CoroutineSystem {
     public int doubleDiceItem; 
@@ -105,32 +106,12 @@ public class UserInventory : CoroutineSystem {
 
 
     public void UseItemBot() {
-        Dictionary<int,float> itemsPercentage = new Dictionary<int, float>();
+        List<ItemAction> succeedActions = new List<ItemAction>();
         
         // Ajouter les pourcentages de base d'un item
         List<int> possessedItems = GetPossessedItems();
 
         foreach(ItemAction action in GameController.Instance.itemController.actions) {
-            foreach(int itemID in possessedItems) {
-                if(action.itemID == itemID) {
-                    switch(GameController.Instance.difficulty) {
-                        case GameController.Difficulty.EASY:
-                            int idIndex = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
-                            action.actionPercentage = GameController.Instance.itemController.easyPercentage[idIndex];
-                            break;
-
-                        case GameController.Difficulty.MEDIUM:
-                            int idIndexM = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
-                            action.actionPercentage = GameController.Instance.itemController.mediumPercentage[idIndexM];
-                            break;
-
-                        case GameController.Difficulty.HARD:
-                            int idIndexH = Array.IndexOf(GameController.Instance.itemController.itemsID,itemID);
-                            action.actionPercentage = GameController.Instance.itemController.hardPercentage[idIndexH];
-                            break;
-                    }
-                }
-            }
 
             if(action.differentPlayerToTarget) {
                 action.possessPlayer = transform.gameObject;
@@ -145,43 +126,65 @@ public class UserInventory : CoroutineSystem {
                         break;
                 }
             }
-            else
+            else 
                 action.DoAction(transform.gameObject);
             
-            if(possessedItems.Contains(action.itemID) && action.succeed) {
-                if(!itemsPercentage.ContainsKey(action.itemID))
-                    itemsPercentage.Add(action.itemID,action.actionPercentage + action.percentageToAdd);
-                else 
-                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;             
-            } 
-                
-
-//            Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
+            if(possessedItems.Contains(action.itemID) && action.succeed) 
+                succeedActions.Add(action);
+            
         }
 
-        foreach(int itemID in possessedItems) {
-            switch(itemID) {
-                case 0:
-                    transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
-                   // Debug.Log("use double dice");
-                    break;
+        if (succeedActions.Count == 0) {
+            Debug.Log("no succeed");
+            return;
+        }
 
-                case 1:
-                    transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
-                    //Debug.Log("use triple dice");
-                    break;
+        int max = 1;
+        int lastMax = 0;
+        ItemAction maxAction = null;
+        for(int i = 0;i < succeedActions.Count;i++) {
+            ItemAction currentAction = succeedActions[i];
+            max = 1;
+            
+            for (int j = i + 1; j < succeedActions.Count; j++) {
+                ItemAction nextAction = succeedActions[j];
 
-                case 2:
-                    transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
-                    //Debug.Log("use reverse dice");
-                    break;
-
-                case 3:
-                    transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
-                    GameController.Instance.blackScreenAnim.Play();
-                    //Debug.Log("use hourglass");
-                    break;
+                if (currentAction.itemID == nextAction.itemID) {
+                    Debug.Log("action max");
+                    max++;
+                }
             }
+
+            if (lastMax == 0 || lastMax <= max)
+            {
+                lastMax = max;
+                maxAction = currentAction;
+            }
+        }
+
+  
+        Debug.Log("transform " + transform.gameObject.name);
+        switch(maxAction.itemID) {
+            case 0:
+                transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
+                Debug.Log("use double dice");
+                break;
+
+            case 1:
+                transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
+                Debug.Log("use triple dice");
+                break;
+
+            case 2:
+                transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
+                Debug.Log("use reverse dice");
+                break;
+
+            case 3:
+                transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
+                GameController.Instance.blackScreenAnim.Play();
+                Debug.Log("use hourglass");
+                break;
         }
 
 

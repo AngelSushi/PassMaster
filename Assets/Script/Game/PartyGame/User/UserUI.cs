@@ -13,7 +13,7 @@ public class UserUI : User {
     public BVar showActionButton = new BVar();
     public BVar showDirection = new BVar();
     public BVar showShop = new BVar();
-    public bool cameraView;
+    public BVar cameraView = new BVar();
     private bool showCursor;
     public GameObject cursor;
     public GameObject infoLabel;
@@ -45,9 +45,15 @@ public class UserUI : User {
     public override void Start() {
         base.Start();
 
+        //showActionButton = new BVar();
+
         gameController.inputs.FindAction("Menus/Right").started += OnRight;
         gameController.inputs.FindAction("Menus/Left").started += OnLeft;
         gameController.inputs.FindAction("Menus/Interact").started += OnInteract;
+        gameController.inputs.FindAction("Player/Movement").performed += OnMove;
+        gameController.inputs.FindAction("Player/Movement").canceled += OnMove;
+        
+        gameController.inputs.FindAction("Player/Quit").started += OnQuit;
 
         showDirection.switchValuePositive += SwitchValuePositive;
         showDirection.switchValueNegative += SwitchValueNegative;
@@ -57,12 +63,21 @@ public class UserUI : User {
         
         showShop.switchValuePositive += SwitchValuePositive;
         showShop.switchValueNegative += SwitchValueNegative;
+
+        cameraView.switchValuePositive += SwitchValuePositive;
+        cameraView.switchValueNegative += SwitchValueNegative;
     }
 
     public override void Update() {  
         base.Update();
         
         if(!gameController.freeze) {
+            
+            showActionButton.UpdateValues();
+            showShop.UpdateValues();
+            showDirection.UpdateValues();
+            cameraView.UpdateValues();
+
             ManageCameraPosition();
             ManageHudState(showHUD);
             ManagerHudTurnState(showTurnInfo && gameController.part == GameController.GamePart.PARTYGAME);
@@ -74,15 +89,24 @@ public class UserUI : User {
     }
 
     public void SwitchValuePositive() {
-        if (showShop | showDirection | showActionButton) 
+        if (showShop | showDirection | showActionButton) {
             gameController.playerInput.SwitchCurrentActionMap("Menus");
+        }
+        
+        if(cameraView)
+            gameController.playerInput.SwitchCurrentActionMap("Player");
     }
 
     public void SwitchValueNegative() {
-        if(!showShop & !showDirection && !showActionButton)
+        if(!cameraView)
+            gameController.playerInput.SwitchCurrentActionMap("Menus");
+        
+        if (!showShop & !showDirection & !showActionButton) {
             gameController.playerInput.SwitchCurrentActionMap("Player");
+        }
+        
     }
-    
+
     public override void OnBeginTurn() {}
     public override void OnFinishTurn() {}
     public override void OnDiceAction() {}
@@ -91,7 +115,7 @@ public class UserUI : User {
 
         float directionX = cameraView ? vecMove.x * cameraSpeed * Time.deltaTime : 0;
         float directionY = cameraView ? vecMove.y * cameraSpeed * Time.deltaTime : 0;
-
+        
         camera.transform.Translate(directionX,directionY,0);
 
         if(showCursor) 
@@ -124,6 +148,7 @@ public class UserUI : User {
                     break;        
             }
 
+            audio.ButtonHover();
             return;
         }
 
@@ -173,21 +198,24 @@ public class UserUI : User {
                     directions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
+            
+            
+            audio.ButtonHover();
         }
 
-        if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
-            if(index < inventoryItems.Length) 
+        if (e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
+            if (index < inventoryItems.Length)
                 index++;
 
-            Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
-            
             hoverInventoryItem.gameObject.SetActive(true);
-            hoverInventoryItem.localPosition = index == inventoryItems.Length ? hoverPos[hoverPos.Length - 2] : hoverPos[index];       
+
+            Vector3 hoverPos = index < inventoryItems.Length - 1
+                ? hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition
+                : hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition +
+                  new Vector3(0, 10f, 0);
+
+            hoverInventoryItem.localPosition = hoverPos;
         }
-
-
-        
-
     }
 
     public void OnLeft(InputAction.CallbackContext e) {
@@ -215,6 +243,9 @@ public class UserUI : User {
                     actions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
+            
+            
+            audio.ButtonHover();
         }
 
         if(e.started && !cameraView && !showHUD & showDirection && !gameController.freeze) {
@@ -250,6 +281,9 @@ public class UserUI : User {
                     directions[2].GetChild(1).gameObject.SetActive(true);
                     break;        
             }
+            
+            
+            audio.ButtonHover();
         }      
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
@@ -302,13 +336,12 @@ public class UserUI : User {
                     isTurn = true;
 
                 //GetComponent<NavMeshAgent>().enabled = true;
-                gameController.playerInput.SwitchCurrentActionMap("Player");
                 movement.waitDiceResult = true;
                 index = -1;
             }
 
             else if(index == 2) {
-                cameraView = true;
+                cameraView.value = true;
                 camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
 
                 camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
@@ -320,7 +353,7 @@ public class UserUI : User {
             return;
         }
 
-        if(e.started && movement.useLightning && cameraView && !gameController.freeze) {
+        if(e.started && movement.useLightning & cameraView && !gameController.freeze) {
             Debug.Log("enter lightning");
             Vector2 cursorPos = new Vector2(cursor.transform.position.x,cursor.transform.position.z);
 
@@ -352,7 +385,7 @@ public class UserUI : User {
 
             if(targetStep != null) {
                 gameController.blackScreenAnim.Play();
-                cameraView = false;
+                cameraView.value = false;
                 movement.targetLightningStep = targetStep;
             }
             else {
@@ -396,7 +429,7 @@ public class UserUI : User {
 
                         case 4:  // Lightning
                             movement.useLightning = true;
-                            cameraView = true;
+                            cameraView.value = true;
                             showCursor = true;
                             camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
 
@@ -436,8 +469,10 @@ public class UserUI : User {
 
 
     public void OnMove(InputAction.CallbackContext e) {
-        if(cameraView && !gameController.freeze) 
+        if (e.performed && !gameController.freeze & cameraView) 
             vecMove = e.ReadValue<Vector2>();
+        else
+            vecMove = Vector2.zero;
     }
 
     public void CloseActionHUD(bool goToDice) {
@@ -455,10 +490,10 @@ public class UserUI : User {
 
 
     public void OnQuit(InputAction.CallbackContext e) {
-        if(e.started && cameraView && !gameController.freeze) {
-            cameraView = false;
-            camera.transform.position = new Vector3(-804f,5213f,-15807f);
-            camera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+        if(e.started & cameraView && !gameController.freeze) {
+            cameraView.value = false;
+
+            gameController.ManageCameraPosition();
             infoLabel.SetActive(false);
             index = 2;
             return;
@@ -606,21 +641,16 @@ public class UserUI : User {
             color.a = 1f;
 
         diceResult.GetComponent<Text>().color = color;
-        diceResult.GetComponent<Text>().text = result + "";
+        diceResult.GetComponent<Text>().text = result >= 0 ? result + "" : "0";
     }
 
     public void ClearDiceResult() {
         diceResult.GetComponent<Text>().text = "";
     }
 
-    public void DisplayReward(bool bonus,int coins,bool stepReward) {
-
-        coinIconReward.GetComponent<CoinsReward>().changePos = true;
-        coinIconReward.GetComponent<CoinsReward>().stepReward = stepReward;
+    public void DisplayReward(bool bonus,int coins) {
         coinIconReward.SetActive(true);
-        coinIconReward.transform.position = new Vector3(959,315,0);
         coinIconReward.GetComponent<CoinsReward>().RunCoroutine();
-       // coinTextReward.SetActive(true);  
 
         if(bonus) {
             coinTextReward.color = new Color(0f,0.35f,1f,1f);

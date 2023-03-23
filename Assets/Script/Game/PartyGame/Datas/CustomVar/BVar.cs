@@ -9,9 +9,9 @@ public class BVar  {
     public SwitchValueNegative switchValueNegative;
     
     public void UpdateValues() {
-        
-        if (value && !lastValue)
+        if (value && !lastValue) 
             switchValuePositive();
+        
         else if (!value && lastValue)
             switchValueNegative();
 

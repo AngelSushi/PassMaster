@@ -8,7 +8,7 @@ public class UserMovementEditor : CustomFieldInspector<UserMovement> {
 
 
     // Controller Tab
-    private SerializedProperty movement,ui,inventory,audio,gameController,userType,userCam;
+    private SerializedProperty movement,ui,inventory,audio,gameController,userType,userAction,userCam;
 
     // Player tab
     private SerializedProperty id,isTurn,isPlayer,agent,rb,canMoove,isMooving,canJump,isJumping,jumpSpeed,animatorController;
@@ -32,6 +32,7 @@ public class UserMovementEditor : CustomFieldInspector<UserMovement> {
         audio = serializedClass.FindProperty("audio");
         gameController = serializedClass.FindProperty("gameController");
         userType = serializedClass.FindProperty("userType");
+        userAction = serializedClass.FindProperty("currentAction");
         userCam = serializedClass.FindProperty("userCam");
 
         // Player tab
@@ -98,6 +99,7 @@ public class UserMovementEditor : CustomFieldInspector<UserMovement> {
                 EditorGUILayout.PropertyField(audio);
                 EditorGUILayout.PropertyField(gameController);
                 EditorGUILayout.PropertyField(userType);
+                EditorGUILayout.PropertyField(userAction);
                 EditorGUILayout.PropertyField(userCam);
                 break;
             case 1: // Player

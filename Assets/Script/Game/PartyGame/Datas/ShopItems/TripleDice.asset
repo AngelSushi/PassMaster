@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: "D\xE9 Triple"
   sprite: {fileID: 21300000, guid: 20250a76819c43d42b8c18f76471892c, type: 3}
+  spriteScale: {x: 123, y: 123}
   price: 25
   maxQuantity: 99

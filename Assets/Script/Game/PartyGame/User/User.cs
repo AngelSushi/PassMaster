@@ -9,6 +9,19 @@ public enum UserType {
     BOT_002,
     BOT_003
 }
+
+public enum UserAction {
+    WAIT,
+    MENU,
+    DICE,
+    MOVEMENT,
+    MALUS,
+    BONUS,
+    SHOP,
+    CHEST
+    
+}
+
 public abstract class User : CoroutineSystem {
     public bool isTurn;
     public bool isPlayer;

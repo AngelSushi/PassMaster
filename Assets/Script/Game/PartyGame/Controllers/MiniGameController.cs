@@ -151,7 +151,8 @@ public class MiniGameController : CoroutineSystem {
                                 }
                             }
                                 
-                            classementPanels[ConvertPlayerIndex(winner)].transform.parent.GetChild(5).gameObject.GetComponent<CoinsReward>().changePos = true;
+                            // A REVOIR
+                            //classementPanels[ConvertPlayerIndex(winner)].transform.parent.GetChild(5).gameObject.GetComponent<CoinsReward>().changePos = true;
                             classementPanels[ConvertPlayerIndex(winner)].transform.parent.GetChild(5).gameObject.GetComponent<CoinsReward>().hasFinishAnimation = false;
                             classementPanels[ConvertPlayerIndex(winner)].transform.parent.GetChild(5).gameObject.GetComponent<CoinsReward>().minigame = true;
                             classementPanels[ConvertPlayerIndex(winner)].transform.parent.GetChild(5).gameObject.GetComponent<CoinsReward>().RunCoroutine();

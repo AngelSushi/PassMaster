@@ -77,7 +77,10 @@ public class DialogController : MonoBehaviour {
     public void EnterDialog() => gController.playerInput.SwitchCurrentActionMap("Menus");
     
 
-    public void LeaveDialog() => gController.playerInput.SwitchCurrentActionMap("Player");
+    public void LeaveDialog() {
+        if(gController.players[gController.actualPlayer].GetComponent<UserMovement>().currentAction != UserAction.SHOP)
+            gController.playerInput.SwitchCurrentActionMap("Player");
+    } 
     
 
     public void OnInteract(InputAction.CallbackContext e) { // APPELEZ QUAND LE JOUEUR APPUIE SUR E
@@ -142,7 +145,6 @@ public class DialogController : MonoBehaviour {
                             }
                             if(currentDialog.id == 10) {
                                 Vector3 chestVector = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.transform.position;
-                                Debug.Log("chest: " + chestVector);
                                 args = new OnDialogEndArgs { dialog = currentDialog, actualPlayer = gController.players[gController.actualPlayer], position = chestVector,obj = gController.players[gController.actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest, answerIndex = answer};                               
                             }
 
@@ -173,11 +175,8 @@ public class DialogController : MonoBehaviour {
                         }
 
                         if(currentDialog.Name == "FindAllSecretCode" || currentDialog.Name == "FindNewCode") {
-                            gController.players[gController.actualPlayer].transform.GetChild(1).gameObject.SetActive(false);
-                            gController.mainCamera.transform.position = new Vector3(gController.players[gController.actualPlayer].transform.position.x,5747.6f,gController.players[gController.actualPlayer].transform.position.z);
-                            gController.mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f);
-                            gController.hasGenChest = false;
-
+                            gController.chestController.returnToStep = true;
+                            gController.chestController.goToChest = false;
                         }
                     }
                 }
@@ -196,6 +195,8 @@ public class DialogController : MonoBehaviour {
                     arrowObj.SetActive(true);
                     arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,15 ,0);
                     answer++;
+                    
+                    gController.players[gController.actualPlayer].GetComponent<UserAudio>().ButtonHover();
                 }
             }
        }
@@ -208,6 +209,7 @@ public class DialogController : MonoBehaviour {
                     arrowObj.SetActive(true);
                     arrowObj.transform.localPosition = new Vector3(arrowObj.transform.localPosition.x,66,0);
                     answer--;
+                    gController.players[gController.actualPlayer].GetComponent<UserAudio>().ButtonHover();
                 }
             }
         }
@@ -267,6 +269,16 @@ public class DialogController : MonoBehaviour {
         finish = false;
         currentDialog.isFinish = true;
 
+    }
+
+    public void DisplayDialog() {
+        dialogObj.SetActive(true);
+        text.gameObject.SetActive(true);
+        answerObj.SetActive(false);
+        textAnswer.gameObject.SetActive(false);
+        arrowObj.SetActive(false);
+
+        text.text = currentDialog.Content[0];
     }
 
     public Dialog GetDialogByName(string name) {

@@ -17,9 +17,11 @@ public class AudioController : MonoBehaviour {
     public AudioClip buttonClick;
     public AudioClip earthQuake;
     public AudioClip lightning;
-
+    public AudioClip footstep;
+    
     public AudioSource mainSource;
-    public AudioSource ambiantSource; 
+    public AudioSource ambiantSource;
+
 
     void Awake() {
         Instance = this;

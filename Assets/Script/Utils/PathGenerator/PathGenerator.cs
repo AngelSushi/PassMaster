@@ -6,6 +6,9 @@ public class PathGenerator : MonoBehaviour {
     public GameObject prefab,planePrefab;
     public GameObject target;
     public GameController game;
+    public Material pathMat;
+    
+    
 
     public void GeneratePath() {
         target = transform.gameObject;
@@ -54,6 +57,7 @@ public class PathGenerator : MonoBehaviour {
             chest.AddComponent<BoxCollider>();
             chest.GetComponent<BoxCollider>().center = new Vector3(-0.325f,-0.283f,-0.235f);
             chest.GetComponent<BoxCollider>().size = new Vector3(9.072f,10.917f,14.796f);
+            chest.AddComponent<Chest>();
             step.chest = chest;
             step.avoidPos = chest.transform.position - ((chest.transform.position - step.transform.position).normalized * 4f);
             

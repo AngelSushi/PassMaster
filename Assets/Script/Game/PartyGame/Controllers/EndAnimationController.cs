@@ -72,11 +72,15 @@ public class EndAnimationController : CoroutineSystem {
                 }
 
                 else { // Return normal
+                    controller.players[controller.actualPlayer].GetComponent<UserMovement>().enabled = true;
+                    controller.players[controller.actualPlayer].GetComponent<UserMovement>().stop = false;
                     if(controller.players[controller.actualPlayer].GetComponent<UserMovement>().actualStep == null)
                         return;
 
                     if(!controller.players[controller.actualPlayer].GetComponent<NavMeshAgent>().enabled)
                         controller.players[controller.actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
+
+                    controller.players[controller.actualPlayer].GetComponent<UserMovement>().nextStep = controller.players[controller.actualPlayer].GetComponent<UserMovement>().lastStep.transform;
                 }
             });  
         }

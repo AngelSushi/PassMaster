@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,8 +16,6 @@ public enum ItemActionResult {
 public class ItemAction : MonoBehaviour {
     public string actionName;
     public int itemID;
-    public float actionPercentage;
-    public float percentageToAdd;
     public ItemActionResult rangeResultType;
     public int rangeMax;
     public int coinsToHave;
@@ -28,13 +27,11 @@ public class ItemAction : MonoBehaviour {
     public bool differentPlayerToTarget;
     public UnityEvent actionsEvent;
     private GameController controller;
-    private List<GameObject> stepsActionPath;
     private List<bool> succeedActions;
 
 
     void Start() {
         controller = GameController.Instance;
-        stepsActionPath = new List<GameObject>();
         succeedActions = new List<bool>();
     }
 
@@ -45,19 +42,20 @@ public class ItemAction : MonoBehaviour {
         actionsEvent.Invoke();
 
         succeed = !(succeedActions.Count(succeedA => !succeedA) > 0); // Si une des actions est fausse -> succeed est faux
+        
+       // Debug.Log("current action check " + actionName + " succeed " + succeed);
     }
 
     public void CheckInRangeAction(/*bool checkType*/) { 
         GameObject beginStep = targetPlayer.GetComponent<UserMovement>().actualStep;
         if(beginStep == null)
             beginStep = controller.firstStep;
-
-        stepsActionPath.Clear();
-
-        succeedActions.Add(FindSmallestPathTo(beginStep,stepsActionPath,itemID == 2,true));         
+        
+        succeedActions.Add(FindSmallestPathTo());         
     }
 
     public void CheckHasCoinsAction() { 
+        
        succeedActions.Add(targetPlayer.GetComponent<UserInventory>().coins >= coinsToHave); 
     }
 
@@ -76,83 +74,58 @@ public class ItemAction : MonoBehaviour {
 
     public void CheckCoinsAndCards() {
         succeedActions.Add(targetPlayer.GetComponent<UserInventory>().cards == possessPlayer.GetComponent<UserInventory>().cards && targetPlayer.GetComponent<UserInventory>().coins >= possessPlayer.GetComponent<UserInventory>().coins);
-    
-        Debug.Log("check: " + targetPlayer.name + "with " + possessPlayer.name);
     }
 
     public void CheckCoinsAndObjects() {
         succeedActions.Add(targetPlayer.GetComponent<UserInventory>().coins > 0 || targetPlayer.GetComponent<UserInventory>().HasObjects());
     }
 
-
-    private bool FindSmallestPathTo(GameObject begin,List<GameObject> iaDirectionSteps,bool decrement,bool sameParent) {
-        int beginIndex =  controller.FindIndexInParent(begin.transform.parent.gameObject,begin);
-
-        for(int i = beginIndex; i != beginIndex + rangeMax;) {
-            if(i >= begin.transform.parent.childCount) 
-                i -= begin.transform.parent.childCount;
-            
-            GameObject actualObj = begin.transform.parent.GetChild(i).gameObject;
-
-            if(!stepsActionPath.Contains(actualObj))
-                stepsActionPath.Add(actualObj);
-
-
-            if(CheckResult(actualObj.GetComponent<Step>())) 
-                return true;            
-
-            if(actualObj.GetComponent<Direction>() != null) {
-                for(int j = 0;j<actualObj.GetComponent<Direction>().directionsStep.Length;j++) {
-                    GameObject beginDirection = actualObj.GetComponent<Direction>().directionsStep[j];
-                    if(beginDirection != null) { 
-                        Direction nextDir = actualObj.GetComponent<Direction>().directionsStep[j].GetComponent<Direction>();
-
-                        GameObject beginObj = beginDirection;
-                        GameObject endObj = null;
-
-                        if(nextDir != null) {
-                            beginObj = nextDir.directionsStep[1].gameObject;
-                            endObj = nextDir.directionsStep[1].gameObject.transform.parent.GetChild(nextDir.directionsStep[1].gameObject.transform.parent.childCount- 1).gameObject;
-                        }
-                        else {
-                            if(beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject) // -2 ici car on ne veut pas prendre en compte la direction
-                                endObj = beginObj.transform.parent.GetChild(0).gameObject;              
-                            else 
-                                endObj = beginDirection.transform.parent.GetChild(beginDirection.transform.parent.childCount - 1).gameObject;
-                        }
-
-                        decrement = beginObj == beginObj.transform.parent.GetChild(beginDirection.transform.parent.childCount - 2).gameObject;
-
-                        int beginSize = stepsActionPath.Count;
-                        bool result = FindSmallestPathTo(beginObj,iaDirectionSteps,decrement,beginObj.transform.parent == endObj.transform.parent);
-                        int size = stepsActionPath.Count - beginSize;
-
-                        if(!result)  
-                            EraseSteps(beginSize,size,iaDirectionSteps);   
-                    }
-                }
-            }
-
-            if(decrement)
-                i--;
-            else
-                i++;
-
-        }
-
-        return false;
+    public void CheckDayPeriod(int dayPeriod) {
+        succeedActions.Add((int)GameController.Instance.dayController.dayPeriod == dayPeriod);
     }
 
-    private void EraseSteps(int beginIndex,int size,List<GameObject> iaDirectionSteps) {
-        List<GameObject> erase = new List<GameObject>();
+    public void CheckIsInArea() {
+        succeedActions.Add(GameController.Instance.dayController.deactivatedSteps.Contains(targetPlayer.GetComponent<UserMovement>().actualStep));
+    }
 
-        for(int i = 0;i<iaDirectionSteps.Count;i++) {
-            if(i >= beginIndex && i <= beginIndex + size) 
-                erase.Add(iaDirectionSteps[i]);
+    public void CheckHasObjects(int itemId) {
+        switch (itemId) {
+            case 0:
+                succeedActions.Add(targetPlayer.GetComponent<UserInventory>().doubleDiceItem > 0);
+                break;
+            
+            case 1:
+                succeedActions.Add(targetPlayer.GetComponent<UserInventory>().tripleDiceItem > 0);
+                break;
+            
+            case 2:
+                succeedActions.Add(targetPlayer.GetComponent<UserInventory>().reverseDiceItem > 0);
+                break;
+            
+            case 3:
+                succeedActions.Add(targetPlayer.GetComponent<UserInventory>().hourglassItem > 0);
+                break;
         }
+    }
 
-        foreach(GameObject eraseObj in erase) 
-            stepsActionPath.Remove(eraseObj);
+    private bool FindSmallestPathTo() {
+        if (rangeMax < 0)
+            targetPlayer.GetComponent<UserMovement>().reverseCount = true;
+        
+        GameObject[] stepPaths = new GameObject[Math.Abs(rangeMax)];
+        
+        targetPlayer.GetComponent<UserMovement>().hasCheckPath = false;
+        targetPlayer.GetComponent<UserMovement>().CheckPath(false,stepPaths,Math.Abs(rangeMax));
+
+        foreach (GameObject step in stepPaths) {
+            if (step != null && step.GetComponent<Step>() != null && CheckResult(step.GetComponent<Step>())) {
+                return true;
+            }
+        }
+        
+        targetPlayer.GetComponent<UserMovement>().reverseCount = false;
+
+        return false;
     }
 
     private bool CheckResult(Step actualStep) {
@@ -175,7 +148,7 @@ public class ItemAction : MonoBehaviour {
                     
 
                 case ItemActionResult.END:
-                    if(actualStep.type == StepType.STEP_END) 
+                    if(actualStep.type == StepType.STEP_END) // Ajouter le fait qu'il doit avoir fini le code pour y aller  
                        // Debug.Log("is in range of " + actualStep.type);
                         return true;
                     break;

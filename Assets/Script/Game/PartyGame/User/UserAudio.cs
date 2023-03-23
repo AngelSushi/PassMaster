@@ -40,4 +40,9 @@ public class UserAudio : MonoBehaviour {
         userSource.clip = AudioController.Instance.buttonClick;
         userSource.Play();
     }
+
+    public void Footstep() {
+        userSource.clip = AudioController.Instance.footstep;
+        userSource.Play();
+    }
 }

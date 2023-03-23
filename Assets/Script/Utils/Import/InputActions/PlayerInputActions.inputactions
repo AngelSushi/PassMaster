@@ -11,7 +11,8 @@
                     "id": "3e663530-0ba8-4032-a960-c7f19879cdfd",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Movement",
@@ -19,7 +20,8 @@
                     "id": "210ec766-58c8-409f-b7f7-8541dff5a646",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Quit",
@@ -27,7 +29,8 @@
                     "id": "df265a42-cc61-4e89-a167-d114218e4c90",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -173,6 +176,17 @@
                     "action": "Quit",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bfff1ef6-dc40-4a9f-84d1-ebfa34fecde9",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -186,7 +200,8 @@
                     "id": "48b9b0b5-7260-4bc1-b8a0-975e979b4c6b",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Shoot",
@@ -194,7 +209,8 @@
                     "id": "e04735fc-5910-48df-be5b-c965a8ad599c",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -232,7 +248,8 @@
                     "id": "e400963d-2c6f-49b4-b961-3af0b0ac5a3d",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Right",
@@ -240,7 +257,8 @@
                     "id": "23f01d82-a34d-4222-a5be-08ed03d2b05f",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Left",
@@ -248,7 +266,8 @@
                     "id": "b019acbc-0bf5-416d-9a2a-8f20c3bad5a3",
                     "expectedControlType": "Button",
                     "processors": "Scale(factor=10)",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Interact",
@@ -256,7 +275,8 @@
                     "id": "a5f8ea89-12d2-4968-b870-6792bd15dd3c",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Previous",
@@ -264,7 +284,8 @@
                     "id": "5ebed10c-0a6b-4b2d-a250-fa5f1aceeb26",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Next",
@@ -272,7 +293,8 @@
                     "id": "45520ad9-679a-4df8-9296-9d2e1cfa4277",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
