@@ -313,6 +313,7 @@ public class UserMovement : User {
                GameObject hitObj = hit.gameObject;
                hitObj.GetComponent<MeshRenderer>().enabled = false;
 
+               hasCheckPath = false;
                CheckPath(true,stepPaths,actualStep != null ? diceResult : beginResult);
                ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
 

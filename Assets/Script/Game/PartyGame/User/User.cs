@@ -35,7 +35,9 @@ public abstract class User : CoroutineSystem {
     private bool lastIsTurn;
     private bool lastShowHUD;
 
-    public virtual void Start() { }
+    public virtual void Start() {
+        gameController = GameController.Instance;
+    }
 
     public virtual void Update() { 
 

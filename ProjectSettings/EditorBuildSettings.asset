@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MiniGames/Archery/Archery.unity
     guid: 32e075eb8dcc19c4789ab79c4d26feb9
   - enabled: 1
-    path: Assets/Scenes/MiniGames/KeyBall/KeyBall.unity
+    path: Assets/Scenes/MiniGames/OldKeyBall/Old_KeyBall.unity
     guid: 15efb8b2a42115a449a9f3ecfbca80f8
   - enabled: 1
     path: Assets/Scenes/MiniGames/FindPath/FindPath.unity

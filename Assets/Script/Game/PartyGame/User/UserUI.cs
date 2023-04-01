@@ -45,6 +45,7 @@ public class UserUI : User {
     public override void Start() {
         base.Start();
 
+        
         //showActionButton = new BVar();
 
         gameController.inputs.FindAction("Menus/Right").started += OnRight;
@@ -567,6 +568,7 @@ public class UserUI : User {
                         }
                     }
 
+                    Debug.Log("targetUser " + targetUser);
                     gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,targetUser.userType);
 
                     playersPanels[hudIndex].gameObject.SetActive(active);

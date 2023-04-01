@@ -13,7 +13,6 @@ public class KBController : MiniGame {
 
     public Dictionary<GameObject,int> playersPoints = new Dictionary<GameObject,int>();
 
-    public GameObject[] players;
     public Transform areaDeath;
 
     //public GameObject confetti;
@@ -49,7 +48,7 @@ public class KBController : MiniGame {
 
         RenderSettings.skybox = skybox;
 
-        tpPos = portal.transform.position;
+//        tpPos = portal.transform.position;
     }
 
     public override void OnFinish() {
@@ -83,7 +82,7 @@ public class KBController : MiniGame {
     }
 
     private void ActualizePlayerPoint(GameObject player) {
-        pointsText[ConvertPlayerInt(player)].GetComponent<Text>().text = playersPoint[player].ToString();
+        //pointsText[ConvertPlayerInt(player)].GetComponent<Text>().text = playersPoint[player].ToString();
     }
 
     public int ConvertPlayerInt(GameObject player) {

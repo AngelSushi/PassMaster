@@ -19,6 +19,8 @@ public abstract class MiniGame : CoroutineSystem {
     public GameObject[] classementPanels;
     public GameObject confetti;
 
+    public GameObject[] players;
+    
     private bool hasPlayedSFX;
     private float beginTimer = 4f;
     private string lastBeginText,lastTimeText;
@@ -34,7 +36,10 @@ public abstract class MiniGame : CoroutineSystem {
         
         gameController = GameObject.FindGameObjectsWithTag("Game").Length > 0 ?  GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>() : null;
         
+        // Tools --> If Board Scene not Loaded -> AutoLoad
     }
+
+
 
     public virtual void Update() {
         if(!finish) {
