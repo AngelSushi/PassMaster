@@ -27,7 +27,7 @@ public class Ball : MonoBehaviour {
             playerCollider.transform.parent = transform;
             
             playerMovement.isOnBall = true;
-            playerMovement.characterController = _ballController;
+         //   playerMovement.characterController = _ballController;
             playerMovement.transform.parent.localPosition = new Vector3(1f, -4.8f, 63.9f);
         }
     }

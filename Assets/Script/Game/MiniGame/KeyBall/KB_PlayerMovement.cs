@@ -15,7 +15,7 @@ public class KB_PlayerMovement : MonoBehaviour {
     public KBController controller;
     public GameController gameController;
     public Animator animator;
-    public CharacterController characterController;
+    public Rigidbody rigidbody;
     public Transform cameraTransform;
     public float gravity;
     private float _groundedGravity = -.5f;
@@ -26,6 +26,10 @@ public class KB_PlayerMovement : MonoBehaviour {
     [HideInInspector] public Vector3 movement;
     private Vector2 _input;
     public bool isOnBall;
+    
+    /* Sliding Variables */
+    private Vector2 _lastInput;
+    public float slidingAmplifier;
     
     /* State Variables */
     public bool dead;
@@ -44,6 +48,7 @@ public class KB_PlayerMovement : MonoBehaviour {
         get { return maxJumpTime / 2; }
     }
     
+  
     #endregion
 
     #region Unity's Functions
@@ -59,119 +64,127 @@ public class KB_PlayerMovement : MonoBehaviour {
         gameController.inputs.FindAction("Keyball/Movement").canceled += OnMove;
         gameController.inputs.FindAction("Keyball/Jump").started += OnJump;
         gameController.inputs.FindAction("Keyball/Jump").canceled += OnJump;
-
+        
         animator = GetComponent<Animator>();
-        characterController = GetComponentInParent<CharacterController>();
+        rigidbody = GetComponentInParent<Rigidbody>();
 
         gravity = (-2 * maxJumpHeight) / Mathf.Pow(_timeToReachHeightJump, 2);
         _initialJumpVelocity = (2 * maxJumpHeight) / _timeToReachHeightJump;
     }
-    
 
-    void Update() {
+    void FixedUpdate() {
         if (!controller.begin && !controller.finish) {
             if (!dead && !freeze) {
                 animator.SetBool("IsMooving", isMoving);
-              //  animator.SetBool("IsJumping", isJumping);
-                
-                HandleGravity();
-                Movement();
-                
-                Debug.Log("grounded " + characterController.isGrounded);
-                HandleJump();
+
+                MovementPending();
             }
         }
+    }
+    
+    
 
+    #endregion
+
+    #region Physics Functions
+    private IEnumerator Slide(Vector2 startSlideInput) {
+        while (startSlideInput != Vector2.zero) {
+            startSlideInput = Vector2.Lerp(startSlideInput, Vector2.zero, Time.deltaTime * speed * slidingAmplifier);
+          //  movement += new Vector3(startSlideInput.y, 0, startSlideInput.x);
+            yield return new WaitForEndOfFrame();
+        }
+
+        movement = Vector3.zero;
+        yield return null;
     }
 
-    void HandleGravity() {
-        bool isFalling = movement.y <= 0.0f || !isJumpPressed;
+   
+    private void Movement()
+    {
         
-        if (characterController.isGrounded && !isJumping)
-            movement.y = _groundedGravity;
-        else if (isFalling) {
-            float previousYVelocity = movement.y;
-            float newYVelocity = movement.y + (gravity * fallMultiplier * Time.deltaTime);
-            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
-            movement.y = nextYVelocity;
-        }
-        else {
-            float previousYVelocity = movement.y;
-            float newYVelocity = movement.y + (gravity * Time.deltaTime);
-            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
-            movement.y = nextYVelocity;
-        }
-
-
-        if (isOnBall) {
-            float previousXVelocity = movement.x;
-            float newXVelocity = movement.x + (gravity * Time.deltaTime);
-            float nextYVelocity = (previousXVelocity + newXVelocity);
-            
-            if(nextYVelocity >= 0) 
-                movement.x = nextYVelocity;
-
-            float previousZVelocity = movement.z;
-            float newZVelocity = movement.z + (gravity * Time.deltaTime);
-            float nextZVelocity = (previousZVelocity + newZVelocity);
-            
-            if(nextZVelocity >= 0)
-                movement.z = nextZVelocity;
-        }
-    }
-
-    void HandleJump() {
-        if (!isJumping && characterController.isGrounded && isJumpPressed) {
-            isJumping = true;
-            float previousYVelocity = movement.y;
-            float newYVelocity = movement.y + _initialJumpVelocity;
-            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f; // Velocity Verlet Integration to avoid difference with FPS
-            movement.y = nextYVelocity;
-        }
-        else if (!isJumpPressed && isJumping && characterController.isGrounded) {
-            isJumping = false;
-        }
-    }
-
-    private void Movement() {
-        float forwardInput = new Vector3(movement.x, 0, 0).magnitude * Mathf.Sign(movement.x);
-        Vector3 forwardVec = forwardInput * cameraTransform.forward;
-
-        float rightInput = new Vector3(0, 0, -movement.z).magnitude * Mathf.Sign(movement.z);
-        Vector3 rightVec = rightInput * cameraTransform.right;
-
-        Vector3 movementDirection = forwardVec + rightVec;
-        float magnitude = Mathf.Clamp01(movementDirection.magnitude) * speed;
-
-        Vector3 velocity = movementDirection * magnitude;
-        velocity.y = movement.y;
-  
-        characterController.Move(velocity * Time.deltaTime);
-
-        if (_input != Vector2.zero) {
-            Quaternion rotation = Quaternion.LookRotation(new Vector3(velocity.x,0,velocity.z), Vector3.up);
+        Vector3 velocity = new Vector3(_input.y, 0, -_input.x) * speed;
+        //Debug.Log("value " + (velocity * Time.fixedDeltaTime));
+        
+        
+        
+       // rigidbody.MovePosition(transform.parent.position + velocity * Time.fixedDeltaTime);
+        if (_input != Vector2.zero) { 
+            Quaternion rotation = Quaternion.LookRotation(new Vector3(velocity.x,0,velocity.z), Vector3.up); 
             transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, 500f * Time.deltaTime);
         }
     }
 
+   // public void ApplyForce(Vector3 force) => characterController.Move(force);
+
+    #endregion
+
+    private void MovementPending() {
+        float moveX = _input.y * speed;
+        float moveZ = _input.x * speed * -1;
+
+        if (moveX == 0 && moveZ == 0)
+            return;
+
+        if (isOnBall) {
+
+         /*   if (_input.y > 0)
+                rigidbody.AddForce(Vector3.right * speed * slidingAmplifier, ForceMode.VelocityChange);
+            else if (_input.y < 0)
+                rigidbody.AddForce(Vector3.right * speed * slidingAmplifier* -1, ForceMode.VelocityChange);
+            if (_input.x > 0)
+                rigidbody.AddForce(Vector3.forward * speed * slidingAmplifier * -1, ForceMode.VelocityChange);
+            else if (_input.x < 0)
+                rigidbody.AddForce(Vector3.forward * speed * slidingAmplifier, ForceMode.VelocityChange);
+*/
+         
+            rigidbody.AddForce(new Vector3(moveX,0,moveZ));
+            // Debug.Log("velocity " + rigidbody.velocity.magnitude);
+            //rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, speed);
+            // Debug.Log("newVel " + rigidbody.velocity.magnitude);
+        }
+        else
+        {
+            rigidbody.velocity = new Vector3(moveX, 0, moveZ);
+        }
+    }
+
+    #region Inputs Functions
+    
     public void OnMove(InputAction.CallbackContext e) {
         _input = e.ReadValue<Vector2>();
-        
-        if(_input != Vector2.zero)
-            movement = new Vector3(_input.y, movement.y, _input.x);
 
-        if(e.started) isMoving = true;
-        if(e.canceled)  isMoving = false;
         
+        
+      /*  float forwardInput = new Vector3(_input.y, 0, 0).magnitude * Mathf.Sign(movement.x);
+        Vector3 forwardVec = forwardInput * cameraTransform.forward;
+
+        float rightInput = new Vector3(0, 0, -_input.x).magnitude * Mathf.Sign(movement.z);
+        Vector3 rightVec = rightInput * cameraTransform.right;
+
+        Vector3 movementDirection = forwardVec + rightVec;
+        
+        float magnitude = Mathf.Clamp01(movementDirection.magnitude) * speed;
+
+        
+        Vector3 velocity = movementDirection * magnitude;
+        rigidbody.AddForce(velocity,ForceMode.Force);
+        */
+        
+        if (e.started)
+            isMoving = true;
+        if (e.canceled)
+            isMoving = false;
+
     }
 
     public void OnJump(InputAction.CallbackContext e) {
+        if (e.started)
+            isOnBall = !isOnBall;
+        
         if (canJump) 
             isJumpPressed = e.ReadValueAsButton();
     }
 
-    public void ApplyForce(Vector3 force) => characterController.Move(force * Time.deltaTime);
-    
 
     #endregion
 

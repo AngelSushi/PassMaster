@@ -12,7 +12,7 @@ public class KB_PlayerMovementEditor : CustomFieldInspector<KB_PlayerMovement> {
     private SerializedProperty _dead, _freeze;
     private SerializedProperty _speed, _isMoving;
     private SerializedProperty _canJump, _maxJumpTime, _isJumping,_maxJumpHeight,_isJumpPressed,_fallMultiplier;
-    
+    private SerializedProperty _slidingAmplifier;
     protected override void OnEnable() {
         base.OnEnable();
 
@@ -32,6 +32,8 @@ public class KB_PlayerMovementEditor : CustomFieldInspector<KB_PlayerMovement> {
         _maxJumpHeight = serializedClass.FindProperty("maxJumpHeight");
         _maxJumpTime = serializedClass.FindProperty("maxJumpTime");
         _fallMultiplier = serializedClass.FindProperty("fallMultiplier");
+
+        _slidingAmplifier = serializedClass.FindProperty("slidingAmplifier");
     }
 
     public override void OnInspectorGUI() {
@@ -65,6 +67,11 @@ public class KB_PlayerMovementEditor : CustomFieldInspector<KB_PlayerMovement> {
         EditorGUILayout.PropertyField(_maxJumpHeight);
         EditorGUILayout.PropertyField(_maxJumpTime);
         EditorGUILayout.PropertyField(_fallMultiplier);
+        
+        
+        EditorGUILayout.Space(20);
+        EditorGUILayout.LabelField("Additional Force",EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(_slidingAmplifier);
         
         if(EditorGUI.EndChangeCheck()) {
             serializedClass.ApplyModifiedProperties();

@@ -22,7 +22,7 @@ public class Treadmill : MonoBehaviour {
         if (collider.tag.Equals("Player")) {
             if (collider.gameObject.GetComponentInChildren<KB_PlayerMovement>() != null) {
                 KB_PlayerMovement playerMovement = collider.gameObject.GetComponentInChildren<KB_PlayerMovement>();
-                playerMovement.ApplyForce(Vector3.right * -1 * attractiveForce);
+                //playerMovement.ApplyForce(Vector3.right * -1 * attractiveForce * Time.deltaTime);
             }
         }
     }
