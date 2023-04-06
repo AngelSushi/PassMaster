@@ -43,5 +43,15 @@ public class GUIExtended {
             EditorSceneManager.SaveOpenScenes();
             EditorSceneManager.OpenScene("Assets/Scenes/MiniGames/Keyball/Keyball.unity");
         }
+
+        if (GUILayout.Button("DrawMe")) {
+            EditorSceneManager.SaveOpenScenes();
+            EditorSceneManager.OpenScene("Assets/Scenes/MiniGames/DrawMe/DrawMe.unity");
+        }
+
+        if (GUILayout.Button("Surf")) {
+            EditorSceneManager.SaveOpenScenes();
+            EditorSceneManager.OpenScene("Assets/Scenes/MiniGames/Surf/Surf.unity");
+        }
     }
 }
