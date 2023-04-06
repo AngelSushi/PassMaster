@@ -8,14 +8,14 @@ using UnityEngine.Serialization;
 using UnityEngine.TextCore.Text;
 
 public class KB_PlayerMovement : MonoBehaviour {
-    #region Variables
+ #region Variables
     
     
     /* Controller Variables */
     public KBController controller;
     public GameController gameController;
     public Animator animator;
-    public Rigidbody rigidbody;
+    public CharacterController characterController;
     public Transform cameraTransform;
     public float gravity;
     private float _groundedGravity = -.5f;
@@ -26,6 +26,8 @@ public class KB_PlayerMovement : MonoBehaviour {
     [HideInInspector] public Vector3 movement;
     private Vector2 _input;
     public bool isOnBall;
+    private Vector3 _velocity,_lastFrameVelocity;
+    private Vector3 _positionPerFrame;
     
     /* Sliding Variables */
     private Vector2 _lastInput;
@@ -47,8 +49,8 @@ public class KB_PlayerMovement : MonoBehaviour {
     private float _timeToReachHeightJump {
         get { return maxJumpTime / 2; }
     }
-    
-  
+
+    private float calculatedDrag;
     #endregion
 
     #region Unity's Functions
@@ -66,121 +68,155 @@ public class KB_PlayerMovement : MonoBehaviour {
         gameController.inputs.FindAction("Keyball/Jump").canceled += OnJump;
         
         animator = GetComponent<Animator>();
-        rigidbody = GetComponentInParent<Rigidbody>();
+        characterController = GetComponentInParent<CharacterController>();
 
         gravity = (-2 * maxJumpHeight) / Mathf.Pow(_timeToReachHeightJump, 2);
         _initialJumpVelocity = (2 * maxJumpHeight) / _timeToReachHeightJump;
+        
+        calculatedDrag = Mathf.Clamp01(1f - (2 * Time.fixedDeltaTime));
     }
 
-    void FixedUpdate() {
+    void Update() {
         if (!controller.begin && !controller.finish) {
             if (!dead && !freeze) {
                 animator.SetBool("IsMooving", isMoving);
 
-                MovementPending();
+                HandleGravity();
+                Movement();
+                HandleJump();
             }
         }
     }
-    
-    
+
+    private void FixedUpdate()
+    {
+      /*  float drag = Mathf.Clamp01(1.0f - (2 * Time.fixedDeltaTime)) ; // 2 is a constant can be replace by variable
+
+        Vector3 velocityPerFrame = _lastFrameVelocity + (Physics.gravity * Time.fixedDeltaTime);
+        velocityPerFrame *= drag;
+
+        _positionPerFrame += velocityPerFrame * Time.fixedDeltaTime;
+        Debug.Log("_position " + _positionPerFrame);
+
+
+        _lastFrameVelocity = _velocity;*/
+
+     // Movement();
+     
+     // _velocity += Physics.gravity * Time.fixedDeltaTime;
+     // _velocity *= calculatedDrag;
+
+     // Debug.Log("vel " + _velocity);
+      //characterController.Move(_velocity * Time.fixedDeltaTime);
+    }
 
     #endregion
 
     #region Physics Functions
     private IEnumerator Slide(Vector2 startSlideInput) {
-        while (startSlideInput != Vector2.zero) {
-            startSlideInput = Vector2.Lerp(startSlideInput, Vector2.zero, Time.deltaTime * speed * slidingAmplifier);
-          //  movement += new Vector3(startSlideInput.y, 0, startSlideInput.x);
+        
+        Debug.Log("startWith " + startSlideInput) ;
+        
+        while (startSlideInput.magnitude > 0.1f) {
+            startSlideInput = Vector2.Lerp(startSlideInput, Vector2.zero, Time.deltaTime * (speed /2) * slidingAmplifier);
+            movement += new Vector3(startSlideInput.y, 0, startSlideInput.x);
+            
+            Debug.Log("SlideInput " + startSlideInput);
             yield return new WaitForEndOfFrame();
         }
 
         movement = Vector3.zero;
+        Debug.Log("end");
         yield return null;
     }
 
-   
-    private void Movement()
-    {
+    void HandleGravity() {
+        bool isFalling = movement.y <= 0.0f || !isJumpPressed;
         
-        Vector3 velocity = new Vector3(_input.y, 0, -_input.x) * speed;
-        //Debug.Log("value " + (velocity * Time.fixedDeltaTime));
-        
-        
-        
-       // rigidbody.MovePosition(transform.parent.position + velocity * Time.fixedDeltaTime);
-        if (_input != Vector2.zero) { 
-            Quaternion rotation = Quaternion.LookRotation(new Vector3(velocity.x,0,velocity.z), Vector3.up); 
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, 500f * Time.deltaTime);
+        if (characterController.isGrounded && !isJumping)
+            movement.y = _groundedGravity;
+        else if (isFalling) {
+            float previousYVelocity = movement.y;
+            float newYVelocity = movement.y + (gravity * fallMultiplier * Time.deltaTime);
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
+            movement.y = nextYVelocity;
+        }
+        else {
+            float previousYVelocity = movement.y;
+            float newYVelocity = movement.y + (gravity * Time.deltaTime);
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
+            movement.y = nextYVelocity;
+        }
+
+    }
+
+    void HandleJump() {
+        if (!isJumping && characterController.isGrounded && isJumpPressed) {
+            isJumping = true;
+            float previousYVelocity = movement.y;
+            float newYVelocity = movement.y + _initialJumpVelocity;
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f; // Velocity Verlet Integration to avoid difference with FPS
+            movement.y = nextYVelocity;
+        }
+        else if (!isJumpPressed && isJumping && characterController.isGrounded) {
+            isJumping = false;
         }
     }
 
-   // public void ApplyForce(Vector3 force) => characterController.Move(force);
+    private void Movement() {
+        Vector3 forwardVec = movement.x * cameraTransform.forward;
+        Vector3 rightVec = movement.z * cameraTransform.right;
+        
+        Debug.Log("forward " + forwardVec + " movement " + movement.x + " input " + _input.y);
+        Debug.Log("rightVec " + rightVec);
+
+        Vector3 movementDirection = forwardVec + rightVec;
+        float magnitude = Mathf.Clamp01(movementDirection.magnitude) * speed;
+
+        
+        _velocity = movementDirection * magnitude;
+        _velocity.y = movement.y;
+        
+        Debug.Log("velocity " + _velocity);
+        
+        characterController.Move(_velocity * Time.deltaTime);
+
+        
+        if (_input != Vector2.zero) { 
+            Quaternion rotation = Quaternion.LookRotation(new Vector3(_velocity.x,0,_velocity.z), Vector3.up); 
+           // transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, 500f * Time.deltaTime);
+        }
+    }
+
+    public void ApplyForce(Vector3 force) => characterController.Move(force);
 
     #endregion
-
-    private void MovementPending() {
-        float moveX = _input.y * speed;
-        float moveZ = _input.x * speed * -1;
-
-        if (moveX == 0 && moveZ == 0)
-            return;
-
-        if (isOnBall) {
-
-         /*   if (_input.y > 0)
-                rigidbody.AddForce(Vector3.right * speed * slidingAmplifier, ForceMode.VelocityChange);
-            else if (_input.y < 0)
-                rigidbody.AddForce(Vector3.right * speed * slidingAmplifier* -1, ForceMode.VelocityChange);
-            if (_input.x > 0)
-                rigidbody.AddForce(Vector3.forward * speed * slidingAmplifier * -1, ForceMode.VelocityChange);
-            else if (_input.x < 0)
-                rigidbody.AddForce(Vector3.forward * speed * slidingAmplifier, ForceMode.VelocityChange);
-*/
-         
-            rigidbody.AddForce(new Vector3(moveX,0,moveZ));
-            // Debug.Log("velocity " + rigidbody.velocity.magnitude);
-            //rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, speed);
-            // Debug.Log("newVel " + rigidbody.velocity.magnitude);
-        }
-        else
-        {
-            rigidbody.velocity = new Vector3(moveX, 0, moveZ);
-        }
-    }
-
+    
     #region Inputs Functions
     
     public void OnMove(InputAction.CallbackContext e) {
         _input = e.ReadValue<Vector2>();
+        
+        
+        Debug.Log("input " + _input);
+        //if(!isOnBall) 
+         //   movement += new Vector3(_input.y, movement.y, _input.x);
+       // else if(_input != Vector2.zero)
+            movement += new Vector3(_input.y, movement.y, _input.x);
 
-        
-        
-      /*  float forwardInput = new Vector3(_input.y, 0, 0).magnitude * Mathf.Sign(movement.x);
-        Vector3 forwardVec = forwardInput * cameraTransform.forward;
-
-        float rightInput = new Vector3(0, 0, -_input.x).magnitude * Mathf.Sign(movement.z);
-        Vector3 rightVec = rightInput * cameraTransform.right;
-
-        Vector3 movementDirection = forwardVec + rightVec;
-        
-        float magnitude = Mathf.Clamp01(movementDirection.magnitude) * speed;
-
-        
-        Vector3 velocity = movementDirection * magnitude;
-        rigidbody.AddForce(velocity,ForceMode.Force);
-        */
-        
         if (e.started)
             isMoving = true;
         if (e.canceled)
             isMoving = false;
 
+        
+        //if (/*isOnBall &&*/ _input.normalized != _lastInput) 
+          // StartCoroutine(Slide(_lastInput));
+        
+        _lastInput = _input.normalized;
     }
 
     public void OnJump(InputAction.CallbackContext e) {
-        if (e.started)
-            isOnBall = !isOnBall;
-        
         if (canJump) 
             isJumpPressed = e.ReadValueAsButton();
     }
