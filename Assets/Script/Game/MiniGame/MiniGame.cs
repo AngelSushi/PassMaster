@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -27,6 +28,10 @@ public abstract class MiniGame : CoroutineSystem {
     private GameController gameController;
 
     public static MiniGame Instance;
+    
+    
+    public InputActionAsset inputs;
+    
 
     public virtual void Awake() {
         Instance = this;
@@ -109,6 +114,9 @@ public abstract class MiniGame : CoroutineSystem {
         float seconds = Mathf.FloorToInt(gameTime % 60);
 
         if(gameTime > 0) {
+            if (timer == null)
+                return;
+            
             if(seconds >= 10)
                 timer.text = minutes + ":" + seconds;
             else 

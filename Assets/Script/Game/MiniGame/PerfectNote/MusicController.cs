@@ -1,86 +1,169 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class MusicController : MonoBehaviour {
 
-    [System.Serializable]
-    public class Note {
+using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Interaction;
+using System.IO;
+using System.Linq;
+using UnityEngine.Networking;
 
-        public int line;
-        public float startTime;
-        public float noteTime;
-        public Material color;
+public class MusicController : MiniGame {
+    
+   /* [SerializeField] private float songBPM; // How many beats there are in 1 minutes ; 161
+    [HideInInspector] public float secPerBeat; // How many seconds there are in 1 beat
+    private float _songPosition; // The current position of the song in seconds
+    public float _beatSongPosition; // The current position of the song in beat;
+    private float _dspSongTime; // How many songs have passed since the beginning of the song
+    public float firstBeatOffset; // The offset to the first beat of the song in seconds ; 8.13
+
+    private bool isPlayed;
+    [SerializeField] private AudioSource music;
+
+    [SerializeField] private GameObject notePrefab;
+    [SerializeField] private Transform noteStart;
+    [SerializeField] private Transform noteEnd;
+    [SerializeField] private float startOffset;
+
+    private float _distance;
+    public float noteSpeed;
+    private float _time;
+
+    [SerializeField] private NoteCreator creator;
+
+
+    private int counter;
+    
+    */
+   [SerializeField] [Tooltip("The song delay in seconds")] public float songDelay;
+   [SerializeField] [Tooltip("The input delay in milliseconds")] public int inputDelay;
+
+   [SerializeField] private string fileLocation;
+   public float noteTime;
+   public float noteSpawnX;
+   [SerializeField] private float noteTapX;
+   [SerializeField] private double marginError;
+
+   public float noteDespawnX {
+       get {
+           return noteTapX - (noteSpawnX - noteTapX);
+       }
+   }
+
+   public NoteLane[] lanes;
+
+   public static MidiFile midiFile;
+
+   public override void Awake() {
+       base.Awake();
+   }
+
+   void Start() {
+       ReadMidiFile();
+   }
+
+   private void ReadMidiFile() {
+       midiFile = MidiFile.Read(Application.streamingAssetsPath + "/" + fileLocation);
+       GetDataFromMidi();
+   }
+
+   private void GetDataFromMidi() {
+       List<Note> notes = midiFile.GetNotes().ToList();
+
+       foreach (NoteLane lane in lanes)
+       {
+           lane.SetTimeStamps(notes);
+       } 
+       Invoke(nameof(StartSong),songDelay);
+   }
+
+   private void StartSong() {
+      mainAudio.Play(); 
+      Debug.Log("start main audio");
+   }
+
+   public static double GetAudioSourceTime() {
+       
+       
+       return (double)Instance.mainAudio.timeSamples / Instance.mainAudio.clip.frequency;
+   }
+   
+    /*public override void Awake() {
+        base.Awake();
+        secPerBeat = 60f / songBPM; 
+        _dspSongTime = (float)AudioSettings.dspTime;
+
+        _distance = Vector2.Distance(noteStart.position, noteEnd.position);
+        
+        _time = _distance / noteSpeed;
+        music.Play();
+        
+        Debug.Log("play mode");
+        inputs.FindAction("Player/Jump").started += OnSpaceBar;
     }
 
-    public List<Note> notesStartTime;
-    public Transform[] noteSpawn;
-    public Transform[] noteEnd;
-    public GameObject notePrefab;
-    public AudioSource song;
-    public int index;
-
-    public float bpm = 161;
-    private float crotchet; // time duration of a beat
-    private float offset; // in MP3 there us teeny gap for metadata
-    private float songposition;
-    private float dsptimesong;
-// 161 bpm
-
-    void Start() {
-        SortNote();
+    private void OnSpaceBar(InputAction.CallbackContext e) {
+        Debug.Log("position " + _songPosition + " beatSongPosition " + _beatSongPosition);
     }
 
-    void Update() {
+    private int index = 0;
+    private bool active = false;
 
-        songposition = (float)(AudioSettings.dspTime - dsptimesong) * song.pitch - offset;
+    private void Update() { 
+        _songPosition = (float)(AudioSettings.dspTime - _dspSongTime - firstBeatOffset);
+        _beatSongPosition = _songPosition / secPerBeat;
 
+        if (creator.notes.Count == 0)
+            return;
 
-        if(songposition > crotchet * 1.32 && index == 0) {
-             Instantiate(notePrefab,noteEnd[0].position,Quaternion.Euler(0,0,0));
-             index++;
-        }
-        /*int i = 0;
-
-        do {
+        NoteCreator.Note nextNote = creator.notes.Peek();
+        
+        //Debug.Log("index " + nextNote.noteIndex);
+        //Debug.Log("nextNote " + nextNote.time + " beats " + nextNote.timeBeat);
             
-        } 
-        while (i < 7);
+        float pathDurationBeat = _time / secPerBeat;
+        float spawnBeat = (nextNote.timeBeat - pathDurationBeat); // Caused the first note is on the beat number 1 and not number 0
+      
+        
+        if(index > 0)
+            return;
 
-        */
-    }
+        
+        if (_beatSongPosition >= spawnBeat && !active) { // Called exactly when the first note is spawning
 
-    private void SortNote() {
-        List<float> notesStart = new List<float>();
-        List<Note> newNotesStartTime = new List<Note>();
+            Vector3 position = noteStart.position;
+            position.z -= startOffset * (nextNote.noteIndex - 1);
+            Debug.Log("spawn " + noteEnd.transform.position);
 
-        foreach(Note note in notesStartTime) {
-            notesStart.Add(note.startTime);
+            position.y += 0.03f;
+            GameObject note = Instantiate(notePrefab, position,notePrefab.transform.rotation);
+            note.GetComponent<NoteController>().startPos = position;
+            note.GetComponent<NoteController>().note = nextNote;
+
+            active = true;
+            //creator.notes.Dequeue();
         }
 
-        notesStart.Sort();
-
-        foreach(float start in notesStart) {
-            newNotesStartTime.Add(GetNoteByStartTime(start));
+        if (_beatSongPosition > +nextNote.timeBeat) {
+            
+            Vector3 position = noteEnd.position;
+            position.z -= startOffset * (nextNote.noteIndex - 1);
+            
+            Debug.Log("spawn on perfect time");
+            
+            GameObject note = Instantiate(notePrefab, position,notePrefab.transform.rotation);
+            note.GetComponent<NoteController>().enabled = false;
+            index++;
         }
-
-        notesStartTime = newNotesStartTime;
+        
     }
-
-    private Note GetNoteByStartTime(float newStartTime) {
-        foreach(Note note in notesStartTime) {
-            if(note.startTime == newStartTime)
-                return note;
-        }
-        return null;
-    }
-
-    private void ApplyVariables(NoteController note,int i,float age,Vector3 pos) {
-        note.noteIndex = index;
-        note.startPos = pos;
-        note.age = age;
-        note.gameObject.transform.position = pos;
-        note.gameObject.SetActive(true);
-        note.gameObject.GetComponent<MeshRenderer>().material = notesStartTime[index + i].color;
+*/
+    
+    
+    public override void OnFinish() {
+        
     }
 }

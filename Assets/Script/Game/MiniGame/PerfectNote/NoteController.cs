@@ -1,26 +1,30 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class NoteController : MonoBehaviour {
 
-    public Vector3 startPos;
-    public int noteIndex;
-    public float age;
+    public double timeInstantiated;
+    public float assignedTime;
 
-    void Start() {
-          transform.position = startPos;
+    private MusicController controller;
+
+    private void Start() {
+        timeInstantiated = MusicController.GetAudioSourceTime();
+
+        controller = (MusicController)MusicController.Instance;
     }
 
-    void Update() {
-        if(startPos != Vector3.zero) {
-            age -= Time.deltaTime;
-            Debug.Log("enter: " + startPos);
-            Vector3 position = startPos - ( Vector3.left * age  );
-            transform.position = position;
+    private void Update() {
+        double timeSinceInstantiated = MusicController.GetAudioSourceTime() - timeInstantiated;
+        float t = (float)(timeSinceInstantiated / controller.noteTime / 2);
+
+        if (t > 1) {
+            Destroy(gameObject);
         }
         else {
-            transform.gameObject.SetActive(false);
+            transform.localPosition = Vector3.Lerp(Vector3.left * controller.noteSpawnX, Vector3.left * controller.noteDespawnX, t);
         }
     }
 }
