@@ -11,35 +11,41 @@ public abstract class MiniGame : CoroutineSystem {
     public bool isTraining;
     public bool runSinceMenu;
     public float gameTime;
-    public List<GameObject> winners = new List<GameObject>();
-    public Text beginText,timer;
+
+    public bool useTimer,useChrono;
+    
+    public Text chronoText,timer;
     public Text endText;
-    public AudioSource startSound,timerSound,timeSound;
+    public AudioSource startChrono,runChrono,endChrono;
     public AudioSource mainAudio;
+    
+    
+    public List<GameObject> winners = new List<GameObject>();
     public AudioSource win;
     public GameObject[] classementPanels;
     public GameObject confetti;
 
-    public GameObject[] players;
     
-    private bool hasPlayedSFX;
-    private float beginTimer = 4f;
-    private string lastBeginText,lastTimeText;
-    private GameController gameController;
+    public Player[] players;
+    
+    private bool _hasPlayedSfx;
+    private float _beginTimer = 4f;
+    private string _lastBeginText,_lastTimeText;
+    private GameController _gameController;
 
-    public static MiniGame Instance;
+    public static MiniGame instance;
     
     
     public InputActionAsset inputs;
     
 
     public virtual void Awake() {
-        Instance = this;
+        instance = this;
     }
 
     public virtual void Start() {
         
-        gameController = GameObject.FindGameObjectsWithTag("Game").Length > 0 ?  GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>() : null;
+        _gameController = GameObject.FindGameObjectsWithTag("Game").Length > 0 ?  GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>() : null;
         
         // Tools --> If Board Scene not Loaded -> AutoLoad
     }
@@ -58,9 +64,9 @@ public abstract class MiniGame : CoroutineSystem {
 
             mainAudio.Stop();
 
-            if(!hasPlayedSFX) {
+            if(!_hasPlayedSfx) {
                 win.Play();
-                hasPlayedSFX = true;
+                _hasPlayedSfx = true;
                 endText.gameObject.SetActive(true);
                 confetti.SetActive(true);
                 confetti.transform.position = winners[0].transform.position;
@@ -78,33 +84,33 @@ public abstract class MiniGame : CoroutineSystem {
                 SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
             }
             else 
-                gameController.mgController.EndMiniGame(classementPanels,winners,endText.gameObject); 
+                _gameController.mgController.EndMiniGame(classementPanels,winners,endText.gameObject); 
  
         }
     }
 
     private void BeginTimer() {
-        beginTimer -= Time.deltaTime;
-        float seconds = Mathf.FloorToInt(beginTimer % 60);
+        _beginTimer -= Time.deltaTime;
+        float seconds = Mathf.FloorToInt(_beginTimer % 60);
                     
         if(seconds > 0)
-             beginText.text = "" + seconds;
+             chronoText.text = "" + seconds;
         else
-            beginText.text = "GO";
+            chronoText.text = "GO";
 
-        if(lastBeginText == null || beginText.text != lastBeginText) {
-            if(beginText.text == "GO")
-                startSound.Play();
+        if(_lastBeginText == null || chronoText.text != _lastBeginText) {
+            if(chronoText.text == "GO")
+                startChrono.Play();
             else 
-                timerSound.Play();
+                runChrono.Play();
         }
 
-        if(beginTimer < 0) {
-            beginText.text = "";
+        if(_beginTimer < 0) {
+            chronoText.text = "";
             begin = false;
         }
 
-        lastBeginText = beginText.text;
+        _lastBeginText = chronoText.text;
     }
 
     private void MiniGameTimer() {
@@ -125,11 +131,11 @@ public abstract class MiniGame : CoroutineSystem {
             if(gameTime <= 10) {
                 timer.gameObject.GetComponent<Outline>().enabled = true;
             
-                if(timer.text != lastTimeText) 
-                    timeSound.Play();                        
+                if(timer.text != _lastTimeText) 
+                    endChrono.Play();                        
             }
 
-            lastTimeText = timer.text;
+            _lastTimeText = timer.text;
         }
         else 
             finish = true;

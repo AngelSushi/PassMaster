@@ -11,7 +11,7 @@ public class KBController : MiniGame {
     public GameObject[] stopwatch = new GameObject[4];
     public Sprite[] destroySprite = new Sprite[48];
 
-    public Dictionary<GameObject,int> playersPoints = new Dictionary<GameObject,int>();
+    public Dictionary<Player,int> playersPoints = new Dictionary<Player,int>();
 
     public Transform areaDeath;
 
@@ -34,17 +34,12 @@ public class KBController : MiniGame {
     public override void Start() {
         base.Start();
         
-        playersPoint.Add(players[0],0);
+  /*      playersPoint.Add(players[0],0);
         playersPoint.Add(players[1],0);
         playersPoint.Add(players[2],0);
         playersPoint.Add(players[3],0);
-        
+    */    
         Debug.Log("start");
-
-        ActualizePlayerPoint(players[0]);
-        ActualizePlayerPoint(players[1]);
-        ActualizePlayerPoint(players[2]);
-        ActualizePlayerPoint(players[3]);
 
         RenderSettings.skybox = skybox;
 
@@ -71,19 +66,7 @@ public class KBController : MiniGame {
         }       
     }
 
-    public void AddPoint(GameObject player) {
-        playersPoint[player] = playersPoint[player] + 1;
-        ActualizePlayerPoint(player);
-        
-        
-        
-        
-        Destroy(player.transform.GetChild(player.transform.childCount - 1).gameObject);
-    }
 
-    private void ActualizePlayerPoint(GameObject player) {
-        //pointsText[ConvertPlayerInt(player)].GetComponent<Text>().text = playersPoint[player].ToString();
-    }
 
     public int ConvertPlayerInt(GameObject player) {
         switch(player.name) {

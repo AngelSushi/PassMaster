@@ -673,6 +673,174 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""PerfectNote"",
+            ""id"": ""bdec5d09-f25f-4502-bb35-52eed5ca5712"",
+            ""actions"": [
+                {
+                    ""name"": ""Note1"",
+                    ""type"": ""Button"",
+                    ""id"": ""32882f9e-c66f-447a-9aa8-895db45da792"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Note2"",
+                    ""type"": ""Button"",
+                    ""id"": ""34422b61-b54d-4781-b86e-21fa605df992"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Note3"",
+                    ""type"": ""Button"",
+                    ""id"": ""7039a5ed-4018-4655-8302-5aaa6526b2e4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Note4"",
+                    ""type"": ""Button"",
+                    ""id"": ""213aedc7-b1e0-46a1-b96b-51f89bb53faa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Note5"",
+                    ""type"": ""Button"",
+                    ""id"": ""07e88ef2-5b09-4e13-99ab-3220658a7005"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Note6"",
+                    ""type"": ""Button"",
+                    ""id"": ""13fd9093-acf0-40f5-8c19-382a8bf08517"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Note7"",
+                    ""type"": ""Button"",
+                    ""id"": ""b85f9833-7889-4616-a2fc-6de086e3fe16"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Note8"",
+                    ""type"": ""Button"",
+                    ""id"": ""773f0ac6-3b67-4fce-a5de-33aeee99d8be"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4b3f109b-1435-4a4a-a780-a9f6630ff7ab"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9e7dc2e0-aeec-4370-a3e6-f6602ab9b9b6"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3f9ebea2-f674-4909-86d3-3adb019d8b44"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""03dc9c24-a1a5-4556-9d39-3c94a7b0450e"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6dbd621b-8f44-4522-a0ba-12b5ebe4a868"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4ffb234-3700-4003-900a-19ada33e24a5"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aa2e2f24-a07f-4fdf-8c8f-5de6b6e2b817"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note7"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ba3f08ff-356c-4d54-9ed5-715678d92298"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Note8"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -728,6 +896,16 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Keyball_Quit = m_Keyball.FindAction("Quit", throwIfNotFound: true);
         m_Keyball_Jump = m_Keyball.FindAction("Jump", throwIfNotFound: true);
         m_Keyball_CameraRotation = m_Keyball.FindAction("CameraRotation", throwIfNotFound: true);
+        // PerfectNote
+        m_PerfectNote = asset.FindActionMap("PerfectNote", throwIfNotFound: true);
+        m_PerfectNote_Note1 = m_PerfectNote.FindAction("Note1", throwIfNotFound: true);
+        m_PerfectNote_Note2 = m_PerfectNote.FindAction("Note2", throwIfNotFound: true);
+        m_PerfectNote_Note3 = m_PerfectNote.FindAction("Note3", throwIfNotFound: true);
+        m_PerfectNote_Note4 = m_PerfectNote.FindAction("Note4", throwIfNotFound: true);
+        m_PerfectNote_Note5 = m_PerfectNote.FindAction("Note5", throwIfNotFound: true);
+        m_PerfectNote_Note6 = m_PerfectNote.FindAction("Note6", throwIfNotFound: true);
+        m_PerfectNote_Note7 = m_PerfectNote.FindAction("Note7", throwIfNotFound: true);
+        m_PerfectNote_Note8 = m_PerfectNote.FindAction("Note8", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1003,6 +1181,95 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         }
     }
     public KeyballActions @Keyball => new KeyballActions(this);
+
+    // PerfectNote
+    private readonly InputActionMap m_PerfectNote;
+    private IPerfectNoteActions m_PerfectNoteActionsCallbackInterface;
+    private readonly InputAction m_PerfectNote_Note1;
+    private readonly InputAction m_PerfectNote_Note2;
+    private readonly InputAction m_PerfectNote_Note3;
+    private readonly InputAction m_PerfectNote_Note4;
+    private readonly InputAction m_PerfectNote_Note5;
+    private readonly InputAction m_PerfectNote_Note6;
+    private readonly InputAction m_PerfectNote_Note7;
+    private readonly InputAction m_PerfectNote_Note8;
+    public struct PerfectNoteActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public PerfectNoteActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Note1 => m_Wrapper.m_PerfectNote_Note1;
+        public InputAction @Note2 => m_Wrapper.m_PerfectNote_Note2;
+        public InputAction @Note3 => m_Wrapper.m_PerfectNote_Note3;
+        public InputAction @Note4 => m_Wrapper.m_PerfectNote_Note4;
+        public InputAction @Note5 => m_Wrapper.m_PerfectNote_Note5;
+        public InputAction @Note6 => m_Wrapper.m_PerfectNote_Note6;
+        public InputAction @Note7 => m_Wrapper.m_PerfectNote_Note7;
+        public InputAction @Note8 => m_Wrapper.m_PerfectNote_Note8;
+        public InputActionMap Get() { return m_Wrapper.m_PerfectNote; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PerfectNoteActions set) { return set.Get(); }
+        public void SetCallbacks(IPerfectNoteActions instance)
+        {
+            if (m_Wrapper.m_PerfectNoteActionsCallbackInterface != null)
+            {
+                @Note1.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote1;
+                @Note1.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote1;
+                @Note1.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote1;
+                @Note2.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote2;
+                @Note2.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote2;
+                @Note2.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote2;
+                @Note3.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote3;
+                @Note3.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote3;
+                @Note3.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote3;
+                @Note4.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote4;
+                @Note4.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote4;
+                @Note4.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote4;
+                @Note5.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote5;
+                @Note5.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote5;
+                @Note5.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote5;
+                @Note6.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote6;
+                @Note6.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote6;
+                @Note6.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote6;
+                @Note7.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote7;
+                @Note7.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote7;
+                @Note7.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote7;
+                @Note8.started -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote8;
+                @Note8.performed -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote8;
+                @Note8.canceled -= m_Wrapper.m_PerfectNoteActionsCallbackInterface.OnNote8;
+            }
+            m_Wrapper.m_PerfectNoteActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Note1.started += instance.OnNote1;
+                @Note1.performed += instance.OnNote1;
+                @Note1.canceled += instance.OnNote1;
+                @Note2.started += instance.OnNote2;
+                @Note2.performed += instance.OnNote2;
+                @Note2.canceled += instance.OnNote2;
+                @Note3.started += instance.OnNote3;
+                @Note3.performed += instance.OnNote3;
+                @Note3.canceled += instance.OnNote3;
+                @Note4.started += instance.OnNote4;
+                @Note4.performed += instance.OnNote4;
+                @Note4.canceled += instance.OnNote4;
+                @Note5.started += instance.OnNote5;
+                @Note5.performed += instance.OnNote5;
+                @Note5.canceled += instance.OnNote5;
+                @Note6.started += instance.OnNote6;
+                @Note6.performed += instance.OnNote6;
+                @Note6.canceled += instance.OnNote6;
+                @Note7.started += instance.OnNote7;
+                @Note7.performed += instance.OnNote7;
+                @Note7.canceled += instance.OnNote7;
+                @Note8.started += instance.OnNote8;
+                @Note8.performed += instance.OnNote8;
+                @Note8.canceled += instance.OnNote8;
+            }
+        }
+    }
+    public PerfectNoteActions @PerfectNote => new PerfectNoteActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1047,5 +1314,16 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnQuit(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnCameraRotation(InputAction.CallbackContext context);
+    }
+    public interface IPerfectNoteActions
+    {
+        void OnNote1(InputAction.CallbackContext context);
+        void OnNote2(InputAction.CallbackContext context);
+        void OnNote3(InputAction.CallbackContext context);
+        void OnNote4(InputAction.CallbackContext context);
+        void OnNote5(InputAction.CallbackContext context);
+        void OnNote6(InputAction.CallbackContext context);
+        void OnNote7(InputAction.CallbackContext context);
+        void OnNote8(InputAction.CallbackContext context);
     }
 }

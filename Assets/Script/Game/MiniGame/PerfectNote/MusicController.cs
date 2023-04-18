@@ -10,59 +10,69 @@ using Melanchall.DryWetMidi.Interaction;
 using System.IO;
 using System.Linq;
 using UnityEngine.Networking;
+using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
 public class MusicController : MiniGame {
     
-   /* [SerializeField] private float songBPM; // How many beats there are in 1 minutes ; 161
-    [HideInInspector] public float secPerBeat; // How many seconds there are in 1 beat
-    private float _songPosition; // The current position of the song in seconds
-    public float _beatSongPosition; // The current position of the song in beat;
-    private float _dspSongTime; // How many songs have passed since the beginning of the song
-    public float firstBeatOffset; // The offset to the first beat of the song in seconds ; 8.13
-
-    private bool isPlayed;
-    [SerializeField] private AudioSource music;
-
-    [SerializeField] private GameObject notePrefab;
-    [SerializeField] private Transform noteStart;
-    [SerializeField] private Transform noteEnd;
-    [SerializeField] private float startOffset;
-
-    private float _distance;
-    public float noteSpeed;
-    private float _time;
-
-    [SerializeField] private NoteCreator creator;
-
-
-    private int counter;
-    
-    */
    [SerializeField] [Tooltip("The song delay in seconds")] public float songDelay;
-   [SerializeField] [Tooltip("The input delay in milliseconds")] public int inputDelay;
 
    [SerializeField] private string fileLocation;
    public float noteTime;
-   public float noteSpawnX;
-   [SerializeField] private float noteTapX;
-   [SerializeField] private double marginError;
+   public float noteSpawnY;
+   public float noteTapY;
+   
+   
+   public float goodMarginError;
+   public float perfectMarginError;
+
+   [Tooltip("The reward when you do a good note in point")] public int goodReward;
+   [Tooltip("The reward when you do a perfect note in point")] public int perfectReward;
+
+   public Dictionary<Player, int> playersPoint = new Dictionary<Player, int>();
+   public Transform[] playersUI;
 
    public float noteDespawnX {
        get {
-           return noteTapX - (noteSpawnX - noteTapX);
+           return noteTapY - (noteSpawnY - noteTapY);
        }
    }
 
    public NoteLane[] lanes;
+   
 
    public static MidiFile midiFile;
 
-   public override void Awake() {
-       base.Awake();
-   }
+   public GameObject notePrefab;
+   public GameObject longNotePrefab;
+   public GameObject detection;
+   public GameObject start;
+
+   public Transform canvas;
+   public GameObject noteStatePrefab;
+   public Transform uiKeyParent;
+
+   public List<PN_AIController> allAI;
+
+   public List<Note> allNotes;
+
+   public List<Texture2D> patternsRef;
+   public List<int[]> patterns = new List<int[]>();
+
 
    void Start() {
+
+       foreach (Player player in players) 
+           playersPoint.Add(player,0);
+       
+       foreach(PN_AIController aiController in FindObjectsOfType<PN_AIController>())
+           allAI.Add(aiController);
+       
        ReadMidiFile();
+       ManageUIKey();
+      // GenerateAllPatterns();
+       
+       Debug.Log("difficulty " + GameController.Instance.difficulty);
    }
 
    private void ReadMidiFile() {
@@ -71,99 +81,131 @@ public class MusicController : MiniGame {
    }
 
    private void GetDataFromMidi() {
-       List<Note> notes = midiFile.GetNotes().ToList();
+       allNotes = midiFile.GetNotes().ToList();
 
        foreach (NoteLane lane in lanes)
-       {
-           lane.SetTimeStamps(notes);
-       } 
+           lane.SetTimeStamps(allNotes);
+
+       foreach (PN_AIController aiController in allAI) {
+           aiController.allNotes = allNotes;
+       }
+       
        Invoke(nameof(StartSong),songDelay);
    }
 
    private void StartSong() {
       mainAudio.Play(); 
-      Debug.Log("start main audio");
    }
 
    public static double GetAudioSourceTime() {
+       return (double)instance.mainAudio.timeSamples / instance.mainAudio.clip.frequency;
+   }
+
+   private void ManageUIKey() {
+       if (uiKeyParent.transform.childCount != lanes.Length) {
+           Debug.LogError("Errror when generation ui keys");
+       }
+
+       for (int i = 0; i < lanes.Length; i++) {
+           uiKeyParent.GetChild(i).GetChild(0).gameObject.SetActive(true);
+           uiKeyParent.GetChild(i).GetChild(1).gameObject.SetActive(false);
+           uiKeyParent.GetChild(i).GetChild(0).GetComponent<Image>().sprite = lanes[i].laneKeySprite;
+       }
+       
+   }
+
+   public override void Update() {
+       base.Update();
+       
+       start.SetActive(begin);
        
        
-       return (double)Instance.mainAudio.timeSamples / Instance.mainAudio.clip.frequency;
+       Debug.DrawLine(detection.transform.position,detection.transform.position + Vector3.up * goodMarginError,Color.yellow);
+       Debug.DrawLine(detection.transform.position,detection.transform.position - Vector3.up * goodMarginError,Color.yellow);
+       
+       
+       Debug.DrawLine((detection.transform.position + Vector3.left ),(detection.transform.position + Vector3.left )+ Vector3.up * perfectMarginError ,Color.red);
+       Debug.DrawLine((detection.transform.position + Vector3.left ),(detection.transform.position + Vector3.left ) - Vector3.up * perfectMarginError,Color.red);
+
+       if (!begin && !mainAudio.isPlaying ) {
+           Debug.Log("finish");
+           OnFinish();
+       }
+   }
+
+   public void AddPointToPlayer(Player player,int point) {
+       playersPoint[player] += point;
+       
+       Debug.Log("player " + player);
+
+       List<int> allPoints = playersPoint.Values.ToList();
+       allPoints.Sort();
+       allPoints.Reverse();
+
+       List<Player> classedPlayers = new List<Player>();
+
+       foreach(int actualPoint in allPoints) {
+           foreach (Player targetPlayer in playersPoint.Keys) {
+               if (playersPoint[targetPlayer] == actualPoint && !classedPlayers.Contains(targetPlayer)) {
+                   classedPlayers.Add(targetPlayer);
+                   break;
+               }
+           }
+       }
+
+       for (int i = 0; i < classedPlayers.Count; i++) {
+           playersUI[i].GetChild(2).gameObject.GetComponent<Text>().text = allPoints[i].ToString("D3");
+           playersUI[i].GetChild(1).gameObject.GetComponent<Image>().sprite = classedPlayers[i].uiIcon;
+       }
+
+
    }
    
-    /*public override void Awake() {
-        base.Awake();
-        secPerBeat = 60f / songBPM; 
-        _dspSongTime = (float)AudioSettings.dspTime;
+   public void CreateNoteState(bool isPerfect) {
+       GameObject noteState = Instantiate(noteStatePrefab,canvas.transform);
+       noteState.transform.position = Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, -3, 0));
+       noteState.GetComponent<Text>().text = isPerfect ? "Perfect" : "Good";
+       noteState.GetComponent<Text>().color = isPerfect ? Color.yellow : Color.gray;
+   }
 
-        _distance = Vector2.Distance(noteStart.position, noteEnd.position);
-        
-        _time = _distance / noteSpeed;
-        music.Play();
-        
-        Debug.Log("play mode");
-        inputs.FindAction("Player/Jump").started += OnSpaceBar;
-    }
+   private void GenerateAllPatterns() {
+       foreach (Texture2D reference in patternsRef)
+           GeneratePattern(reference);
+       
+       for (int i = 0; i < patterns.Count; i++) {
+           int[] currentPattern = patterns[i];
 
-    private void OnSpaceBar(InputAction.CallbackContext e) {
-        Debug.Log("position " + _songPosition + " beatSongPosition " + _beatSongPosition);
-    }
+           foreach(int note in currentPattern){
+               Debug.Log("note " + note);
+           }
 
-    private int index = 0;
-    private bool active = false;
+           Debug.Log("----------------");
+       }
+   }
 
-    private void Update() { 
-        _songPosition = (float)(AudioSettings.dspTime - _dspSongTime - firstBeatOffset);
-        _beatSongPosition = _songPosition / secPerBeat;
+   private void GeneratePattern(Texture2D reference) {
+       int[] pattern = new int[reference.width];
+       
+       int arrayIndex = 0;
+       
+       for (int i = 0; i < reference.width; i++) {
+           for (int j = 0; j < reference.height; j++) {
+               Color pixelColor = reference.GetPixel(i, j);
+               
+               if (pixelColor != Color.white) {
+                  if (arrayIndex < pattern.Length) {
+                      pattern[arrayIndex] = j;
+                      arrayIndex++;
+                  }
+               }
+           }
+       }
 
-        if (creator.notes.Count == 0)
-            return;
+       patterns.Add(pattern);
+   }
+   
+   public override void OnFinish() {
+       finish = true;
 
-        NoteCreator.Note nextNote = creator.notes.Peek();
-        
-        //Debug.Log("index " + nextNote.noteIndex);
-        //Debug.Log("nextNote " + nextNote.time + " beats " + nextNote.timeBeat);
-            
-        float pathDurationBeat = _time / secPerBeat;
-        float spawnBeat = (nextNote.timeBeat - pathDurationBeat); // Caused the first note is on the beat number 1 and not number 0
-      
-        
-        if(index > 0)
-            return;
-
-        
-        if (_beatSongPosition >= spawnBeat && !active) { // Called exactly when the first note is spawning
-
-            Vector3 position = noteStart.position;
-            position.z -= startOffset * (nextNote.noteIndex - 1);
-            Debug.Log("spawn " + noteEnd.transform.position);
-
-            position.y += 0.03f;
-            GameObject note = Instantiate(notePrefab, position,notePrefab.transform.rotation);
-            note.GetComponent<NoteController>().startPos = position;
-            note.GetComponent<NoteController>().note = nextNote;
-
-            active = true;
-            //creator.notes.Dequeue();
-        }
-
-        if (_beatSongPosition > +nextNote.timeBeat) {
-            
-            Vector3 position = noteEnd.position;
-            position.z -= startOffset * (nextNote.noteIndex - 1);
-            
-            Debug.Log("spawn on perfect time");
-            
-            GameObject note = Instantiate(notePrefab, position,notePrefab.transform.rotation);
-            note.GetComponent<NoteController>().enabled = false;
-            index++;
-        }
-        
-    }
-*/
-    
-    
-    public override void OnFinish() {
-        
-    }
+   }
 }

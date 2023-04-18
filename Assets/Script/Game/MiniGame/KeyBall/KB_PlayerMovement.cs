@@ -56,7 +56,7 @@ public class KB_PlayerMovement : MonoBehaviour {
     #region Unity's Functions
 
     void Start() {
-        controller = (KBController)KBController.Instance;
+        controller = (KBController)KBController.instance;
 
         if(gameController == null)
             gameController = GameController.Instance;

@@ -337,7 +337,7 @@ public class KBIA : CoroutineSystem {
                         transform.position = Vector3.MoveTowards(transform.position,new Vector3(portalPos.x + 10,portalPos.y,portalPos.z),speed * Time.deltaTime);
 
                         if (transform.position.x < controller.tpPos.x && isOnBall) {
-                            controller.AddPoint(transform.gameObject);
+                           // controller.AddPoint(transform.gameObject);
                             percentage = beginPercentage;
                             transform.position = controller.portalPoints[controller.ConvertPlayerInt(transform.gameObject)];
                             hasCheckPos = false;

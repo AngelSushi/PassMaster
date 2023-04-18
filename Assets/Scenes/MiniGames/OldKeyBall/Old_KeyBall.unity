@@ -7745,9 +7745,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5cb8ec550d8cd4ebb6ef4a46269666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 890211617}
-  left: 0
-  speed: 0.8
+  reverse: 0
+  value: {x: 0, y: 0, z: 0}
 --- !u!4 &364399839 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f3177e6dc21aeb741b50ab873223a201,
@@ -11103,9 +11102,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5cb8ec550d8cd4ebb6ef4a46269666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 890211617}
-  left: 0
-  speed: 0.8
+  reverse: 0
+  value: {x: 0, y: 0, z: 0}
 --- !u!4 &660073238 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f3177e6dc21aeb741b50ab873223a201,
@@ -13270,6 +13268,12 @@ MonoBehaviour:
   - {fileID: 647782369}
   - {fileID: 60906122}
   confetti: {fileID: 0}
+  players:
+  - {fileID: 1648831956}
+  - {fileID: 1585106338}
+  - {fileID: 188056122}
+  - {fileID: 588739035}
+  inputs: {fileID: 0}
   stopwatch:
   - {fileID: 1862822476}
   - {fileID: 364399833}
@@ -13324,11 +13328,6 @@ MonoBehaviour:
   - {fileID: -2207048144105476017, guid: cab87295ff1880e4c92f6e8db06b0da4, type: 3}
   - {fileID: -4067138243831433878, guid: cab87295ff1880e4c92f6e8db06b0da4, type: 3}
   - {fileID: -3032393257747418426, guid: cab87295ff1880e4c92f6e8db06b0da4, type: 3}
-  players:
-  - {fileID: 1648831956}
-  - {fileID: 1585106338}
-  - {fileID: 188056122}
-  - {fileID: 588739035}
   areaDeath: {fileID: 1207849708}
   mainCamera: {fileID: 1586514845}
   pointsText:
@@ -21468,19 +21467,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 890211617}
+  gameController: {fileID: 0}
+  animator: {fileID: 0}
+  characterController: {fileID: 0}
+  cameraTransform: {fileID: 0}
+  gravity: 0
   speed: 75
-  jumpSpeed: 80
-  rb: {fileID: 1648831958}
-  canJump: 1
-  respawnPos: {x: 0, y: 0, z: 0}
+  isMoving: 0
+  movement: {x: 0, y: 0, z: 0}
   isOnBall: 0
+  slidingAmplifier: 0
   dead: 0
   freeze: 0
+  canJump: 1
   isJumping: 0
-  timeToDestroy: 7
-  thruster: 0
-  thrusterForce: 0
-  lastFloor: {fileID: 0}
+  isJumpPressed: 0
+  maxJumpHeight: 0
+  maxJumpTime: 0
+  fallMultiplier: 0
 --- !u!114 &1648831960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22848,9 +22852,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5cb8ec550d8cd4ebb6ef4a46269666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 890211617}
-  left: 0
-  speed: 0.8
+  reverse: 0
+  value: {x: 0, y: 0, z: 0}
 --- !u!4 &1862822482 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f3177e6dc21aeb741b50ab873223a201,
@@ -24826,9 +24829,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5cb8ec550d8cd4ebb6ef4a46269666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 890211617}
-  left: 0
-  speed: 0.8
+  reverse: 0
+  value: {x: 0, y: 0, z: 0}
 --- !u!4 &2085180535 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f3177e6dc21aeb741b50ab873223a201,
@@ -30569,9 +30571,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5cb8ec550d8cd4ebb6ef4a46269666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 890211617}
-  left: 0
-  speed: 0.3
+  reverse: 0
+  value: {x: 0, y: 0, z: 0}
 --- !u!54 &304548373188773891
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -33304,9 +33305,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5cb8ec550d8cd4ebb6ef4a46269666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 890211617}
-  left: 0
-  speed: 0.3
+  reverse: 0
+  value: {x: 0, y: 0, z: 0}
 --- !u!54 &5906496112173277935
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -33583,9 +33583,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5cb8ec550d8cd4ebb6ef4a46269666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 890211617}
-  left: 1
-  speed: 0.3
+  reverse: 0
+  value: {x: 0, y: 0, z: 0}
 --- !u!54 &6781330549892200831
 Rigidbody:
   m_ObjectHideFlags: 0

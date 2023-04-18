@@ -9,7 +9,7 @@ public class RotativeObject : MonoBehaviour {
     [SerializeField] private bool reverse;
     [SerializeField] private Vector3 value;
     
-    void Start() => _controller = (KBController) KBController.Instance;
+    void Start() => _controller = (KBController) KBController.instance;
     
 
     void Update() {

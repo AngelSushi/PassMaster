@@ -15,7 +15,7 @@ public class PendingMovement : MonoBehaviour {
     
     void Start()
     {
-        controller = (KBController)KBController.Instance;
+        controller = (KBController)KBController.instance;
 
         if (gameController == null)
             gameController = GameController.Instance;

@@ -53,5 +53,15 @@ public class GUIExtended {
             EditorSceneManager.SaveOpenScenes();
             EditorSceneManager.OpenScene("Assets/Scenes/MiniGames/Surf/Surf.unity");
         }
+        
+        if (GUILayout.Button("PerfectNote")) {
+            EditorSceneManager.SaveOpenScenes();
+            EditorSceneManager.OpenScene("Assets/Scenes/MiniGames/PerfectNote/PerfectNote.unity");
+        }
+        
+        if (GUILayout.Button("Test")) {
+            EditorSceneManager.SaveOpenScenes();
+            EditorSceneManager.OpenScene("Assets/Scenes/TestScene2.unity");
+        }
     }
 }

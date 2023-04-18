@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlackScreenEvents : CoroutineSystem {
+public class BlackScreenEvents : CoroutineSystem { // Use for BoardGame and perfectNote
 
     private GameController controller;
+
+    public void DestroyNoteState() => Destroy(transform.gameObject);
+    
 
 
     void Start() {
