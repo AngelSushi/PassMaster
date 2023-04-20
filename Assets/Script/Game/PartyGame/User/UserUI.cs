@@ -324,8 +324,11 @@ public class UserUI : User {
             showDirection.value = false;
             index = -1;
         }
+        
+        Debug.Log(" " + e.started + " action " + showActionButton + " isInInventory " + isInInventory + " cameraView " + cameraView + " freeze " + gameController.freeze);
 
         if(e.started & showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
+            Debug.Log("interact with button");
             if(index == 0) {
                 ManageInventory(true);
             }
@@ -337,6 +340,9 @@ public class UserUI : User {
                     isTurn = true;
 
                 //GetComponent<NavMeshAgent>().enabled = true;
+               
+                Debug.Log("movement " + movement.rb);
+                
                 movement.waitDiceResult = true;
                 index = -1;
             }
@@ -567,10 +573,12 @@ public class UserUI : User {
                             break;
                         }
                     }
+                    
+                    //gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,targetUser.userType);
 
-                    Debug.Log("targetUser " + targetUser);
-                    gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,targetUser.userType);
-
+                    Player playerData = gameController.playersData.Where(playerData => playerData.name == targetUser.name).ToList()[0];
+                    
+                    playersPanels[hudIndex].GetChild(0).gameObject.GetComponent<Image>().sprite = playerData.uiIcon;
                     playersPanels[hudIndex].gameObject.SetActive(active);
                     playersPanels[hudIndex].GetChild(2).GetComponent<Text>().text = (rank + 1) + "";
                     playersPanels[hudIndex].GetChild(2).GetComponent<Text>().color = gameController.classedColors[rank];

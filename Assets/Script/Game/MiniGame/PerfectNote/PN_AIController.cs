@@ -54,12 +54,14 @@ public class PN_AIController : MonoBehaviour {
         
         _succeedPercentage = 1 - (1 - percentagesDifficulty[(int)GameController.Instance.difficulty]);
         _currentMaxPercentageDifficulty = maxPercentageDifficulty[(int)GameController.Instance.difficulty];
-        
-        
+
+
+        player = _controller.players.Where(player => player.gameObject == transform.gameObject).ToList()[0];
+
     }
 
     private void Update() {
-        if (allNotes.Count > 0) {
+        if (!_controller.finish && allNotes.Count > 0) {
             Note currentNote = allNotes[_checkedNotes.Count];
 
             if (aliveNotes.Count == 0)

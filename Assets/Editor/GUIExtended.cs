@@ -21,7 +21,7 @@ public class GUIExtended {
         
         GUILayout.FlexibleSpace();
 
-        GUI.backgroundColor = GameController.Instance.showStepNames ? Color.green : Color.red;
+/*        GUI.backgroundColor = GameController.Instance.showStepNames ? Color.green : Color.red;
         if (GUILayout.Button("Enable/Disable Step Names")) 
             GameController.Instance.showStepNames = !GameController.Instance.showStepNames;
 
@@ -30,7 +30,7 @@ public class GUIExtended {
             GameController.Instance.showStepDirections = !GameController.Instance.showStepDirections; // Need To recompile
         }
       
-      
+  */    
     }
 
     private static void OnLeftToolbarGUI() {

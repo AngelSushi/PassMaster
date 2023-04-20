@@ -6,7 +6,9 @@ using UnityEngine;
 
 [CustomEditor(typeof(MusicController)),CanEditMultipleObjects]
 public class MusicControllerEditor : CustomFieldInspector<MusicController> {
-    private SerializedProperty _begin,_finish,_runSinceMenu,_isTraining,_mainAudio,_inputs,_players;
+    private SerializedProperty _begin,_finish,_runSinceMenu,_isTraining,_mainAudio,_inputs,_players,_mainCamera,_actualState;
+
+    private SerializedProperty _startCinematic,_startCinematicCameras,_endCinematic,_endCinematicCameras;
 
     private SerializedProperty _useTimer,_gameTime,_timer,_endChrono;
 
@@ -20,7 +22,7 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
 
     private SerializedProperty _detection,_goodMarginError, _goodReward, _perfectMarginError, _perfectReward,_lanes;
 
-    private SerializedProperty _canvas,_start,_playersUI,_noteState,uiKeyParent;
+    private SerializedProperty _canvas,_start,_playersUI,_noteState,_uiKeyParent,_classementParent,_circleTransition;
     
     protected override void OnEnable() {
         base.OnEnable();
@@ -47,7 +49,9 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
         _lanes = serializedClass.FindProperty("lanes");
         _playersUI = serializedClass.FindProperty("playersUI");
         _noteState = serializedClass.FindProperty("noteStatePrefab");
-        uiKeyParent = serializedClass.FindProperty("uiKeyParent");
+        _uiKeyParent = serializedClass.FindProperty("uiKeyParent");
+        _classementParent = serializedClass.FindProperty("classementParent");
+        _circleTransition = serializedClass.FindProperty("circleTransition");
     }
 
     public override void OnInspectorGUI() {
@@ -95,14 +99,21 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
         EditorGUILayout.PropertyField(_start);
         EditorGUILayout.PropertyField(_playersUI);
         EditorGUILayout.PropertyField(_noteState);
-        EditorGUILayout.PropertyField(uiKeyParent);
+        EditorGUILayout.PropertyField(_uiKeyParent);
+        EditorGUILayout.PropertyField(_classementParent);
+        EditorGUILayout.PropertyField(_circleTransition);
         EditorGUILayout.EndVertical();
         
 
         if(EditorGUI.EndChangeCheck()) 
             serializedClass.ApplyModifiedProperties();
+        
     }
 
+ /*   public override bool RequiresConstantRepaint() {
+        return true;
+    }
+*/
     private void MiniGameInit() {
         _begin = serializedClass.FindProperty("begin");
         _finish = serializedClass.FindProperty("finish");
@@ -111,6 +122,13 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
         _mainAudio = serializedClass.FindProperty("mainAudio");
         _inputs = serializedClass.FindProperty("inputs");
         _players = serializedClass.FindProperty("players");
+        _mainCamera = serializedClass.FindProperty("mainCamera");
+        _actualState = serializedClass.FindProperty("actualState");
+        
+        _startCinematic = serializedClass.FindProperty("startCinematic");
+        _startCinematicCameras = serializedClass.FindProperty("startCinematicCameras");
+        _endCinematic = serializedClass.FindProperty("endCinematic");
+        _endCinematicCameras = serializedClass.FindProperty("endCinematicCameras");
 
         _useTimer = serializedClass.FindProperty("useTimer");
         _gameTime = serializedClass.FindProperty("gameTime");
@@ -139,10 +157,24 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
         EditorGUILayout.PropertyField(_players);
         EditorGUILayout.PropertyField(_songDelay);
         EditorGUILayout.PropertyField(_inputs);
+        EditorGUILayout.PropertyField(_mainCamera);
+        EditorGUILayout.PropertyField(_actualState);
         EditorGUILayout.EndVertical();
         
         EditorGUILayout.Space(10);
-
+        
+        
+        EditorGUILayout.BeginVertical("box");
+        EditorGUILayout.TextField("Cinematics", textStyle);
+        EditorGUILayout.PropertyField(_startCinematic);
+        EditorGUILayout.PropertyField(_startCinematicCameras);
+        EditorGUILayout.PropertyField(_endCinematic);
+        EditorGUILayout.PropertyField(_endCinematicCameras);
+        EditorGUILayout.EndVertical();
+        
+        EditorGUILayout.Space(10);
+        
+        
         EditorGUILayout.BeginVertical("box");
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.TextField("Timer", textStyle);

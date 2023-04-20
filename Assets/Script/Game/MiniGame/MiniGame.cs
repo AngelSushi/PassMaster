@@ -2,15 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Timeline;
 
 public abstract class MiniGame : CoroutineSystem {
 
+    public enum GameState {
+        START,
+        PLAYING,
+        END
+    }
+    
     public bool finish,begin;
+    private bool _lastFinish;
     public bool isTraining;
     public bool runSinceMenu;
     public float gameTime;
+    public GameState actualState;
 
     public bool useTimer,useChrono;
     
@@ -18,6 +28,7 @@ public abstract class MiniGame : CoroutineSystem {
     public Text endText;
     public AudioSource startChrono,runChrono,endChrono;
     public AudioSource mainAudio;
+    public Camera mainCamera;
     
     
     public List<GameObject> winners = new List<GameObject>();
@@ -28,68 +39,94 @@ public abstract class MiniGame : CoroutineSystem {
     
     public Player[] players;
     
-    private bool _hasPlayedSfx;
+    protected bool _hasPlayedSfx;
     private float _beginTimer = 4f;
     private string _lastBeginText,_lastTimeText;
     private GameController _gameController;
 
     public static MiniGame instance;
-    
-    
+
+    public PlayableDirector startCinematic;
+    public Camera[] startCinematicCameras;
+    public PlayableDirector endCinematic;
+    public Camera[] endCinematicCameras;
     public InputActionAsset inputs;
+
+    public GameObject circleTransition;
+
+    private bool _hasGenerateBoard;
+
     
-
-    public virtual void Awake() {
-        instance = this;
-    }
-
+    public virtual void Awake() => instance = this;
+    
     public virtual void Start() {
-        
         _gameController = GameObject.FindGameObjectsWithTag("Game").Length > 0 ?  GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>() : null;
-        
-        // Tools --> If Board Scene not Loaded -> AutoLoad
+
+        switch (actualState) {
+            case GameState.START:
+                if(startCinematic != null)
+                    startCinematic.Play();
+                break;
+            case GameState.END:
+                finish = true;
+                break;
+        }
     }
 
 
 
     public virtual void Update() {
         if(!finish) {
+            
+            if (startCinematic.state == PlayState.Playing) 
+                return;
+            
+            if (startCinematicCameras[0].gameObject.activeSelf) {
+                foreach(Camera camera in startCinematicCameras)
+                    camera.gameObject.SetActive(false);
+            }
+            
             if(begin) 
                 BeginTimer();            
             else 
                 MiniGameTimer();     
         }
         else {
-            OnFinish();
-
-            mainAudio.Stop();
-
-            if(!_hasPlayedSfx) {
-                win.Play();
-                _hasPlayedSfx = true;
-                endText.gameObject.SetActive(true);
-                confetti.SetActive(true);
-                confetti.transform.position = winners[0].transform.position;
-                confetti.GetComponent<ParticleSystem>().enableEmission = true;
-                confetti.GetComponent<ParticleSystem>().Play();
+            if (!_lastFinish) {
+                mainAudio.Stop();
+                _lastFinish = true;
+                OnFinish();
             }
-
-
-            if(isTraining) {
-                SceneManager.LoadScene("MiniGameLabel",LoadSceneMode.Additive);
-                SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name); // Attention avec plusieurs scenes ouvertes
-            }
-            else if(runSinceMenu) {
-                SceneManager.LoadScene("MainMenu",LoadSceneMode.Single);
-                SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
-            }
-            else 
-                _gameController.mgController.EndMiniGame(classementPanels,winners,endText.gameObject); 
- 
         }
+
+    }
+
+    public void OnStartCinematicEndListener() { 
+        actualState = GameState.PLAYING;
+        OnStartCinematicEnd();
+    }
+
+    protected void FinishMiniGame() {
+        if(isTraining) {
+            SceneManager.LoadScene("MiniGameLabel",LoadSceneMode.Additive);
+            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name); // Attention avec plusieurs scenes ouvertes
+        }
+        else if(runSinceMenu) {
+            SceneManager.LoadScene("MainMenu",LoadSceneMode.Single);
+            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
+        }
+        else 
+            _gameController.mgController.EndMiniGame(classementPanels,winners); 
+        
     }
 
     private void BeginTimer() {
+
+        if (!useChrono && begin) {
+            begin = false;
+            return;
+        }
+
         _beginTimer -= Time.deltaTime;
         float seconds = Mathf.FloorToInt(_beginTimer % 60);
                     
@@ -141,5 +178,8 @@ public abstract class MiniGame : CoroutineSystem {
             finish = true;
     }
 
+    public abstract void OnStartCinematicEnd();
     public abstract void OnFinish();
+    public abstract void OnSwitchCamera();
+    public abstract void OnTransitionEnd();
 }

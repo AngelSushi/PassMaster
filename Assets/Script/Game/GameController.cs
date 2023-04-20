@@ -10,7 +10,7 @@ using Random=UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class GameController : CoroutineSystem {
 
     // Refaire la bombe qu'elle se pose la ou est le joueur plutot que de détruire le pont . Le pont est inaccessible la nuit
@@ -38,7 +38,8 @@ public class GameController : CoroutineSystem {
     
     public int actualPlayer;
     public GameObject[] players = new GameObject[4];
-
+    public Player[] playersData;
+    
     public Dictionary<GameObject,int> classedPlayers = new Dictionary<GameObject,int>();
 
     [HideInInspector] public GameObject mainCamera;
@@ -69,8 +70,6 @@ public class GameController : CoroutineSystem {
     private bool hasBeginGame;
     public Difficulty difficulty;
     public bool freeze;
-
-    public List<Material> diceMaterials;
 
     public LoadingScene loadingScene;
     private GameObject[] objects;
@@ -116,8 +115,8 @@ public class GameController : CoroutineSystem {
     
     
     private InputActionMap lastAction;
-    
-    
+
+    public AudioSource mainAudio;
 
     private void OnEnable() => Instance = this;
     
@@ -147,13 +146,21 @@ public class GameController : CoroutineSystem {
             dialog.dialogArray.dialogs[i].id = i;
         
         UpdateSubPath(null,false);
+        
+        RandomSecretCode();
+            
+        nightIndex =
+            difficulty == Difficulty.EASY ? 4 :
+            difficulty == Difficulty.MEDIUM ? 3 :
+            difficulty == Difficulty.HARD ? 2 : 4;
+        
     }
     
     void Update() {
         if(part != lastPart) 
             ChangePart();
     
-        if (!hasGenChest && !dialog.isInDialog) {
+        if (part == GamePart.PARTYGAME && !hasGenChest && !dialog.isInDialog) {
             GenerateChest();
         }
         
@@ -184,23 +191,23 @@ public class GameController : CoroutineSystem {
             orderController.BeginOrder();   
 
         if(part == GamePart.PARTYGAME) { // Faire en sorte que ca soit appelé 
-            mainCamera.transform.position = new Vector3(players[0].transform.position.x,5479f,players[0].transform.position.z);
-            mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
+          //  mainCamera.transform.position = new Vector3(players[0].transform.position.x,5479f,players[0].transform.position.z);
+          //  mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
-            RandomSecretCode();
             
-            nightIndex =
-                difficulty == Difficulty.EASY ? 4 :
-                difficulty == Difficulty.MEDIUM ? 3 :
-                difficulty == Difficulty.HARD ? 2 : 4;
             
             ManageTurn();
             ActualizePlayerClassement();
         }
         if(part == GamePart.CHOOSE_MINIGAME) {
-           // StartCoroutine(mgController.RandomMiniGame());
-           turn++;
-           BeginTurn(false);
+
+            foreach (GameObject player in players) {
+                player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            }
+            
+            StartCoroutine(mgController.RandomMiniGame());
+            mainAudio.enabled = false;
+            turn++;
         }
 
         
@@ -427,14 +434,20 @@ public class GameController : CoroutineSystem {
 
         actualPlayer = 0;
         if (turn > 1) {
-            ManagePlayerInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>(),
+            GameObject step = players[actualPlayer].GetComponent<UserMovement>().actualStep != null ? players[actualPlayer].GetComponent<UserMovement>().actualStep : firstStep;
+            
+            ManagePlayerInStep(step.GetComponent<Step>(),
                 players[actualPlayer]);
 
-            if (!repair && !hasChangeState && !debugController.skipMG)
-            {
+            if (!repair && !hasChangeState && !debugController.skipMG) {
                 ChangeStateScene(true, "NewMain");
-                SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
+                
+                if(mgController.actualMiniGame != null)
+                    SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
+                
+                
                 hasChangeState = true;
+                mainAudio.enabled = true;
             }
         }
         else 
@@ -442,15 +455,20 @@ public class GameController : CoroutineSystem {
 
         part = GamePart.PARTYGAME;
 
-        players[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
+        
+        players[0].transform.rotation = Quaternion.Euler(0f, -294.291f, 0f);
         players[0].GetComponent<UserMovement>().isTurn = true;
         players[0].GetComponent<UserMovement>().enabled = true;
+        //players[0].GetComponent<UserMovement>().rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
         players[0].GetComponent<UserUI>().enabled = true;
         players[0].GetComponent<UserAudio>().enabled = true;
         players[0].GetComponent<UserInventory>().enabled = true;
+
+        //if (!players[0].GetComponent<UserUI>().showActionButton.value && players[0].GetComponent<UserMovement>().currentAction != UserAction.DICE) 
         players[0].GetComponent<UserUI>().showActionButton.value = players[0].GetComponent<UserMovement>().isPlayer;
         
-
+        players[0].GetComponent<UserUI>().showHUD = true;
+    
         ManageCameraPosition();
     }
 
@@ -498,6 +516,8 @@ public class GameController : CoroutineSystem {
 
             actualPlayer++;
             players[actualPlayer].GetComponent<UserMovement>().isTurn = true;
+            
+            //players[actualPlayer].GetComponent<UserMovement>().rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
             
             if(players[actualPlayer].GetComponent<UserMovement>().actualStep != null)
                 ManagePlayerInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>(),players[actualPlayer]);
@@ -573,11 +593,10 @@ public class GameController : CoroutineSystem {
         if(turn == 1) 
             mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetDirection(firstStep,firstStep.GetComponent<Step>(),25f) * 2.25f);
         else {
-            GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep;
+            GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep != null ? players[actualPlayer].GetComponent<UserMovement>().actualStep : firstStep;
             mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
         }
-
-
+        
         Vector3 playerPosition = players[actualPlayer].transform.position;
         playerPosition.y += 5f;
 
@@ -607,27 +626,6 @@ public class GameController : CoroutineSystem {
         }
 
         return null;
-    }
-
-    public void ChangeHUDSpritePlayer(Transform[] panels,int index,UserType type) {
-        // A check si on peut pas tt concaténer en 1 ligne . A REFAIRE SANS LE NOM
-        switch(type) {
-            case UserType.PLAYER: // Player
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
-                break;
-
-            case UserType.BOT_001:
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[1];
-                break;
-
-            case UserType.BOT_002:
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[2];
-                break;
-
-            case UserType.BOT_003:
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
-                break;            
-        }
     }
 
     public void SortUserSprite() {

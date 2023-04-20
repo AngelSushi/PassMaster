@@ -66,6 +66,17 @@ public class KBController : MiniGame {
         }       
     }
 
+    public override void OnTransitionEnd() {
+        
+    }
+    
+    public override void OnSwitchCamera() {
+        
+    }
+    
+    public override void OnStartCinematicEnd()
+    {
+    }
 
 
     public int ConvertPlayerInt(GameObject player) {

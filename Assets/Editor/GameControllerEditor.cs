@@ -11,7 +11,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
     
     
     // General
-    private SerializedProperty firstStep,actualPlayer,players,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,diceMaterials,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath,inputs;
+    private SerializedProperty firstStep,actualPlayer,players,_playersData,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath,inputs,_mainAudio;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -31,6 +31,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
         firstStep = serializedClass.FindProperty("firstStep");
         actualPlayer = serializedClass.FindProperty("actualPlayer");
         players = serializedClass.FindProperty("players");
+        _playersData = serializedClass.FindProperty("playersData");
         part = serializedClass.FindProperty("part");
         posBegin = serializedClass.FindProperty("posBegin");
         smallSprites = serializedClass.FindProperty("smallSprites");
@@ -38,13 +39,13 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
         turn = serializedClass.FindProperty("turn");
         difficulty = serializedClass.FindProperty("difficulty");
         freeze = serializedClass.FindProperty("freeze");
-        diceMaterials = serializedClass.FindProperty("diceMaterials");
         nightIndex = serializedClass.FindProperty("nightIndex");
         hasChangeState = serializedClass.FindProperty("hasChangeState");
         blackScreenAnim = serializedClass.FindProperty("blackScreenAnim");
         shellPrefab = serializedClass.FindProperty("shellPrefab");
         mainPath = serializedClass.FindProperty("mainPath");
         inputs = serializedClass.FindProperty("inputs");
+        _mainAudio = serializedClass.FindProperty("mainAudio");
         
         // Controllers 
         day = serializedClass.FindProperty("dayController");
@@ -87,6 +88,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
                 EditorGUILayout.PropertyField(firstStep);
                 EditorGUILayout.PropertyField(actualPlayer);
                 EditorGUILayout.PropertyField(players);
+                EditorGUILayout.PropertyField(_playersData);
                 EditorGUILayout.PropertyField(part);
                 EditorGUILayout.PropertyField(posBegin);
                 EditorGUILayout.PropertyField(smallSprites);
@@ -94,13 +96,13 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
                 EditorGUILayout.PropertyField(turn);
                 EditorGUILayout.PropertyField(difficulty);
                 EditorGUILayout.PropertyField(freeze);
-                EditorGUILayout.PropertyField(diceMaterials);
                 EditorGUILayout.PropertyField(nightIndex);
                 EditorGUILayout.PropertyField(hasChangeState);
                 EditorGUILayout.PropertyField(blackScreenAnim);
                 EditorGUILayout.PropertyField(shellPrefab);
                 EditorGUILayout.PropertyField(mainPath);
                 EditorGUILayout.PropertyField(inputs);
+                EditorGUILayout.PropertyField(_mainAudio);
                 break;
             
             case 1:

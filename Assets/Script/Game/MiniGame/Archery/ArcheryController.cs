@@ -32,6 +32,9 @@ public class ArcheryController : MiniGame {
     }
 
     void Update() {}
+    public override void OnStartCinematicEnd()
+    {
+    }
 
     public override void OnFinish() {             
         GameObject[] objects = SceneManager.GetSceneByName("Archery").GetRootGameObjects();
@@ -64,6 +67,9 @@ public class ArcheryController : MiniGame {
         Destroy(bottom);
             
     }
+    
+    public override void OnTransitionEnd() {}
+    public override void OnSwitchCamera() {}
 
     public void AddPoints(GameObject player,int point) {
         playersPoint[player] += point;

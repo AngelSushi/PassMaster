@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Player",menuName = "PassMaster/Player")]
-public class Player : ScriptableObject{
+[System.Serializable]
+public class Player {
 
-    public GameObject player;
+    public GameObject gameObject;
     public string name;
     public Sprite uiIcon;
 

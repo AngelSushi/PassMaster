@@ -14,15 +14,19 @@ public class DiceController : CoroutineSystem {
 
     public int index;
 
-    [HideInInspector]public bool lockDice,lastLockDice = true;
+    public bool lockDice,lastLockDice = true;
 
+    private MeshRenderer _meshRenderer;
 
+    void Start() => _meshRenderer = GetComponent<MeshRenderer>();
 
     void Update() {
         
         if(!lockDice && lastLockDice) {
             StartCoroutine(RotateDice());
         }
+        
+        Debug.DrawLine(transform.position,transform.position + Vector3.forward * 100,Color.black);
 
         lastLockDice = lockDice;
           
@@ -32,12 +36,16 @@ public class DiceController : CoroutineSystem {
        while(!lockDice) {
             UserMovement movement = GameController.Instance.players[GameController.Instance.actualPlayer].GetComponent<UserMovement>();
 
-            transform.GetComponent<MeshRenderer>().material.mainTexture =
+            _meshRenderer.material.mainTexture =
                 !movement.doubleDice && !movement.tripleDice && !movement.reverseDice ? diceTextures[index] :
                 movement.doubleDice && !movement.tripleDice && !movement.reverseDice ? doubleDiceTextures[index] :
                 !movement.doubleDice && movement.tripleDice && !movement.reverseDice ? tripleDiceTextures[index] :
                 !movement.doubleDice && !movement.tripleDice && movement.reverseDice ? reverseDiceTextures[index] :
                 diceTextures[index];
+
+            
+            transform.LookAt(GameController.Instance.mainCamera.transform.position);
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 180);
             index++;
 
             if(index == 6) index = 0;

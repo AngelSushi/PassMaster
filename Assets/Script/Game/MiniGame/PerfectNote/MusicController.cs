@@ -12,6 +12,7 @@ using System.Linq;
 using UnityEngine.Networking;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
+using UnityStandardAssets.Effects;
 
 public class MusicController : MiniGame {
     
@@ -51,6 +52,7 @@ public class MusicController : MiniGame {
    public Transform canvas;
    public GameObject noteStatePrefab;
    public Transform uiKeyParent;
+   public Transform classementParent;
 
    public List<PN_AIController> allAI;
 
@@ -60,8 +62,9 @@ public class MusicController : MiniGame {
    public List<int[]> patterns = new List<int[]>();
 
 
-   void Start() {
-
+   public override void Start() { 
+       base.Start();
+        
        foreach (Player player in players) 
            playersPoint.Add(player,0);
        
@@ -116,28 +119,24 @@ public class MusicController : MiniGame {
 
    public override void Update() {
        base.Update();
-       
-       start.SetActive(begin);
-       
-       
        Debug.DrawLine(detection.transform.position,detection.transform.position + Vector3.up * goodMarginError,Color.yellow);
        Debug.DrawLine(detection.transform.position,detection.transform.position - Vector3.up * goodMarginError,Color.yellow);
-       
-       
+
        Debug.DrawLine((detection.transform.position + Vector3.left ),(detection.transform.position + Vector3.left )+ Vector3.up * perfectMarginError ,Color.red);
        Debug.DrawLine((detection.transform.position + Vector3.left ),(detection.transform.position + Vector3.left ) - Vector3.up * perfectMarginError,Color.red);
 
        if (!begin && !mainAudio.isPlaying ) {
-           Debug.Log("finish");
            OnFinish();
        }
    }
 
    public void AddPointToPlayer(Player player,int point) {
        playersPoint[player] += point;
-       
-       Debug.Log("player " + player);
 
+       foreach (Player p in playersPoint.Keys) {
+         //  Debug.Log("player " + p.gameObject.name + " with " + playersPoint[p] + " points ");
+       }
+       
        List<int> allPoints = playersPoint.Values.ToList();
        allPoints.Sort();
        allPoints.Reverse();
@@ -205,7 +204,102 @@ public class MusicController : MiniGame {
    }
    
    public override void OnFinish() {
-       finish = true;
+
+
+       int currentMaxPoint = 0;
+
+       foreach (int point in playersPoint.Values) {
+           if (point >= currentMaxPoint) {
+               currentMaxPoint = point;
+           }
+       }
+
+       foreach (Player player in playersPoint.Keys) {
+           if (playersPoint[player] == currentMaxPoint) {
+               winners.Add(player.gameObject);
+           }
+       }
+
+
+       foreach (Player player in players) {
+           for (int i = 0; i < player.gameObject.transform.childCount; i++) {
+               player.gameObject.transform.GetChild(i).gameObject.SetActive(winners.Contains(player.gameObject));
+               player.gameObject.SetActive(winners.Contains(player.gameObject));
+           }
+       }
+       
+       canvas.GetChild(0).gameObject.SetActive(false);
+       canvas.GetChild(2).gameObject.SetActive(false);
+
+       if (winners.Count > 1) {
+           Vector3 startPosition = winners[0].transform.position;
+
+           bool isPair = winners.Count % 2 == 0;
+
+           for(int i = 0;i < winners.Count;i++) {
+               GameObject  player = winners[i];
+               for (int j = 0; j < player.gameObject.transform.childCount; j++) {
+                   player.gameObject.transform.GetChild(j).gameObject.SetActive(true);
+               }
+           }
+
+           int offset = isPair ? winners.Count / 2 : winners.Count % 2;
+
+           int winnerIndex = -1;
+           for (int i =-offset; i < offset + 1; i++) {
+
+               if (isPair && i == 0)
+                   continue; 
+               
+               winnerIndex++;
+
+               Vector3 newPosition = startPosition + Vector3.left   * i;
+               Debug.Log("newPosition " + newPosition + " isPair " + isPair);
+               winners[winnerIndex].transform.position = newPosition;
+               
+           }
+           
+           
+       }
+       
+       
+       
+       circleTransition.SetActive(true);
 
    }
-}
+
+   public override void OnTransitionEnd() {
+       if (!_hasPlayedSfx) {
+           win.Play();
+           _hasPlayedSfx = true;
+                
+           if (endText != null)
+               endText.gameObject.SetActive(true);
+
+           if (confetti != null) {
+               confetti.SetActive(true);
+               confetti.transform.position = winners[0].transform.position;
+               confetti.GetComponent<ParticleSystem>().enableEmission = true;
+               confetti.GetComponent<ParticleSystem>().Play();
+           }
+       }
+       
+       foreach (GameObject winner in winners) {
+           winner.GetComponent<Animator>().SetBool("Victory",true);
+       }
+       
+       uiKeyParent.gameObject.SetActive(false);
+       FinishMiniGame();
+       
+       
+   }
+   
+   public override void OnSwitchCamera() {
+       endCinematicCameras[0].gameObject.SetActive(true);
+   }
+
+   public override void OnStartCinematicEnd() {
+       uiKeyParent.gameObject.SetActive(true);
+       classementParent.gameObject.SetActive(true);
+   }
+ }

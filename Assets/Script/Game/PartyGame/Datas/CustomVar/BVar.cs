@@ -3,7 +3,8 @@
 public class BVar  {
     
     public bool value;
-    public bool lastValue;
+    private bool lastValue;
+
 
     public SwitchValuePositive switchValuePositive;
     public SwitchValueNegative switchValueNegative;

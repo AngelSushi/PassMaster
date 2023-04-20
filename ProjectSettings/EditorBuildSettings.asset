@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Mains/Isle/NewMain/NewMain.unity
     guid: d995db60580e8884a9857c529e42e06c
+  - enabled: 1
+    path: Assets/Scenes/MiniGames/PerfectNote/PerfectNote.unity
+    guid: 18d8cb4c6e88e9f4c812fb22bb7ae158
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 49c00185dcba8594081eed5a674a603d,
       type: 2}

@@ -88,7 +88,7 @@ public class UserMovement : User {
         ui.enabled = true;
 
         transform.LookAt(gameController.mainCamera.transform);
-
+        
         if(waitDiceResult) {
             if(!isPlayer) {
 
@@ -150,7 +150,7 @@ public class UserMovement : User {
                animatorController.SetBool("IsMooving",isMooving);
            
            if(isTurn) {
-                Debug.Log("turn of " + transform.gameObject.name);
+//                Debug.Log("turn of " + transform.gameObject.name);
                 canMoove = !stop;
                 
                 if(nextStep != null && !jump && !stop) {
@@ -229,6 +229,7 @@ public class UserMovement : User {
                         timer += Time.deltaTime;
 
                         if(timer >= random && !hasJump) {
+                            
                             Jump();
                             hasJump = true;
                             ui.showHUD = false;
@@ -322,10 +323,11 @@ public class UserMovement : User {
                RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
            }
 
-           if(hit.gameObject.CompareTag("Sol")) { 
-               if(isJumping) 
+           if(hit.gameObject.CompareTag("Sol")) {
+               if (isJumping) {
                    isJumping = false;
-               
+               }
+
                if(constantJump) 
                 Jump();
                 
@@ -349,7 +351,7 @@ public class UserMovement : User {
             
             if(type == StepType.BONUS || type == StepType.MALUS || type == StepType.SHOP || type == StepType.BONUS_END || type == StepType.MALUS_END || type == StepType.STEP_END) {
 
-                if (diceResult < 0) { // Called when the player is coming back from the end animation controller
+                if (diceResult < 0 && finishMovement) { // Called when the player is coming back from the end animation controller
                     if (type == StepType.BONUS || type == StepType.STEP_END)
                         StartCoroutine(WaitBonus());
 
@@ -378,7 +380,8 @@ public class UserMovement : User {
                 }
                 
                 if(isJumping) {
-                    isJumping = false;  
+                    isJumping = false; 
+                    
                     jump = false;
                     waitDiceResult = false;
                     beginStep = hit.gameObject;
@@ -659,13 +662,14 @@ public class UserMovement : User {
         dice = gameController.dice;
         dice.SetActive(true);
         agent.enabled = false;
+        
+        Debug.Log("pos " + gameController.dice);
+            
         dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
+        dice.GetComponent<MeshRenderer>().enabled = true;
         dice.GetComponent<DiceController>().lockDice = false;
         dice.GetComponent<DiceController>().lastLockDice = true;
-        dice.GetComponent<MeshRenderer>().enabled = true;
 
-        int matIndex = tripleDice ? 3 : doubleDice ? 1 : reverseDice ? 2 : 0;
-        dice.GetComponent<MeshRenderer>().material = gameController.diceMaterials[matIndex];
     }
 
     private void ChooseNextStep(StepType type) {
@@ -823,8 +827,7 @@ public class UserMovement : User {
     }
 
     public void Jump() {
-        
-        Debug.Log("jump my body");
+        movement.rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 
         agent.enabled = false;
         rb.AddForce(jumpSpeed * Vector3.up,ForceMode.Impulse);    
@@ -848,6 +851,8 @@ public class UserMovement : User {
         ui.DisplayReward(true,3);
         ui.ClearDiceResult();
         gameController.ActualizePlayerClassement();
+        
+        Debug.Log("wait my bonus ");
 
         random = -1;
         timer = 0f;

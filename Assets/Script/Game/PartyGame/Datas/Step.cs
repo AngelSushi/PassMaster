@@ -55,8 +55,8 @@ public class Step : MonoBehaviour {
             player.transform.position = stepPosition;
             playerInStep.Remove(player);
         }
-        else 
-            Debug.Log("this step doesn't contains " + player.name);
+  //      else 
+//            Debug.Log("this step doesn't contains " + player.name);
     }
     
     public void ManagePlayerInStep(GameObject player) {

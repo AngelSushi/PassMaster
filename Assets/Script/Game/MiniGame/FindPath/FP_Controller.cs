@@ -438,5 +438,17 @@ public class FP_Controller : MiniGame {
         }
     }
 
+    public override void OnTransitionEnd() {
+        
+    }
+    
+    public override void OnSwitchCamera() {
+        
+    }
+
+    public override void OnStartCinematicEnd()
+    {
+    }
+
     #endregion
 }

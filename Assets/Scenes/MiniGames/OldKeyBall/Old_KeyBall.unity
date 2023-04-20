@@ -13253,14 +13253,17 @@ MonoBehaviour:
   isTraining: 0
   runSinceMenu: 0
   gameTime: 100
-  winners: []
-  beginText: {fileID: 208591000}
+  useTimer: 0
+  useChrono: 0
+  chronoText: {fileID: 0}
   timer: {fileID: 1205902890}
   endText: {fileID: 0}
-  startSound: {fileID: 616980195}
-  timerSound: {fileID: 461491010}
-  timeSound: {fileID: 898622945}
+  startChrono: {fileID: 0}
+  runChrono: {fileID: 0}
+  endChrono: {fileID: 0}
   mainAudio: {fileID: 177901779}
+  mainCamera: {fileID: 1586514845}
+  winners: []
   win: {fileID: 1474876697}
   classementPanels:
   - {fileID: 125077692}
@@ -13273,7 +13276,12 @@ MonoBehaviour:
   - {fileID: 1585106338}
   - {fileID: 188056122}
   - {fileID: 588739035}
+  startCinematic: {fileID: 0}
+  startCinematicCameras: []
+  endCinematic: {fileID: 0}
+  endCinematicCameras: []
   inputs: {fileID: 0}
+  circleTransition: {fileID: 0}
   stopwatch:
   - {fileID: 1862822476}
   - {fileID: 364399833}

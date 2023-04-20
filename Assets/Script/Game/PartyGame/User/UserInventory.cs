@@ -163,27 +163,22 @@ public class UserInventory : CoroutineSystem {
         }
 
   
-        Debug.Log("transform " + transform.gameObject.name);
         switch(maxAction.itemID) {
             case 0:
                 transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
-                Debug.Log("use double dice");
                 break;
 
             case 1:
                 transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
-                Debug.Log("use triple dice");
                 break;
 
             case 2:
                 transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
-                Debug.Log("use reverse dice");
                 break;
 
             case 3:
                 transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
                 GameController.Instance.blackScreenAnim.Play();
-                Debug.Log("use hourglass");
                 break;
         }
 
