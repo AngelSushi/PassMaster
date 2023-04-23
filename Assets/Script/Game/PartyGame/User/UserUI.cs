@@ -320,15 +320,11 @@ public class UserUI : User {
                 directions[2].GetChild(1).gameObject.SetActive(false);
             }
 
-           // movement.reverseCount = direction.reverseCount;
             showDirection.value = false;
             index = -1;
         }
-        
-        Debug.Log(" " + e.started + " action " + showActionButton + " isInInventory " + isInInventory + " cameraView " + cameraView + " freeze " + gameController.freeze);
 
         if(e.started & showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
-            Debug.Log("interact with button");
             if(index == 0) {
                 ManageInventory(true);
             }
@@ -338,10 +334,6 @@ public class UserUI : User {
                 infoLabel.SetActive(false);
                 if(isPlayer) 
                     isTurn = true;
-
-                //GetComponent<NavMeshAgent>().enabled = true;
-               
-                Debug.Log("movement " + movement.rb);
                 
                 movement.waitDiceResult = true;
                 index = -1;
@@ -361,7 +353,6 @@ public class UserUI : User {
         }
 
         if(e.started && movement.useLightning & cameraView && !gameController.freeze) {
-            Debug.Log("enter lightning");
             Vector2 cursorPos = new Vector2(cursor.transform.position.x,cursor.transform.position.z);
 
             GameObject targetStep = null;
@@ -369,8 +360,6 @@ public class UserUI : User {
             for(int x = -7;x <7;x++) { // Range : 7
                 for(int z = -7;z<7;z++) {
                     Vector2 calculatePos = new Vector2(cursorPos.x + x,cursorPos.y + z);
-
-                   // Debug.Log("calculatePos: " + calculatePos);
 
                     foreach(Step step in FindObjectsOfType(typeof(Step))) {
                         Vector2 stepPos = new Vector2(step.gameObject.transform.position.x,step.gameObject.transform.position.z);
@@ -407,7 +396,6 @@ public class UserUI : User {
 
 
         if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
-            Debug.Log("index " + index);
             if(index < inventoryItems.Length && index > -1) {
         
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 

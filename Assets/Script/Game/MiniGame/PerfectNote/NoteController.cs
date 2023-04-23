@@ -9,17 +9,16 @@ using UnityEngine.UI;
 public class NoteController : CoroutineSystem {
 
     public double timeInstantiated;
-   // public float time;
 
     public float timeLength;
-    public Note targetNote;
-    public int noteIndex;
 
     [HideInInspector] public NoteLane currentLane;
     
     private MusicController _controller;
     private bool _startPlayNote,_destroy;
     private float _performedTimer;
+
+    private bool _hasHitLine;
 
     private void Start() {
         timeInstantiated = MusicController.GetAudioSourceTime();
@@ -35,7 +34,7 @@ public class NoteController : CoroutineSystem {
         _controller.inputs.FindAction(currentLane.inputName).performed += OnNotePressed;
         _controller.inputs.FindAction(currentLane.inputName).canceled += OnNotePressed; 
     }
-    
+
     public override void Update() {
         double timeSinceInstantiated = MusicController.GetAudioSourceTime() - timeInstantiated;
         float t = (float)(timeSinceInstantiated / (_controller.noteTime * 2));
@@ -48,18 +47,31 @@ public class NoteController : CoroutineSystem {
 
             Destroy(gameObject);
         }
-        else 
-            transform.localPosition = Vector3.Lerp(Vector3.up * _controller.noteSpawnY, Vector3.up * _controller.noteDespawnX, t);
+        else
+            transform.localPosition = Vector3.Lerp(Vector3.up * _controller.noteSpawnY,
+                Vector3.up * _controller.noteDespawnX, t);
 
         if (_startPlayNote && MusicController.GetAudioSourceTime() <= (timeInstantiated + timeLength)) {
             _performedTimer += Time.deltaTime;
 
             if (_performedTimer >= 1f) {
                 _performedTimer = 0f;
-                _controller.AddPointToPlayer(_controller.players[0],1);
+                _controller.AddPointToPlayer(_controller.players[0], 1);
             }
         }
+
+        foreach (RaycastHit2D hit in Physics2D.RaycastAll(transform.position, Vector3.left)) {
+            if (hit.collider != null) {
+                if (hit.collider.gameObject == _controller.detection && !_hasHitLine) {
+                    foreach(PN_AIController aiController in _controller.allAI)
+                        aiController.RandomSucceed(this);
+                    _hasHitLine = true;
+                }
+            }
+
+        }
     }
+
 
 
     private void OnNotePressed(InputAction.CallbackContext e) {
@@ -79,13 +91,8 @@ public class NoteController : CoroutineSystem {
         }
 
         if (e.canceled) {
-        //    if (_destroy)
-        //        Destroy(transform.gameObject);
-            
             _startPlayNote = false;
         }
     }
-
     
-
 }

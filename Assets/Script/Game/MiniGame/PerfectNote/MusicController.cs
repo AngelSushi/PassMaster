@@ -47,7 +47,6 @@ public class MusicController : MiniGame {
    public GameObject notePrefab;
    public GameObject longNotePrefab;
    public GameObject detection;
-   public GameObject start;
 
    public Transform canvas;
    public GameObject noteStatePrefab;
@@ -89,9 +88,8 @@ public class MusicController : MiniGame {
        foreach (NoteLane lane in lanes)
            lane.SetTimeStamps(allNotes);
 
-       foreach (PN_AIController aiController in allAI) {
+       foreach (PN_AIController aiController in allAI) 
            aiController.allNotes = allNotes;
-       }
        
        Invoke(nameof(StartSong),songDelay);
    }
@@ -119,24 +117,24 @@ public class MusicController : MiniGame {
 
    public override void Update() {
        base.Update();
-       Debug.DrawLine(detection.transform.position,detection.transform.position + Vector3.up * goodMarginError,Color.yellow);
-       Debug.DrawLine(detection.transform.position,detection.transform.position - Vector3.up * goodMarginError,Color.yellow);
-
-       Debug.DrawLine((detection.transform.position + Vector3.left ),(detection.transform.position + Vector3.left )+ Vector3.up * perfectMarginError ,Color.red);
-       Debug.DrawLine((detection.transform.position + Vector3.left ),(detection.transform.position + Vector3.left ) - Vector3.up * perfectMarginError,Color.red);
-
-       if (!begin && !mainAudio.isPlaying ) {
+       
+       if (!begin && !mainAudio.isPlaying ) 
            OnFinish();
-       }
+       
    }
 
-   public void AddPointToPlayer(Player player,int point) {
-       playersPoint[player] += point;
+   public void AddPointToPlayer(Player player,int point,int noteIndex = -1) {
+       if (noteIndex != -1) {
+           PN_AIController aiController = allAI.Where(aiController => aiController.player == player).ToList()[0];
+           if (aiController.lastSucceedNoteIndex == noteIndex)
+           
+               return;
 
-       foreach (Player p in playersPoint.Keys) {
-         //  Debug.Log("player " + p.gameObject.name + " with " + playersPoint[p] + " points ");
+           aiController.lastSucceedNoteIndex = noteIndex;
        }
        
+       playersPoint[player] += point;
+
        List<int> allPoints = playersPoint.Values.ToList();
        allPoints.Sort();
        allPoints.Reverse();
@@ -204,8 +202,6 @@ public class MusicController : MiniGame {
    }
    
    public override void OnFinish() {
-
-
        int currentMaxPoint = 0;
 
        foreach (int point in playersPoint.Values) {
@@ -258,44 +254,41 @@ public class MusicController : MiniGame {
                winners[winnerIndex].transform.position = newPosition;
                
            }
-           
-           
        }
-       
-       
-       
-       circleTransition.SetActive(true);
 
+       circleTransition.Play();
    }
 
    public override void OnTransitionEnd() {
-       if (!_hasPlayedSfx) {
-           win.Play();
-           _hasPlayedSfx = true;
-                
-           if (endText != null)
-               endText.gameObject.SetActive(true);
+       if (actualState == GameState.END) {
+           if (!_hasPlayedSfx) {
+               win.Play();
+               _hasPlayedSfx = true;
 
-           if (confetti != null) {
-               confetti.SetActive(true);
-               confetti.transform.position = winners[0].transform.position;
-               confetti.GetComponent<ParticleSystem>().enableEmission = true;
-               confetti.GetComponent<ParticleSystem>().Play();
+               if (endText != null)
+                   endText.gameObject.SetActive(true);
+
+               if (confetti != null) {
+                   confetti.SetActive(true);
+                   confetti.transform.position = winners[0].transform.position;
+                   confetti.GetComponent<ParticleSystem>().enableEmission = true;
+                   confetti.GetComponent<ParticleSystem>().Play();
+               }
            }
+
+           foreach (GameObject winner in winners) 
+               winner.GetComponent<Animator>().SetBool("Victory", true);
+           
+           uiKeyParent.gameObject.SetActive(false);
+           FinishMiniGame();
        }
-       
-       foreach (GameObject winner in winners) {
-           winner.GetComponent<Animator>().SetBool("Victory",true);
-       }
-       
-       uiKeyParent.gameObject.SetActive(false);
-       FinishMiniGame();
-       
-       
+
+
    }
    
-   public override void OnSwitchCamera() {
-       endCinematicCameras[0].gameObject.SetActive(true);
+   public override void OnSwitchCamera() { 
+       if(actualState == GameState.END) 
+           endCinematicCameras[0].gameObject.SetActive(true);
    }
 
    public override void OnStartCinematicEnd() {

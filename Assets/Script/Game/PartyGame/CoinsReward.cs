@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class CoinsReward : MonoBehaviour {
     
-    public int beginY;
+    public float beginY;
     public bool hasFinishAnimation;
     private GameController controller;
 

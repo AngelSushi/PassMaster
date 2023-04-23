@@ -11,7 +11,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
     
     
     // General
-    private SerializedProperty firstStep,actualPlayer,players,_playersData,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,nightIndex,hasChangeState,blackScreenAnim,shellPrefab,mainPath,inputs,_mainAudio;
+    private SerializedProperty firstStep,actualPlayer,players,_playersData,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,nightIndex,hasChangeState,blackScreenAnim,_circleTransitionAnim,shellPrefab,mainPath,inputs,_mainAudio;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -42,6 +42,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
         nightIndex = serializedClass.FindProperty("nightIndex");
         hasChangeState = serializedClass.FindProperty("hasChangeState");
         blackScreenAnim = serializedClass.FindProperty("blackScreenAnim");
+        _circleTransitionAnim = serializedClass.FindProperty("circleTransitionAnim");
         shellPrefab = serializedClass.FindProperty("shellPrefab");
         mainPath = serializedClass.FindProperty("mainPath");
         inputs = serializedClass.FindProperty("inputs");
@@ -99,6 +100,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
                 EditorGUILayout.PropertyField(nightIndex);
                 EditorGUILayout.PropertyField(hasChangeState);
                 EditorGUILayout.PropertyField(blackScreenAnim);
+                EditorGUILayout.PropertyField(_circleTransitionAnim);
                 EditorGUILayout.PropertyField(shellPrefab);
                 EditorGUILayout.PropertyField(mainPath);
                 EditorGUILayout.PropertyField(inputs);

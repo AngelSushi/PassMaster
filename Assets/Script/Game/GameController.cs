@@ -80,6 +80,7 @@ public class GameController : CoroutineSystem {
     public bool hasChangeState;
     private bool isFirstChest = true;
     public Animation blackScreenAnim;
+    public Animation circleTransitionAnim;
     
     public GameObject stepChest;
     
@@ -206,7 +207,8 @@ public class GameController : CoroutineSystem {
             }
             
             StartCoroutine(mgController.RandomMiniGame());
-            mainAudio.enabled = false;
+            //mainAudio.enabled = false;
+            mainAudio.volume /= 2f;
             turn++;
         }
 
@@ -431,24 +433,30 @@ public class GameController : CoroutineSystem {
     }
 
     public void BeginTurn(bool repair) {
-
         actualPlayer = 0;
         if (turn > 1) {
-            GameObject step = players[actualPlayer].GetComponent<UserMovement>().actualStep != null ? players[actualPlayer].GetComponent<UserMovement>().actualStep : firstStep;
-            
-            ManagePlayerInStep(step.GetComponent<Step>(),
-                players[actualPlayer]);
+            RunDelayed(1.5f, () => { // Wait the middle of transition
+                GameObject step = players[actualPlayer].GetComponent<UserMovement>().actualStep != null
+                    ? players[actualPlayer].GetComponent<UserMovement>().actualStep
+                    : firstStep;
 
-            if (!repair && !hasChangeState && !debugController.skipMG) {
-                ChangeStateScene(true, "NewMain");
-                
-                if(mgController.actualMiniGame != null)
-                    SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
-                
-                
-                hasChangeState = true;
-                mainAudio.enabled = true;
-            }
+                ManagePlayerInStep(step.GetComponent<Step>(),
+                    players[actualPlayer]);
+
+                if (!repair && !hasChangeState && !debugController.skipMG) {
+                    ChangeStateScene(false,mgController.actualMiniGame.minigameName);
+
+                    RunDelayed(1f, () => { ChangeStateScene(true, "NewMain"); });
+                    
+                    RunDelayed(2f,() => {
+                        if (mgController.actualMiniGame != null)
+                            SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
+                    });
+                    
+                    hasChangeState = true;
+                    mainAudio.enabled = true;
+                }
+            });
         }
         else 
             UpdateSubPath(players[0].GetComponent<UserMovement>(),false);
@@ -640,7 +648,7 @@ public class GameController : CoroutineSystem {
         objects = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
         
         foreach(GameObject obj in objects) {
-            if ((obj.name == "SFX" && sceneName == "NewMain") || obj.GetComponent<GameController>() != null || obj.name == "EventSystem") {
+            if ((obj.name == "SFX" && sceneName == "NewMain") || obj.GetComponent<GameController>() != null || obj.name == "EventSystem" || (obj.GetComponentInChildren<Canvas>() != null && !sceneName.Equals("NewMain"))) {
                 obj.SetActive(true);
                 continue;
             }

@@ -22,7 +22,7 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
 
     private SerializedProperty _detection,_goodMarginError, _goodReward, _perfectMarginError, _perfectReward,_lanes;
 
-    private SerializedProperty _canvas,_start,_playersUI,_noteState,_uiKeyParent,_classementParent,_circleTransition;
+    private SerializedProperty _canvas,_playersUI,_noteState,_uiKeyParent,_classementParent,_circleTransition;
     
     protected override void OnEnable() {
         base.OnEnable();
@@ -45,7 +45,6 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
         _perfectReward = serializedClass.FindProperty("perfectReward");
 
         _canvas = serializedClass.FindProperty("canvas");
-        _start = serializedClass.FindProperty("start");
         _lanes = serializedClass.FindProperty("lanes");
         _playersUI = serializedClass.FindProperty("playersUI");
         _noteState = serializedClass.FindProperty("noteStatePrefab");
@@ -96,7 +95,6 @@ public class MusicControllerEditor : CustomFieldInspector<MusicController> {
         EditorGUILayout.BeginVertical("box");
         EditorGUILayout.TextField("UI", textStyle);
         EditorGUILayout.PropertyField(_canvas);
-        EditorGUILayout.PropertyField(_start);
         EditorGUILayout.PropertyField(_playersUI);
         EditorGUILayout.PropertyField(_noteState);
         EditorGUILayout.PropertyField(_uiKeyParent);

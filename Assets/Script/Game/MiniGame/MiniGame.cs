@@ -52,7 +52,7 @@ public abstract class MiniGame : CoroutineSystem {
     public Camera[] endCinematicCameras;
     public InputActionAsset inputs;
 
-    public GameObject circleTransition;
+    public Animation circleTransition;
 
     private bool _hasGenerateBoard;
 

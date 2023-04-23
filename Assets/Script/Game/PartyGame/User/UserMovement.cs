@@ -662,8 +662,6 @@ public class UserMovement : User {
         dice = gameController.dice;
         dice.SetActive(true);
         agent.enabled = false;
-        
-        Debug.Log("pos " + gameController.dice);
             
         dice.transform.position = new Vector3(transform.position.x,transform.position.y + 17,transform.position.z);
         dice.GetComponent<MeshRenderer>().enabled = true;
@@ -768,15 +766,11 @@ public class UserMovement : User {
             }
             else {
                 
-                
-                Debug.Log("enter else 22");
                 if (stepIndex -  1 >= 0) {
-                    Debug.Log("next is here");
                     nextStep = actualParent.transform.GetChild(stepIndex - 1);
                 }
                 else {
                     if (reverseCount) { // Si on est a la fin et qu'on veut revenir
-                        Debug.Log("here reverse");
                         Direction targetDirection = FindObjectsOfType<Direction>().Where(dir => dir.directionsStep.Contains(actualStep)).ToList()[0];
                         if (targetDirection != null) {
                             nextStep = targetDirection.directionsStep.Where(step => step != null && step != actualStep).ToList()[0].transform;
@@ -790,8 +784,6 @@ public class UserMovement : User {
                 }
             }
         }
-        
-//        Debug.Log("nextStep " + nextStep);
     }
 
     private void StepBackMovement(GameObject[] steps) { // Cette fonction sera a faire en sorte que le joueur recule si un autre joueur passe devant lui 
@@ -851,8 +843,6 @@ public class UserMovement : User {
         ui.DisplayReward(true,3);
         ui.ClearDiceResult();
         gameController.ActualizePlayerClassement();
-        
-        Debug.Log("wait my bonus ");
 
         random = -1;
         timer = 0f;
@@ -872,10 +862,8 @@ public class UserMovement : User {
             gameController.ActualizePlayerClassement();
         }
         else
-        {
-            Debug.Log("end when no coins ");
             gameController.EndUserTurn(); // A Test lors d'une step shop ou chest 
-        }
+        
 
         ui.ClearDiceResult();   
 
@@ -886,8 +874,6 @@ public class UserMovement : User {
     public IEnumerator WaitMalus(int amount) { // Impossible de booster les cases
 
         yield return new WaitForSeconds(0.5f);
-
-        Debug.Log("enter wait malus " + currentAction);
         
        // isMooving = false;
         if(inventory.coins > 0) {
@@ -910,7 +896,6 @@ public class UserMovement : User {
     public void DisplayChestDialog() {
         if (inventory.cards >= gameController.secretCode.Length) {
             gameController.EndUserTurn();
-            Debug.Log("end cause have full secret code");
             return;
         }
 

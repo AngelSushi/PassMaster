@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: PerfectNote
   m_EditorClassIdentifier: 
   minigameName: PerfectNote
-  minigameDesc: "Seul ta m\xE9moire peut t'aider. M\xE9morise le bon chemin et remporte
-    la victoire !"
-  minigameSprite: {fileID: 21300000, guid: ad9c122f1ced4514e9cb628017ff3c58, type: 3}
+  minigameDesc: 'Seras tu le prochain grand virtuose ? '
+  minigameSprite: {fileID: 21300000, guid: 0e854853400d66647b9d20160902049d, type: 3}
   controls: 'ZQSD : Movement  SPACE : Sauter'

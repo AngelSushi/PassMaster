@@ -57,7 +57,7 @@ public class MiniGameController : CoroutineSystem {
             step += Time.deltaTime;
             if(step >= speed) {
                 step = 0;
-
+                
                 render.GetComponent<Image>().sprite = minigames[index].minigameSprite;
                 render.transform.parent.GetChild(2).GetChild(0).gameObject.GetComponent<Text>().text = minigames[index].minigameName;
                 render.transform.parent.GetChild(2).GetChild(1).gameObject.GetComponent<Text>().text = minigames[index].minigameDesc;
@@ -83,6 +83,7 @@ public class MiniGameController : CoroutineSystem {
                // gameController.dayController.mainAudio.Stop();
                 gameController.players[gameController.actualPlayer].GetComponent<UserUI>().showTurnInfo = false;
                 gameController.loadingScene.loadScene = true;
+                gameController.mainAudio.enabled = false;
                 hasLoadScene = true;
                 speed = 0.08f;
                 timer = 0;
@@ -100,6 +101,9 @@ public class MiniGameController : CoroutineSystem {
         _classementPanels = classementPanels;
         _winners = winners;
         _hasCountWinner = false;
+
+        if (gameController.part != GameController.GamePart.MINIGAME)
+            return;
         
         RunDelayed(3f,() => {
             if(!hasClassementShow) {
@@ -112,7 +116,6 @@ public class MiniGameController : CoroutineSystem {
                     classedPlayer = gameController.classedPlayers.Keys.ToList();
                     UserInventory inv = classedPlayer[i].GetComponent<UserInventory>();
 
-                    Debug.Log("print here");
                     classementPanels[i].transform.GetChild(1).gameObject.GetComponent<Text>().text = "" +  (gameController.FindPlayerClassement(gameController.GetKeyByValue(i,gameController.classedPlayers)) + 1);
                     classementPanels[i].transform.GetChild(1).gameObject.GetComponent<Text>().color = gameController.classedColors[gameController.FindPlayerClassement(gameController.GetKeyByValue(i,gameController.classedPlayers))];
                     classementPanels[i].transform.GetChild(0).gameObject.GetComponent<Image>().sprite = GetPlayerSprite(classedPlayer[i]);
@@ -138,15 +141,16 @@ public class MiniGameController : CoroutineSystem {
                         foreach(GameObject winner in winners) {
                             
                             ConvertPlayer(winner).transform.parent.gameObject.SetActive(true);
-//                            ConvertPlayer(winner).transform.parent.parent.gameObject.SetActive(true);
                             ConvertPlayer(winner).SetActive(true);
                             
                             
                             
                             classementPanels[ConvertPlayerIndex(winner)].transform.GetChild(5).gameObject.SetActive(true);
                             if (!_hasCountWinner) {
-                                ConvertPlayer(winner).GetComponent<UserInventory>().coins += 15;
-                                _hasCountWinner = true;
+                                for (int i = 0; i < winners.Count; i++) { // No optimization but ok
+                                    ConvertPlayer(winners[i]).GetComponent<UserInventory>().coins += 15;
+                                    _hasCountWinner = true;
+                                }
                             }
                             classementPanels[ConvertPlayerIndex(winner)].transform.GetChild(5).GetChild(0).gameObject.GetComponent<Text>().text = "+" + 15;
 
@@ -168,7 +172,7 @@ public class MiniGameController : CoroutineSystem {
                                             break;
 
                                         case 3:
-                                            classementPanels[ConvertPlayerIndex(winner)].transform.GetChild(5).gameObject.GetComponent<CoinsReward>().beginY = -271;
+                                            classementPanels[ConvertPlayerIndex(winner)].transform.GetChild(5).gameObject.GetComponent<CoinsReward>().beginY = -2.5f;
                                             break;
                                     }
                                 }
@@ -195,6 +199,8 @@ public class MiniGameController : CoroutineSystem {
                                 gameController.difficulty == GameController.Difficulty.HARD ? 2 : 4;
                         }
                                     
+                        MiniGame.instance.circleTransition.Play();
+                        _classementPanels[0].transform.parent.gameObject.SetActive(false);
                         gameController.ManageTurn();
                         hasTurnChange = true;
                     }
@@ -245,6 +251,10 @@ public class MiniGameController : CoroutineSystem {
     }
 
     public void EndOfAnim() {
+
+        if (gameController.part != GameController.GamePart.MINIGAME)
+            return;
+        
         if(_classementPanels != null && _classementPanels[ConvertPlayerIndex(_winners[0])].transform.GetChild(5).gameObject.GetComponent<CoinsReward>().hasFinishAnimation) {
             RunDelayed(1f,() => {
                 List<GameObject> oldClassedPlayers = gameController.classedPlayers.Keys.ToList();
@@ -271,8 +281,7 @@ public class MiniGameController : CoroutineSystem {
                             UserInventory inv = ConvertPlayer(newClassedPlayers[i]).GetComponent<UserInventory>();
                             _classementPanels[i].transform.GetChild(3).GetChild(1).gameObject.GetComponent<Text>().text = "" + inv.coins;
 
-                            _classementPanels[i].transform.GetChild(1).gameObject.GetComponent<Text>().text = ""  + (gameController.FindPlayerClassement(newClassedPlayers[i]) + 1);   
-                            Debug.Log("print here 222");
+                            _classementPanels[i].transform.GetChild(1).gameObject.GetComponent<Text>().text = ""  + (gameController.FindPlayerClassement(newClassedPlayers[i]) + 1);
                             _classementPanels[i].transform.GetChild(1).gameObject.GetComponent<Text>().color = gameController.classedColors[gameController.FindPlayerClassement(newClassedPlayers[i])];
                         }
                     }
@@ -323,6 +332,9 @@ public class MiniGameController : CoroutineSystem {
                 else 
                     wait = 10;
                 
+                
+                
+                
                 RunDelayed(wait,() => {
                     if(!hasTurnChange) {
                         gameController.turn++;
@@ -335,6 +347,9 @@ public class MiniGameController : CoroutineSystem {
                         
                         gameController.ManageTurn();
 
+                        
+                        MiniGame.instance.circleTransition.Play();
+                        _classementPanels[0].transform.parent.gameObject.SetActive(false);
                         hasTurnChange = true;
                     }
 
@@ -352,6 +367,8 @@ public class MiniGameController : CoroutineSystem {
             });
         }
         else {
+            
+            
             RunDelayed(3f,() => {
                 if(!hasTurnChange) {
                     gameController.turn++;
@@ -363,6 +380,9 @@ public class MiniGameController : CoroutineSystem {
                             gameController.difficulty == GameController.Difficulty.HARD ? 2 : 4;
 
                     gameController.ManageTurn();
+                    
+                    _classementPanels[0].transform.parent.gameObject.SetActive(false);
+                    MiniGame.instance.circleTransition.Play();
                     hasTurnChange = true;
                 }
 

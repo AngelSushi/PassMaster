@@ -12,7 +12,6 @@ public class NoteLane : MonoBehaviour {
     public string inputName;
     public Color laneColor;
     public Sprite laneKeySprite;
-    public int laneIndex;
 
     private List<double> _timeStamps = new List<double>();
     private List<double> _timeLengths = new List<double>();
@@ -51,8 +50,8 @@ public class NoteLane : MonoBehaviour {
                 note.GetComponent<NoteController>().ApplyInputs();
                 
                 note.GetComponent<NoteController>().timeLength = (float)_timeLengths[_spawnIndex];
-                note.GetComponent<NoteController>().targetNote = _notes[_spawnIndex];
-                note.GetComponent<NoteController>().noteIndex = laneIndex;
+
+                note.name = _spawnIndex.ToString();
                 
                 foreach(PN_AIController aiController in _controller.allAI) 
                     aiController.aliveNotes.Add(note.GetComponent<NoteController>());
