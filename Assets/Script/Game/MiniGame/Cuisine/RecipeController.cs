@@ -6,6 +6,7 @@ public class RecipeController : MonoBehaviour {
 
     [System.Serializable]
     public class Recipe {
+        public string name;
         public List<int> allIngredientsID;
         public Sprite recipeSprite;
         public bool needToBeCook;
