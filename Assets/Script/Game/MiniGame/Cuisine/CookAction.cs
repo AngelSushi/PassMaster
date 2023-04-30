@@ -49,7 +49,7 @@ public class CookAction : MonoBehaviour {
             else 
                 plate.SetActive(false);
         }
-      }
+    }
 
     public void RefreshUI() {
         for(int i = 0;i<ingredients.Count;i++) {

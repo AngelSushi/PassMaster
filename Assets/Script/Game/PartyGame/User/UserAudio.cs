@@ -33,16 +33,26 @@ public class UserAudio : MonoBehaviour {
 
     public void ButtonHover() {
         userSource.clip = AudioController.Instance.buttonHover;
+        userSource.volume = 0.05f;
         userSource.Play();
     }
 
     public void ButtonClick() {
         userSource.clip = AudioController.Instance.buttonClick;
+        userSource.volume = 0.05f;
         userSource.Play();
     }
 
     public void Footstep() {
         userSource.clip = AudioController.Instance.footstep;
+        userSource.volume = 0.05f;
+        userSource.Play();
+    }
+
+    public void Error() {
+        Debug.Log("error sound");
+        userSource.clip = AudioController.Instance.error;
+        userSource.volume = 0.5f;
         userSource.Play();
     }
 }

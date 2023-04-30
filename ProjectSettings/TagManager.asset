@@ -64,8 +64,6 @@ TagManager:
   - Area_011
   - Area_012
   - Area_013
-  - EndSpeedBoost
-  - BeginSpeedBoost
   - Area_014
   - DeathArea
   - Rotative
@@ -80,14 +78,6 @@ TagManager:
   - GreenBall
   - YellowBall
   - Spike
-  - Ingredient
-  - CutBox
-  - FurnaceBox
-  - CookBox
-  - Box
-  - IngredientBox
-  - PanBox
-  - PlateBox
   - arrow
   - Shell
   layers:

@@ -163,16 +163,17 @@ public class UserMovement : User {
                         });
                     }
 
-                    if(!hasCollideDice) {
+                    if (!hasCollideDice) {
                         beginResult = diceResult;
-                        stepPaths = new GameObject[beginResult]; 
+                        stepPaths = new GameObject[beginResult];
                         hasCollideDice = true;
                         waitDiceResult = false;
                         ui.showHUD = false;
-                        if(dice != null) 
+                        if (dice != null) {
                             dice.SetActive(false);
+                        }
                     }
-                    
+
                     if(lastStep == nextStep.gameObject) 
                         ChooseNextStep(StepType.NONE);
 
@@ -284,9 +285,11 @@ public class UserMovement : User {
                }
            }
 
-           if(hit.gameObject.CompareTag("Dice")) { 
+           if(hit.gameObject.CompareTag("Dice")) {
+               DiceController diceController = hit.gameObject.GetComponent<DiceController>();
+               
                if(diceResult == 0 || diceResult == -1) { 
-                   diceResult = hit.gameObject.GetComponent<DiceController>().index;
+                   diceResult = diceController.index;
 
                    if(diceResult == 0)
                        diceResult = 6;
@@ -298,12 +301,8 @@ public class UserMovement : User {
                 
                agent.enabled = true;
 
-            //   diceResult = 50;
-
-               // diceResult = 26;
-            
-                //diceResult =  63;
-
+               diceController.diceAudio.Play();
+               
                beginResult = diceResult; 
                stepPaths = new GameObject[beginResult]; 
                hasCollideDice = true;  
@@ -319,8 +318,8 @@ public class UserMovement : User {
                ChooseNextStep(gameController.firstStep.GetComponent<Step>().type);
 
                currentAction = UserAction.MOVEMENT;
-
-               RunDelayed(0.1f,() => {  hitObj.SetActive(false); });
+               
+               RunDelayed(1f,() => {  hitObj.SetActive(false); });
            }
 
            if(hit.gameObject.CompareTag("Sol")) {

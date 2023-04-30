@@ -8,22 +8,46 @@ public class ChefController : MonoBehaviour {
     public Rigidbody rb;
     public GameObject actualIngredient;
     private Vector2 movement;
-    private Vector3 move;
+    [HideInInspector] public Vector3 move;
     public bool isMoving;
     public bool canMoove;
-    private GameObject cutBox,ingredientBox,panBox,stoveBox,box,groundIngredient,plateBox;
+    private GameObject groundIngredient;
     private CookAction action;
     private Quaternion rotation;
 
-    void Update() {
+    private CookController _cookController;
+    private Animator _animator;
+
+
+    private Box _currentCollisionBox;
+
+    public Transform ingredientSpawn;
+
+    
+    void Start() {
+        _cookController = (CookController)CookController.instance;
+        _animator = GetComponent<Animator>();
         
+        _cookController.inputs.FindAction("Cuisine/Movement").started += OnMove;
+        _cookController.inputs.FindAction("Cuisine/Movement").performed += OnMove;
+        _cookController.inputs.FindAction("Cuisine/Movement").canceled += OnMove;
+
+        _cookController.inputs.FindAction("Cuisine/Interact").started += OnInteract;
+        
+    }
+    
+    void Update() {
+        _animator.SetBool("IsMooving",isMoving);
+        
+        Debug.DrawLine(transform.position, transform.position + transform.forward * 100,Color.magenta);
+         
         if(isMoving && canMoove)
             Movement();
         else 
             transform.rotation = rotation;
 
         if(action != null) {
-            if(cutBox != null && cutBox.transform.childCount > 1 &&  cutBox.transform.GetChild(1).gameObject.GetComponent<Ingredient>().cookTag == "CutBox") {
+            /*if(cutBox != null && cutBox.transform.childCount > 1 &&  cutBox.transform.GetChild(1).gameObject.GetComponent<Ingredient>().cookTag == "CutBox") {
                 if(action.isDoingAction)
                     canMoove = false;
 
@@ -34,7 +58,7 @@ public class ChefController : MonoBehaviour {
                     action.ingredients.Remove(action.ingredients[0]);
                     canMoove = true;
                 }
-            }
+            }*/
             
         }
 
@@ -43,9 +67,10 @@ public class ChefController : MonoBehaviour {
       private void Movement() {
         float moveX = movement.x * speed * -1;
         float moveZ = movement.y * speed * -1;
-
+        
         move = new Vector3(moveX,rb.velocity.y,moveZ);
-        rb.velocity = move;
+        
+        rb.MovePosition(transform.position + move * Time.deltaTime);
 
         rotation = Quaternion.LookRotation(move, Vector3.up);
         transform.rotation = rotation;
@@ -60,45 +85,31 @@ public class ChefController : MonoBehaviour {
         if(hit.gameObject.tag == "Ingredient") 
             groundIngredient = hit.gameObject;     
     }
-
-    private void OnTriggerStay(Collider hit) {
-        if(hit.gameObject.tag == "IngredientBox") 
-            ingredientBox = hit.gameObject;
-        if(hit.gameObject.tag == "CutBox") 
-            cutBox = hit.gameObject; 
-        if(hit.gameObject.tag == "PanBox")
-            panBox = hit.gameObject;
-        if(hit.gameObject.tag == "StoveBox")
-            stoveBox = hit.gameObject;
-        if(hit.gameObject.tag == "Box") 
-            box = hit.gameObject;
-        if(hit.gameObject.tag == "PlateBox") 
-            plateBox = hit.gameObject;
-    }
-
-    private void OnTriggerExit(Collider hit) {
-        if(hit.gameObject.tag == "IngredientBox" && ingredientBox != null) 
-            ingredientBox = null;     
-        if(hit.gameObject.tag == "CutBox" && cutBox != null) 
-            cutBox = null;  
-        if(hit.gameObject.tag == "PanBox" && panBox != null)
-            panBox = null;
-        if(hit.gameObject.tag == "StoveBox" && stoveBox != null)
-            stoveBox = null;
-        if(hit.gameObject.tag == "Box" && box != null) 
-            box = null;
-        if(hit.gameObject.tag == "PlateBox" && plateBox != null)
-            plateBox = null;
-    }
+    
 
     public void OnMove(InputAction.CallbackContext e) {
         movement = e.ReadValue<Vector2>();
-
+        
         if(e.started) isMoving = true;
         if(e.canceled)  isMoving = false;    
     }
 
+
     public void OnInteract(InputAction.CallbackContext e) {
+        if (e.started) {
+            foreach (RaycastHit hit in Physics.RaycastAll(transform.position, transform.forward)) {
+                if (hit.collider != null) {
+                    if (hit.collider.gameObject.TryGetComponent<Box>(out Box box)) {
+                        box.BoxInteract(actualIngredient,this);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    
+   /* public void OnInteract(InputAction.CallbackContext e) {
         if(e.started) {
             if(ingredientBox == null && cutBox == null && box == null && panBox == null && actualIngredient != null) { // On check si le commis peut lacher l'ingrédient
                 DropIngredient();
@@ -149,6 +160,7 @@ public class ChefController : MonoBehaviour {
             }        
         }
     }
+
 
     private void CutAction() {
         action = cutBox.transform.GetChild(0).gameObject.GetComponent<CookAction>();
@@ -254,13 +266,13 @@ public class ChefController : MonoBehaviour {
         actualIngredient = null;
     }
 
+*/
 
-
-    private List<CookController.Recipes> GetListContaining(List<GameObject> plate) {
+    /*private List<CookController.Recipes> GetListContaining(List<GameObject> plate) {
         List<CookController.Recipes> plateRecipes = new List<CookController.Recipes>();
 
-        for(int i = CookController.instance.recipes.Count - 1;i > 0;i--) {
-            CookController.Recipes recipe = CookController.instance.recipes[i];
+        for(int i = _cookController.recipes.Count - 1;i > 0;i--) {
+            CookController.Recipes recipe = _cookController.recipes[i];
             plateRecipes.Add(recipe);
 
             foreach(GameObject ingredient in plate) {
@@ -274,5 +286,5 @@ public class ChefController : MonoBehaviour {
 
         return plateRecipes;
     }
-
+*/
 }

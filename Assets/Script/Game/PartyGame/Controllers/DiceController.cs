@@ -12,26 +12,25 @@ public class DiceController : CoroutineSystem {
     public Texture2D[] tripleDiceTextures;
     public Texture2D[] reverseDiceTextures;
 
-    public int index;
+    [HideInInspector] public int index;
 
-    public bool lockDice,lastLockDice = true;
+    [HideInInspector] public bool lockDice,lastLockDice = true;
 
     private MeshRenderer _meshRenderer;
+    [HideInInspector] public AudioSource diceAudio;
 
-    void Start() => _meshRenderer = GetComponent<MeshRenderer>();
-
-    void Update() {
-        
-        if(!lockDice && lastLockDice) {
-            StartCoroutine(RotateDice());
-        }
-        
-        Debug.DrawLine(transform.position,transform.position + Vector3.forward * 100,Color.black);
-
-        lastLockDice = lockDice;
-          
+    void Start() {
+        _meshRenderer = GetComponent<MeshRenderer>();
+        diceAudio = GetComponent<AudioSource>();
     }
 
+    void Update() {
+        if(!lockDice && lastLockDice) 
+            StartCoroutine(RotateDice());
+
+        lastLockDice = lockDice;
+    }
+    
     public IEnumerator RotateDice() {
        while(!lockDice) {
             UserMovement movement = GameController.Instance.players[GameController.Instance.actualPlayer].GetComponent<UserMovement>();

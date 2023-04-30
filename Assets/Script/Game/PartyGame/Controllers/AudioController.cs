@@ -11,6 +11,7 @@ public class AudioController : MonoBehaviour {
     public AudioClip coinsGain;
     public AudioClip coinsLoose;
     public AudioClip buyLoose;
+    public AudioClip error;
     public AudioClip cardGain;
     public AudioClip findSecretCode;
     public AudioClip buttonHover;

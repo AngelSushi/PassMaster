@@ -1,19 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class CookController : MonoBehaviour {
+public class CookController : MiniGame {
+    
+    [HideInInspector] public RecipeController recipeController;
+    public List<Camera> camerasInstance;
+    public GameObject sliderPrefab;
+    public GameObject slotPrefab;
 
-    [System.Serializable]
-    public class Recipes {
-        public List<string> ingredients;
+    public override void Start() {
+        base.Start();
+
+        recipeController = GetComponent<RecipeController>();
     }
     
-    public static CookController instance;
-    public List<Recipes> recipes;
-
-    void Awake() {
-        instance = this;
-    }
-    
+    public override void OnStartCinematicEnd() {}
+    public override void OnFinish() { }
+    public override void OnSwitchCamera() { }
+    public override void OnTransitionEnd() { }
 }

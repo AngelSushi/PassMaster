@@ -216,6 +216,8 @@ public class UserUI : User {
                   new Vector3(0, 10f, 0);
 
             hoverInventoryItem.localPosition = hoverPos;
+            
+            audio.ButtonHover();
         }
     }
 
@@ -291,10 +293,17 @@ public class UserUI : User {
             if(index > 0) 
                 index--;
 
-            Vector2[] hoverPos = {new Vector2(-444,31),new Vector2(-299,31),new Vector2(-149,31),new Vector2(5,31),new Vector2(145,31),new Vector2(305,31),new Vector2(448,31),new Vector2(583,31)};
-            
             hoverInventoryItem.gameObject.SetActive(true);
-            hoverInventoryItem.localPosition = hoverPos[index];
+
+            Vector3 hoverPos = index < inventoryItems.Length - 1
+                ? hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition
+                : hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition +
+                  new Vector3(0, 10f, 0);
+            
+            hoverInventoryItem.localPosition = hoverPos;
+            
+            
+            audio.ButtonHover();
         }
     }
 
@@ -449,9 +458,7 @@ public class UserUI : User {
                 }
                 else { // Le joueur n'a pas l'objet
                     if(index >= 0 && hoverInventoryItem.transform.parent.gameObject.activeSelf) {
-                        DisplayInfoText(new Vector2(971,297),new Color(1.0f,0.0f,0.0f), "Vous ne possédez pas cet objet");
-                        isInInventory = false;
-                        StartCoroutine(InfoLabelWaiting());
+                        audio.Error();
                     }
                 }
             }

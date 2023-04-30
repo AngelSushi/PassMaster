@@ -25,8 +25,7 @@ public class GameController : CoroutineSystem {
         MINIGAME
     }
 
-    public enum Difficulty
-    {
+    public enum Difficulty {
         EASY,
         MEDIUM,
         HARD
@@ -83,9 +82,7 @@ public class GameController : CoroutineSystem {
     public Animation circleTransitionAnim;
     
     public GameObject stepChest;
-    
-    
-    
+
     public DayController dayController;
     public DialogController dialog;
     public MiniGameController mgController;
@@ -118,6 +115,8 @@ public class GameController : CoroutineSystem {
     private InputActionMap lastAction;
 
     public AudioSource mainAudio;
+
+    public Vector3 beginCamPos, beginCamRot;
 
     private void OnEnable() => Instance = this;
     
@@ -440,8 +439,7 @@ public class GameController : CoroutineSystem {
                     ? players[actualPlayer].GetComponent<UserMovement>().actualStep
                     : firstStep;
 
-                ManagePlayerInStep(step.GetComponent<Step>(),
-                    players[actualPlayer]);
+                ManagePlayerInStep(step.GetComponent<Step>(), players[actualPlayer]);
 
                 if (!repair && !hasChangeState && !debugController.skipMG) {
                     ChangeStateScene(false,mgController.actualMiniGame.minigameName);
@@ -598,18 +596,21 @@ public class GameController : CoroutineSystem {
     }
 
     public void ManageCameraPosition() {
-        if(turn == 1) 
-            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetDirection(firstStep,firstStep.GetComponent<Step>(),25f) * 2.25f);
-        else {
-            GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep != null ? players[actualPlayer].GetComponent<UserMovement>().actualStep : firstStep;
-            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
-        }
-        
+        GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep != null ? players[actualPlayer].GetComponent<UserMovement>().actualStep : firstStep;
+        mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
+
         Vector3 playerPosition = players[actualPlayer].transform.position;
         playerPosition.y += 5f;
 
         Vector3 direction = playerPosition - mainCamera.transform.position;
         mainCamera.transform.rotation = Quaternion.LookRotation(direction);
+
+        foreach (GameObject player in players) {
+            if (players[actualPlayer] != player) {
+                if (player.TryGetComponent<UserMovement>(out UserMovement movement)) 
+                    player.SetActive(movement.actualStep != null);
+            }
+        }
     }
     
     public GameObject GetKeyByValue<Key, Value>(Value value,Dictionary<Key,Value> dict) {
