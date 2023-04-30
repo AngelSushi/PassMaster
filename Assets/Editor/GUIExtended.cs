@@ -59,9 +59,9 @@ public class GUIExtended {
             EditorSceneManager.OpenScene("Assets/Scenes/MiniGames/PerfectNote/PerfectNote.unity");
         }
         
-        if (GUILayout.Button("Test")) {
+        if (GUILayout.Button("Cuisine")) {
             EditorSceneManager.SaveOpenScenes();
-            EditorSceneManager.OpenScene("Assets/Scenes/TestScene2.unity");
+            EditorSceneManager.OpenScene("Assets/Scenes/MiniGames/Cuisine/Cuisine.unity");
         }
     }
 }

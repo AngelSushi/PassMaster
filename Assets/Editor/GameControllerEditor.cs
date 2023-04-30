@@ -11,7 +11,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
     
     
     // General
-    private SerializedProperty firstStep,actualPlayer,players,_playersData,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,nightIndex,hasChangeState,blackScreenAnim,_circleTransitionAnim,shellPrefab,mainPath,inputs,_mainAudio;
+    private SerializedProperty firstStep,actualPlayer,players,_playersData,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,nightIndex,hasChangeState,blackScreenAnim,_circleTransitionAnim,shellPrefab,mainPath,inputs,_mainAudio,_beginCamPos,_beginCamRot;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -47,7 +47,9 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
         mainPath = serializedClass.FindProperty("mainPath");
         inputs = serializedClass.FindProperty("inputs");
         _mainAudio = serializedClass.FindProperty("mainAudio");
-        
+        _beginCamPos = serializedClass.FindProperty("beginCamPos");
+        _beginCamRot = serializedClass.FindProperty("beginCamRot");
+
         // Controllers 
         day = serializedClass.FindProperty("dayController");
         dialog = serializedClass.FindProperty("dialog");
@@ -105,6 +107,8 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
                 EditorGUILayout.PropertyField(mainPath);
                 EditorGUILayout.PropertyField(inputs);
                 EditorGUILayout.PropertyField(_mainAudio);
+                EditorGUILayout.PropertyField(_beginCamPos);
+                EditorGUILayout.PropertyField(_beginCamRot);
                 break;
             
             case 1:
