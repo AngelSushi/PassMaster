@@ -15,6 +15,10 @@ public class RecipeController : MonoBehaviour {
     }
     
     public List<Recipe> recipes;
+
+    public void GenerateRecipe() {
+        
+    }
     
-  
+    
 }

@@ -17,7 +17,7 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
 
     private SerializedProperty _win, _classementPanels, _confetti;
 
-    private SerializedProperty _camerasInstance,_sliderPrefab,_slotPrefab;
+    private SerializedProperty _camerasInstance,_sliderPrefab,_slotPrefab,_teams;
     
     protected override void OnEnable() {
         base.OnEnable();
@@ -26,6 +26,7 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         _camerasInstance = serializedClass.FindProperty("camerasInstance");
         _sliderPrefab = serializedClass.FindProperty("sliderPrefab");
         _slotPrefab = serializedClass.FindProperty("slotPrefab");
+        _teams = serializedClass.FindProperty("teams");
     }
 
     public override void OnInspectorGUI() {
@@ -43,6 +44,7 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         EditorGUILayout.PropertyField(_camerasInstance);
         EditorGUILayout.PropertyField(_sliderPrefab);
         EditorGUILayout.PropertyField(_slotPrefab);
+        EditorGUILayout.PropertyField(_teams);
         
         if(EditorGUI.EndChangeCheck()) 
             serializedClass.ApplyModifiedProperties();
