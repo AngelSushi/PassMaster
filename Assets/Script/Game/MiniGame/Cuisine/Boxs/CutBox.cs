@@ -60,7 +60,7 @@ public class CutBox : MakeBox {
     #region Basic Box Functions
     public override void BoxInteract(GameObject current, ChefController controller) {
         if (stock != null && stock.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
-            if (ingredient.isCuttable) {
+            if (ingredient.data.isCuttable) {
                 if (!ingredient.isCut)
                     _startCutting = true;
                 else
@@ -77,7 +77,7 @@ public class CutBox : MakeBox {
 
     protected override void Put() {
         if (stock == null && currentController.actualIngredient != null && currentController.actualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
-            if (!ingredient.isCuttable || ingredient.isCut)
+            if (!ingredient.data.isCuttable || ingredient.isCut)
                 return;
         }
         

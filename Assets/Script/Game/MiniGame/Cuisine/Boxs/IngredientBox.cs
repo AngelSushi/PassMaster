@@ -13,7 +13,7 @@ public class IngredientBox : Box {
 
     public override void BoxInteract(GameObject current,ChefController controller) {
         currentController = controller;
-       Take();
+        Take();
     }
    
     protected override void Put() {}

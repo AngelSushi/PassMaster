@@ -48,8 +48,8 @@ public class StoveBox : MakeBox {
     protected override void Put() {
         Debug.Log("put from here");
         if (stock == null && currentController.actualIngredient != null && currentController.actualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
-            if (ingredient.cookIndex == 0) { // detect if ingredient is cooked  on stove
-                if (ingredient.isCookable && !ingredient.isCook) 
+            if (ingredient.data.cookIndex == 0) { // detect if ingredient is cooked  on stove
+                if (ingredient.data.isCookable && !ingredient.isCook) 
                     base.Put();
             }
         }

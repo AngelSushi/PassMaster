@@ -5,14 +5,10 @@ using UnityEngine;
 
 public class Ingredient : MonoBehaviour {
 
-    public int id;
-    public bool isCuttable;
-    public bool isCut;
-    public bool isCookable;
-    public bool isCook;
-    public Sprite sprite;
+    public IngredientData data;
     
-    [Range(-1,1)] [Tooltip("-1 : Ignore ; 0 : Stove ; 1 : Pan")] public int cookIndex; 
+    public bool isCut;
+    public bool isCook;
 
 
     [HideInInspector] public GameObject basic;

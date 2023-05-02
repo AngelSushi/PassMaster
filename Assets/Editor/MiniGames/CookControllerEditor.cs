@@ -17,16 +17,19 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
 
     private SerializedProperty _win, _classementPanels, _confetti;
 
-    private SerializedProperty _camerasInstance,_sliderPrefab,_slotPrefab,_teams;
+    private SerializedProperty _sliderPrefab, _slotPrefab, _teams, _recipePrefab, _recipeParent,_instances,_platePrefab;
     
     protected override void OnEnable() {
         base.OnEnable();
         MiniGameInit();
 
-        _camerasInstance = serializedClass.FindProperty("camerasInstance");
         _sliderPrefab = serializedClass.FindProperty("sliderPrefab");
         _slotPrefab = serializedClass.FindProperty("slotPrefab");
         _teams = serializedClass.FindProperty("teams");
+        _recipeParent = serializedClass.FindProperty("recipeParent");
+        _recipePrefab = serializedClass.FindProperty("recipePrefab");
+        _platePrefab = serializedClass.FindProperty("platePrefab");
+        _instances = serializedClass.FindProperty("instances");
     }
 
     public override void OnInspectorGUI() {
@@ -40,11 +43,16 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         textStyle.fontStyle = FontStyle.Bold;
 
         MiniGameBody(textStyle);
+        
+        EditorGUILayout.Space(10);
 
-        EditorGUILayout.PropertyField(_camerasInstance);
         EditorGUILayout.PropertyField(_sliderPrefab);
         EditorGUILayout.PropertyField(_slotPrefab);
+        EditorGUILayout.PropertyField(_instances);
         EditorGUILayout.PropertyField(_teams);
+        EditorGUILayout.PropertyField(_recipeParent);
+        EditorGUILayout.PropertyField(_recipePrefab);
+        EditorGUILayout.PropertyField(_platePrefab);
         
         if(EditorGUI.EndChangeCheck()) 
             serializedClass.ApplyModifiedProperties();

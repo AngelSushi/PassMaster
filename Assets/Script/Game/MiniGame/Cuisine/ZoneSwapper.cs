@@ -14,6 +14,17 @@ public class ZoneSwapper : MonoBehaviour {
     private void Start() {
         startY = transform.position.y;
         _cookController = (CookController)CookController.instance;
+
+        foreach (CookController.Instance instance in _cookController.instances) {
+            instance.instanceCamera.gameObject.SetActive(false);
+            for(int i = 0;i < instance.allCanvas.Count;i++)
+                instance.allCanvas[i].gameObject.SetActive(false);
+        }
+        
+       
+        _cookController.instances[areaIndex].instanceCamera.gameObject.SetActive(true);
+        for(int i = 0;i <  _cookController.instances[areaIndex].allCanvas.Count;i++)
+            _cookController.instances[areaIndex].allCanvas[i].gameObject.SetActive(true);
     }
 
 
@@ -23,19 +34,32 @@ public class ZoneSwapper : MonoBehaviour {
 
         if (sideRight < 0) {
             if (areaIndex < rightSwappers.Length) {
-                _cookController.camerasInstance[areaIndex].gameObject.SetActive(false);
+                _cookController.instances[areaIndex].instanceCamera.gameObject.SetActive(false);
+                for(int i = 0;i <  _cookController.instances[areaIndex].allCanvas.Count;i++)
+                    _cookController.instances[areaIndex].allCanvas[i].gameObject.SetActive(false);
+                
                 areaIndex++;
                 transform.position = leftSwappers[areaIndex].transform.position;
-                _cookController.camerasInstance[areaIndex].gameObject.SetActive(true);
+                
+                _cookController.instances[areaIndex].instanceCamera.gameObject.SetActive(true);
+                for(int i = 0;i <  _cookController.instances[areaIndex].allCanvas.Count;i++)
+                    _cookController.instances[areaIndex].allCanvas[i].gameObject.SetActive(true);
+                
             }
         }
 
         if (sideLeft > 0) {
             if (areaIndex > 0) {
-                _cookController.camerasInstance[areaIndex].gameObject.SetActive(false);
+                _cookController.instances[areaIndex].instanceCamera.gameObject.SetActive(false);
+                for(int i = 0;i <  _cookController.instances[areaIndex].allCanvas.Count;i++)
+                    _cookController.instances[areaIndex].allCanvas[i].gameObject.SetActive(false);
+                
                 areaIndex--;
                 transform.position = rightSwappers[areaIndex].transform.position;
-                _cookController.camerasInstance[areaIndex].gameObject.SetActive(true);
+                
+                _cookController.instances[areaIndex].instanceCamera.gameObject.SetActive(true);
+                for(int i = 0;i <  _cookController.instances[areaIndex].allCanvas.Count;i++)
+                    _cookController.instances[areaIndex].allCanvas[i].gameObject.SetActive(true);
             }
         }
     }

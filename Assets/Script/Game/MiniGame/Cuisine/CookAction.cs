@@ -51,7 +51,7 @@ public class CookAction : MonoBehaviour {
         }
     }
 
-    public void RefreshUI() {
+   /* public void RefreshUI() {
         for(int i = 0;i<ingredients.Count;i++) {
             GameObject ingredient = ingredients[i];
             GameObject actionPanel = slider.gameObject.transform.parent.gameObject;
@@ -67,4 +67,5 @@ public class CookAction : MonoBehaviour {
             plate.transform.GetChild(i).gameObject.GetComponent<Image>().sprite = ingredient.GetComponent<Ingredient>().sprite;
         }
     }
+    */
 }

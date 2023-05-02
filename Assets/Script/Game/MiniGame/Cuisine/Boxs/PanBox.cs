@@ -50,7 +50,7 @@ public class PanBox : MakeBox {
         _isDirtyWater = true;
 
         _slot.gameObject.SetActive(true);
-        _slot.sprite = _stockIngredient.sprite;
+        _slot.sprite = _stockIngredient.data.sprite;
 
         StartCoroutine(LerpColor(_waterMesh,mainColor,cookedColor));
         StartCoroutine(LerpColor(_meshIngredient, _mainIngredientColor, _mainCookedColor));
@@ -75,8 +75,8 @@ public class PanBox : MakeBox {
     #region Basic Box Function
     protected override void Put() {
         if (stock == null && currentController.actualIngredient != null && currentController.actualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
-            if (ingredient.cookIndex == 1) { // detect if ingredient is cooked  on pan
-                if (ingredient.isCookable && !ingredient.isCook && !_isDirtyWater) 
+            if (ingredient.data.cookIndex == 1) { // detect if ingredient is cooked  on pan
+                if (ingredient.data.isCookable && !ingredient.isCook && !_isDirtyWater) 
                     base.Put();
             }
         }

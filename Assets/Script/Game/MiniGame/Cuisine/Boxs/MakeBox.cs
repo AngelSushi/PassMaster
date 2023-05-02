@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +25,9 @@ public abstract class MakeBox : BasicBox {
         canvas.AddComponent<CanvasScaler>();
         canvas.AddComponent<GraphicRaycaster>();
         canvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+
+        CookController.Instance targetInstance = _cookController.instances.Where(instance => instance.instance == transform.parent.gameObject).ToList()[0];
+        targetInstance.allCanvas.Add(canvas.GetComponent<Canvas>());
 
         GameObject slider = Instantiate(_cookController.sliderPrefab);
         slider.transform.parent = canvas.transform;

@@ -170,13 +170,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b8f19f297cb7a6a4ea45a34d8c762e65, type: 3}
-  cookIndex: -1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!135 &5317291
@@ -879,36 +875,54 @@ MonoBehaviour:
   inputs: {fileID: -944628639613478452, guid: 9d9b96fca36421f42b9f4b6af1c6a9fe, type: 3}
   circleTransition: {fileID: 0}
   recipeController: {fileID: 0}
-  camerasInstance:
-  - {fileID: 689670756}
-  - {fileID: 558567327}
-  - {fileID: 1177715137}
-  - {fileID: 1089068487}
+  instances:
+  - instanceCamera: {fileID: 689670756}
+    allCanvas: []
+    instance: {fileID: 1093432580}
+  - instanceCamera: {fileID: 558567327}
+    allCanvas: []
+    instance: {fileID: 1933480603}
+  - instanceCamera: {fileID: 1177715137}
+    allCanvas: []
+    instance: {fileID: 1257916697}
+  - instanceCamera: {fileID: 1089068487}
+    allCanvas: []
+    instance: {fileID: 1431459857}
   sliderPrefab: {fileID: 2831229487126269571, guid: f2694ba4db5eec84486208ad0e0acfe9,
     type: 3}
   slotPrefab: {fileID: 5964484028051196279, guid: ef95d8fd395b3be4bb3923a87cc5c6da,
+    type: 3}
+  recipePrefab: {fileID: 8518711218934586031, guid: 2e16e540906533a40bf32e16fa9e741b,
+    type: 3}
+  recipeParent: {fileID: 7220724068716697333, guid: 86b59a0fbbbb03c41abfd588a620abfb,
+    type: 3}
+  platePrefab: {fileID: 2473544002184976988, guid: 28062ab1b66a9274f872bfab1d2e279a,
     type: 3}
   teams:
   - name: Red Team
     player: {fileID: 3050388849821317067}
     point: 0
     recipes: []
-    instance: {fileID: 0}
-  - name: 
-    player: {fileID: 0}
+    instance: {fileID: 1093432580}
+    canvas: {fileID: 0}
+  - name: Blue Team
+    player: {fileID: 1210801509}
     point: 0
     recipes: []
-    instance: {fileID: 0}
-  - name: 
-    player: {fileID: 0}
+    instance: {fileID: 1933480603}
+    canvas: {fileID: 0}
+  - name: Green Team
+    player: {fileID: 6040287241631411218}
     point: 0
     recipes: []
-    instance: {fileID: 0}
-  - name: 
-    player: {fileID: 0}
+    instance: {fileID: 1257916697}
+    canvas: {fileID: 0}
+  - name: Yellow Team
+    player: {fileID: 2445903935565625898}
     point: 0
     recipes: []
-    instance: {fileID: 0}
+    instance: {fileID: 1431459857}
+    canvas: {fileID: 0}
 --- !u!114 &57780303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1038,85 +1052,147 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recipes:
   - name: Burger
-    allIngredientsID: 0000000001000000
+    allIngredients:
+    - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
+    - {fileID: 11400000, guid: d4595592142ad5e40a78d795f221f4cd, type: 2}
     recipeSprite: {fileID: 21300000, guid: 48c56e25c2410a1419da96ed47afb113, type: 3}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 4565239381963668373, guid: 0fde57efd3bb6e147b8b6f297f9152dc,
       type: 3}
   - name: CheeseBurger
-    allIngredientsID: 000000000100000002000000
+    allIngredients:
+    - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
+    - {fileID: 11400000, guid: d4595592142ad5e40a78d795f221f4cd, type: 2}
+    - {fileID: 11400000, guid: e1b9ee23e46c3854097e60b241be1ac7, type: 2}
     recipeSprite: {fileID: 21300000, guid: 44130c187ff6e64489cac43528284230, type: 3}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 1966410759660335329, guid: 48c3f080fe28f19458edbc70248d2ebb,
       type: 3}
   - name: MaxiBurger
-    allIngredientsID: 0000000001000000020000000300000004000000
+    allIngredients:
+    - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
+    - {fileID: 11400000, guid: d4595592142ad5e40a78d795f221f4cd, type: 2}
+    - {fileID: 11400000, guid: 7d672c9834a49a643a079eeaa3c68474, type: 2}
+    - {fileID: 11400000, guid: 2665661f865b43f45be7597b540fbea0, type: 2}
+    - {fileID: 11400000, guid: e1b9ee23e46c3854097e60b241be1ac7, type: 2}
     recipeSprite: {fileID: 21300000, guid: 430222a6d8f6e7b4e8222baeaabba9d9, type: 3}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 6888387548442037710, guid: ae3ec09ad78f64347b1272471596f97e,
       type: 3}
   - name: SaladBurger
-    allIngredientsID: 000000000100000003000000
+    allIngredients:
+    - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
+    - {fileID: 11400000, guid: d4595592142ad5e40a78d795f221f4cd, type: 2}
+    - {fileID: 11400000, guid: e1b9ee23e46c3854097e60b241be1ac7, type: 2}
     recipeSprite: {fileID: 21300000, guid: 44130c187ff6e64489cac43528284230, type: 3}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 6554075392170418293, guid: 34ab5ef2f7b5a844bad05a308a3e1ea1,
       type: 3}
   - name: BeaconPizza
-    allIngredientsID: 0b0000000400000005000000
+    allIngredients:
+    - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
+    - {fileID: 11400000, guid: 2665661f865b43f45be7597b540fbea0, type: 2}
+    - {fileID: 11400000, guid: 27939cebbb3452547a2ae6439438a207, type: 2}
     recipeSprite: {fileID: 0}
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
   - name: BeaconChessePizza
-    allIngredientsID: 0b000000040000000500000002000000
+    allIngredients:
+    - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
+    - {fileID: 11400000, guid: 2665661f865b43f45be7597b540fbea0, type: 2}
+    - {fileID: 11400000, guid: 7d672c9834a49a643a079eeaa3c68474, type: 2}
+    - {fileID: 11400000, guid: 27939cebbb3452547a2ae6439438a207, type: 2}
     recipeSprite: {fileID: 0}
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
   - name: BeaconCheeseMushroomPizza
-    allIngredientsID: 0b000000040000000500000006000000
-    recipeSprite: {fileID: 0}
-    needToBeCook: 0
-    isCooked: 0
-    recipeMesh: {fileID: 0}
-  - name: BeaconCheeseMushroomPizza
-    allIngredientsID: 0b00000004000000050000000600000002000000
+    allIngredients:
+    - {fileID: 11400000, guid: 27939cebbb3452547a2ae6439438a207, type: 2}
+    - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
+    - {fileID: 11400000, guid: 2665661f865b43f45be7597b540fbea0, type: 2}
+    - {fileID: 11400000, guid: 23af72fa808c24343a63846724b28fa5, type: 2}
+    - {fileID: 11400000, guid: 7d672c9834a49a643a079eeaa3c68474, type: 2}
     recipeSprite: {fileID: 0}
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
   - name: Sushi
-    allIngredientsID: 0900000008000000
+    allIngredients:
+    - {fileID: 11400000, guid: d467da4fe31214a4c8259e856e2da9c7, type: 2}
+    - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
     recipeSprite: {fileID: 0}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 2471349322657918843, guid: 21908c10172bb774783974924a253735,
       type: 3}
   - name: MakiSeeamWeedSalmon
-    allIngredientsID: 070000000800000009000000
+    allIngredients:
+    - {fileID: 11400000, guid: 7e54ccc2cdf179a43969cb2718bb78ef, type: 2}
+    - {fileID: 11400000, guid: d467da4fe31214a4c8259e856e2da9c7, type: 2}
+    - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
     recipeSprite: {fileID: 0}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 2426962652410380701, guid: c8b22127710091f499d30d49d7b0e7c7,
       type: 3}
   - name: MakiCumcumberSalmon
-    allIngredientsID: 09000000080000000a000000
+    allIngredients:
+    - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
+    - {fileID: 11400000, guid: d467da4fe31214a4c8259e856e2da9c7, type: 2}
+    - {fileID: 11400000, guid: 52ab35eca26b7264b91e215315fd4a3f, type: 2}
     recipeSprite: {fileID: 0}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 6111783651869493911, guid: 686f608ea963be348a7a7768d7d555ff,
       type: 3}
   - name: MakiSeamWeedSalmonCumcumber
-    allIngredientsID: 0700000008000000090000000a000000
+    allIngredients:
+    - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
+    - {fileID: 11400000, guid: 7e54ccc2cdf179a43969cb2718bb78ef, type: 2}
+    - {fileID: 11400000, guid: d467da4fe31214a4c8259e856e2da9c7, type: 2}
+    - {fileID: 11400000, guid: 52ab35eca26b7264b91e215315fd4a3f, type: 2}
     recipeSprite: {fileID: 0}
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 2426962652410380701, guid: c8b22127710091f499d30d49d7b0e7c7,
       type: 3}
+  maxRecipesPerTeam: 5
+  maxRecipeTime: 30
+  sliderColor:
+    serializedVersion: 2
+    key0: {r: 1, g: 0, b: 0, a: 1}
+    key1: {r: 1, g: 0.9214484, b: 0, a: 1}
+    key2: {r: 0, g: 1, b: 0.14361954, a: 1}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 32768
+    ctime2: 65535
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 32768
+    atime2: 65535
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 3
+    m_NumAlphaKeys: 3
 --- !u!1 &61747201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1177,13 +1253,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 10
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 996082cbfdfe68842a80f9d8d302597d, type: 3}
-  cookIndex: -1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &61747205
@@ -1353,7 +1425,7 @@ Transform:
   m_Children:
   - {fileID: 1478770932}
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &77518391
 MeshRenderer:
@@ -1416,7 +1488,7 @@ PrefabInstance:
     - target: {fileID: 786347962428070628, guid: 86a1c727d86b3144387498287f63e6ec,
         type: 3}
       propertyPath: m_RootOrder
-      value: 18
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 786347962428070628, guid: 86a1c727d86b3144387498287f63e6ec,
         type: 3}
@@ -1745,13 +1817,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 6
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: 0b1e86ab7354c844491fc9b646693b04, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &109644532
@@ -2044,7 +2112,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &119143970
 MeshRenderer:
@@ -2816,13 +2884,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 9
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: bd4066e355870be4989f28ddca3df36d, type: 3}
-  cookIndex: 1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!1 &203343597
@@ -3440,13 +3504,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 2
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: ed76344245242f2448769be7d5c63da1, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &252410012
@@ -3920,13 +3980,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 5
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 6a4aafb3fba18904cb2e78b8912963bb, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &290273310
@@ -4093,7 +4149,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 30
+  m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &299820327
 MeshRenderer:
@@ -4236,13 +4292,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 4
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 83a3c0ed30454d0498f44f3864e31896, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &303967104
@@ -4855,13 +4907,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 2
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: ed76344245242f2448769be7d5c63da1, type: 3}
-  cookIndex: -1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!1 &348186477
@@ -4980,6 +5028,117 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 353228761}
   m_Mesh: {fileID: -4783894591166569364, guid: e47880e0ffe8eb842b3f4f76dd0436eb, type: 3}
+--- !u!1 &362813940
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 362813941}
+  - component: {fileID: 362813945}
+  - component: {fileID: 362813944}
+  - component: {fileID: 362813943}
+  - component: {fileID: 362813946}
+  m_Layer: 0
+  m_Name: Plate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &362813941
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362813940}
+  m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
+  m_LocalPosition: {x: -26.08429, y: 5.1820107, z: -22.438824}
+  m_LocalScale: {x: 1.1827852, y: 1.136613, z: 1.5926161}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 371791384661567135}
+  m_Father: {fileID: 1431459858}
+  m_RootOrder: 44
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &362813943
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362813940}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.127384, y: 3.7380095, z: 2.180505}
+  m_Center: {x: 0, y: 0, z: -1.0902525}
+--- !u!23 &362813944
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362813940}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a9bce15e6eb560a4ea61a6edee73f3ea, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &362813945
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362813940}
+  m_Mesh: {fileID: 1414275290710141465, guid: aebc10ff8eaf4c745a8d3e3d5270dd45, type: 3}
+--- !u!114 &362813946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362813940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe72abe8ca0169942b95d651f300e662, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &368113359
 GameObject:
   m_ObjectHideFlags: 0
@@ -5472,13 +5631,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 3
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 107c33db34a677441a6dbd1f1cf7a36d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &395798385
@@ -5623,8 +5778,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2049785920}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6483,7 +6637,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 35
+  m_RootOrder: 34
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &494638460
 MeshRenderer:
@@ -6904,13 +7058,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 3
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 107c33db34a677441a6dbd1f1cf7a36d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &521090319
@@ -7440,7 +7590,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 43
+  m_RootOrder: 42
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &550426097
 MeshRenderer:
@@ -7571,7 +7721,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &558567324
 Transform:
   m_ObjectHideFlags: 0
@@ -8116,7 +8266,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 20
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &624837912
 MeshRenderer:
@@ -8344,13 +8494,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 5
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 6a4aafb3fba18904cb2e78b8912963bb, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &664361294
@@ -8817,7 +8963,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 19
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &672616781
 MeshRenderer:
@@ -8907,7 +9053,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 24
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &684716215
 MeshRenderer:
@@ -8977,7 +9123,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &689670753
 Transform:
   m_ObjectHideFlags: 0
@@ -9544,7 +9690,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 32
+  m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &725629546
 MeshRenderer:
@@ -9739,7 +9885,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 27
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &732746574
 MeshRenderer:
@@ -10383,13 +10529,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 4
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 83a3c0ed30454d0498f44f3864e31896, type: 3}
-  cookIndex: -1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &779556273
@@ -11680,7 +11822,7 @@ PrefabInstance:
     - target: {fileID: 5110617025239495497, guid: 5eefa80c87ba3de438f57dd055c88824,
         type: 3}
       propertyPath: m_RootOrder
-      value: 16
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5110617025239495497, guid: 5eefa80c87ba3de438f57dd055c88824,
         type: 3}
@@ -12082,7 +12224,7 @@ PrefabInstance:
     - target: {fileID: 5110617025239495497, guid: 5eefa80c87ba3de438f57dd055c88824,
         type: 3}
       propertyPath: m_RootOrder
-      value: 15
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5110617025239495497, guid: 5eefa80c87ba3de438f57dd055c88824,
         type: 3}
@@ -12757,7 +12899,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 25
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &944877921
 MeshRenderer:
@@ -12966,7 +13108,7 @@ Transform:
   - {fileID: 1921858241}
   - {fileID: 21027221}
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 44
+  m_RootOrder: 43
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &961561991
 GameObject:
@@ -13195,13 +13337,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 7
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 4cd1ed97a0b588c4689a026435182899, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &965692375
@@ -13633,82 +13771,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 987641848}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &994946524
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 994946525}
-  - component: {fileID: 994946527}
-  - component: {fileID: 994946526}
-  m_Layer: 5
-  m_Name: Recipe
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &994946525
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 994946524}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2049785920}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -735.1968, y: 9.2138}
-  m_SizeDelta: {x: -1600.2295, y: -18.4276}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &994946526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 994946524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 0.392}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &994946527
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 994946524}
-  m_CullTransparentMesh: 1
 --- !u!1 &1001000629
 GameObject:
   m_ObjectHideFlags: 0
@@ -13740,7 +13802,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 39
+  m_RootOrder: 38
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1001000631
 MeshRenderer:
@@ -14164,13 +14226,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b8f19f297cb7a6a4ea45a34d8c762e65, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!135 &1045546938
@@ -14267,7 +14325,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 40
+  m_RootOrder: 39
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1047466977
 MeshRenderer:
@@ -15229,13 +15287,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b8f19f297cb7a6a4ea45a34d8c762e65, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!135 &1127079062
@@ -15444,13 +15498,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 2
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: ed76344245242f2448769be7d5c63da1, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1137400509
@@ -15563,13 +15613,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 11
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b63d65a8d7a5b3941a4fcf0091bc0ae2, type: 3}
-  cookIndex: -1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1139296079
@@ -16178,7 +16224,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1177715134
 Transform:
   m_ObjectHideFlags: 0
@@ -16421,13 +16467,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 3
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 107c33db34a677441a6dbd1f1cf7a36d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1190198271
@@ -16762,7 +16804,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 22
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1204667218
 MeshRenderer:
@@ -17363,13 +17405,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b8f19f297cb7a6a4ea45a34d8c762e65, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!135 &1222991130
@@ -17791,13 +17829,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 3
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 107c33db34a677441a6dbd1f1cf7a36d, type: 3}
-  cookIndex: -1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1249535930
@@ -17941,13 +17975,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 10
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 996082cbfdfe68842a80f9d8d302597d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1254084169
@@ -18345,7 +18375,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 28
+  m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1288411322
 MeshRenderer:
@@ -18511,7 +18541,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 26
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1295908051
 MeshRenderer:
@@ -18890,13 +18920,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 10
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 996082cbfdfe68842a80f9d8d302597d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1331505449
@@ -19531,13 +19557,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 2
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: ed76344245242f2448769be7d5c63da1, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1395122377
@@ -19622,7 +19644,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 42
+  m_RootOrder: 41
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1399254886
 MeshCollider:
@@ -20072,13 +20094,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 11
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b63d65a8d7a5b3941a4fcf0091bc0ae2, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1419226804
@@ -20353,7 +20371,6 @@ Transform:
   - {fileID: 1823533378}
   - {fileID: 987641849}
   - {fileID: 668633355}
-  - {fileID: 2105432305}
   - {fileID: 119143969}
   - {fileID: 1209852169}
   - {fileID: 1927075912}
@@ -20391,6 +20408,7 @@ Transform:
   - {fileID: 1399254885}
   - {fileID: 550426096}
   - {fileID: 957366957}
+  - {fileID: 362813941}
   - {fileID: 1704630744}
   - {fileID: 294288404}
   - {fileID: 520338934}
@@ -20461,13 +20479,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 4
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 83a3c0ed30454d0498f44f3864e31896, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1438530157
@@ -21352,13 +21366,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 5
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 6a4aafb3fba18904cb2e78b8912963bb, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1520893865
@@ -21471,13 +21481,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 5
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 6a4aafb3fba18904cb2e78b8912963bb, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1528161877
@@ -21826,7 +21832,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 36
+  m_RootOrder: 35
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1555203350
 MeshRenderer:
@@ -22022,13 +22028,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 6
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: 0b1e86ab7354c844491fc9b646693b04, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1560899848
@@ -22618,7 +22620,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 38
+  m_RootOrder: 37
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1607715693
 MeshRenderer:
@@ -23073,13 +23075,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 7
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 4cd1ed97a0b588c4689a026435182899, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1638293467
@@ -23518,7 +23516,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 33
+  m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1662163261
 MeshRenderer:
@@ -23601,7 +23599,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 34
+  m_RootOrder: 33
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1665341176
 MeshRenderer:
@@ -24207,7 +24205,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 23
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1697935445
 BoxCollider:
@@ -24763,7 +24761,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 29
+  m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1718775142
 MeshRenderer:
@@ -24996,7 +24994,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 41
+  m_RootOrder: 40
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1759036040
 MeshCollider:
@@ -25404,13 +25402,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 9
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: bd4066e355870be4989f28ddca3df36d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1778309720
@@ -25536,7 +25530,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 31
+  m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1783736897
 MeshRenderer:
@@ -25765,13 +25759,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 7
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 4cd1ed97a0b588c4689a026435182899, type: 3}
-  cookIndex: -1
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1805848070
@@ -26499,7 +26489,7 @@ Transform:
   m_Children:
   - {fileID: 4383922323336992979}
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1837483438
 MeshRenderer:
@@ -27206,7 +27196,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 37
+  m_RootOrder: 36
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1899097831
 MeshRenderer:
@@ -27318,13 +27308,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 11
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b63d65a8d7a5b3941a4fcf0091bc0ae2, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1914007342
@@ -27491,7 +27477,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 21
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1914915265
 MeshRenderer:
@@ -27716,13 +27702,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 6
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: 0b1e86ab7354c844491fc9b646693b04, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1924011881
@@ -27884,7 +27866,7 @@ PrefabInstance:
     - target: {fileID: 3942884646095654034, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654034, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
@@ -28231,7 +28213,7 @@ Transform:
   m_Children:
   - {fileID: 210962012}
   m_Father: {fileID: 1431459858}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1946287098
 MeshRenderer:
@@ -28344,13 +28326,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 9
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: bd4066e355870be4989f28ddca3df36d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1947145670
@@ -28560,13 +28538,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 10
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 996082cbfdfe68842a80f9d8d302597d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1956261208
@@ -28679,13 +28653,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 6
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: 0b1e86ab7354c844491fc9b646693b04, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &1963136766
@@ -29362,83 +29332,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2048059658}
   m_Mesh: {fileID: 1656123235873610918, guid: e47880e0ffe8eb842b3f4f76dd0436eb, type: 3}
---- !u!1 &2049785919
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2049785920}
-  - component: {fileID: 2049785922}
-  - component: {fileID: 2049785921}
-  m_Layer: 5
-  m_Name: Recipes
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2049785920
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049785919}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 994946525}
-  m_Father: {fileID: 403901538}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 428.45898}
-  m_SizeDelta: {x: 0, y: -856.918}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2049785921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049785919}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &2049785922
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049785919}
-  m_CullTransparentMesh: 1
 --- !u!1 &2059265456
 GameObject:
   m_ObjectHideFlags: 0
@@ -29499,13 +29392,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 11
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: b63d65a8d7a5b3941a4fcf0091bc0ae2, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &2059265460
@@ -30097,13 +29986,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 9
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: bd4066e355870be4989f28ddca3df36d, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &2097022504
@@ -30398,13 +30283,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 7
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 4cd1ed97a0b588c4689a026435182899, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &2103600081
@@ -30457,81 +30338,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2103600077}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &2105432304
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1431459858}
-    m_Modifications:
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -26.03106
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.4679163
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -22.437937
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -4.3297806e-17
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -4.3297806e-17
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832175086222884153, guid: 734480a3148de4f46bc4fc59977d7d28,
-        type: 3}
-      propertyPath: m_Name
-      value: BasicBox
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 734480a3148de4f46bc4fc59977d7d28, type: 3}
---- !u!4 &2105432305 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
-    type: 3}
-  m_PrefabInstance: {fileID: 2105432304}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2122745952
 GameObject:
   m_ObjectHideFlags: 0
@@ -30623,13 +30429,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 4
-  isCuttable: 1
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 0
   isCook: 0
-  sprite: {fileID: 21300000, guid: 83a3c0ed30454d0498f44f3864e31896, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!23 &2125649340
@@ -31116,6 +30918,90 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &371791384661342911
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 371791384661567135}
+  - component: {fileID: 371791384664467135}
+  - component: {fileID: 371791384663336063}
+  - component: {fileID: 3477070048605183074}
+  m_Layer: 0
+  m_Name: Plate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &371791384661567135
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371791384661342911}
+  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 7.465158, y: 5.327709, z: 7.1737413}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 362813941}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &371791384663336063
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371791384661342911}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 0054cbb2942940f46a8872a0c6f7e495, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &371791384664467135
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371791384661342911}
+  m_Mesh: {fileID: 4300000, guid: ff57cf6fb8f4cdb4082b2f79053db118, type: 3}
 --- !u!1 &453246630162636605
 GameObject:
   m_ObjectHideFlags: 0
@@ -31334,7 +31220,7 @@ PrefabInstance:
     - target: {fileID: 786347962428070628, guid: 86a1c727d86b3144387498287f63e6ec,
         type: 3}
       propertyPath: m_RootOrder
-      value: 17
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 786347962428070628, guid: 86a1c727d86b3144387498287f63e6ec,
         type: 3}
@@ -32935,6 +32821,7 @@ MonoBehaviour:
   speed: 15
   rb: {fileID: 2445903935565626066}
   actualIngredient: {fileID: 0}
+  actualPlate: {fileID: 0}
   move: {x: 0, y: 0, z: 0}
   isMoving: 0
   canMoove: 1
@@ -33211,6 +33098,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132149088661457}
   m_Mesh: {fileID: 8552134717624371188, guid: 0a3fea4b44dbbc74883af9bb17e5bebb, type: 3}
+--- !u!114 &3477070048605183074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371791384661342911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f70e825f49309864c918a25ff9241efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ingredientsInPlate: []
+  availableRecipes: []
+  plateOffset: {x: 0, y: 45}
 --- !u!1 &3500641208487876823
 GameObject:
   m_ObjectHideFlags: 0
@@ -33351,7 +33253,7 @@ PrefabInstance:
     - target: {fileID: 3942884646095654034, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654034, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
@@ -33695,13 +33597,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 1
-  isCuttable: 0
+  data: {fileID: 0}
   isCut: 0
-  isCookable: 1
   isCook: 0
-  sprite: {fileID: 21300000, guid: 116243b40c0c77643831d78dc8957da4, type: 3}
-  cookIndex: 0
   basic: {fileID: 0}
   modified: {fileID: 0}
 --- !u!1 &4585249690685431649
@@ -33980,7 +33878,7 @@ PrefabInstance:
     - target: {fileID: 5110617025239495497, guid: 5eefa80c87ba3de438f57dd055c88824,
         type: 3}
       propertyPath: m_RootOrder
-      value: 14
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 5110617025239495497, guid: 5eefa80c87ba3de438f57dd055c88824,
         type: 3}
