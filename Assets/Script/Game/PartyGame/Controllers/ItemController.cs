@@ -23,20 +23,12 @@ public class ItemController : CoroutineSystem {
     [HideInInspector]
     public int[] itemsID = { 0,1,2,3,4,5};
 
-    [HideInInspector]
-    public int[] easyPercentage = {28,26,26,30,24,23};  
-
-    [HideInInspector]
-    public int[] mediumPercentage = {48,46,46,50,44,43};
-
-    [HideInInspector]
-    public int[] hardPercentage = {58,56,56,60,54,53}; 
-
 
     public void DropCoins(GameObject player,UserInventory inv) {
 
      //   player.GetComponent<UserMovement>().actualStep.GetComponent<Step>().itemsInStep.Add(ItemType.COINS,inv.coins / 2);
-        StartCoroutine(player.GetComponent<UserMovement>().WaitMalus(false,inv.coins / 2));
+        player.GetComponent<UserMovement>().currentAction = UserAction.MALUS;
+        StartCoroutine(player.GetComponent<UserMovement>().WaitMalus(inv.coins / 2));
 
         GameObject coinsObj = Instantiate(coins);
         coinsObj.transform.position = player.transform.GetChild(5).GetChild(0).gameObject.transform.position;

@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using System;
+using System.Linq;
+using VSLangProj80;
 
-public class UserInventory : MonoBehaviour {
+public class UserInventory : CoroutineSystem {
     public int doubleDiceItem; 
     public int tripleDiceItem;
     public int reverseDiceItem; 
@@ -39,8 +42,6 @@ public class UserInventory : MonoBehaviour {
 
         while(secretCode[rand] != -1 || rand >= secretCode.Length) 
             rand = UnityEngine.Random.Range(0,secretCode.Length);
-
-        Debug.Log("rand: "+ rand);
         
         secretCode[rand] = GameController.Instance.secretCode[rand];
 
@@ -55,13 +56,63 @@ public class UserInventory : MonoBehaviour {
         return doubleDiceItem != 0 || tripleDiceItem != 0 || reverseDiceItem != 0 || hourglassItem != 0 || lightningItem != 0 || shellItem != 0;
     } 
 
+    public void UseShell() {
+        Vector3 smokePos = new Vector3(transform.position.x, transform.position.y + 3,transform.position.z);
+
+        GameObject smoke = Instantiate(transform.gameObject.GetComponent<UserUI>().smokeEffect.gameObject,smokePos,Quaternion.identity);
+        transform.gameObject.GetComponent<UserUI>().smokeEffect.Play();
+
+        transform.gameObject.GetComponent<UserMovement>().Jump();
+        GameObject shell = Instantiate(GameController.Instance.shellPrefab,transform.position,Quaternion.Euler(90,0,0));
+
+        shell.transform.GetChild(0).gameObject.SetActive(false);
+        shell.transform.GetChild(1).gameObject.SetActive(false);
+
+        transform.parent = shell.transform;
+        Debug.Log("rot: " + shell.transform.eulerAngles);
+
+        transform.gameObject.GetComponent<UserMovement>().useShell = true;
+
+        NavMeshAgent actualAgent = transform.gameObject.GetComponent<NavMeshAgent>();
+
+        shell.AddComponent<NavMeshAgent>();
+        shell.GetComponent<NavMeshAgent>().speed = actualAgent.speed;
+        shell.GetComponent<NavMeshAgent>().angularSpeed = actualAgent.angularSpeed;
+        shell.GetComponent<NavMeshAgent>().acceleration = actualAgent.acceleration;
+        shell.GetComponent<NavMeshAgent>().radius = 0.1f;
+        shell.GetComponent<NavMeshAgent>().height = 0.12f;
+
+        transform.gameObject.GetComponent<UserMovement>().agent = shell.GetComponent<NavMeshAgent>();
+
+        UnityEditorInternal.ComponentUtility.CopyComponent(transform.gameObject.GetComponent<UserMovement>());
+        UnityEditorInternal.ComponentUtility.PasteComponentAsNew(shell);
+        
+        transform.gameObject.GetComponent<UserUI>().movement = shell.GetComponent<UserMovement>();
+
+        Destroy(actualAgent);
+
+        RunDelayed(0.8f,() => {
+            shell.transform.GetChild(0).gameObject.SetActive(true);
+            shell.transform.GetChild(1).gameObject.SetActive(true);
+            shell.GetComponent<UserMovement>().InitDice();
+        });
+
+        RunDelayed(2f,() => {
+            Destroy(smoke);
+        });
+        
+    }
+
+
+
     public void UseItemBot() {
-        Dictionary<int,float> itemsPercentage = new Dictionary<int, float>();
+        List<ItemAction> succeedActions = new List<ItemAction>();
         
         // Ajouter les pourcentages de base d'un item
         List<int> possessedItems = GetPossessedItems();
 
         foreach(ItemAction action in GameController.Instance.itemController.actions) {
+<<<<<<< HEAD
             foreach(int itemID in possessedItems) {
                 if(action.itemID == itemID) {
                     switch(GameController.difficulty) {
@@ -82,59 +133,81 @@ public class UserInventory : MonoBehaviour {
                     }
                 }
             }
+=======
+>>>>>>> main
 
             if(action.differentPlayerToTarget) {
                 action.possessPlayer = transform.gameObject;
 
                 foreach(GameObject player in GameController.Instance.players) {
+                    if(player == action.possessPlayer) 
+                        continue;
+
                     action.DoAction(player);
 
                     if(action.succeed)
                         break;
                 }
             }
-            else
+            else 
                 action.DoAction(transform.gameObject);
             
-            if(possessedItems.Contains(action.itemID) && action.succeed) {
-                if(!itemsPercentage.ContainsKey(action.itemID))
-                    itemsPercentage.Add(action.itemID,action.percentageToAdd);
-                else {
-                    itemsPercentage[action.itemID] = itemsPercentage[action.itemID] + action.percentageToAdd;
-                }
-            } 
-                
-
-            Debug.Log("name: " + action.name + " succeed: " + action.succeed);            
+            if(possessedItems.Contains(action.itemID) && action.succeed) 
+                succeedActions.Add(action);
+            
         }
 
-        foreach(int itemID in possessedItems) {
-            switch(itemID) {
-                case 0:
-                    transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
-                    Debug.Log("use double dice");
-                    break;
+        if (succeedActions.Count == 0) {
+            Debug.Log("no succeed");
+            return;
+        }
 
-                case 1:
-                    transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
-                    Debug.Log("use triple dice");
-                    break;
+        int max = 1;
+        int lastMax = 0;
+        ItemAction maxAction = null;
+        for(int i = 0;i < succeedActions.Count;i++) {
+            ItemAction currentAction = succeedActions[i];
+            max = 1;
+            
+            for (int j = i + 1; j < succeedActions.Count; j++) {
+                ItemAction nextAction = succeedActions[j];
 
-                case 2:
-                    transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
-                    Debug.Log("use reverse dice");
-                    break;
+                if (currentAction.itemID == nextAction.itemID) {
+                    Debug.Log("action max");
+                    max++;
+                }
+            }
 
-                case 3:
-                    transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
-                    GameController.Instance.blackScreenAnim.Play();
-                    Debug.Log("use hourglass");
-                    break;
+            if (lastMax == 0 || lastMax <= max)
+            {
+                lastMax = max;
+                maxAction = currentAction;
             }
         }
 
-        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
+  
+        switch(maxAction.itemID) {
+            case 0:
+                transform.gameObject.GetComponent<UserMovement>().doubleDice = true;
+                break;
 
+            case 1:
+                transform.gameObject.GetComponent<UserMovement>().tripleDice = true;
+                break;
+
+            case 2:
+                transform.gameObject.GetComponent<UserMovement>().reverseDice = true;
+                break;
+
+            case 3:
+                transform.gameObject.GetComponent<UserMovement>().useHourglass = true;
+                GameController.Instance.blackScreenAnim.Play();
+                break;
+        }
+
+
+        transform.gameObject.GetComponent<UserMovement>().checkObjectToUse = false;
+        transform.gameObject.GetComponent<UserMovement>().InitDice();
 
     }
 

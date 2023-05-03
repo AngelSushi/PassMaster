@@ -60,7 +60,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: -2724992303374064930, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
-  - {fileID: -8944546314521402686, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
+  - {fileID: 2100000, guid: 0cea62bc59ebf9f44a1791aba1b95c8f, type: 2}
   - {fileID: -8424583493777350915, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
   - {fileID: -287505411645742072, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
   - {fileID: -181044083533692589, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
@@ -145,7 +145,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: -2724992303374064930, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
-  - {fileID: -8944546314521402686, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
+  - {fileID: 2100000, guid: 0cea62bc59ebf9f44a1791aba1b95c8f, type: 2}
   - {fileID: -181044083533692589, guid: 3ae10cb9a15a30f47af582ce205e3939, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -179,9 +179,10 @@ GameObject:
   - component: {fileID: 5786026948805522421}
   - component: {fileID: 5786026948805522422}
   - component: {fileID: 5786026948805522423}
+  - component: {fileID: 509302808063575570}
   m_Layer: 0
   m_Name: Chest
-  m_TagString: Untagged
+  m_TagString: Chest
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -232,6 +233,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 9.072, y: 10.917, z: 14.796}
   m_Center: {x: -0.325, y: -0.283, z: -0.235}
+--- !u!114 &509302808063575570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5786026948805522424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06f0b69032f6bee41a459a402f9bd6bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5786026949020267585
 GameObject:
   m_ObjectHideFlags: 0

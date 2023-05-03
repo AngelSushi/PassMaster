@@ -66,6 +66,7 @@ public class FP_Controller : MiniGame {
         if(!hasGenPath) {
             if(!ContainsWithTag()) {
 
+<<<<<<< HEAD
                 switch(GameController.difficulty) {
                     case GameController.Difficulty.EASY: // Facile
                         segmentLength = Random.Range(4,7);
@@ -76,13 +77,29 @@ public class FP_Controller : MiniGame {
                         break;
 
                     case GameController.Difficulty.HARD: // Difficile
+=======
+                switch(GameController.Instance.difficulty) {
+                    case GameController.Difficulty.EASY:
+                        segmentLength = Random.Range(4,7);
+                        break;
+
+                    case GameController.Difficulty.MEDIUM:
+                        segmentLength = Random.Range(2,4);
+                        break;
+
+                    case GameController.Difficulty.HARD: 
+>>>>>>> main
                         segmentLength = Random.Range(2,4);
                         break;        
                 }
 
                 if(path.Count == 0) { // Il n'y a encore aucun segment de fait, la direction est donc tt droite
                     direction = 1;
+<<<<<<< HEAD
                     if(GameController.difficulty == GameController.Difficulty.HARD && segmentLength == 1) segmentLength = 2;
+=======
+                    if(GameController.Instance.difficulty == GameController.Difficulty.HARD && segmentLength == 1) segmentLength = 2;
+>>>>>>> main
                 }
                 
                 else {
@@ -436,6 +453,18 @@ public class FP_Controller : MiniGame {
         for(int i = 0;i<path.corners.Length - 1;i++) {
             Debug.DrawLine(path.corners[i], path.corners[i + 1], color);
         }
+    }
+
+    public override void OnTransitionEnd() {
+        
+    }
+    
+    public override void OnSwitchCamera() {
+        
+    }
+
+    public override void OnStartCinematicEnd()
+    {
     }
 
     #endregion

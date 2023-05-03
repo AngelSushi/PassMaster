@@ -31,7 +31,11 @@ public class IAController : CoroutineSystem {
     #region Unity's Functions
     void Start() {
 
+<<<<<<< HEAD
         switch(GameController.difficulty) {
+=======
+        switch(GameController.Instance.difficulty) {
+>>>>>>> main
             case GameController.Difficulty.EASY:
                 percentage = 55;
                 break;

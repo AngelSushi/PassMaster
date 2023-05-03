@@ -23,14 +23,15 @@ public class EndAnimationController : CoroutineSystem {
     private GameController controller;
     private LeaderboardPanel[] panels;
 
-    void Start() {
+    public void Start() {
+        
         controller = GameController.Instance;
         panels = new LeaderboardPanel[4];
 
         leaderboard.SetActive(true);
 
         for(int i = 0;i<panels.Length;i++) {
-            panels[i] = leaderboard.transform.GetChild(1 + i).gameObject.GetComponent<LeaderboardPanel>();
+            panels[i] = leaderboard.transform.GetChild(1 + i).gameObject.GetComponent<LeaderboardPanel>();  
         }
 
         leaderboard.SetActive(false);
@@ -71,11 +72,15 @@ public class EndAnimationController : CoroutineSystem {
                 }
 
                 else { // Return normal
+                    controller.players[controller.actualPlayer].GetComponent<UserMovement>().enabled = true;
+                    controller.players[controller.actualPlayer].GetComponent<UserMovement>().stop = false;
                     if(controller.players[controller.actualPlayer].GetComponent<UserMovement>().actualStep == null)
                         return;
 
                     if(!controller.players[controller.actualPlayer].GetComponent<NavMeshAgent>().enabled)
                         controller.players[controller.actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
+
+                    controller.players[controller.actualPlayer].GetComponent<UserMovement>().nextStep = controller.players[controller.actualPlayer].GetComponent<UserMovement>().lastStep.transform;
                 }
             });  
         }

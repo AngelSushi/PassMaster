@@ -57,14 +57,17 @@ public class CookAction : MonoBehaviour {
                 plate.SetActive(false);
         }
     }
+<<<<<<< HEAD
 
     public void StartAction() {
         isStarted = true;
         slider.gameObject.SetActive(true);
     }
     
+=======
+>>>>>>> main
 
-    public void RefreshUI() {
+   /* public void RefreshUI() {
         for(int i = 0;i<ingredients.Count;i++) {
             GameObject ingredient = ingredients[i];
             GameObject actionPanel = slider.gameObject.transform.parent.gameObject;
@@ -80,4 +83,5 @@ public class CookAction : MonoBehaviour {
             plate.transform.GetChild(i).gameObject.GetComponent<Image>().sprite = ingredient.GetComponent<Ingredient>().ingredientModel.sprite;
         }
     }
+    */
 }

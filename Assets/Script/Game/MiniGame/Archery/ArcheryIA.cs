@@ -118,7 +118,11 @@ public class ArcheryIA : MonoBehaviour {
     }
 
     private Vector3 GetTargetArea(GameObject target) {
+<<<<<<< HEAD
             GameController.Difficulty difficulty = GameController.difficulty;
+=======
+            GameController.Difficulty difficulty = GameController.Instance.difficulty;
+>>>>>>> main
             int random = Random.Range(0,100);
 
             if(difficulty == GameController.Difficulty.EASY) { // Facile

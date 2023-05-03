@@ -6,6 +6,9 @@ public class PathGenerator : MonoBehaviour {
     public GameObject prefab,planePrefab;
     public GameObject target;
     public GameController game;
+    public Material pathMat;
+    
+    
 
     public void GeneratePath() {
         target = transform.gameObject;
@@ -46,7 +49,7 @@ public class PathGenerator : MonoBehaviour {
 
             position.y += 2.5f;
             GameObject chest = Instantiate(prefab,position,Quaternion.identity,target.transform); 
-            int amplifierDirection = step.positive == true ? 1 : -1;
+            int amplifierDirection = step.positive ? 1 : -1;
             chest.transform.position += GetChestDirection(chest,step) * amplifierDirection;
             chest.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
             chest.transform.LookAt(transform.GetChild(i).position);
@@ -54,7 +57,9 @@ public class PathGenerator : MonoBehaviour {
             chest.AddComponent<BoxCollider>();
             chest.GetComponent<BoxCollider>().center = new Vector3(-0.325f,-0.283f,-0.235f);
             chest.GetComponent<BoxCollider>().size = new Vector3(9.072f,10.917f,14.796f);
+            chest.AddComponent<Chest>();
             step.chest = chest;
+            step.avoidPos = chest.transform.position - ((chest.transform.position - step.transform.position).normalized * 4f);
             
             position.y -= 2.5f;
             GameObject plane = Instantiate(planePrefab,position,Quaternion.identity,target.transform);
@@ -74,6 +79,21 @@ public class PathGenerator : MonoBehaviour {
         }
     }
 
+    public void GenerateStackPositions() {
+        for (int i = 0; i < target.transform.childCount; i++) {
+            GameObject step = target.transform.GetChild(i).gameObject;
+
+            Vector3 first = new Vector3(10f,0,2f);
+            Vector3 second = new Vector3(7,0,-7f);
+            
+            for (int j = 0; j < 2; j++) {
+                GameObject stack = Instantiate(new GameObject(),Vector3.zero,Quaternion.identity,step.transform);
+                stack.transform.localPosition = j == 0 ? first : second;
+                stack.name = "stackPos_" + j;
+            }
+        }
+    }
+
     private Vector3 GetChestDirection(GameObject obj,Step step) {
         if(step.useVectors.Length > 0) {
             bool forward = step.useVectors[0];
@@ -84,18 +104,18 @@ public class PathGenerator : MonoBehaviour {
             if(forward) {
                 if(right && !left) 
                     return obj.transform.forward * 9.5f + obj.transform.right * 9.5f;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * 9.5f + obj.transform.right * -1 * 9.5f;
-                else 
-                    return obj.transform.forward * 13;
+                 
+                return obj.transform.forward * 13;
             }
-            else if(back) {
+            if(back) {
                 if(right && !left) 
                     return obj.transform.forward * -1 * 9.5f + obj.transform.right * 9.5f;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * -1 *  9.5f + obj.transform.right * -1 * 9.5f;
-                else 
-                    return obj.transform.forward * -1 * 13;
+                 
+                return obj.transform.forward * -1 * 13;
             }
             else if(right) 
                 return obj.transform.right * 13;

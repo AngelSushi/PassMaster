@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum UserType {
     PLAYER,
@@ -8,6 +9,19 @@ public enum UserType {
     BOT_002,
     BOT_003
 }
+
+public enum UserAction {
+    WAIT,
+    MENU,
+    DICE,
+    MOVEMENT,
+    MALUS,
+    BONUS,
+    SHOP,
+    CHEST
+    
+}
+
 public abstract class User : CoroutineSystem {
     public bool isTurn;
     public bool isPlayer;
@@ -21,7 +35,9 @@ public abstract class User : CoroutineSystem {
     private bool lastIsTurn;
     private bool lastShowHUD;
 
-    public virtual void Start() { }
+    public virtual void Start() {
+        gameController = GameController.Instance;
+    }
 
     public virtual void Update() { 
 

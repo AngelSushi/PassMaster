@@ -9,6 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< HEAD
   m_Script: {fileID: 11500000, guid: ed0e5efa59aed704983b4869be6591f2, type: 3}
   m_Name: Burger
   m_EditorClassIdentifier: 
@@ -21,3 +22,13 @@ MonoBehaviour:
     type: 3}
   ingredientCutPrefab: {fileID: 0}
   ingredientCookPrefab: {fileID: 0}
+=======
+  m_Script: {fileID: 11500000, guid: 47aa3a6c93111294fb7ea9f32a08e0c4, type: 3}
+  m_Name: Burger
+  m_EditorClassIdentifier: 
+  id: 0
+  sprite: {fileID: 21300000, guid: b8f19f297cb7a6a4ea45a34d8c762e65, type: 3}
+  cookIndex: -1
+  isCuttable: 0
+  isCookable: 0
+>>>>>>> main

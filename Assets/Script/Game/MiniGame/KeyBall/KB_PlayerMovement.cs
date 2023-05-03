@@ -1,181 +1,226 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
+using UnityEngine.Serialization;
+using UnityEngine.TextCore.Text;
 
 public class KB_PlayerMovement : MonoBehaviour {
-    #region Variables
+ #region Variables
     
+    
+    /* Controller Variables */
     public KBController controller;
+    public GameController gameController;
+    public Animator animator;
+    public CharacterController characterController;
+    public Transform cameraTransform;
+    public float gravity;
+    private float _groundedGravity = -.5f;
+    
+    /* Movement Variables */
     public float speed;
-    public float jumpSpeed;
-    //public CharacterController controller;
-    public Rigidbody rb;
-    public bool canJump;
-    private bool jump;
-    private int countJump;
-    public Vector3 respawnPos;
-
+    public bool isMoving;
+    [HideInInspector] public Vector3 movement;
+    private Vector2 _input;
     public bool isOnBall;
+    private Vector3 _velocity,_lastFrameVelocity;
+    private Vector3 _positionPerFrame;
+    
+    /* Sliding Variables */
+    private Vector2 _lastInput;
+    public float slidingAmplifier;
+    
+    /* State Variables */
     public bool dead;
     public bool freeze;
-    private float time;
-    private float seconds;
 
-    private bool isMoving;
-    public bool isJumping;
-    public float timeToDestroy;
-    public bool thruster;
-    public float thrusterForce;
-    
-    private Vector3 movement;
-    private float maxSpeed = 105;
-    private string lastHit;
-    private float timer;
-    private float thrusterTime;
+    /* Jump Variables */
+    public bool canJump;
+    [Tooltip("True during all the time of the jump")]public bool isJumping;
+    [Tooltip("True when the play click on the jump button")] public bool isJumpPressed;
+    public float maxJumpHeight;
+    public float maxJumpTime;
+    [Tooltip("The multiplicator of speed when character is falling")]public float fallMultiplier;
+    private float _initialJumpVelocity;
 
-    public GameObject lastFloor;
+    private float _timeToReachHeightJump {
+        get { return maxJumpTime / 2; }
+    }
 
+    private float calculatedDrag;
     #endregion
 
     #region Unity's Functions
 
     void Start() {
+        controller = (KBController)KBController.instance;
+
+        if(gameController == null)
+            gameController = GameController.Instance;
+
+        gameController.inputs.FindAction("Keyball/Movement").started += OnMove;
+        gameController.inputs.FindAction("Keyball/Movement").performed += OnMove;
+        gameController.inputs.FindAction("Keyball/Movement").canceled += OnMove;
+        gameController.inputs.FindAction("Keyball/Jump").started += OnJump;
+        gameController.inputs.FindAction("Keyball/Jump").canceled += OnJump;
+        
+        animator = GetComponent<Animator>();
+        characterController = GetComponentInParent<CharacterController>();
+
+        gravity = (-2 * maxJumpHeight) / Mathf.Pow(_timeToReachHeightJump, 2);
+        _initialJumpVelocity = (2 * maxJumpHeight) / _timeToReachHeightJump;
+        
+        calculatedDrag = Mathf.Clamp01(1f - (2 * Time.fixedDeltaTime));
     }
 
     void Update() {
-        
-       if(!controller.begin && !controller.finish) {
-            //if(isOnBall && !isJumping) 
-           // transform.position = new Vector3(transform.position.x,59.5f,transform.position.z);
+        if (!controller.begin && !controller.finish) {
+            if (!dead && !freeze) {
+                animator.SetBool("IsMooving", isMoving);
 
-            if(!dead && !freeze) {
+                HandleGravity();
                 Movement();
+                HandleJump();
+            }
+        }
+    }
 
-                if(thruster) {
-                    thrusterTime += Time.deltaTime;
-                    rb.AddForce(new Vector3(0,0,thrusterForce));
-                    if(thrusterTime >= 0.05f) {
-                        thrusterTime = 0;
-                        thruster = false;
-                    }
-                }
+    private void FixedUpdate()
+    {
+      /*  float drag = Mathf.Clamp01(1.0f - (2 * Time.fixedDeltaTime)) ; // 2 is a constant can be replace by variable
 
-                if(rb.velocity.magnitude > (speed + 10)){
-                    rb.velocity = Vector3.ClampMagnitude(rb.velocity, (speed + 10));
-                }
+        Vector3 velocityPerFrame = _lastFrameVelocity + (Physics.gravity * Time.fixedDeltaTime);
+        velocityPerFrame *= drag;
 
+        _positionPerFrame += velocityPerFrame * Time.fixedDeltaTime;
+        Debug.Log("_position " + _positionPerFrame);
+
+
+        _lastFrameVelocity = _velocity;*/
+
+     // Movement();
+     
+     // _velocity += Physics.gravity * Time.fixedDeltaTime;
+     // _velocity *= calculatedDrag;
+
+     // Debug.Log("vel " + _velocity);
+      //characterController.Move(_velocity * Time.fixedDeltaTime);
+    }
+
+    #endregion
+
+    #region Physics Functions
+    private IEnumerator Slide(Vector2 startSlideInput) {
+        
+        Debug.Log("startWith " + startSlideInput) ;
+        
+        while (startSlideInput.magnitude > 0.1f) {
+            startSlideInput = Vector2.Lerp(startSlideInput, Vector2.zero, Time.deltaTime * (speed /2) * slidingAmplifier);
+            movement += new Vector3(startSlideInput.y, 0, startSlideInput.x);
             
-            // Debug.Log("magnitude: " + rb.velocity.magnitude);
+            Debug.Log("SlideInput " + startSlideInput);
+            yield return new WaitForEndOfFrame();
+        }
 
-                timer += Time.deltaTime;
+        movement = Vector3.zero;
+        Debug.Log("end");
+        yield return null;
+    }
 
-                //Debug.Log("velocityZ: " + rb.velocity.z);
+    void HandleGravity() {
+        bool isFalling = movement.y <= 0.0f || !isJumpPressed;
+        
+        if (characterController.isGrounded && !isJumping)
+            movement.y = _groundedGravity;
+        else if (isFalling) {
+            float previousYVelocity = movement.y;
+            float newYVelocity = movement.y + (gravity * fallMultiplier * Time.deltaTime);
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
+            movement.y = nextYVelocity;
+        }
+        else {
+            float previousYVelocity = movement.y;
+            float newYVelocity = movement.y + (gravity * Time.deltaTime);
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
+            movement.y = nextYVelocity;
+        }
 
-                if(isOnBall) {
-                    if( (rb.velocity.x > 0.1 || rb.velocity.x < -0.1) || (rb.velocity.z > 0.1 || rb.velocity.z < -0.1)) {
-                        transform.GetChild(2).Rotate(2,0,0);
-                    }
-                }
-                
-                if(isOnBall && isMoving && speed < maxSpeed && timer >= 0.5 && movement.y > 0) {
-                // speed += 6;
-                    timer = 0;
-                    return;
-                }
-                
-                if(!isMoving) {
-                // speed = 75;
-                }
-            }
-            else if(dead) {
-                time += Time.deltaTime;
+    }
 
-                if(time >= 0.2) {  
-                    transform.gameObject.GetComponent<MeshRenderer>().enabled = !transform.gameObject.GetComponent<MeshRenderer>().enabled;
-                    transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = !transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled;
-                    time = 0;
-                    seconds++;
-                }
-
-                if(seconds == 15) {
-                    dead = false;
-                    transform.gameObject.GetComponent<MeshRenderer>().enabled = true;
-                    transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = true;
-                    seconds = 0;
-                    time = 0;
-                }
-            }
-       }
-       else {
-           if(controller.finish && isJumping && jump && countJump < 3) {
-               rb.AddForce(Vector3.up * jumpSpeed,ForceMode.Impulse);  
-               jump = false;
-               countJump++;
-           }
-       }
+    void HandleJump() {
+        if (!isJumping && characterController.isGrounded && isJumpPressed) {
+            isJumping = true;
+            float previousYVelocity = movement.y;
+            float newYVelocity = movement.y + _initialJumpVelocity;
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f; // Velocity Verlet Integration to avoid difference with FPS
+            movement.y = nextYVelocity;
+        }
+        else if (!isJumpPressed && isJumping && characterController.isGrounded) {
+            isJumping = false;
+        }
     }
 
     private void Movement() {
-        float moveX = movement.y * speed * -1;
-        float moveZ = movement.x * speed;
+        Vector3 forwardVec = movement.x * cameraTransform.forward;
+        Vector3 rightVec = movement.z * cameraTransform.right;
+        
+        Debug.Log("forward " + forwardVec + " movement " + movement.x + " input " + _input.y);
+        Debug.Log("rightVec " + rightVec);
 
-        if(!isOnBall) rb.velocity = new Vector3(moveX, rb.velocity.y,moveZ);
-        else {
-           // rb.velocity = new Vector3(moveX * speed * Time.deltaTime, rb.velocity.y,rb.velocity.z);
-            Vector3 force = new Vector3(moveX,0,moveZ);
-            rb.AddForce(force);
+        Vector3 movementDirection = forwardVec + rightVec;
+        float magnitude = Mathf.Clamp01(movementDirection.magnitude) * speed;
+
+        
+        _velocity = movementDirection * magnitude;
+        _velocity.y = movement.y;
+        
+        Debug.Log("velocity " + _velocity);
+        
+        characterController.Move(_velocity * Time.deltaTime);
+
+        
+        if (_input != Vector2.zero) { 
+            Quaternion rotation = Quaternion.LookRotation(new Vector3(_velocity.x,0,_velocity.z), Vector3.up); 
+           // transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, 500f * Time.deltaTime);
         }
     }
 
+    public void ApplyForce(Vector3 force) => characterController.Move(force);
 
-    private void OnCollisionEnter(Collision hit) {
-        if(hit.gameObject.tag == "RedBall") {
-            isOnBall = true;
-            Vector3 centerPos = hit.gameObject.GetComponent<SphereCollider>().bounds.center;
-            transform.position = new Vector3(centerPos.x,centerPos.y + 10.5f,centerPos.z);
-            hit.gameObject.transform.parent = transform; 
-
-            if(isJumping && (lastHit == "Sol" || lastHit == "Untagged")) 
-                isJumping = false;
-        }
-
-        if(hit.gameObject.tag == "Sol") {
-            isJumping = false;
-            jump = true;
-        }
-
-        if(hit.gameObject.tag == "Portal") 
-            transform.position = controller.portalPoints[controller.ConvertPlayerInt(transform.gameObject)];   
-   
-
-        lastHit = hit.gameObject.tag; 
-    }
-
-    private void OnCollisionExit(Collision hit) {   
-        if(hit.gameObject.tag == "Sol") {
-            respawnPos = transform.position;
-            lastFloor = hit.gameObject;
-        }
-    }
-
+    #endregion
+    
+    #region Inputs Functions
+    
     public void OnMove(InputAction.CallbackContext e) {
-        movement = e.ReadValue<Vector2>();
+        _input = e.ReadValue<Vector2>();
+        
+        
+        Debug.Log("input " + _input);
+        //if(!isOnBall) 
+         //   movement += new Vector3(_input.y, movement.y, _input.x);
+       // else if(_input != Vector2.zero)
+            movement += new Vector3(_input.y, movement.y, _input.x);
 
-        if(e.started) isMoving = true;
-        if(e.canceled)  isMoving = false;
+        if (e.started)
+            isMoving = true;
+        if (e.canceled)
+            isMoving = false;
 
-            
-
+        
+        //if (/*isOnBall &&*/ _input.normalized != _lastInput) 
+          // StartCoroutine(Slide(_lastInput));
+        
+        _lastInput = _input.normalized;
     }
 
     public void OnJump(InputAction.CallbackContext e) {
-        if(e.started && !isJumping && canJump) {
-            isJumping = true;
-            respawnPos = transform.position;
-            rb.AddForce(Vector3.up * jumpSpeed,ForceMode.Impulse);     
-        }
+        if (canJump) 
+            isJumpPressed = e.ReadValueAsButton();
     }
+
 
     #endregion
 

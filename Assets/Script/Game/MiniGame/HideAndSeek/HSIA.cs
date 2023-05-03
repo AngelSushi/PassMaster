@@ -95,7 +95,11 @@ public class HSIA : CoroutineSystem {
     void Start() {
        // GameController.difficulty = 2;
 
+<<<<<<< HEAD
         switch(GameController.difficulty) {
+=======
+        switch(GameController.Instance.difficulty) {
+>>>>>>> main
             case GameController.Difficulty.EASY:
                 percentageRoom = 80; 
                 percentageHidden = 15;
@@ -391,9 +395,15 @@ public class HSIA : CoroutineSystem {
         }
 
         private bool CheckValidityOfFurnitures(GameObject furniture) { // Cette fonction sert a ajuster si il y a plusieurs personnes dans la meme piece et/ou meuble et son la difficulté
+<<<<<<< HEAD
             if(GameController.difficulty == GameController.Difficulty.EASY)
                 return true;
             if(GameController.difficulty == GameController.Difficulty.MEDIUM) {
+=======
+            if(GameController.Instance.difficulty == GameController.Difficulty.EASY)
+                return true;
+            if(GameController.Instance.difficulty == GameController.Difficulty.MEDIUM) {
+>>>>>>> main
                 foreach(GameObject obj in controller.GetSeekersFurniture().Values) {
                     if(obj == furniture && GetKeyByValue(obj) != transform.gameObject) 
                         return false;                 
@@ -401,7 +411,11 @@ public class HSIA : CoroutineSystem {
 
                 return true;
             }
+<<<<<<< HEAD
             else if(GameController.difficulty == GameController.Difficulty.HARD) {
+=======
+            else if(GameController.Instance.difficulty == GameController.Difficulty.HARD) {
+>>>>>>> main
                 foreach(GameObject obj in controller.GetSeekersFurniture().Values) {
                     if(obj == furniture && GetKeyByValue(obj) != transform.gameObject) 
                         return false;      

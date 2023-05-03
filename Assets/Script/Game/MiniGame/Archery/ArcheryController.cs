@@ -32,6 +32,9 @@ public class ArcheryController : MiniGame {
     }
 
     void Update() {}
+    public override void OnStartCinematicEnd()
+    {
+    }
 
     public override void OnFinish() {             
         GameObject[] objects = SceneManager.GetSceneByName("Archery").GetRootGameObjects();
@@ -64,6 +67,9 @@ public class ArcheryController : MiniGame {
         Destroy(bottom);
             
     }
+    
+    public override void OnTransitionEnd() {}
+    public override void OnSwitchCamera() {}
 
     public void AddPoints(GameObject player,int point) {
         playersPoint[player] += point;
@@ -80,14 +86,27 @@ public class ArcheryController : MiniGame {
         bottom = Instantiate(target,new Vector3(0,0,0),Quaternion.Euler(0,0,0));
         bottom.tag = "Target";
         bottom.AddComponent<TargetShifting>();
+<<<<<<< HEAD
         bottom.GetComponent<TargetShifting>().speed = 3 + (GameController.difficulty == GameController.Difficulty.EASY ? 0 : GameController.difficulty == GameController.Difficulty.MEDIUM ? 1 : GameController.difficulty == GameController.Difficulty.HARD ? 2 : 0 ) ;
+=======
+
+        int speedAdditive = GameController.Instance.difficulty == GameController.Difficulty.EASY ? 0 :
+            GameController.Instance.difficulty == GameController.Difficulty.MEDIUM ? 1 :
+            GameController.Instance.difficulty == GameController.Difficulty.HARD ? 2 : 0;
+        
+        bottom.GetComponent<TargetShifting>().speed = 3 + speedAdditive;
+>>>>>>> main
         bottom.GetComponent<TargetShifting>().controller = this;
         bottom.GetComponent<TargetShifting>().left = true;
 
         top = Instantiate(target,new Vector3(0,0,0),Quaternion.Euler(0,0,0));
         top.tag = "Target";
         top.AddComponent<TargetShifting>();
+<<<<<<< HEAD
         bottom.GetComponent<TargetShifting>().speed = 3 + (GameController.difficulty == GameController.Difficulty.EASY ? 0 : GameController.difficulty == GameController.Difficulty.MEDIUM ? 1 : GameController.difficulty == GameController.Difficulty.HARD ? 2 : 0);
+=======
+        top.GetComponent<TargetShifting>().speed = 3 +  speedAdditive;
+>>>>>>> main
         top.GetComponent<TargetShifting>().controller = this;
         top.GetComponent<TargetShifting>().bottom = true;
     }

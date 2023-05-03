@@ -1,15 +1,16 @@
-using System.Collections;
-using System;
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using PathCreation;
 using UnityEngine.AI;
 using System.Linq;
+using UnityEditor;
+using UnityEngine.InputSystem;
 using Random=UnityEngine.Random;
 
 using UnityEngine.SceneManagement;
 
+//[ExecuteInEditMode]
 public class GameController : CoroutineSystem {
 
     // Refaire la bombe qu'elle se pose la ou est le joueur plutot que de détruire le pont . Le pont est inaccessible la nuit
@@ -31,28 +32,18 @@ public class GameController : CoroutineSystem {
     }
 
     public GameObject dice; 
-    public GameObject prefabInStep;
-    public GameObject stepParent;
 
     public GameObject firstStep;
-    //public GamePart partOfGame = GamePart.TUTORIEL;
-    public GameObject light;
-    public GameObject[] diceResultObj = new GameObject[4];
-    public Text[] diceResultText = new Text[4];
     
-
-
     public int actualPlayer;
     public GameObject[] players = new GameObject[4];
-
+    public Player[] playersData;
+    
     public Dictionary<GameObject,int> classedPlayers = new Dictionary<GameObject,int>();
 
-    private SortedDictionary<int,int> results = new SortedDictionary<int,int>();
-    
-    public int[] turnOrder = new int[4];
-
-    public GameObject mainCamera;
+    [HideInInspector] public GameObject mainCamera;
     public TextAsset dialogsFile,stepFile; 
+    public JsonExcelArray excelArray;
 
     public GamePart part;
 
@@ -64,11 +55,11 @@ public class GameController : CoroutineSystem {
 
     public Dictionary<GameObject,GameObject> playerConflict = new Dictionary<GameObject,GameObject>();
 
-    public Vector3[] stackPos = new Vector3[4];
-    public Vector3[] stackSize = new Vector3[4];
 
     public Sprite[] smallSprites = new Sprite[4];
     public Color[] classedColors = new Color[4];
+    
+    
     public int turn;
     public int[] secretCode;
 
@@ -76,40 +67,76 @@ public class GameController : CoroutineSystem {
     private bool checkLastChest;
     private int randomIndex = -1;
     private bool hasBeginGame;
+<<<<<<< HEAD
     public static Difficulty difficulty;
+=======
+    public Difficulty difficulty;
+>>>>>>> main
     public bool freeze;
 
-    public List<Material> diceMaterials;
-
     public LoadingScene loadingScene;
-    public List<GameObject> allMainObjects;
+    private GameObject[] objects;
     public int nightIndex;
     private  List<int> points = new List<int>();
     public Dictionary<GameObject,int> playerPoint = new Dictionary<GameObject,int>();
     private GamePart lastPart;
     public bool hasChangeState;
     private bool isFirstChest = true;
+    public Animation blackScreenAnim;
+    public Animation circleTransitionAnim;
+    
+    public GameObject stepChest;
+
     public DayController dayController;
     public DialogController dialog;
     public MiniGameController mgController;
     public OrderController orderController;
-    public Transform stackPlayersParent;
-    public JsonExcelArray excelArray;
-    public GameObject stepChest;
     public ShopController shopController;
     public ChestController chestController;
     public ItemController itemController;
     public EndAnimationController endAnimationController;
-    public Animation blackScreenAnim;
 
+    public DebugController debugController;
+
+    public GameObject shellPrefab;
+    public NavMeshSurface mainPath;
+    
+    [HideInInspector]
+    public int currentTabIndex;
+    
     public static GameController Instance { get; private set;}
+
+    private bool isAlreadyBaked;
+
+    public bool showStepNames;
+    public bool showStepDirections;
+
+    public InputActionAsset inputs;
+    [HideInInspector]
+    public PlayerInput playerInput;
+    
+    
+    private InputActionMap lastAction;
+
+    public AudioSource mainAudio;
+
+    public Vector3 beginCamPos, beginCamRot;
+
+    private void OnEnable() => Instance = this;
+    
 
     void Awake() {
         Instance = this;
+        mainCamera = Camera.main.gameObject;
+        playerInput = GetComponent<PlayerInput>();
     }
 
     void Start() {
+<<<<<<< HEAD
         GameController.difficulty = Difficulty.HARD;
+=======
+        difficulty = Difficulty.HARD;
+>>>>>>> main
 
         classedPlayers.Add(players[0],1);
         classedPlayers.Add(players[1],2);
@@ -125,17 +152,25 @@ public class GameController : CoroutineSystem {
 
         for(int i = 0;i<dialog.dialogArray.dialogs.Length;i++) 
             dialog.dialogArray.dialogs[i].id = i;
-
+        
+        UpdateSubPath(null,false);
+        
+        RandomSecretCode();
             
+        nightIndex =
+            difficulty == Difficulty.EASY ? 4 :
+            difficulty == Difficulty.MEDIUM ? 3 :
+            difficulty == Difficulty.HARD ? 2 : 4;
         
     }
     
     void Update() {
         if(part != lastPart) 
             ChangePart();
-
-        if(!hasGenChest && !dialog.isInDialog)
+    
+        if (part == GamePart.PARTYGAME && !hasGenChest && !dialog.isInDialog) {
             GenerateChest();
+<<<<<<< HEAD
 
         if(part == GamePart.CHOOSE_MINIGAME) {
            // Debug.Log("choose my mini game");
@@ -143,14 +178,38 @@ public class GameController : CoroutineSystem {
             //return;
         }
 
+=======
+        }
+        
+        if (lastAction != null && playerInput != null && playerInput.currentActionMap != null && lastAction.name != playerInput.currentActionMap.name)
+            Debug.Log("current action map " + playerInput.currentActionMap);
+            
+        lastAction = playerInput.currentActionMap;
+        
+>>>>>>> main
         lastPart = part;
     }
 
+    private void OnDrawGizmos() {
+        foreach (Step step in FindObjectsOfType<Step>()) {
+            if (showStepNames) {
+                GUI.color = Color.black;
+                Handles.Label(step.transform.position + Vector3.up * 10, step.name);
+            }
+
+            if (showStepDirections) {
+                Debug.DrawRay(step.transform.position,Vector3.forward * 20,Color.magenta,2f);
+                Debug.DrawRay(step.transform.position,Vector3.right * 20,Color.green,2f);
+            }
+        }
+    }
+    
     private void ChangePart() {
         if(part == GamePart.CHOOSE_ORDER) 
             orderController.BeginOrder();   
 
         if(part == GamePart.PARTYGAME) { // Faire en sorte que ca soit appelé 
+<<<<<<< HEAD
             mainCamera.transform.position = new Vector3(players[0].transform.position.x,5479f,players[0].transform.position.z);
             mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
 
@@ -162,14 +221,33 @@ public class GameController : CoroutineSystem {
                 nightIndex= 3;
             if(difficulty == GameController.Difficulty.HARD)
                 nightIndex = 2;
+=======
+          //  mainCamera.transform.position = new Vector3(players[0].transform.position.x,5479f,players[0].transform.position.z);
+          //  mainCamera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
+>>>>>>> main
 
+            
+            
             ManageTurn();
             ActualizePlayerClassement();
         }
+<<<<<<< HEAD
       /*  if(part == GamePart.CHOOSE_MINIGAME) {
             Debug.Log("choose my mini game");
             mgController.RandomMiniGame();
             //return;
+=======
+        if(part == GamePart.CHOOSE_MINIGAME) {
+
+            foreach (GameObject player in players) {
+                player.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            }
+            
+            StartCoroutine(mgController.RandomMiniGame());
+            //mainAudio.enabled = false;
+            mainAudio.volume /= 2f;
+            turn++;
+>>>>>>> main
         }
 */
         
@@ -184,20 +262,19 @@ public class GameController : CoroutineSystem {
     private void GenerateChest() {
         actualChest = null;
         freeze = true;
+        
         if(chestParent.transform.childCount == 0) {
             Debug.Log("There is no chest on the map. Please put someone");
             return;
         }
 
-        if(randomIndex == -1) {
+        if(randomIndex == -1) 
             randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
-        }
 
         int lastIndex = GetLastChest();
         bool hasLastChest = (lastIndex != -1);
  
         if(hasLastChest && !checkLastChest) {
-            chestParent.transform.GetChild(lastIndex).gameObject.SetActive(false);
             while(randomIndex >= (lastIndex - 3) && randomIndex <= (lastIndex + 3)) {
                 randomIndex = Random.Range(0,chestParent.transform.childCount - 1);
             }
@@ -211,12 +288,9 @@ public class GameController : CoroutineSystem {
         }
         
         GameObject chest = chestParent.transform.GetChild(randomIndex).gameObject;
-       // chest.SetActive(true);
-
         
-
         chest.GetComponent<Animation>().clip = chestController.chestAnimations[0];
-
+        
         if(!blackScreenAnim.isPlaying) {
             float timeToWait = 2.4f;
 
@@ -229,8 +303,8 @@ public class GameController : CoroutineSystem {
             blackScreenAnim.Play();
 
             chest.SetActive(true);
-            foreach(Step step in FindObjectsOfType(typeof(Step))) {
-                if(step.chest != null && step.chest.activeSelf) {
+            foreach(Step step in FindObjectsOfType<Step>()) {
+                if(step.chest != null && step.chest == chest) {
                     stepChest = step.gameObject;
                     break;
                 }
@@ -242,12 +316,20 @@ public class GameController : CoroutineSystem {
                 mainCamera.transform.LookAt(chest.transform);
             }
             else { 
+                
+                players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(true);
+                players[actualPlayer].GetComponent<UserMovement>().agent.enabled = false;
                 RunDelayed(0.8f,() => {
-                    
-                    if(players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) 
+
+                    if (players[actualPlayer].GetComponent<User>().isTurn && players[actualPlayer].GetComponent<UserMovement>().userCam.activeSelf) {
                         players[actualPlayer].GetComponent<UserMovement>().userCam.SetActive(false);
+                    }
+                    
+                    players[actualPlayer].GetComponent<UserMovement>().agent.enabled = true;
+                    chestParent.transform.GetChild(lastIndex).gameObject.SetActive(false);
 
                     mainCamera.transform.position = new Vector3(stepChest.transform.position.x,stepChest.transform.position.y + 10,stepChest.transform.position.z) - GetDirection(stepChest,stepChest.GetComponent<Step>(),25f);
+
                     mainCamera.transform.LookAt(chest.transform);
                 });
             }
@@ -275,16 +357,15 @@ public class GameController : CoroutineSystem {
                         freeze = false;
                     }
                     else {
-                        players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().chest.SetActive(false);
                         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
                         
-                        mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
-                        mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+                        //mainCamera.transform.position = new Vector3(-454.4f,5226.9f,-15872.2f);
+                       // mainCamera.transform.rotation = Quaternion.Euler(0,275.83f,0f);
+
                         mainCamera.SetActive(true);
                         mainCamera.GetComponent<Camera>().enabled = true;
-
+                        
                         EndUserTurn();
-
                         freeze = false;
                     }
                 });
@@ -302,22 +383,22 @@ public class GameController : CoroutineSystem {
             if(forward) {
                 if(right && !left) 
                     return obj.transform.forward * distance + obj.transform.right * distance;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * distance + obj.transform.right * -1 * distance;
-                else 
-                    return obj.transform.forward * distance;
+                 
+                return obj.transform.forward * distance;
             }
-            else if(back) {
+            if(back) {
                 if(right && !left) 
                     return obj.transform.forward * -1 * distance + obj.transform.right * distance;
-                else if(!right && left) 
+                if(!right && left) 
                     return obj.transform.forward * -1 *  distance + obj.transform.right * -1 * distance;
-                else 
-                    return obj.transform.forward * -1 * distance;
+                 
+                return obj.transform.forward * -1 * distance;
             }
-            else if(right) 
+            if(right) 
                 return obj.transform.right * distance;
-            else if(left)
+            if(left)
                 return obj.transform.right * -1 * distance;
 
         }
@@ -380,40 +461,95 @@ public class GameController : CoroutineSystem {
         points.Sort();
         points.Reverse();
 
-        
-        for(int i = 0;i<points.Count;i++) 
-            GetKeyByValue(points[i],playerPoint,classedPlayers);   
+
+        for (int i = 0; i < points.Count; i++) {
+            GetKeyByValue(points[i], playerPoint, classedPlayers);
+        }
+
+        for (int i = 0; i < classedPlayers.Count; i++) 
+            classedPlayers.Keys.ToArray()[i].transform.SetSiblingIndex(i);
     }
 
     public void BeginTurn(bool repair) {
-
         actualPlayer = 0;
-        if(turn > 1 && !repair && !hasChangeState) {
-            ChangeStateScene("Main",true);
-            SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
-            hasChangeState = true;
+        if (turn > 1) {
+            RunDelayed(1.5f, () => { // Wait the middle of transition
+                GameObject step = players[actualPlayer].GetComponent<UserMovement>().actualStep != null
+                    ? players[actualPlayer].GetComponent<UserMovement>().actualStep
+                    : firstStep;
+
+                ManagePlayerInStep(step.GetComponent<Step>(), players[actualPlayer]);
+
+                if (!repair && !hasChangeState && !debugController.skipMG) {
+                    ChangeStateScene(false,mgController.actualMiniGame.minigameName);
+
+                    RunDelayed(1f, () => { ChangeStateScene(true, "NewMain"); });
+                    
+                    RunDelayed(2f,() => {
+                        if (mgController.actualMiniGame != null)
+                            SceneManager.UnloadSceneAsync(mgController.actualMiniGame.minigameName);
+                    });
+                    
+                    hasChangeState = true;
+                    mainAudio.enabled = true;
+                }
+            });
         }
+        else 
+            UpdateSubPath(players[0].GetComponent<UserMovement>(),false);
 
-        part = GameController.GamePart.PARTYGAME;
+        part = GamePart.PARTYGAME;
 
-        List<GameObject> playersInStack = GetPlayersInStack();
-
-        players[0].transform.rotation = Quaternion.Euler(0f,-294.291f,0f);
+        
+        players[0].transform.rotation = Quaternion.Euler(0f, -294.291f, 0f);
         players[0].GetComponent<UserMovement>().isTurn = true;
         players[0].GetComponent<UserMovement>().enabled = true;
+        //players[0].GetComponent<UserMovement>().rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
         players[0].GetComponent<UserUI>().enabled = true;
         players[0].GetComponent<UserAudio>().enabled = true;
         players[0].GetComponent<UserInventory>().enabled = true;
-        players[0].GetComponent<UserUI>().showHUD = players[0].GetComponent<UserMovement>().isPlayer;
-        players[0].GetComponent<UserUI>().showTurnInfo = players[0].GetComponent<UserMovement>().isPlayer;
-        players[0].GetComponent<UserUI>().showActionButton = players[0].GetComponent<UserMovement>().isPlayer;
 
-        ManageCameraPosition();       
-
-        light.transform.rotation = Quaternion.Euler(58.809f,174.994f,294.254f);
+        //if (!players[0].GetComponent<UserUI>().showActionButton.value && players[0].GetComponent<UserMovement>().currentAction != UserAction.DICE) 
+        players[0].GetComponent<UserUI>().showActionButton.value = players[0].GetComponent<UserMovement>().isPlayer;
+        
+        players[0].GetComponent<UserUI>().showHUD = true;
+    
+        ManageCameraPosition();
     }
 
     public void EndUserTurn() {
+
+        Debug.Log("end turn of " + players[actualPlayer].name);
+        
+        players[actualPlayer].GetComponent<UserUI>().ClearDiceResult();
+        
+        if(players[actualPlayer].transform.parent.CompareTag("Shell")) {
+            
+            GameObject shell = players[actualPlayer].transform.parent.gameObject;
+
+            UnityEditorInternal.ComponentUtility.CopyComponent(players[actualPlayer].transform.parent.gameObject.GetComponent<UserMovement>());
+            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(players[actualPlayer]);
+
+            UnityEditorInternal.ComponentUtility.CopyComponent(players[actualPlayer].transform.parent.gameObject.GetComponent<UserUI>());
+            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(players[actualPlayer]);
+            
+            players[actualPlayer].GetComponent<UserMovement>().useShell = false;
+            players[actualPlayer].GetComponent<UserMovement>().agent.radius = 0.5f;
+            players[actualPlayer].GetComponent<UserMovement>().agent.height = 1.57f;
+
+            int playerIndex = actualPlayer - 1;
+
+            if(playerIndex < 0)
+                playerIndex = players.Length - 1;
+
+            players[actualPlayer].transform.parent = players[playerIndex].transform.parent;
+
+            players[actualPlayer].GetComponent<UserUI>().movement = players[actualPlayer].GetComponent<UserMovement>();
+            players[actualPlayer].transform.GetChild(1).gameObject.SetActive(false);
+
+            Destroy(shell);
+        }
+
         players[actualPlayer].GetComponent<UserMovement>().finishTurn = false;
         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
 
@@ -422,16 +558,18 @@ public class GameController : CoroutineSystem {
         }
         
         if(actualPlayer < 3) {
+
             actualPlayer++;
             players[actualPlayer].GetComponent<UserMovement>().isTurn = true;
+            
+            //players[actualPlayer].GetComponent<UserMovement>().rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            
+            if(players[actualPlayer].GetComponent<UserMovement>().actualStep != null)
+                ManagePlayerInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>(),players[actualPlayer]);
 
             if(!players[actualPlayer].activeSelf) {
                 players[actualPlayer].SetActive(true);
 
-                if(players[actualPlayer].GetComponent<UserMovement>().actualStep != null) {        
-                    players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep.Remove(players[actualPlayer]);
-                    ActualPlayersInStep(players[actualPlayer].GetComponent<UserMovement>().actualStep,players[actualPlayer]);
-                }
             }
 
             if(turn == 1) {
@@ -446,49 +584,76 @@ public class GameController : CoroutineSystem {
             players[actualPlayer].GetComponent<NavMeshAgent>().enabled = true;
             players[actualPlayer].SetActive(true);
 
-            ManageCameraPosition();    
+            ManageCameraPosition();
+
+            if (players[actualPlayer].GetComponent<UserMovement>().actualStep == null)
+                return;
+
+            List<GameObject> playersInStep = players[actualPlayer].GetComponent<UserMovement>().actualStep.GetComponent<Step>().playerInStep;
+            
+            if (playersInStep.Count > 0) {
+                GameObject playerToAdd = null;
+
+                float y = playersInStep[0].transform.position.y;
+                
+                playersInStep.Remove(players[actualPlayer]);
+
+                Vector3 stepPosition = players[actualPlayer].GetComponent<UserMovement>().actualStep.transform.position;
+                stepPosition.y = y;
+                players[actualPlayer].transform.position = stepPosition;
+                
+
+            }
 
         }
         else { // Le tour est fini. Lancement d'un mini jeux
             Debug.Log("enter my mini game");    
             part = GamePart.CHOOSE_MINIGAME;
             actualPlayer = 0;
+
+            if (turn == 1) {
+                mainPath.transform.GetChild(mainPath.transform.childCount - 1).gameObject.layer = 0;
+                mainPath.BuildNavMesh();
+            }
             
             ActualizePlayerClassement();
         }
     }
 
-    private void ManageCameraPosition() {
-        if(turn == 1) 
-            mainCamera.transform.position = new Vector3(firstStep.transform.position.x,firstStep.transform.position.y + 15,firstStep.transform.position.z) - (GetDirection(firstStep,firstStep.GetComponent<Step>(),25f) * 2.25f);
-        else {
-            GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep;
-            mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
-        }
+    public void ManagePlayerInStep(Step actualStep,GameObject playerIsTurn) {
+        Collider[] colliders = Physics.OverlapSphere(actualStep.transform.position,5,1 << 9);
 
-        Transform transform = players[actualPlayer].transform;
-        transform.position = new Vector3(transform.position.x,transform.position.y + 5f,transform.position.z);
-        mainCamera.transform.LookAt(transform);
+        actualStep.RemovePlayerInStep(playerIsTurn);
+        
+        foreach (Collider collider in colliders) {
+            if (collider.gameObject != playerIsTurn) {
+                Debug.Log(collider.name + " is not correctly placed !");
+                actualStep.playerInStep.Add(collider.gameObject);
+                actualStep.SwitchPlayerInStep(collider.gameObject);
+            }
+            
+        }
     }
 
-    private List<GameObject> GetPlayersInStack() {
-        List<GameObject> localPlayersInStep = new List<GameObject>();
+    public void ManageCameraPosition() {
+        GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep != null ? players[actualPlayer].GetComponent<UserMovement>().actualStep : firstStep;
+        mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
 
-        foreach(Step step in FindObjectsOfType(typeof(Step))) {
-            if(step.playerInStep.Count > 0) {
-                foreach(GameObject user in step.playerInStep) {
-                    if(!localPlayersInStep.Contains(user)) 
-                        localPlayersInStep.Add(user);
-                }
+        Vector3 playerPosition = players[actualPlayer].transform.position;
+        playerPosition.y += 5f;
+
+        Vector3 direction = playerPosition - mainCamera.transform.position;
+        mainCamera.transform.rotation = Quaternion.LookRotation(direction);
+
+        foreach (GameObject player in players) {
+            if (players[actualPlayer] != player) {
+                if (player.TryGetComponent<UserMovement>(out UserMovement movement)) 
+                    player.SetActive(movement.actualStep != null);
             }
         }
-
-        return localPlayersInStep;
     }
-
-
+    
     public GameObject GetKeyByValue<Key, Value>(Value value,Dictionary<Key,Value> dict) {
-
         foreach(Key key in dict.Keys) {
             if(dict[key].Equals(value)) {
                 return key as GameObject;
@@ -512,96 +677,6 @@ public class GameController : CoroutineSystem {
         return null;
     }
 
-    public void ActualPlayersInStep(GameObject step,GameObject user) {
-        Step targetStep = step.GetComponent<Step>();
-        if(targetStep.stack == null) {
-            
-            targetStep.stack = Instantiate(prefabInStep,new Vector3(step.transform.position.x,step.transform.position.y + 10,step.transform.position.z),prefabInStep.transform.rotation);
-
-            targetStep.stack.transform.parent = stackPlayersParent;
-
-            int length = targetStep.playerInStep.Count;
-
-            if(length > 0) {
-                targetStep.stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
-                targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
-
-                targetStep.stack.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-             //   ChangeStackSpritePlayer(step,0,user.GetComponent<UserMovement>().id);
-            }
-            else 
-                Destroy(targetStep.stack);        
-        }
-        else { // Il y a plusieurs joueurs dans la step
-            int length = targetStep.playerInStep.Count;
-
-            if(length == 0) {
-                Destroy(targetStep.stack);
-                return;
-            }
-
-            targetStep.stack.transform.GetChild(0).localScale = new Vector3(stackSize[length -1].x,stackSize[length - 1].y,stackSize[length -1].z);
-            targetStep.stack.transform.GetChild(1).localPosition = new Vector3(stackPos[length -1].x,0,0);
-
-            for(int i = 0;i<length;i++) {
-                targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(true);
-           //     ChangeStackSpritePlayer(step,i,targetStep.playerInStep[i].GetComponent<UserMovement>().id);
-            }
-
-            for(int i = length;i<4;i++) 
-                targetStep.stack.transform.GetChild(1).GetChild(i).gameObject.SetActive(false);      
-        }
-    }
-
-    public void ChangeStackSpritePlayer(GameObject step,int index,int id) {
-        // A REFAIRE SANS LE NOM
-        switch(id) {
-            case 0:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[0];
-                break;
-
-            case 1:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[1];
-                break;
-
-            case 2:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[2];
-                break;
-
-            case 3:
-                step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().sprite = smallSprites[3];
-                break;            
-        }
-
-        
-        step.GetComponent<Step>().stack.transform.GetChild(1).GetChild(index).gameObject.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(8.940888f,9.624872f,8.940888f);
-    }
-
-    public void ChangeHUDSpritePlayer(Transform[] panels,int index,UserType type) {
-        // A check si on peut pas tt concaténer en 1 ligne . A REFAIRE SANS LE NOM
-        switch(type) {
-            case UserType.PLAYER: // Player
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite = smallSprites[0];
-                break;
-
-            case UserType.BOT_001:
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[1];
-                break;
-
-            case UserType.BOT_002:
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[2];
-                break;
-
-            case UserType.BOT_003:
-                panels[index].GetChild(0).gameObject.GetComponent<Image>().sprite =  smallSprites[3];
-                break;            
-        }
-    }
-
-    public Sprite GetSpriteByUser(int user) {
-        return smallSprites[user];
-    }
-
     public void SortUserSprite() {
         for(int i = 0;i<players.Length;i++) {
             if(players[i].GetComponent<UserUI>().userSprite != smallSprites[i])
@@ -609,52 +684,75 @@ public class GameController : CoroutineSystem {
         }
     }
 
-
-    private void ChangeStepName() {
-        GameObject isleOneBeach = stepParent.transform.GetChild(0).GetChild(0).gameObject;
-
-        for(int i = 0;i<isleOneBeach.transform.childCount;i++) {
-            isleOneBeach.transform.GetChild(i).gameObject.name = "step_beach_00" + i;
-        }
-
-        GameObject isleOneInterior = stepParent.transform.GetChild(0).GetChild(1).gameObject;
-
-        for(int i = 0;i<isleOneInterior.transform.childCount;i++) {
-            isleOneInterior.transform.GetChild(i).gameObject.name = "step_interior_00" + i;
-        }
-
-        GameObject isleTwo = stepParent.transform.GetChild(1).gameObject;
-
-        for(int i = 0;i<isleTwo.transform.childCount;i++) 
-            isleTwo.transform.GetChild(i).gameObject.name = "step_00" + i;
-
-        GameObject isleThreeFront = stepParent.transform.GetChild(2).GetChild(1).gameObject;
-
-        for(int i = 0;i<isleThreeFront.transform.childCount;i++)
-            isleThreeFront.transform.GetChild(i).gameObject.name = "step_front_00" + i;       
-
-        GameObject isleThreeLeft = stepParent.transform.GetChild(2).GetChild(2).gameObject;
-
-        for(int i = 0;i<isleThreeLeft.transform.childCount;i++) 
-            isleThreeLeft.transform.GetChild(i).gameObject.name = "step_left_00" + i;        
-
-        GameObject isleThreeRight = stepParent.transform.GetChild(2).GetChild(3).gameObject;
-
-        for(int i = 0;i<isleThreeRight.transform.childCount;i++) 
-            isleThreeRight.transform.GetChild(i).gameObject.name = "step_right_00" + i;
+    public void ChangeStateScene(bool state,string sceneName = "") {
         
-    }
-
-    public void ChangeStateScene(string sceneName,bool state) {
-        GameObject[] objects = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
-
-        foreach(GameObject obj in allMainObjects) {
-            if(obj.name == "SFX" && sceneName == "Main")
-                return;
+        objects = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
+        
+        foreach(GameObject obj in objects) {
+            if ((obj.name == "SFX" && sceneName == "NewMain") || obj.GetComponent<GameController>() != null || obj.name == "EventSystem" || (obj.GetComponentInChildren<Canvas>() != null && !sceneName.Equals("NewMain"))) {
+                obj.SetActive(true);
+                continue;
+            }
             
             obj.SetActive(state);
         }
     }
 
+    private UserMovement lastBake;
     
+    public void UpdateSubPath(UserMovement user,bool add) {
+
+        if (add) { // The Path must have more locations
+            if (isAlreadyBaked && (lastBake == null || lastBake == user))
+                return;
+            
+            
+            Debug.Log("update my path");
+            
+            GameObject stepChest = user.actualStep.GetComponent<Step>().chest;
+
+            UpdateOtherSubPath(user,true);
+            
+            stepChest.SetActive(true);
+            bool isAlreadyActive = actualChest == stepChest;
+            if(stepChest.transform.childCount > 1)
+                stepChest.transform.GetChild(0).gameObject.SetActive(false);
+
+            mainPath.BuildNavMesh();
+
+            
+            if(stepChest != actualChest)
+                stepChest.SetActive(false);
+            
+            UpdateOtherSubPath(user,false);
+            
+            if(stepChest.transform.childCount > 1)
+                stepChest.transform.GetChild(0).gameObject.SetActive(isAlreadyActive);
+
+            isAlreadyBaked = true;
+            lastBake = user;
+        }
+        else {
+            UpdateOtherSubPath(user,true);
+            mainPath.BuildNavMesh();
+            UpdateOtherSubPath(user,false);
+            
+            isAlreadyBaked = false;
+        }
+    }
+
+    private void UpdateOtherSubPath(UserMovement user,bool active) {
+        foreach (GameObject player in players) {
+            
+            if (player != players[actualPlayer] && player.GetComponent<UserMovement>() != user) { // If there is two players to stepback between
+                // activer les path vers les chest des players qui ne sont pas sur la step
+
+                UserMovement userMovement = player.GetComponent<UserMovement>();
+                
+                if (userMovement.point != Vector3.zero && actualChest != userMovement.actualStep.GetComponent<Step>().chest) {
+                    userMovement.actualStep.GetComponent<Step>().chest.SetActive(active);
+                }
+            }
+        }
+    }
 }

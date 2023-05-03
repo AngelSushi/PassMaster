@@ -11,15 +11,18 @@ public class AudioController : MonoBehaviour {
     public AudioClip coinsGain;
     public AudioClip coinsLoose;
     public AudioClip buyLoose;
+    public AudioClip error;
     public AudioClip cardGain;
     public AudioClip findSecretCode;
     public AudioClip buttonHover;
     public AudioClip buttonClick;
     public AudioClip earthQuake;
     public AudioClip lightning;
-
+    public AudioClip footstep;
+    
     public AudioSource mainSource;
-    public AudioSource ambiantSource; 
+    public AudioSource ambiantSource;
+
 
     void Awake() {
         Instance = this;

@@ -64,8 +64,6 @@ TagManager:
   - Area_011
   - Area_012
   - Area_013
-  - EndSpeedBoost
-  - BeginSpeedBoost
   - Area_014
   - DeathArea
   - Rotative
@@ -80,28 +78,21 @@ TagManager:
   - GreenBall
   - YellowBall
   - Spike
-  - Ingredient
-  - CutBox
-  - FurnaceBox
-  - CookBox
-  - Box
-  - IngredientBox
-  - PanBox
-  - PlateBox
   - arrow
+  - Shell
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Treadmill
   - Water
   - UI
-  - 
+  - AreaDayPeriod
   - 
   - Wall
   - Player
   - Chest_Path
-  - Floor_002
+  - Ground
   - Floor_003
   - Floor_004
   - Floor_005
@@ -120,7 +111,7 @@ TagManager:
   - Lightning
   - Fantom_001
   - Fantom_002
-  - Fantom_003
+  - Unlockable
   - Path
   m_SortingLayers:
   - name: Default

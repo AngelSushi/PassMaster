@@ -21,17 +21,15 @@ public class LoadingScene : MonoBehaviour {
 
     private IEnumerator LoadScene(string name) {
         AsyncOperation operation = SceneManager.LoadSceneAsync("MiniGameLabel",LoadSceneMode.Additive);
-        Debug.Log("enumerator");
-
-
+        
         while(!operation.isDone) {
             
-            float progress = Mathf.Clamp01(operation.progress / 0.9f);
-            loadingText.text = "Loading... " + " (" + progress * 100f + "%)";
+          //  float progress = Mathf.Clamp01(operation.progress / 0.9f);
+          //  loadingText.text = "Loading... " + " (" + progress * 100f + "%)";
             yield return null;
         }
 
-        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().ChangeStateScene("Main",false);
+        GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().ChangeStateScene(false,"NewMain");
         GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().mgController.timer = 0;
         GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().mgController.index = 0;
         GameObject.FindGameObjectsWithTag("Game")[0].GetComponent<GameController>().mgController.maxTimer = 0;

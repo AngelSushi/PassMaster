@@ -144,6 +144,24 @@
 			"Answers": [
 				"Oui\nNon"
 			]
-		}
-    ]
+		},
+		{
+			"Author": "Koopa",
+			"Name": "EnterShop",
+			"Content": [
+				"Bienvenue dans ma boutique. Ici tu pourras trouver un tas d'objet marrant alors profites-en ! "
+			],
+			"NeedAnswer": false,
+			"Answers": []
+		},
+		{
+		"Author": "Koopa",
+		"Name": "CloseShop",
+		"Content": [
+			"Wow, quel super achat ! N'hésite pas à revenir dès que tu en as besoin. "
+		],
+		"NeedAnswer": false,
+		"Answers": []
+	}
+	]
 }	

@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: "D\xE9 Inverse"
   sprite: {fileID: 21300000, guid: deb74a4e6f7c07445b1e5cc3ad5b2b3d, type: 3}
-  price: 25
+  spriteScale: {x: 123, y: 123}
+  price: 35
   maxQuantity: 99
+  itemType: 0

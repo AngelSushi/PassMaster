@@ -33,7 +33,11 @@ public class SEController : CoroutineSystem {
     }
 
     void Start() {
+<<<<<<< HEAD
         switch(GameController.difficulty) {
+=======
+        switch(GameController.Instance.difficulty) {
+>>>>>>> main
             case GameController.Difficulty.EASY:
                 percentageToChange = 35;
                 break;
