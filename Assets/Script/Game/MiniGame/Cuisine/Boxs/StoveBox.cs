@@ -46,7 +46,6 @@ public class StoveBox : MakeBox {
     #region Basic Box Functions
 
     protected override void Put() {
-        Debug.Log("put from here");
         if (stock == null && currentController.actualIngredient != null && currentController.actualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
             if (ingredient.data.cookIndex == 0) { // detect if ingredient is cooked  on stove
                 if (ingredient.data.isCookable && !ingredient.isCook) 
@@ -56,7 +55,6 @@ public class StoveBox : MakeBox {
     }
 
     protected override void Take() {
-        Debug.Log("take from here");
         if (stock != null) {
             if (stock.TryGetComponent<Ingredient>(out Ingredient ingredient) && ingredient.isCook) {
                 base.Take();

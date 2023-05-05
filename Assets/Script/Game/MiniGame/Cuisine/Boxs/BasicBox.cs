@@ -13,12 +13,12 @@ public class BasicBox : Box {
     }
 
     protected override void Put() {
-        Debug.Log("put here basic " + currentController.actualPlate);
         
         if (currentController.actualIngredient != null || currentController.actualPlate != null) {
             if (currentController.actualIngredient != null) {
                 if (stock != null && stock.GetComponent<Plate>() != null) {
                     Plate plate = stock.GetComponent<Plate>();
+                    plate.currentCameraInstance = _cookController.instances[currentController.GetComponent<ZoneSwapper>().areaIndex].instanceCamera;
                     plate.AddIngredient(currentController.actualIngredient.GetComponent<Ingredient>(),this);
                 }
                 else {
@@ -35,7 +35,7 @@ public class BasicBox : Box {
                 plate.transform.parent = transform;
                 plate.transform.localPosition = stockPosition;
             
-                currentController.actualIngredient = null;
+                currentController.actualPlate = null;
                 stock = plate;
             }
         }

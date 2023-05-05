@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Box : MonoBehaviour {
 
-    protected ChefController currentController;
+    [HideInInspector] public ChefController currentController;
     protected CookController _cookController;
 
     protected virtual void Start() {

@@ -16,7 +16,7 @@ public class Ingredient : MonoBehaviour {
 
     private void Start() {
         basic = transform.GetChild(0).gameObject;
-        modified = transform.GetChild(1).gameObject;
+        modified = transform.childCount >= 2 ? transform.GetChild(1).gameObject : null;
     }
 
     private void Update() {

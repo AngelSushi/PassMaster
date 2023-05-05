@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class ChefController : MonoBehaviour {
 
-    public float speed;
+    public float speed; // 15 last speed
     public Rigidbody rb;
     
     public GameObject actualIngredient;
@@ -37,12 +37,14 @@ public class ChefController : MonoBehaviour {
     }
     
     void Update() {
-        _animator.SetBool("IsMooving",isMoving);
+        //_animator.SetBool("IsMooving",isMoving);
 
         if(isMoving && canMoove)
             Movement();
         else 
             transform.rotation = _rotation;
+        
+        Debug.DrawLine(transform.position,transform.position + transform.forward * 10,Color.magenta);
     }
 
       private void Movement() {
@@ -68,7 +70,7 @@ public class ChefController : MonoBehaviour {
 
     public void OnInteract(InputAction.CallbackContext e) {
         if (e.started) {
-            foreach (RaycastHit hit in Physics.RaycastAll(transform.position, transform.forward)) {
+            foreach (RaycastHit hit in Physics.RaycastAll(transform.position, transform.forward,5)) {
                 if (hit.collider != null) {
                     if (hit.collider.gameObject.TryGetComponent<Box>(out Box box)) {
                         box.BoxInteract(actualIngredient != null ? actualIngredient : actualPlate != null ? actualPlate : null,this);

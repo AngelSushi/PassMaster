@@ -23,6 +23,7 @@ public class PlateBox : Box {
             GameObject plate = Instantiate(_plate);
             plate.transform.parent = currentController.transform;
             plate.transform.localPosition = currentController.ingredientSpawn.localPosition;
+            plate.GetComponent<Plate>().currentCameraInstance = _cookController.instances[currentController.GetComponent<ZoneSwapper>().areaIndex].instanceCamera;
             plate.SetActive(true);
             currentController.actualPlate = plate;
         }
