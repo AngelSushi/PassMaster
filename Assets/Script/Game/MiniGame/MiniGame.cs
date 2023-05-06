@@ -78,7 +78,7 @@ public abstract class MiniGame : CoroutineSystem {
     public virtual void Update() {
         if(!finish) {
             
-            if (startCinematic.state == PlayState.Playing) 
+            if (startCinematic == null || startCinematic.state == PlayState.Playing) 
                 return;
             
             if (startCinematicCameras[0].gameObject.activeSelf) {
