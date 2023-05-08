@@ -23,6 +23,17 @@ public class IngredientBox : Box {
             GameObject ingredient = Instantiate(_ingredient);
             ingredient.transform.parent = currentController.transform;
             ingredient.transform.localPosition = currentController.ingredientSpawn.localPosition;
+            
+            Debug.Log("rotation " + _ingredient.GetComponent<Ingredient>().ingredientRotation);
+            
+            Vector3 euler = _ingredient.GetComponent<Ingredient>().ingredientRotation;
+            ingredient.transform.rotation = Quaternion.Euler(euler.x, euler.y, euler.z);
+
+            
+            
+            Debug.Log("euler " + ingredient.transform.eulerAngles);
+            Debug.Log("rotation " + ingredient.transform.rotation);
+            
             ingredient.SetActive(true);
             currentController.actualIngredient = ingredient;
         }

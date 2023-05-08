@@ -39,7 +39,7 @@ public abstract class MakeBox : BasicBox {
         boxSlider = slider.GetComponent<Slider>();
     }
 
-    protected void Update() {
+    protected virtual void Update() {
         if(stock != null && _lastStock == null)
             StartMake();
         

@@ -172,7 +172,6 @@ MonoBehaviour:
   inputName: PerfectNote/Note1
   laneColor: {r: 1, g: 0, b: 0, a: 1}
   laneKeySprite: {fileID: 1897175951, guid: 78c41de24ce41554fb29be6905b1572b, type: 3}
-  laneIndex: 0
 --- !u!212 &14996884
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2347,7 +2346,6 @@ MonoBehaviour:
   inputName: PerfectNote/Note4
   laneColor: {r: 1, g: 0.920817, b: 0, a: 1}
   laneKeySprite: {fileID: 1758030718, guid: 78c41de24ce41554fb29be6905b1572b, type: 3}
-  laneIndex: 0
 --- !u!1 &645782716
 GameObject:
   m_ObjectHideFlags: 0
@@ -2943,7 +2941,6 @@ MonoBehaviour:
   inputName: PerfectNote/Note5
   laneColor: {r: 1, g: 0.60249305, b: 0, a: 1}
   laneKeySprite: {fileID: -1996500463, guid: 78c41de24ce41554fb29be6905b1572b, type: 3}
-  laneIndex: 0
 --- !u!212 &869978125
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4625,7 +4622,6 @@ MonoBehaviour:
   inputName: PerfectNote/Note7
   laneColor: {r: 1, g: 0, b: 0.8999224, a: 1}
   laneKeySprite: {fileID: 739301184, guid: 78c41de24ce41554fb29be6905b1572b, type: 3}
-  laneIndex: 0
 --- !u!212 &1345076915
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4942,7 +4938,6 @@ MonoBehaviour:
   inputName: PerfectNote/Note3
   laneColor: {r: 0, g: 1, b: 0.00427413, a: 1}
   laneKeySprite: {fileID: 697704097, guid: 78c41de24ce41554fb29be6905b1572b, type: 3}
-  laneIndex: 0
 --- !u!212 &1441840090
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5328,7 +5323,6 @@ MonoBehaviour:
   inputName: PerfectNote/Note6
   laneColor: {r: 0.5047741, g: 0, b: 1, a: 1}
   laneKeySprite: {fileID: 270188158, guid: 78c41de24ce41554fb29be6905b1572b, type: 3}
-  laneIndex: 0
 --- !u!1 &1511297504
 GameObject:
   m_ObjectHideFlags: 0
@@ -6199,7 +6193,6 @@ MonoBehaviour:
   inputName: PerfectNote/Note2
   laneColor: {r: 0.043033123, g: 0, b: 1, a: 1}
   laneKeySprite: {fileID: 297966643, guid: 78c41de24ce41554fb29be6905b1572b, type: 3}
-  laneIndex: 0
 --- !u!1 &1860728234
 GameObject:
   m_ObjectHideFlags: 0
@@ -9948,7 +9941,6 @@ MonoBehaviour:
     uiIcon: {fileID: 0}
   followNote: 0.05
   sameLane: 0.02
-  succeedNote: 0.05
   percentagesDifficulty:
   - 0.56
   - 0.65
@@ -11387,7 +11379,6 @@ MonoBehaviour:
     uiIcon: {fileID: 0}
   followNote: 0.05
   sameLane: 0.02
-  succeedNote: 0.05
   percentagesDifficulty:
   - 0.56
   - 0.65
@@ -12792,7 +12783,6 @@ MonoBehaviour:
     uiIcon: {fileID: 0}
   followNote: 0.05
   sameLane: 0.02
-  succeedNote: 0.05
   percentagesDifficulty:
   - 0.56
   - 0.65
@@ -13065,7 +13055,6 @@ MonoBehaviour:
   longNotePrefab: {fileID: 2845318655402039315, guid: cc3133688bdf725418157b3006c80a9a,
     type: 3}
   detection: {fileID: 234000652}
-  start: {fileID: 645782716}
   canvas: {fileID: 1399820541}
   noteStatePrefab: {fileID: 3260788695511776295, guid: 9f92c9c233b7fda49949b6068e803a8f,
     type: 3}

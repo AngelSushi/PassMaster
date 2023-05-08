@@ -17,7 +17,7 @@ public class CutBox : MakeBox {
         _effect = GetComponentInChildren<ParticleSystem>();
     }
     
-    protected virtual void Update() {
+    protected override void Update() {
         if(_startCutting && !_lastStartCutting)
             StartMake();
         

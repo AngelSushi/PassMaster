@@ -10,12 +10,15 @@ public class Plate : MonoBehaviour {
     private CookController _cookController;
     public List<Ingredient> ingredientsInPlate;
     private List<RecipeController.Recipe> _availableRecipes = new List<RecipeController.Recipe>();
-    private RecipeController.Recipe _fullRecipe;
+    public RecipeController.Recipe fullRecipe;
 
     private GameObject _plateUIParent;
     public Vector2 plateOffset;
 
+    [HideInInspector] public Canvas plateCanvas;
     [HideInInspector] public Camera currentCameraInstance;
+
+    public Vector3 plateRotation;
 
     private Vector3[] _localIngredientsPosition;
     private void Start() {
@@ -30,7 +33,7 @@ public class Plate : MonoBehaviour {
 
     public void SetupPlateUI() {
         GameObject plateCanvasObj = new GameObject("Plate Canvas");
-        Canvas plateCanvas = plateCanvasObj.AddComponent<Canvas>();
+        plateCanvas = plateCanvasObj.AddComponent<Canvas>();
         plateCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
         plateCanvas.transform.parent = transform;
         
@@ -56,7 +59,7 @@ public class Plate : MonoBehaviour {
         bool drawRecipe = CheckAvailableRecipesWithIngredients(newIngredient) || _availableRecipes.Count == 1;
 
         Sprite sprite = drawRecipe
-            ? _fullRecipe != null ? _fullRecipe.recipeSprite : _availableRecipes[0].recipeSprite
+            ? fullRecipe != null ? fullRecipe.recipeSprite : _availableRecipes[0].recipeSprite
             : newIngredient.data.sprite;
         
 
@@ -79,13 +82,11 @@ public class Plate : MonoBehaviour {
 
         box.currentController.actualIngredient = null;
         Destroy(box.currentController.transform.GetChild(box.currentController.transform.childCount - 1).gameObject);
-        DrawRecipeModel(drawRecipe,maxImage);
+       // DrawRecipeModel(drawRecipe,maxImage);
     }
 
-    private void DrawRecipeModel(bool drawRecipe,int max) {
+    private void DrawRecipeModel(bool drawRecipe,int max) { // A refaire lorsque les ingredients ont leur bonne rotation
         for (int i = 0; i < max; i++) {
-           // GameObject ingredientModel = new GameObject("Model");
-            //ingredientModel.transform.parent = transform;
           
             // visé toujours la version la plus haute ( coupé etc)
             Transform ingredientModel = Instantiate(ingredientsInPlate[i].gameObject.transform.GetChild(0), transform);
@@ -116,7 +117,7 @@ public class Plate : MonoBehaviour {
             }
 
             if (isFull) {
-                _fullRecipe = recipe;
+                fullRecipe = recipe;
                 return true;
             }
         }

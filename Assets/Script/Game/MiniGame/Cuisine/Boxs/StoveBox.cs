@@ -13,7 +13,7 @@ public class StoveBox : MakeBox {
 
     #endregion
     
-    #region Make Box FUnctions
+    #region Make Box Functions
     
     protected override void StartMake() {
         boxSlider.gameObject.SetActive(true);

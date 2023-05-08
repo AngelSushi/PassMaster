@@ -37,6 +37,19 @@ public class CookController : MiniGame {
     
     public Team[] teams;
     
+    
+    
+    /* TODO-LIST
+     *
+     * Gestion de livraison des commandes
+     * Système de recherche de recette/client (avec le système de réputation etc)
+     * AI
+     * Ajout de difficulté ( viande qui se crame , plat etc)
+     * 
+     */
+    
+    
+    
     public override void Start() {
         base.Start();
 

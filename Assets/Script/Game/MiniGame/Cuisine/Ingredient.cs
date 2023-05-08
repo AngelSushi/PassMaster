@@ -11,6 +11,9 @@ public class Ingredient : MonoBehaviour {
     public bool isCook;
 
 
+   // [Tooltip("Vector 0 : Hold Rotation, Vector 1 : Box Rotation, Vector 2 : Plate Rotation")] public Vector3[] ingredientRotation = new Vector3[3];
+    public Vector3 ingredientRotation;
+   
     [HideInInspector] public GameObject basic;
     [HideInInspector] public GameObject modified;
 
@@ -19,24 +22,12 @@ public class Ingredient : MonoBehaviour {
         modified = transform.childCount >= 2 ? transform.GetChild(1).gameObject : null;
     }
 
-    private void Update() {
-        Debug.DrawLine(transform.position,transform.position + transform.right * -1 * 100,Color.black);
-        Debug.DrawLine(transform.position, transform.position + Vector3.forward  * 100, Color.red);
-        Debug.DrawLine(transform.position,transform.position + Vector3.up * -1 * 100,Color.blue);
+    private void Update() { 
+        Debug.DrawLine(transform.position,transform.position + Vector3.forward * 15,Color.blue);
 
-        if (transform.parent.gameObject.TryGetComponent <ChefController>(out ChefController chefController)) {
-           /* if (basic.activeSelf)
-                basic.transform.eulerAngles = holdRotationBasic;
-            if (cut.activeSelf)
-                cut.transform.eulerAngles = holdRotationCut;
-            if (cook.activeSelf)
-                cook.transform.eulerAngles = holdRotationCook;          
-*/
-           
-           //transform.LookAt(Vector3.up);
-           //Quaternion rotation = Quaternion.LookRotation(Vector3.up);
-            // rotation.x -= 90;
-            // basic.transform.rotation = rotation;
-        }
+        Vector3 forwardPosition = transform.position + Vector3.right * 20;
+       // Quaternion targetRotation = Quaternion.LookRotation(forwardPosition);
+        transform.LookAt(forwardPosition);
+        //transform.rotation = targetRotation;
     }
 }
