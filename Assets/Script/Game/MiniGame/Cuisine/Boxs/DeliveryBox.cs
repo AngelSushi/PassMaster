@@ -1,28 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DeliveryBox : Box {
-    void Start() {
-        
-    }
 
     public override void BoxInteract(GameObject current,ChefController controller) {
         currentController = controller;
 
+        
+        CookController.Team team = _cookController.teams.Where(t => t.player == currentController.gameObject).ToList()[0];
+        team.reputation -= 0.1f;
+        Debug.Log("change reputation of team " + team.name + " to "+ team.reputation);
+        
         if (current != null) {
             if (current.TryGetComponent<Plate>(out Plate plate)) {
                 if (plate.fullRecipe != null) {
-                    if (!plate.fullRecipe.needToBeCook || (plate.fullRecipe.needToBeCook && plate.fullRecipe.isCooked)) {
+                    if (!plate.fullRecipe.needToBeCook || (plate.fullRecipe.needToBeCook && plate.fullRecipe.isCooked)) 
                         Put();
-                    }
                 }
             }
         }        
     }
 
     protected override void Put() {
-        Debug.Log("put box");
+        RecipeController.Recipe targetRecipe = currentController.actualPlate.GetComponent<Plate>().fullRecipe;
+        CookController.Team targetTeam = _cookController.teams.Where(team => team.player == currentController.gameObject).ToList()[0];
+
+        if (targetTeam.HasRecipe(targetRecipe.name)) {
+            
+            
+            
+            
+            int currentPoint = (int) (_cookController.maxPointPerRecipe - _cookController.maxPointPerRecipe * (1 - (targetRecipe.ticker._currentTime / targetRecipe.recipeTime)));
+            _cookController.AddPoint(currentPoint,currentController.gameObject);
+
+            targetTeam.DeliverRecipe(targetRecipe);
+            Destroy(currentController.actualPlate);
+        }
     }
 
     protected override void Take() { }

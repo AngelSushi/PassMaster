@@ -14,7 +14,8 @@ public class RecipeController : MonoBehaviour {
         public bool needToBeCook;
         public bool isCooked;
         public GameObject recipeMesh;
-
+        public RecipeTicker ticker;
+        public float recipeTime;
     }
 
     public class RecipeTicker {
@@ -23,8 +24,8 @@ public class RecipeController : MonoBehaviour {
         private Recipe _currentRecipe;
         public GameObject _recipeUI;
         private Slider _slider;
-        private float _currentTime;
-        private RecipeController _recipeController;
+        public float _currentTime;
+        public RecipeController _recipeController;
 
         public RecipeTicker(CookController.Team currentTeam,Recipe currentRecipe,GameObject recipeUI, RecipeController recipeController) {
             _currentTeam = currentTeam;
@@ -36,14 +37,14 @@ public class RecipeController : MonoBehaviour {
         }
         
         public void Start() {
-            _currentTime = _recipeController.maxRecipeTime;
+            _currentTime = _currentRecipe.recipeTime;
         }
         
         public void Tick() {
             _currentTime -= Time.deltaTime;
-            _slider.value = _currentTime / _recipeController.maxRecipeTime;
+            _slider.value = _currentTime / _currentRecipe.recipeTime;
             _slider.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Image>().color = _recipeController.sliderColor.Evaluate(_slider.value);
-            
+
             if (_currentTime < 0)
                 End();
         }
@@ -58,7 +59,7 @@ public class RecipeController : MonoBehaviour {
     
     public List<Recipe> recipes;
     public int maxRecipesPerTeam;
-    public float maxRecipeTime;
+    public float waitNextRecipeTimer;
     
     private CookController _cookController;
     private List<RecipeTicker> _recipeTickers = new List<RecipeTicker>();
@@ -72,14 +73,13 @@ public class RecipeController : MonoBehaviour {
         foreach (CookController.Team team in _cookController.teams) {
             GenerateRecipe(team);
             GenerateRecipeUI(team);
-            DrawRecipes(team);   
+            DrawRecipe(team);   
         }
     }
 
     private void Update() {
         foreach(RecipeTicker ticker in _recipeTickers)
             ticker.Tick();
-        
     }
 
     
@@ -111,14 +111,15 @@ public class RecipeController : MonoBehaviour {
 
             Recipe currentRecipe = team.recipes[i];
             RecipeTicker ticker = new RecipeTicker(team,currentRecipe,recipeUI,this);
+            currentRecipe.ticker = ticker;
             _recipeTickers.Add(ticker);
             ticker.Start();
         }
         
     }
 
-    private void DrawRecipes(CookController.Team team) {
-        for (int i = 0; i < team.recipes.Count; i++) {
+    private void DrawRecipe(CookController.Team team) {
+        for (int i = 0; i < maxRecipesPerTeam; i++) {
             Recipe currentRecipe = team.recipes[i];
             Transform recipe = team.canvas.transform.GetChild(0).GetChild(i);
             
@@ -137,5 +138,25 @@ public class RecipeController : MonoBehaviour {
             }
         }
     }
-    
+
+    public IEnumerator AutoRecipeGenerator(CookController.Team team) {
+        Debug.Log("teamReputation " + team.reputation + " 's " + team.name + " wait " + (waitNextRecipeTimer + ( waitNextRecipeTimer * (1 - team.reputation))));
+        
+        yield return new WaitForSeconds(waitNextRecipeTimer + ( waitNextRecipeTimer * (1 - team.reputation)));
+
+        
+        Debug.Log("teamReputation2 " + team.reputation + " 's " + team.name);
+        
+        if (team.recipes.Count < maxRecipesPerTeam) {
+            GenerateRecipe(team);
+            GenerateRecipeUI(team);
+            DrawRecipe(team);
+        }
+
+        CookController.Team newTeam = _cookController.teams.Where(t => t.player == team.player).ToList()[0];
+        
+        Debug.Log("teamReputation3 " + newTeam.reputation + " 's " + newTeam.name);
+        StartCoroutine(AutoRecipeGenerator(newTeam));
+    }
+
 }

@@ -805,7 +805,19 @@ MonoBehaviour:
   win: {fileID: 0}
   classementPanels: []
   confetti: {fileID: 0}
-  players: []
+  players:
+  - gameObject: {fileID: 1210801509}
+    name: Luffy
+    uiIcon: {fileID: 21300000, guid: 46a95fee68b23de4bbb3662aa3331844, type: 3}
+  - gameObject: {fileID: 6040287241631411218}
+    name: Luigi
+    uiIcon: {fileID: 21300000, guid: 6183ae369f909524493850aee345f9a5, type: 3}
+  - gameObject: {fileID: 3050388849821317067}
+    name: Mario
+    uiIcon: {fileID: 21300000, guid: fb547d8739fd84e4f88cf3e9545e1cd5, type: 3}
+  - gameObject: {fileID: 2445903935565625898}
+    name: Link
+    uiIcon: {fileID: 21300000, guid: d81d565c4fb349d4baee21d3850e6018, type: 3}
   startCinematic: {fileID: 0}
   startCinematicCameras: []
   endCinematic: {fileID: 0}
@@ -836,6 +848,11 @@ MonoBehaviour:
     type: 3}
   platePrefab: {fileID: 2473544002184976988, guid: 28062ab1b66a9274f872bfab1d2e279a,
     type: 3}
+  playersUI:
+  - {fileID: 2125422800}
+  - {fileID: 2057784444}
+  - {fileID: 466350423}
+  - {fileID: 316647388}
   teams:
   - name: Red Team
     player: {fileID: 3050388849821317067}
@@ -843,24 +860,29 @@ MonoBehaviour:
     recipes: []
     instance: {fileID: 1093432580}
     canvas: {fileID: 0}
+    reputation: 1
   - name: Blue Team
     player: {fileID: 1210801509}
     point: 0
     recipes: []
     instance: {fileID: 1933480603}
     canvas: {fileID: 0}
+    reputation: 1
   - name: Green Team
     player: {fileID: 6040287241631411218}
     point: 0
     recipes: []
     instance: {fileID: 1257916697}
     canvas: {fileID: 0}
+    reputation: 1
   - name: Yellow Team
     player: {fileID: 2445903935565625898}
     point: 0
     recipes: []
     instance: {fileID: 1431459857}
     canvas: {fileID: 0}
+    reputation: 1
+  maxPointPerRecipe: 15
 --- !u!114 &57780303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -998,6 +1020,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 4565239381963668373, guid: 0fde57efd3bb6e147b8b6f297f9152dc,
       type: 3}
+    recipeTime: 60
   - name: CheeseBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1008,6 +1031,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 1966410759660335329, guid: 48c3f080fe28f19458edbc70248d2ebb,
       type: 3}
+    recipeTime: 60
   - name: MaxiBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1020,6 +1044,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 6888387548442037710, guid: ae3ec09ad78f64347b1272471596f97e,
       type: 3}
+    recipeTime: 60
   - name: SaladBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1030,6 +1055,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 6554075392170418293, guid: 34ab5ef2f7b5a844bad05a308a3e1ea1,
       type: 3}
+    recipeTime: 60
   - name: BeaconPizza
     allIngredients:
     - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
@@ -1039,6 +1065,7 @@ MonoBehaviour:
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
+    recipeTime: 60
   - name: BeaconChessePizza
     allIngredients:
     - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
@@ -1049,6 +1076,7 @@ MonoBehaviour:
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
+    recipeTime: 60
   - name: BeaconCheeseMushroomPizza
     allIngredients:
     - {fileID: 11400000, guid: 27939cebbb3452547a2ae6439438a207, type: 2}
@@ -1060,6 +1088,7 @@ MonoBehaviour:
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
+    recipeTime: 60
   - name: Sushi
     allIngredients:
     - {fileID: 11400000, guid: d467da4fe31214a4c8259e856e2da9c7, type: 2}
@@ -1069,6 +1098,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 2471349322657918843, guid: 21908c10172bb774783974924a253735,
       type: 3}
+    recipeTime: 60
   - name: MakiSeeamWeedSalmon
     allIngredients:
     - {fileID: 11400000, guid: 7e54ccc2cdf179a43969cb2718bb78ef, type: 2}
@@ -1079,6 +1109,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 2426962652410380701, guid: c8b22127710091f499d30d49d7b0e7c7,
       type: 3}
+    recipeTime: 60
   - name: MakiCumcumberSalmon
     allIngredients:
     - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
@@ -1089,6 +1120,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 6111783651869493911, guid: 686f608ea963be348a7a7768d7d555ff,
       type: 3}
+    recipeTime: 60
   - name: MakiSeamWeedSalmonCumcumber
     allIngredients:
     - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
@@ -1100,8 +1132,9 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 2426962652410380701, guid: c8b22127710091f499d30d49d7b0e7c7,
       type: 3}
-  maxRecipesPerTeam: 5
-  maxRecipeTime: 30
+    recipeTime: 60
+  maxRecipesPerTeam: 1
+  waitNextRecipeTimer: 15
   sliderColor:
     serializedVersion: 2
     key0: {r: 1, g: 0, b: 0, a: 1}
@@ -11923,6 +11956,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5110617025239495500, guid: 5eefa80c87ba3de438f57dd055c88824,
+        type: 3}
+      propertyPath: timeToSucceed
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5eefa80c87ba3de438f57dd055c88824, type: 3}
 --- !u!4 &875847433 stripped
@@ -12324,6 +12362,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5110617025239495500, guid: 5eefa80c87ba3de438f57dd055c88824,
+        type: 3}
+      propertyPath: timeToSucceed
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5eefa80c87ba3de438f57dd055c88824, type: 3}
@@ -40174,6 +40217,7 @@ MonoBehaviour:
     needToBeCook: 0
     isCooked: 0
     recipeMesh: {fileID: 0}
+    recipeTime: 0
   plateOffset: {x: 0, y: 45}
   plateCanvas: {fileID: 0}
   currentCameraInstance: {fileID: 0}
@@ -43205,6 +43249,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5110617025239495500, guid: 5eefa80c87ba3de438f57dd055c88824,
+        type: 3}
+      propertyPath: timeToSucceed
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5eefa80c87ba3de438f57dd055c88824, type: 3}

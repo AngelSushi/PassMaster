@@ -4725,7 +4725,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c294fd33a7256e4b943f60775c98fbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToSucceed: 5
+  currentController: {fileID: 0}
+  timeToSucceed: 3
   sliderOffset: {x: 0, y: 65}
 --- !u!65 &5110617025239495501
 BoxCollider:

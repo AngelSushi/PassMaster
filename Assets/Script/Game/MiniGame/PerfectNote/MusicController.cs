@@ -127,7 +127,6 @@ public class MusicController : MiniGame {
        if (noteIndex != -1) {
            PN_AIController aiController = allAI.Where(aiController => aiController.player == player).ToList()[0];
            if (aiController.lastSucceedNoteIndex == noteIndex)
-           
                return;
 
            aiController.lastSucceedNoteIndex = noteIndex;

@@ -17,7 +17,7 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
 
     private SerializedProperty _win, _classementPanels, _confetti;
 
-    private SerializedProperty _sliderPrefab, _slotPrefab, _teams, _recipePrefab, _recipeParent,_instances,_platePrefab;
+    private SerializedProperty _sliderPrefab, _slotPrefab, _teams, _recipePrefab, _recipeParent,_instances,_platePrefab,_maxPointPerRecipe,_playersUI;
     
     protected override void OnEnable() {
         base.OnEnable();
@@ -30,6 +30,8 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         _recipePrefab = serializedClass.FindProperty("recipePrefab");
         _platePrefab = serializedClass.FindProperty("platePrefab");
         _instances = serializedClass.FindProperty("instances");
+        _maxPointPerRecipe = serializedClass.FindProperty("maxPointPerRecipe");
+        _playersUI = serializedClass.FindProperty("playersUI");
     }
 
     public override void OnInspectorGUI() {
@@ -46,13 +48,26 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         
         EditorGUILayout.Space(10);
 
+        
+        EditorGUILayout.BeginVertical("box");
+        EditorGUILayout.TextField("Datas",textStyle);
+        EditorGUILayout.PropertyField(_maxPointPerRecipe);
+        EditorGUILayout.EndVertical();
+        
+        EditorGUILayout.Space(10);
+        
+        
+        EditorGUILayout.BeginVertical("box");
+        EditorGUILayout.TextField("UI",textStyle);
         EditorGUILayout.PropertyField(_sliderPrefab);
         EditorGUILayout.PropertyField(_slotPrefab);
-        EditorGUILayout.PropertyField(_instances);
-        EditorGUILayout.PropertyField(_teams);
         EditorGUILayout.PropertyField(_recipeParent);
         EditorGUILayout.PropertyField(_recipePrefab);
         EditorGUILayout.PropertyField(_platePrefab);
+        EditorGUILayout.PropertyField(_playersUI);
+        EditorGUILayout.EndVertical();
+        
+        
         
         if(EditorGUI.EndChangeCheck()) 
             serializedClass.ApplyModifiedProperties();
@@ -99,6 +114,8 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         EditorGUILayout.PropertyField(_isTraining);
         EditorGUILayout.PropertyField(_mainAudio);
         EditorGUILayout.PropertyField(_players);
+        EditorGUILayout.PropertyField(_teams);
+        EditorGUILayout.PropertyField(_instances);
         EditorGUILayout.PropertyField(_inputs);
         EditorGUILayout.PropertyField(_mainCamera);
         EditorGUILayout.PropertyField(_actualState);

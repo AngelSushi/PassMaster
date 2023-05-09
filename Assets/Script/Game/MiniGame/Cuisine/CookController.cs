@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CookController : MiniGame {
 
@@ -12,8 +13,32 @@ public class CookController : MiniGame {
         public GameObject player;
         public int point;
         public List<RecipeController.Recipe> recipes;
+        private int _deliveredRecipes;
         public GameObject instance;
         public Canvas canvas;
+        public float reputation = 1;
+
+        public bool HasRecipe(string recipeName) {
+            foreach (RecipeController.Recipe recipe in recipes) {
+                if (recipe.name.Equals(recipeName))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void DeliverRecipe(RecipeController.Recipe removedRecipe) {
+            removedRecipe.ticker.End();
+            recipes.Remove(removedRecipe);
+            _deliveredRecipes++;
+
+            if (_deliveredRecipes == 1) {
+                Debug.Log("start coroutine");
+                removedRecipe.ticker._recipeController.StartCoroutine(removedRecipe.ticker._recipeController.AutoRecipeGenerator(this));
+            }
+        }
+        
+        
     }
 
     [System.Serializable]
@@ -33,15 +58,15 @@ public class CookController : MiniGame {
     public GameObject recipePrefab;
     public GameObject recipeParent;
     public GameObject platePrefab;
-    
+    public Transform[] playersUI;
     
     public Team[] teams;
-    
-    
+
+    public int maxPointPerRecipe;
     
     /* TODO-LIST
      *
-     * Gestion de livraison des commandes
+     * Gestion de livraison des commandes - Fait 
      * Système de recherche de recette/client (avec le système de réputation etc)
      * AI
      * Ajout de difficulté ( viande qui se crame , plat etc)
@@ -69,6 +94,41 @@ public class CookController : MiniGame {
             
             Instantiate(recipeParent, instanceCanvas.transform);
         }
+    }
+
+    public void AddPoint(int point, GameObject player) {
+        Team currentTeam = teams.Where(team => team.player == player).ToList()[0];
+        currentTeam.point += point;
+        
+        Debug.Log("team " + currentTeam.name + " has " + currentTeam.point + " points ");
+
+        List<int> allTeamsPoint = new List<int>();
+        
+        foreach(Team team in teams)
+            allTeamsPoint.Add(team.point);
+
+        allTeamsPoint.Sort();
+        allTeamsPoint.Reverse();
+
+        List<Player> classedPlayers = new List<Player>();
+
+        foreach (int teamPoint in allTeamsPoint) {
+            foreach (Team team in teams) {
+                if (team.point == teamPoint) {
+                    Player cPlayer = players.Where(p => p.gameObject.name == team.player.name).ToList()[0];
+                
+                    if(!classedPlayers.Contains(cPlayer))
+                        classedPlayers.Add(cPlayer);    
+                }
+                
+            }
+        }
+
+        for (int i = 0; i < classedPlayers.Count; i++) {
+            playersUI[i].GetChild(2).gameObject.GetComponent<Text>().text = allTeamsPoint[i].ToString("D3");
+            playersUI[i].GetChild(1).gameObject.GetComponent<Image>().sprite = classedPlayers[i].uiIcon;
+        }
+        
     }
     
     public override void OnStartCinematicEnd() {}

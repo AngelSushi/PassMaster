@@ -131,8 +131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7a07078fa5ef42448be503ad379f0cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToSucceed: 10
-  sliderOffset: {x: 0, y: 65, z: 0}
+  currentController: {fileID: 0}
+  timeToSucceed: 5
+  sliderOffset: {x: 0, y: 65}
 --- !u!64 &786347962428070624
 MeshCollider:
   m_ObjectHideFlags: 0
