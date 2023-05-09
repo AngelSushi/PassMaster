@@ -73,9 +73,9 @@ public class RecipeController : MonoBehaviour {
         _cookController = (CookController)CookController.instance;
 
         foreach (CookController.Team team in _cookController.teams) {
-            GenerateRecipe(team);
-            GenerateRecipeUI(team);
-            DrawRecipe(team);   
+            GenerateAllRecipes(team);
+            GenerateAllRecipeUI(team);
+            DrawAllRecipes(team);   
         }
     }
 
@@ -88,7 +88,7 @@ public class RecipeController : MonoBehaviour {
     }
 
     
-    private void GenerateRecipe(CookController.Team team) {
+    private void GenerateAllRecipes(CookController.Team team) {
         for (int i = team.recipes.Count; i < maxRecipesPerTeam; i++) {
             Recipe lastRecipe = null;
             
@@ -108,8 +108,29 @@ public class RecipeController : MonoBehaviour {
         
         
     }
+    
+    private Recipe GenerateRecipe(CookController.Team team) {
+        Recipe lastRecipe = null;
+        int index = team.recipes.Count;
+        
+        if (index - 1 >= 0) 
+            lastRecipe = team.recipes[index - 1];
 
-    private void GenerateRecipeUI(CookController.Team team) {
+        int randomRecipe = Random.Range(0, recipes.Count);
+        Recipe recipe = recipes[randomRecipe];
+
+        while (recipe == lastRecipe) {
+            randomRecipe = Random.Range(0, recipes.Count);
+            recipe = recipes[randomRecipe];
+        }
+        
+        team.recipes.Add(recipe);
+
+        return recipe;
+
+    }
+
+    private void GenerateAllRecipeUI(CookController.Team team) {
         for (int i = 0; i < maxRecipesPerTeam; i++) {
             Transform recipeParent = team.canvas.transform.GetChild(0);
             GameObject recipeUI = Instantiate(_cookController.recipePrefab,recipeParent);
@@ -123,7 +144,18 @@ public class RecipeController : MonoBehaviour {
         
     }
 
-    private void DrawRecipe(CookController.Team team) {
+    private void GenerateRepiceUI(CookController.Team team, Recipe recipe) {
+        Transform recipeParent = team.canvas.transform.GetChild(0);
+        GameObject recipeUI = Instantiate(_cookController.recipePrefab,recipeParent);
+
+        
+        RecipeTicker ticker = new RecipeTicker(team,recipe,recipeUI,this);
+        recipe.ticker = ticker;
+        _recipeTickers.Add(ticker);
+        ticker.Start();
+    }
+
+    private void DrawAllRecipes(CookController.Team team) {
         for (int i = 0; i < maxRecipesPerTeam; i++) {
             Recipe currentRecipe = team.recipes[i];
             Transform recipe = team.canvas.transform.GetChild(0).GetChild(i);
@@ -144,10 +176,30 @@ public class RecipeController : MonoBehaviour {
         }
     }
 
+    private void DrawRecipe(CookController.Team team,Recipe currentRecipe) {
+        int index = team.canvas.transform.GetChild(0).childCount - 1;
+        Transform recipe = team.canvas.transform.GetChild(0).GetChild(index);
+            
+        Transform ingredientParent = team.canvas.transform.GetChild(0).GetChild(index).GetChild(2);
+        
+        Image recipeSpriteSlot = recipe.GetChild(1).GetComponent<Image>();
+        recipeSpriteSlot.sprite = currentRecipe.recipeSprite;
+
+        for (int j = 0; j < currentRecipe.allIngredients.Count; j++) {
+            IngredientData ingredientData = currentRecipe.allIngredients[j];
+
+            GameObject ingredient = new GameObject("Ingredient");
+            ingredient.transform.parent = ingredientParent;
+            Image ingredientImage = ingredient.AddComponent<Image>();
+            ingredientImage.sprite = ingredientData.sprite;
+        }
+        
+    }
+    
     public void AutoGenerateRecipe(CookController.Team team) { // Est ce qu'on veut que le changement de reputation affecte le timer actuel ou le prochain timer
-        GenerateRecipe(team);
-        GenerateRecipeUI(team);
-        DrawRecipe(team);
+        Recipe newRecipe = GenerateRecipe(team);
+        GenerateRepiceUI(team,newRecipe);
+        DrawRecipe(team,newRecipe);
     }
 
 }

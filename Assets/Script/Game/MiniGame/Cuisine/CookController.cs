@@ -16,7 +16,16 @@ public class CookController : MiniGame {
         private int _deliveredRecipes;
         public GameObject instance;
         public Canvas canvas;
-        public float reputation = 1;
+
+        private float _reputation = 1;
+        public float reputation
+        {
+            get => _reputation;
+            set {
+                _reputation = Mathf.Clamp(value, 0.5f, 2);
+            }
+            
+        }
 
         private float _timer;
         private CookController _cookController;
@@ -34,18 +43,6 @@ public class CookController : MiniGame {
             removedRecipe.ticker.End();
             recipes.Remove(removedRecipe);
             _deliveredRecipes++;
-
-
-            if (_deliveredRecipes == 1)
-            {
-                Debug.Log("start delivered");
-            }
-           /*
-            if (_deliveredRecipes == 1) {
-                Debug.Log("start coroutine");
-                removedRecipe.ticker._recipeController.StartCoroutine(removedRecipe.ticker._recipeController.AutoRecipeGenerator(this));
-            }
-            */
         }
 
         public void Tick() {

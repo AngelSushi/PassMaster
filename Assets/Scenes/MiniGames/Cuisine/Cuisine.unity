@@ -860,28 +860,24 @@ MonoBehaviour:
     recipes: []
     instance: {fileID: 1093432580}
     canvas: {fileID: 0}
-    reputation: 1
   - name: Blue Team
     player: {fileID: 1210801509}
     point: 0
     recipes: []
     instance: {fileID: 1933480603}
     canvas: {fileID: 0}
-    reputation: 1
   - name: Green Team
     player: {fileID: 6040287241631411218}
     point: 0
     recipes: []
     instance: {fileID: 1257916697}
     canvas: {fileID: 0}
-    reputation: 1
   - name: Yellow Team
     player: {fileID: 2445903935565625898}
     point: 0
     recipes: []
     instance: {fileID: 1431459857}
     canvas: {fileID: 0}
-    reputation: 1
   maxPointPerRecipe: 15
 --- !u!114 &57780303
 MonoBehaviour:
@@ -1020,7 +1016,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 4565239381963668373, guid: 0fde57efd3bb6e147b8b6f297f9152dc,
       type: 3}
-    recipeTime: 60
+    recipeTime: 100
   - name: CheeseBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1031,7 +1027,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 1966410759660335329, guid: 48c3f080fe28f19458edbc70248d2ebb,
       type: 3}
-    recipeTime: 60
+    recipeTime: 100
   - name: MaxiBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1044,7 +1040,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 6888387548442037710, guid: ae3ec09ad78f64347b1272471596f97e,
       type: 3}
-    recipeTime: 60
+    recipeTime: 100
   - name: SaladBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1055,7 +1051,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 6554075392170418293, guid: 34ab5ef2f7b5a844bad05a308a3e1ea1,
       type: 3}
-    recipeTime: 60
+    recipeTime: 100
   - name: BeaconPizza
     allIngredients:
     - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
@@ -1065,7 +1061,7 @@ MonoBehaviour:
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
-    recipeTime: 60
+    recipeTime: 100
   - name: BeaconChessePizza
     allIngredients:
     - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
@@ -1076,7 +1072,7 @@ MonoBehaviour:
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
-    recipeTime: 60
+    recipeTime: 100
   - name: BeaconCheeseMushroomPizza
     allIngredients:
     - {fileID: 11400000, guid: 27939cebbb3452547a2ae6439438a207, type: 2}
@@ -1088,7 +1084,7 @@ MonoBehaviour:
     needToBeCook: 1
     isCooked: 0
     recipeMesh: {fileID: 0}
-    recipeTime: 60
+    recipeTime: 100
   - name: Sushi
     allIngredients:
     - {fileID: 11400000, guid: d467da4fe31214a4c8259e856e2da9c7, type: 2}
@@ -1098,7 +1094,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 2471349322657918843, guid: 21908c10172bb774783974924a253735,
       type: 3}
-    recipeTime: 60
+    recipeTime: 100
   - name: MakiSeeamWeedSalmon
     allIngredients:
     - {fileID: 11400000, guid: 7e54ccc2cdf179a43969cb2718bb78ef, type: 2}
@@ -1109,7 +1105,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 2426962652410380701, guid: c8b22127710091f499d30d49d7b0e7c7,
       type: 3}
-    recipeTime: 60
+    recipeTime: 100
   - name: MakiCumcumberSalmon
     allIngredients:
     - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
@@ -1120,7 +1116,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 6111783651869493911, guid: 686f608ea963be348a7a7768d7d555ff,
       type: 3}
-    recipeTime: 60
+    recipeTime: 100
   - name: MakiSeamWeedSalmonCumcumber
     allIngredients:
     - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
@@ -1132,8 +1128,8 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 2426962652410380701, guid: c8b22127710091f499d30d49d7b0e7c7,
       type: 3}
-    recipeTime: 60
-  maxRecipesPerTeam: 1
+    recipeTime: 100
+  maxRecipesPerTeam: 2
   waitNextRecipeTimer: 15
   sliderColor:
     serializedVersion: 2
