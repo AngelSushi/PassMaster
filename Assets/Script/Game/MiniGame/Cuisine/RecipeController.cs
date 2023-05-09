@@ -65,6 +65,8 @@ public class RecipeController : MonoBehaviour {
     private List<RecipeTicker> _recipeTickers = new List<RecipeTicker>();
 
     public Gradient sliderColor;
+
+    
     
     
     private void Start() {
@@ -80,6 +82,9 @@ public class RecipeController : MonoBehaviour {
     private void Update() {
         foreach(RecipeTicker ticker in _recipeTickers)
             ticker.Tick();
+        foreach (CookController.Team team in _cookController.teams) 
+            team.Tick();
+        
     }
 
     
@@ -139,24 +144,10 @@ public class RecipeController : MonoBehaviour {
         }
     }
 
-    public IEnumerator AutoRecipeGenerator(CookController.Team team) {
-        Debug.Log("teamReputation " + team.reputation + " 's " + team.name + " wait " + (waitNextRecipeTimer + ( waitNextRecipeTimer * (1 - team.reputation))));
-        
-        yield return new WaitForSeconds(waitNextRecipeTimer + ( waitNextRecipeTimer * (1 - team.reputation)));
-
-        
-        Debug.Log("teamReputation2 " + team.reputation + " 's " + team.name);
-        
-        if (team.recipes.Count < maxRecipesPerTeam) {
-            GenerateRecipe(team);
-            GenerateRecipeUI(team);
-            DrawRecipe(team);
-        }
-
-        CookController.Team newTeam = _cookController.teams.Where(t => t.player == team.player).ToList()[0];
-        
-        Debug.Log("teamReputation3 " + newTeam.reputation + " 's " + newTeam.name);
-        StartCoroutine(AutoRecipeGenerator(newTeam));
+    public void AutoGenerateRecipe(CookController.Team team) { // Est ce qu'on veut que le changement de reputation affecte le timer actuel ou le prochain timer
+        GenerateRecipe(team);
+        GenerateRecipeUI(team);
+        DrawRecipe(team);
     }
 
 }

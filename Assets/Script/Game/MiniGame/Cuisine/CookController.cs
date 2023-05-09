@@ -18,6 +18,9 @@ public class CookController : MiniGame {
         public Canvas canvas;
         public float reputation = 1;
 
+        private float _timer;
+        private CookController _cookController;
+
         public bool HasRecipe(string recipeName) {
             foreach (RecipeController.Recipe recipe in recipes) {
                 if (recipe.name.Equals(recipeName))
@@ -32,9 +35,32 @@ public class CookController : MiniGame {
             recipes.Remove(removedRecipe);
             _deliveredRecipes++;
 
+
+            if (_deliveredRecipes == 1)
+            {
+                Debug.Log("start delivered");
+            }
+           /*
             if (_deliveredRecipes == 1) {
                 Debug.Log("start coroutine");
                 removedRecipe.ticker._recipeController.StartCoroutine(removedRecipe.ticker._recipeController.AutoRecipeGenerator(this));
+            }
+            */
+        }
+
+        public void Tick() {
+            if (_cookController == null)
+                _cookController = (CookController)CookController.instance;
+            
+            if (_deliveredRecipes >= 1) {
+                _timer += Time.deltaTime;
+
+                if (_timer >= (_cookController.recipeController.waitNextRecipeTimer + (_cookController.recipeController.waitNextRecipeTimer * (1 - reputation)))) {
+                    _timer = 0;
+                    Debug.Log("generate new recipe");
+                    _cookController.recipeController.AutoGenerateRecipe(this);
+                }
+                
             }
         }
         
