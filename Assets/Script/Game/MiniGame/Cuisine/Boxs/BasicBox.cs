@@ -7,6 +7,12 @@ public class BasicBox : Box {
     protected Vector3 stockPosition;
     protected GameObject stock;
 
+    public GameObject Stock
+    {
+        get => stock;
+        private set => stock = value;
+    }
+
     protected override void Start() {
         base.Start();
         stockPosition = transform.GetChild(0).localPosition;

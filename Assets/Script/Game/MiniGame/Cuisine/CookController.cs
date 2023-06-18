@@ -10,7 +10,7 @@ public class CookController : MiniGame {
     [System.Serializable]
     public class Team {
         public string name;
-        public GameObject player;
+        public GameObject[] players;
         public int point;
         public List<RecipeController.Recipe> recipes;
         private int _deliveredRecipes;
@@ -57,7 +57,7 @@ public class CookController : MiniGame {
                     Debug.Log("generate new recipe");
                     _cookController.recipeController.AutoGenerateRecipe(this);
                 }
-                
+                    
             }
         }
         
@@ -91,6 +91,9 @@ public class CookController : MiniGame {
      *
      * Gestion de livraison des commandes - Fait 
      * Système de recherche de recette/client (avec le système de réputation etc)
+     
+     
+     
      * AI
      * Ajout de difficulté ( viande qui se crame , plat etc)
      * 
@@ -120,7 +123,7 @@ public class CookController : MiniGame {
     }
 
     public void AddPoint(int point, GameObject player) {
-        Team currentTeam = teams.Where(team => team.player == player).ToList()[0];
+        Team currentTeam = teams.Where(team => team.players.Contains(player)).ToList()[0];
         currentTeam.point += point;
         
         Debug.Log("team " + currentTeam.name + " has " + currentTeam.point + " points ");
@@ -138,7 +141,7 @@ public class CookController : MiniGame {
         foreach (int teamPoint in allTeamsPoint) {
             foreach (Team team in teams) {
                 if (team.point == teamPoint) {
-                    Player cPlayer = players.Where(p => p.gameObject.name == team.player.name).ToList()[0];
+                    Player cPlayer = players.Where(p => p.gameObject.name == team.players[0].name).ToList()[0];
                 
                     if(!classedPlayers.Contains(cPlayer))
                         classedPlayers.Add(cPlayer);    

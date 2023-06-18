@@ -1,11 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Grid;
 
 public abstract class Box : MonoBehaviour {
 
     [HideInInspector] public ChefController currentController;
     protected CookController _cookController;
+
+
+    [SerializeField] private Vector2Int _tileCoords;
+    
+
+    private Tile _tile;
+    
+    public Tile Tile
+    {
+        get
+        {
+            _tile = GridManager.Instance.Grid[_tileCoords.x, _tileCoords.y];
+            return _tile;
+        }
+    }
 
     protected virtual void Start() {
        _cookController = (CookController) CookController.instance;

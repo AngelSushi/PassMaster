@@ -71,11 +71,20 @@ public class RecipeController : MonoBehaviour {
     
     private void Start() {
         _cookController = (CookController)CookController.instance;
-
+        
         foreach (CookController.Team team in _cookController.teams) {
             GenerateAllRecipes(team);
             GenerateAllRecipeUI(team);
-            DrawAllRecipes(team);   
+            DrawAllRecipes(team);
+            
+            foreach (GameObject player in team.players)
+            {
+                if (player.TryGetComponent(out ChiefAIController aiController))
+                {
+                    aiController.Team = team;
+                }
+            }
+            
         }
     }
 
@@ -84,7 +93,6 @@ public class RecipeController : MonoBehaviour {
             ticker.Tick();
         foreach (CookController.Team team in _cookController.teams) 
             team.Tick();
-        
     }
 
     

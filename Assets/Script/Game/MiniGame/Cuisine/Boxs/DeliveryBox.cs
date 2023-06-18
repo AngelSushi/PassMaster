@@ -9,7 +9,7 @@ public class DeliveryBox : Box {
         currentController = controller;
 
         
-        CookController.Team team = _cookController.teams.Where(t => t.player == currentController.gameObject).ToList()[0];
+        CookController.Team team = _cookController.teams.Where(t => t.players.Contains(currentController.gameObject)).ToList()[0];
         team.reputation -= 0.1f;
         Debug.Log("change reputation of team " + team.name + " to "+ team.reputation);
         
@@ -25,13 +25,10 @@ public class DeliveryBox : Box {
 
     protected override void Put() {
         RecipeController.Recipe targetRecipe = currentController.actualPlate.GetComponent<Plate>().fullRecipe;
-        CookController.Team targetTeam = _cookController.teams.Where(team => team.player == currentController.gameObject).ToList()[0];
+        CookController.Team targetTeam = _cookController.teams.Where(team => team.players.Contains(currentController.gameObject)).ToList()[0];
 
         if (targetTeam.HasRecipe(targetRecipe.name)) {
-            
-            
-            
-            
+
             int currentPoint = (int) (_cookController.maxPointPerRecipe - _cookController.maxPointPerRecipe * (1 - (targetRecipe.ticker._currentTime / targetRecipe.recipeTime)));
             _cookController.AddPoint(currentPoint,currentController.gameObject);
 
