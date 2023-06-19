@@ -136,53 +136,46 @@ public class ChiefAIController : MonoBehaviour
             for (int i = 0; i < recipe.allIngredients.Count; i++)
             {
                 IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == recipe.allIngredients[i]).ToList()[0];
-            //    distance += _gridManager.GeneratePath(ActualTile, targetIngredientBox.Tile).Count;
-
-                Debug.Log("targetTile [" + targetIngredientBox.Tile.X + "," + targetIngredientBox.Tile.Y + "]" );
+                distance += _gridManager.GeneratePath(ActualTile, targetIngredientBox.Tile).Count;
                 
                 if (recipe.allIngredients[i].isCookable)
                 {
                     if (recipe.allIngredients[i].cookIndex == 0)
                     {
                         StoveBox targetStoveBox = FindObjectsOfType<StoveBox>().Where(stoveBox => stoveBox.Stock == null).ToList()[0];
-                        
-                        Debug.Log("stoveTile [" + targetStoveBox.Tile.X + "," + targetStoveBox.Tile.Y + "]");
-                        
-                       distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetStoveBox.Tile).Count;
+
+                        distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetStoveBox.Tile).Count;
                     }
                     else if (recipe.allIngredients[i].cookIndex == 1)
                     {
                         PanBox targetPanBox = FindObjectsOfType<PanBox>().Where(panBox => panBox.Stock == null).ToList()[0];
-                        Debug.Log("panTile " + targetPanBox.Tile);
-                       // distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetPanBox.Tile).Count;
+                        distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetPanBox.Tile).Count;
                     }
                     
                 }
 
-             /*   if (recipe.allIngredients[i].isCuttable)
+                if (recipe.allIngredients[i].isCuttable)
                 { 
                     CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
                     distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetCutBox.Tile).Count;
                 }
-
-*/
+                
             }
-            
-            
-            
-  /*          if (recipe.needToBeCook)
+
+            if (recipe.needToBeCook)
             {
                 OvenBox targetOvenBox = FindObjectsOfType<OvenBox>().Where(ovenBox => ovenBox.Stock == null).ToList()[0];
                 distance += _gridManager.GeneratePath(ActualTile, targetOvenBox.Tile).Count;
             }
-    
-    */        
+            
+            Debug.Log("distance " + distance + " for " + recipe.name);
+            
             recipesDistance.Add(distance);
             
             
         }
 
-        /*int minDistance = recipesDistance[0];
+        int minDistance = recipesDistance[0];
         int minIndex = 0;
         
         for (int i = 0;i < recipesDistance.Count;i++)
@@ -198,7 +191,8 @@ public class ChiefAIController : MonoBehaviour
 
 
         _currentWorkRecipe = _team.recipes[minIndex];
+        
         Debug.Log("work on "+ _currentWorkRecipe.name);
-*/
+
     }
 }

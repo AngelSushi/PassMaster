@@ -137,7 +137,7 @@ public class GridManager : MonoBehaviour
                
                if (newGCost < neighbourTile.GCost)
                {
-                   neighbourTile.GCost = CalculateDistance(startTile, neighbourTile);
+                   neighbourTile.GCost = newGCost;
                    neighbourTile.HCost = CalculateDistance(neighbourTile, endTile);
                    neighbourTile.CalculateFCost();
                    neighbourTile.CameFromTile = currentTile;
@@ -152,12 +152,6 @@ public class GridManager : MonoBehaviour
            }
         }
        
-
-        //startTile.TileObj.GetComponent<MeshRenderer>().material.color = Color.blue;
-        //endTile.TileObj.GetComponent<MeshRenderer>().material.color = Color.magenta;
-
-        Debug.Log("path is null");
-        
         return null;
     }
 
