@@ -44,6 +44,8 @@ public class BasicBox : Box {
                 currentController.actualPlate = null;
                 stock = plate;
             }
+            
+            _cookController.Events.OnUpdateBoxStock?.Invoke(this, new CookEvents.OnUpdateBoxStockArgs() { stock = Stock, box = this});
         }
     }
 
@@ -58,6 +60,7 @@ public class BasicBox : Box {
                 currentController.actualPlate = stock;
             
             stock = null;
+            _cookController.Events.OnUpdateBoxStock?.Invoke(this,new CookEvents.OnUpdateBoxStockArgs() { stock = null, box = this});
         }
     }
 }

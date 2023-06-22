@@ -754,6 +754,7 @@ GameObject:
   - component: {fileID: 57780302}
   - component: {fileID: 57780305}
   - component: {fileID: 57780306}
+  - component: {fileID: 57780307}
   m_Layer: 0
   m_Name: Controller
   m_TagString: ControllerMG
@@ -1194,6 +1195,18 @@ MonoBehaviour:
   tilePrefab: {fileID: 6945335578914176773, guid: d642ed69c22ebe244a29305a9ec9bce7,
     type: 3}
   startPosition: {x: -781.5, y: 2, z: -10}
+--- !u!114 &57780307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57780300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a11468e5e4525c445a60e830819ff1f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &61747201
 GameObject:
   m_ObjectHideFlags: 0
@@ -39943,7 +39956,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &2445903935565625900
 AudioSource:
   m_ObjectHideFlags: 0

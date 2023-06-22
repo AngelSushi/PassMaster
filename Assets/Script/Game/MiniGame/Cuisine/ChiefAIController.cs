@@ -52,17 +52,63 @@ public class ChiefAIController : MonoBehaviour
 
     [SerializeField] private List<BasicBox> basicBoxes;
 
+    private List<BasicBox> _emptyBoxes = new List<BasicBox>();
+
     private void Start()
     {
         _gridManager = GridManager.Instance;
         _controller = (CookController)CookController.instance;
-         ChooseRecipe(_team.recipes);
+        
+        _controller.Events.OnUpdateBoxStock += OnUpdateBoxStock;
 
-         FindBoxForPlate();
-         
-         // Choose in function of difficulty the priority of action 
+        foreach (BasicBox box in FindObjectsOfType<BasicBox>())
+        {
+            _emptyBoxes.Add(box);
+        }
+        
+        ChooseRecipe(_team.recipes);
+
+        FindBoxForPlate();
     }
+
+    private void OnDestroy() => _controller.Events.OnUpdateBoxStock -= OnUpdateBoxStock;
     
+    private void OnUpdateBoxStock(object sender,CookEvents.OnUpdateBoxStockArgs e)
+    {
+        if (e.stock == null)
+        {
+            if (!_emptyBoxes.Contains(e.box))
+            {
+                _emptyBoxes.Add(e.box);
+            }
+        }
+        else
+        {
+            _emptyBoxes.Remove(e.box);
+        }
+    }
+
+    private BasicBox GetBoxWithType(Type boxType)  {
+        if (boxType == typeof(CutBox))
+        {
+            return _emptyBoxes.Where(box => box is CutBox).ToList()[0];
+        }
+        else if (boxType == typeof(PanBox))
+        {
+            return _emptyBoxes.Where(box => box is PanBox).ToList()[0];
+        }
+        else if (boxType == typeof(StoveBox))
+        {
+            return _emptyBoxes.Where(box => box is StoveBox).ToList()[0];
+        }
+        else if (boxType == typeof(OvenBox))
+        {
+            return _emptyBoxes.Where(box => box is OvenBox).ToList()[0];
+        }
+
+        return null;
+    }
+
     #region "Choose Recipe"
     private void ChooseRecipe(List<RecipeController.Recipe> recipes)
     { // Get the "brut" distance between each element to know which recipe AI is going to choose 
@@ -97,23 +143,18 @@ public class ChiefAIController : MonoBehaviour
             {
                 if (recipe.allIngredients[i].cookIndex == 0)
                 {
-                    StoveBox targetStoveBox =
-                        FindObjectsOfType<StoveBox>().Where(stoveBox => stoveBox.Stock == null).ToList()[0];
-
-                    distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetStoveBox.Tile).Count;
+                    distance += _gridManager.GeneratePath(targetIngredientBox.Tile, GetBoxWithType(typeof(StoveBox)).Tile).Count;
                 }
                 else if (recipe.allIngredients[i].cookIndex == 1)
                 {
-                    PanBox targetPanBox = FindObjectsOfType<PanBox>().Where(panBox => panBox.Stock == null).ToList()[0];
-                    distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetPanBox.Tile).Count;
+                    distance += _gridManager.GeneratePath(targetIngredientBox.Tile, GetBoxWithType(typeof(PanBox)).Tile).Count;
                 }
 
             }
 
             if (recipe.allIngredients[i].isCuttable)
             {
-                CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
-                distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetCutBox.Tile).Count;
+                distance += _gridManager.GeneratePath(targetIngredientBox.Tile, GetBoxWithType(typeof(CutBox)).Tile).Count;
             }
         }
 
@@ -121,8 +162,7 @@ public class ChiefAIController : MonoBehaviour
 
         if (recipe.needToBeCook)
         {
-            OvenBox targetOvenBox = FindObjectsOfType<OvenBox>().Where(ovenBox => ovenBox.Stock == null).ToList()[0];
-            distance += _gridManager.GeneratePath(ActualTile, targetOvenBox.Tile).Count;
+            distance += _gridManager.GeneratePath(ActualTile, GetBoxWithType(typeof(OvenBox)).Tile).Count;
 
         }
     }
@@ -211,7 +251,7 @@ public class ChiefAIController : MonoBehaviour
 
             if (ingredient.isCuttable)
             {
-                CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
+                CutBox targetCutBox = (CutBox)GetBoxWithType(typeof(CutBox));
                 averageX += targetCutBox.Tile.X;
                 averageY += targetCutBox.Tile.Y;
             }
@@ -220,13 +260,13 @@ public class ChiefAIController : MonoBehaviour
             {
                 if (ingredient.cookIndex == 0)
                 {
-                    StoveBox targetStoveBox = FindObjectsOfType<StoveBox>().Where(stoveBox => stoveBox.Stock == null).ToList()[0];
+                    StoveBox targetStoveBox = (StoveBox)GetBoxWithType(typeof(StoveBox));
                     averageX += targetStoveBox.Tile.X;
                     averageY += targetStoveBox.Tile.Y;
                 }
                 else if (ingredient.cookIndex == 1)
                 {
-                    PanBox targetPanBox = FindObjectsOfType<PanBox>().Where(panBox => panBox.Stock == null).ToList()[0];
+                    PanBox targetPanBox = (PanBox)GetBoxWithType(typeof(PanBox));
                     averageX += targetPanBox.Tile.X;
                     averageY += targetPanBox.Tile.Y;
                 }
@@ -235,7 +275,7 @@ public class ChiefAIController : MonoBehaviour
         
         if (_currentWorkRecipe.needToBeCook)
         {
-            OvenBox targetOvenBox = FindObjectsOfType<OvenBox>().Where(ovenBox => ovenBox.Stock == null).ToList()[0];
+            OvenBox targetOvenBox = (OvenBox)GetBoxWithType(typeof(OvenBox));
             averageX += targetOvenBox.Tile.X;
             averageY += targetOvenBox.Tile.Y;
         }
@@ -251,21 +291,15 @@ public class ChiefAIController : MonoBehaviour
         averageX /= 7;
         averageY /= 7;
         
-        Debug.Log("brut coords : [" + averageX + "," + averageY + "]");
         Vector2 brutCoords = new Vector2(averageX, averageY);
 
         BasicBox nearestBox = FindNearestBox(brutCoords);
         
         _plateBox = ApplyDifficultyOffset(nearestBox);
-        
-        
-        Debug.Log("nearest box " + nearestBox);
-        Debug.Log("final plate box " + _plateBox);
     }
 
     private BasicBox FindNearestBox(Vector2 brutCoords)
     {
-
         BasicBox minBox = basicBoxes[0];
         float minDistance = Vector2.Distance(brutCoords, minBox.Tile.Coords);
 
@@ -313,13 +347,12 @@ public class ChiefAIController : MonoBehaviour
         
         newIndex = Mathf.Clamp(newIndex, 0, basicBoxes.Count);
         
-        Debug.Log("offset " + randomOffset);
-        Debug.Log("newIndex " + newIndex);
-        
         return basicBoxes[newIndex];
     }
     
     #endregion
+    
+    #region "Tasks"
     
     private void DispatchTask()
     {
@@ -349,4 +382,6 @@ public class ChiefAIController : MonoBehaviour
             ingredientAction.Tasks.Add(movementToIngredientBox);
         }
     }
+    
+    #endregion
 }
