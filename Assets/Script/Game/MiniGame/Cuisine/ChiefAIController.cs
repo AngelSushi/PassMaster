@@ -10,74 +10,6 @@ using UnityEngine.UI;
 
 public class ChiefAIController : MonoBehaviour
 {
-    /** AI LIST
-     *
-     *  Begin :
-     * At the begin of the begin game and when the ai must choose a new recipe it check the less costable recipe per distance 
-     *
-     * Générer un chemin qui selon la difficulté priorise les bonnes choses ou non
-     *
-     * Comment générer un chemin ?
-     * Selon la difficulté il priorise ou non l'action
-     * + ca prend les éléments le plus proche de lui en fonction de sa position
-     * Prendre aussi en compte la distance a laquelle il est ?
-     *
-     * + Faire un mélange entre tt les positions ou faut aller et faire une moyenne pr voir la position ou faut mettre l'assiette
-     */
-    
-    
-    
-    
-    
-    /* COMMENT DOIT SE PASSER LA REPARTITION DES TACHES A FAIRE
-     
-        Il doit toucher privilégier les tâches les plus longues a faire en début et dans lequel il peut faire d'autres taches pendant que celle ci se réalise
-     
-     Si une tâche est dites inactive (qui dur dans le temps et qui nécessite pas l'action permanente de l'ia , l'ia peut aller faire une autre tâche 
-     
-     + si peu de changement entre les difficultés + rajouter le path qui n'est pas le même et qui plus  ou moins opti
-     
-     
-     pendant les taches inactives , l'ia selon sa difficulté afine ses actions selon la rapidité etc 
-     */
-
-    /*
-     * class : ce dont on a besoiin
-     *
-     * type d'action
-     * l'élement concerné par l'action 
-     * priorité de l'action
-     * etat de l'aaction (finie ou non) 
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     * FAIRE UN IA GAME FLOW
-     */
-    
-    
-    
-    public enum ChiefState
-    {
-        MOVEMENT,
-        CUT,
-        STOVE,
-        PAN,
-        COOK,
-        BRING
-    }
-
-
-    private ChiefState _actualState;
-
     private CookController.Team _team;
 
     public CookController.Team Team
@@ -118,19 +50,21 @@ public class ChiefAIController : MonoBehaviour
 
     private BasicBox _plateBox;
 
+    [SerializeField] private List<BasicBox> basicBoxes;
+
     private void Start()
     {
         _gridManager = GridManager.Instance;
         _controller = (CookController)CookController.instance;
-         ChooseRecipe();
+         ChooseRecipe(_team.recipes);
 
-         CreateActionForRecipe();
-
+         FindBoxForPlate();
+         
          // Choose in function of difficulty the priority of action 
     }
     
     #region "Choose Recipe"
-    private void ChooseRecipe()
+    private void ChooseRecipe(List<RecipeController.Recipe> recipes)
     { // Get the "brut" distance between each element to know which recipe AI is going to choose 
         List<int> recipesDistance = new List<int>();
         
@@ -138,22 +72,22 @@ public class ChiefAIController : MonoBehaviour
         {
             int distance = 0;
 
-            CalculateDistance(recipe,distance);
+            CalculateDistance(recipe,distance,recipesDistance);
             recipesDistance.Add(distance);
         }
 
         int minIndex;
         FindShortestRecipe(recipesDistance,out minIndex);
-        
+
+
         _currentWorkRecipe = _team.recipes[minIndex];
         ManageUIRecipe();
 
-        Debug.Log("work on "+ _currentWorkRecipe.name);
-
     }
 
-    private void CalculateDistance(RecipeController.Recipe recipe, float distance)
+    private void CalculateDistance(RecipeController.Recipe recipe, int distance,List<int> recipesDistance)
     {
+
         for (int i = 0; i < recipe.allIngredients.Count; i++)
         {
             IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == recipe.allIngredients[i]).ToList()[0];
@@ -181,10 +115,6 @@ public class ChiefAIController : MonoBehaviour
                 CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
                 distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetCutBox.Tile).Count;
             }
-            
-            recipesDistance.Add(distance);
-            
-            
         }
 
 
@@ -200,7 +130,7 @@ public class ChiefAIController : MonoBehaviour
     private void FindShortestRecipe(List<int> recipesDistance,out int shortestIndex)
     { // Ajouter le facteur temps
         int minDistance = recipesDistance[0];
-        shortestIndex = -1;
+        shortestIndex = 0;
         
         for (int i = 0;i < recipesDistance.Count;i++)
         {
@@ -218,11 +148,9 @@ public class ChiefAIController : MonoBehaviour
     {
         GameObject targetPlayer =  _controller.teams.Where(team => team.players.Contains(transform.gameObject)).ToList()[0].players.Where(player => player.name.Equals(transform.gameObject.name.Replace("CPU",""))).ToList()[0];
         Player player = _controller.players.Where(player => player.gameObject.name.Equals(targetPlayer.name.Replace("CPU",""))).ToList()[0];
-
         
         GameObject slot = _currentWorkRecipe.recipeUI.transform.GetChild(3).gameObject;
         
-  
         if(slot.GetComponent<Image>().sprite != null)
         {
             slot = _currentWorkRecipe.recipeUI.transform.GetChild(4).gameObject;
@@ -238,7 +166,7 @@ public class ChiefAIController : MonoBehaviour
         int choose = Random.Range(0, 100);
         int targetChoose = 0;
 
-        switch (_cookController.Difficulty)
+        switch (_controller.Difficulty)
         {
             case GameController.Difficulty.EASY:
                 targetChoose = 25;
@@ -266,7 +194,10 @@ public class ChiefAIController : MonoBehaviour
             _currentWorkRecipe = null;
         }
     }
+    
+    #endregion
 
+    #region "Find Plate Box"
     private void FindBoxForPlate()
     {
         int averageX = ActualTile.X;
@@ -275,12 +206,14 @@ public class ChiefAIController : MonoBehaviour
         foreach (IngredientData ingredient in _currentWorkRecipe.allIngredients)
         {
             IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == ingredient).ToList()[0];
-            ApplyAddition(averageX,averageY,targetIngredientBox);
+            averageX += targetIngredientBox.Tile.X;
+            averageY += targetIngredientBox.Tile.Y;
 
             if (ingredient.isCuttable)
             {
                 CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
-                ApplyAddition(averageX,averageY,targetCutBox);
+                averageX += targetCutBox.Tile.X;
+                averageY += targetCutBox.Tile.Y;
             }
 
             if (ingredient.isCookable)
@@ -288,12 +221,14 @@ public class ChiefAIController : MonoBehaviour
                 if (ingredient.cookIndex == 0)
                 {
                     StoveBox targetStoveBox = FindObjectsOfType<StoveBox>().Where(stoveBox => stoveBox.Stock == null).ToList()[0];
-                    ApplyAddition(averageX,averageY,targetStoveBox);
+                    averageX += targetStoveBox.Tile.X;
+                    averageY += targetStoveBox.Tile.Y;
                 }
                 else if (ingredient.cookIndex == 1)
                 {
                     PanBox targetPanBox = FindObjectsOfType<PanBox>().Where(panBox => panBox.Stock == null).ToList()[0];
-                    ApplyAddition(averageX,averageY,targetPanBox);
+                    averageX += targetPanBox.Tile.X;
+                    averageY += targetPanBox.Tile.Y;
                 }
             }
         }
@@ -301,14 +236,17 @@ public class ChiefAIController : MonoBehaviour
         if (_currentWorkRecipe.needToBeCook)
         {
             OvenBox targetOvenBox = FindObjectsOfType<OvenBox>().Where(ovenBox => ovenBox.Stock == null).ToList()[0];
-            ApplyAddition(averageX,averageY,targetOvenBox);
+            averageX += targetOvenBox.Tile.X;
+            averageY += targetOvenBox.Tile.Y;
         }
 
         PlateBox plateBox = FindObjectOfType<PlateBox>();
-        ApplyAddition(averageX,averageY,plateBox);
+        averageX += plateBox.Tile.X;
+        averageY += plateBox.Tile.Y;
 
         DeliveryBox deliveryBox = FindObjectOfType<DeliveryBox>();
-        ApplyAddition(averageX, averageY,deliveryBox);
+        averageX += deliveryBox.Tile.X;
+        averageY += deliveryBox.Tile.Y;
         
         averageX /= 7;
         averageY /= 7;
@@ -316,26 +254,22 @@ public class ChiefAIController : MonoBehaviour
         Debug.Log("brut coords : [" + averageX + "," + averageY + "]");
         Vector2 brutCoords = new Vector2(averageX, averageY);
 
-       // FindNearestBox(brutCoords);
+        BasicBox nearestBox = FindNearestBox(brutCoords);
+        
+        _plateBox = ApplyDifficultyOffset(nearestBox);
         
         
-        // Apply difficulty offset 
+        Debug.Log("nearest box " + nearestBox);
+        Debug.Log("final plate box " + _plateBox);
     }
 
-    private void ApplyAddition(int averageX,int averageY,Box targetBox)
-    {
-        averageX += targetBox.Tile.X;
-        averageY += targetBox.Tile.Y;
-    }
-    
     private BasicBox FindNearestBox(Vector2 brutCoords)
     {
-        List<BasicBox> basicsBoxes = FindObjectsOfType<BasicBox>().ToList();
 
-        BasicBox minBox = basicsBoxes[0];
+        BasicBox minBox = basicBoxes[0];
         float minDistance = Vector2.Distance(brutCoords, minBox.Tile.Coords);
 
-        foreach (BasicBox basicBox in basicsBoxes)
+        foreach (BasicBox basicBox in basicBoxes)
         {
             float distance = Vector2.Distance(basicBox.Tile.Coords, brutCoords);
 
@@ -349,11 +283,11 @@ public class ChiefAIController : MonoBehaviour
         return minBox;
     }
 
-    private void ApplyDifficultyOffset()
+    private BasicBox ApplyDifficultyOffset(BasicBox basicBox)
     {
-        int offset = 0;
+        int offset;
         
-        switch (_cookController.Difficulty)
+        switch (_controller.Difficulty)
         {
             case GameController.Difficulty.EASY:
                 offset = 3;
@@ -369,16 +303,23 @@ public class ChiefAIController : MonoBehaviour
             
             default:
                 offset = 3;
-                break;
-        }
-
-        for (int i = -offset; i <= offset; i++)
-        {
-            Debug.Log("offset " + i);
+                 break;
         }
 
         int randomOffset = Random.Range(-offset, offset);
+        
+        int basicIndex = basicBoxes.IndexOf(basicBox);
+        int newIndex = basicIndex + randomOffset;
+        
+        newIndex = Mathf.Clamp(newIndex, 0, basicBoxes.Count);
+        
+        Debug.Log("offset " + randomOffset);
+        Debug.Log("newIndex " + newIndex);
+        
+        return basicBoxes[newIndex];
     }
+    
+    #endregion
     
     private void DispatchTask()
     {
