@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 namespace Grid
@@ -21,7 +22,11 @@ namespace Grid
            get => _y;
            set => _y = value;
        }
-       
+
+       public Vector2 Coords
+       {
+           get => new Vector2(X, Y);
+       }
        
        private int _gCost; // Walking cost from the start node
        

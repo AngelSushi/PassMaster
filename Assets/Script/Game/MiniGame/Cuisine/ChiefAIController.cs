@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Grid;
+using Microsoft.VisualStudio.OLE.Interop;
+using Random = UnityEngine.Random;
 
 public class ChiefAIController : MonoBehaviour
 {
@@ -46,39 +48,7 @@ public class ChiefAIController : MonoBehaviour
         set => _team = value;
     }
     
-    public class ChiefAction
-    {
-
-        private int _priority;
-        private ChiefAction[] _needs;
-        private bool _succeed;
-
-        public int Priority
-        {
-            get => _priority;
-            private set => _priority = value;
-        }
-
-        public ChiefAction[] Needs
-        {
-            get => _needs;
-            private set => _needs = value;
-        }
-
-        public bool Succeed
-        {
-            get => _succeed;
-            private set => _succeed = value;
-        }
-
-        public ChiefAction(int priority, ChiefAction[] needs, bool succeed)
-        {
-            _priority = priority;
-            _needs = needs;
-            _succeed = succeed;
-        }
-    }
-
+    
     private GridManager _gridManager;
 
     private Tile _actualTile; 
@@ -108,28 +78,23 @@ public class ChiefAIController : MonoBehaviour
     }
 
     private RecipeController.Recipe _currentWorkRecipe;
+    private CookController _cookController;
 
+    private BasicBox _plateBox;
 
     private void Start()
     {
         _gridManager = GridManager.Instance;
-       // ChooseRecipe();
+        _cookController = (CookController)CookController.instance;
+        
+        ChooseRecipe(_team.recipes);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            ChooseRecipe();
-        }
-    }
-
-
-    private void ChooseRecipe()
+    private void ChooseRecipe(List<RecipeController.Recipe> recipes)
     { // Get the "brut" distance between each element to know which recipe AI is going to choose 
         List<int> recipesDistance = new List<int>();
         
-        foreach (RecipeController.Recipe recipe in _team.recipes)
+        foreach (RecipeController.Recipe recipe in recipes)
         {
             int distance = 0;
 
@@ -168,8 +133,6 @@ public class ChiefAIController : MonoBehaviour
                 distance += _gridManager.GeneratePath(ActualTile, targetOvenBox.Tile).Count;
             }
             
-            Debug.Log("distance " + distance + " for " + recipe.name);
-            
             recipesDistance.Add(distance);
             
             
@@ -193,6 +156,183 @@ public class ChiefAIController : MonoBehaviour
         _currentWorkRecipe = _team.recipes[minIndex];
         
         Debug.Log("work on "+ _currentWorkRecipe.name);
+        ApplyDifficultyOffset();
 
+    }
+
+    private void ChooseRecipeDifficulty()
+    {
+        int choose = Random.Range(0, 100);
+        int targetChoose = 0;
+
+        switch (_cookController.Difficulty)
+        {
+            case GameController.Difficulty.EASY:
+                targetChoose = 25;
+                break;
+            
+            case GameController.Difficulty.MEDIUM:
+                targetChoose = 55;
+                break;
+            
+            case GameController.Difficulty.HARD:
+                targetChoose = 80;
+                break;
+            
+            default:
+                targetChoose = 25;
+                break;
+        }
+
+        if (choose <= targetChoose)
+        {
+            List<RecipeController.Recipe> newTeamRecipe = _team.recipes;
+            _team.recipes.Remove(_currentWorkRecipe);
+            ChooseRecipe(newTeamRecipe);
+            
+            _currentWorkRecipe = null;
+        }
+    }
+
+    private void FindBoxForPlate()
+    {
+        int averageX = ActualTile.X;
+        int averageY = ActualTile.Y;
+        
+        foreach (IngredientData ingredient in _currentWorkRecipe.allIngredients)
+        {
+            IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == ingredient).ToList()[0];
+            ApplyAddition(averageX,averageY,targetIngredientBox);
+
+            if (ingredient.isCuttable)
+            {
+                CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
+                ApplyAddition(averageX,averageY,targetCutBox);
+            }
+
+            if (ingredient.isCookable)
+            {
+                if (ingredient.cookIndex == 0)
+                {
+                    StoveBox targetStoveBox = FindObjectsOfType<StoveBox>().Where(stoveBox => stoveBox.Stock == null).ToList()[0];
+                    ApplyAddition(averageX,averageY,targetStoveBox);
+                }
+                else if (ingredient.cookIndex == 1)
+                {
+                    PanBox targetPanBox = FindObjectsOfType<PanBox>().Where(panBox => panBox.Stock == null).ToList()[0];
+                    ApplyAddition(averageX,averageY,targetPanBox);
+                }
+            }
+        }
+        
+        if (_currentWorkRecipe.needToBeCook)
+        {
+            OvenBox targetOvenBox = FindObjectsOfType<OvenBox>().Where(ovenBox => ovenBox.Stock == null).ToList()[0];
+            ApplyAddition(averageX,averageY,targetOvenBox);
+        }
+
+        PlateBox plateBox = FindObjectOfType<PlateBox>();
+        ApplyAddition(averageX,averageY,plateBox);
+
+        DeliveryBox deliveryBox = FindObjectOfType<DeliveryBox>();
+        ApplyAddition(averageX, averageY,deliveryBox);
+        
+        averageX /= 7;
+        averageY /= 7;
+        
+        Debug.Log("brut coords : [" + averageX + "," + averageY + "]");
+        Vector2 brutCoords = new Vector2(averageX, averageY);
+
+       // FindNearestBox(brutCoords);
+        
+        
+        // Apply difficulty offset 
+    }
+
+    private void ApplyAddition(int averageX,int averageY,Box targetBox)
+    {
+        averageX += targetBox.Tile.X;
+        averageY += targetBox.Tile.Y;
+    }
+    
+    private BasicBox FindNearestBox(Vector2 brutCoords)
+    {
+        List<BasicBox> basicsBoxes = FindObjectsOfType<BasicBox>().ToList();
+
+        BasicBox minBox = basicsBoxes[0];
+        float minDistance = Vector2.Distance(brutCoords, minBox.Tile.Coords);
+
+        foreach (BasicBox basicBox in basicsBoxes)
+        {
+            float distance = Vector2.Distance(basicBox.Tile.Coords, brutCoords);
+
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                minBox = basicBox;
+            }
+        }
+
+        return minBox;
+    }
+
+    private void ApplyDifficultyOffset()
+    {
+        int offset = 0;
+        
+        switch (_cookController.Difficulty)
+        {
+            case GameController.Difficulty.EASY:
+                offset = 3;
+                break;
+            
+            case GameController.Difficulty.MEDIUM:
+                offset = 2;
+                break;
+            
+            case GameController.Difficulty.HARD:
+                offset = 1;
+                break;
+            
+            default:
+                offset = 3;
+                break;
+        }
+
+        for (int i = -offset; i <= offset; i++)
+        {
+            Debug.Log("offset " + i);
+        }
+
+        int randomOffset = Random.Range(-offset, offset);
+    }
+    
+    private void DispatchTask()
+    {
+        foreach (IngredientData ingredient in _currentWorkRecipe.allIngredients)
+        {
+            AIAction ingredientAction = new AIAction(ingredient);
+            
+            // Movement to ingredient box 
+            IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == ingredient).ToList()[0];
+            
+            AIAction.AITask movementToIngredientBox = new AIAction.AITask(ActualTile,targetIngredientBox.Tile);
+
+            if (!ingredient.isCookable && !ingredient.isCuttable)
+            {
+                
+            }
+            else if (ingredient.isCookable)
+            {
+                
+            }
+            else if (ingredient.isCuttable)
+            {
+                
+            }
+
+
+            ingredientAction.Tasks.Add(movementToIngredientBox);
+        }
     }
 }

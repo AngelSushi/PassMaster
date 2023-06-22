@@ -7,7 +7,7 @@ using UnityEngine;
 [CustomEditor(typeof(CookController)),CanEditMultipleObjects]
 public class CookControllerEditor : CustomFieldInspector<CookController> {
 
-    private SerializedProperty _begin,_finish,_runSinceMenu,_isTraining,_mainAudio,_inputs,_players,_mainCamera,_actualState;
+    private SerializedProperty _begin,_finish,_runSinceMenu,_isTraining,_mainAudio,_inputs,_players,_mainCamera,_actualState,_difficulty;
 
     private SerializedProperty _startCinematic,_startCinematicCameras,_endCinematic,_endCinematicCameras;
 
@@ -83,6 +83,7 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         _players = serializedClass.FindProperty("players");
         _mainCamera = serializedClass.FindProperty("mainCamera");
         _actualState = serializedClass.FindProperty("actualState");
+        _difficulty = serializedClass.FindProperty("difficulty");
         
         _startCinematic = serializedClass.FindProperty("startCinematic");
         _startCinematicCameras = serializedClass.FindProperty("startCinematicCameras");
@@ -119,6 +120,7 @@ public class CookControllerEditor : CustomFieldInspector<CookController> {
         EditorGUILayout.PropertyField(_inputs);
         EditorGUILayout.PropertyField(_mainCamera);
         EditorGUILayout.PropertyField(_actualState);
+        EditorGUILayout.PropertyField(_difficulty);
         EditorGUILayout.EndVertical();
         
         EditorGUILayout.Space(10);

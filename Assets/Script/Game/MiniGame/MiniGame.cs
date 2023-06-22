@@ -44,6 +44,12 @@ public abstract class MiniGame : CoroutineSystem {
     private string _lastBeginText,_lastTimeText;
     private GameController _gameController;
 
+    public GameController GameController
+    {
+        get => _gameController;
+        private set => _gameController = value;
+    }
+
     public static MiniGame instance;
 
     public PlayableDirector startCinematic;
@@ -56,6 +62,13 @@ public abstract class MiniGame : CoroutineSystem {
 
     private bool _hasGenerateBoard;
 
+    [SerializeField] private GameController.Difficulty difficulty;
+    public GameController.Difficulty Difficulty
+    {
+        get => difficulty;
+        private set => difficulty = value;
+    }
+    
     
     public virtual void Awake() => instance = this;
     
