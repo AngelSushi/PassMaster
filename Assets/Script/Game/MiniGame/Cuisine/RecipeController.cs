@@ -16,6 +16,7 @@ public class RecipeController : MonoBehaviour {
         public GameObject recipeMesh;
         public RecipeTicker ticker;
         public float recipeTime;
+        public GameObject recipeUI;
     }
 
     public class RecipeTicker {
@@ -89,10 +90,11 @@ public class RecipeController : MonoBehaviour {
     }
 
     private void Update() {
-        foreach(RecipeTicker ticker in _recipeTickers)
+       /* foreach(RecipeTicker ticker in _recipeTickers)
             ticker.Tick();
         foreach (CookController.Team team in _cookController.teams) 
             team.Tick();
+    */
     }
 
     
@@ -167,6 +169,7 @@ public class RecipeController : MonoBehaviour {
         for (int i = 0; i < maxRecipesPerTeam; i++) {
             Recipe currentRecipe = team.recipes[i];
             Transform recipe = team.canvas.transform.GetChild(0).GetChild(i);
+            currentRecipe.recipeUI = recipe.gameObject;
             
             Transform ingredientParent = team.canvas.transform.GetChild(0).GetChild(i).GetChild(2);
             
@@ -187,7 +190,8 @@ public class RecipeController : MonoBehaviour {
     private void DrawRecipe(CookController.Team team,Recipe currentRecipe) {
         int index = team.canvas.transform.GetChild(0).childCount - 1;
         Transform recipe = team.canvas.transform.GetChild(0).GetChild(index);
-            
+        currentRecipe.recipeUI = recipe.gameObject;
+        
         Transform ingredientParent = team.canvas.transform.GetChild(0).GetChild(index).GetChild(2);
         
         Image recipeSpriteSlot = recipe.GetChild(1).GetComponent<Image>();

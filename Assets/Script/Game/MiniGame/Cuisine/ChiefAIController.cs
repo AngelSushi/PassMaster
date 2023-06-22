@@ -6,11 +6,10 @@ using UnityEngine;
 using Grid;
 using Microsoft.VisualStudio.OLE.Interop;
 using Random = UnityEngine.Random;
+using UnityEngine.UI;
 
 public class ChiefAIController : MonoBehaviour
 {
-    
-    
     /** AI LIST
      *
      *  Begin :
@@ -25,7 +24,44 @@ public class ChiefAIController : MonoBehaviour
      *
      * + Faire un mélange entre tt les positions ou faut aller et faire une moyenne pr voir la position ou faut mettre l'assiette
      */
+    
+    
+    
+    
+    
+    /* COMMENT DOIT SE PASSER LA REPARTITION DES TACHES A FAIRE
+     
+        Il doit toucher privilégier les tâches les plus longues a faire en début et dans lequel il peut faire d'autres taches pendant que celle ci se réalise
+     
+     Si une tâche est dites inactive (qui dur dans le temps et qui nécessite pas l'action permanente de l'ia , l'ia peut aller faire une autre tâche 
+     
+     + si peu de changement entre les difficultés + rajouter le path qui n'est pas le même et qui plus  ou moins opti
+     
+     
+     pendant les taches inactives , l'ia selon sa difficulté afine ses actions selon la rapidité etc 
+     */
 
+    /*
+     * class : ce dont on a besoiin
+     *
+     * type d'action
+     * l'élement concerné par l'action 
+     * priorité de l'action
+     * etat de l'aaction (finie ou non) 
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * FAIRE UN IA GAME FLOW
+     */
     
     
     
@@ -33,6 +69,8 @@ public class ChiefAIController : MonoBehaviour
     {
         MOVEMENT,
         CUT,
+        STOVE,
+        PAN,
         COOK,
         BRING
     }
@@ -73,24 +111,26 @@ public class ChiefAIController : MonoBehaviour
 
             return null;
         }
-        
-        
     }
 
     private RecipeController.Recipe _currentWorkRecipe;
-    private CookController _cookController;
+    private CookController _controller;
 
     private BasicBox _plateBox;
 
     private void Start()
     {
         _gridManager = GridManager.Instance;
-        _cookController = (CookController)CookController.instance;
-        
-        ChooseRecipe(_team.recipes);
-    }
+        _controller = (CookController)CookController.instance;
+         ChooseRecipe();
 
-    private void ChooseRecipe(List<RecipeController.Recipe> recipes)
+         CreateActionForRecipe();
+
+         // Choose in function of difficulty the priority of action 
+    }
+    
+    #region "Choose Recipe"
+    private void ChooseRecipe()
     { // Get the "brut" distance between each element to know which recipe AI is going to choose 
         List<int> recipesDistance = new List<int>();
         
@@ -98,39 +138,48 @@ public class ChiefAIController : MonoBehaviour
         {
             int distance = 0;
 
-            for (int i = 0; i < recipe.allIngredients.Count; i++)
+            CalculateDistance(recipe,distance);
+            recipesDistance.Add(distance);
+        }
+
+        int minIndex;
+        FindShortestRecipe(recipesDistance,out minIndex);
+        
+        _currentWorkRecipe = _team.recipes[minIndex];
+        ManageUIRecipe();
+
+        Debug.Log("work on "+ _currentWorkRecipe.name);
+
+    }
+
+    private void CalculateDistance(RecipeController.Recipe recipe, float distance)
+    {
+        for (int i = 0; i < recipe.allIngredients.Count; i++)
+        {
+            IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == recipe.allIngredients[i]).ToList()[0];
+            distance += _gridManager.GeneratePath(ActualTile, targetIngredientBox.Tile).Count;
+            
+            if (recipe.allIngredients[i].isCookable)
             {
-                IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == recipe.allIngredients[i]).ToList()[0];
-                distance += _gridManager.GeneratePath(ActualTile, targetIngredientBox.Tile).Count;
-                
-                if (recipe.allIngredients[i].isCookable)
+                if (recipe.allIngredients[i].cookIndex == 0)
                 {
-                    if (recipe.allIngredients[i].cookIndex == 0)
-                    {
-                        StoveBox targetStoveBox = FindObjectsOfType<StoveBox>().Where(stoveBox => stoveBox.Stock == null).ToList()[0];
+                    StoveBox targetStoveBox =
+                        FindObjectsOfType<StoveBox>().Where(stoveBox => stoveBox.Stock == null).ToList()[0];
 
-                        distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetStoveBox.Tile).Count;
-                    }
-                    else if (recipe.allIngredients[i].cookIndex == 1)
-                    {
-                        PanBox targetPanBox = FindObjectsOfType<PanBox>().Where(panBox => panBox.Stock == null).ToList()[0];
-                        distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetPanBox.Tile).Count;
-                    }
-                    
+                    distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetStoveBox.Tile).Count;
+                }
+                else if (recipe.allIngredients[i].cookIndex == 1)
+                {
+                    PanBox targetPanBox = FindObjectsOfType<PanBox>().Where(panBox => panBox.Stock == null).ToList()[0];
+                    distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetPanBox.Tile).Count;
                 }
 
-                if (recipe.allIngredients[i].isCuttable)
-                { 
-                    CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
-                    distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetCutBox.Tile).Count;
-                }
-                
             }
 
-            if (recipe.needToBeCook)
+            if (recipe.allIngredients[i].isCuttable)
             {
-                OvenBox targetOvenBox = FindObjectsOfType<OvenBox>().Where(ovenBox => ovenBox.Stock == null).ToList()[0];
-                distance += _gridManager.GeneratePath(ActualTile, targetOvenBox.Tile).Count;
+                CutBox targetCutBox = FindObjectsOfType<CutBox>().Where(cutBox => cutBox.Stock == null).ToList()[0];
+                distance += _gridManager.GeneratePath(targetIngredientBox.Tile, targetCutBox.Tile).Count;
             }
             
             recipesDistance.Add(distance);
@@ -138,8 +187,20 @@ public class ChiefAIController : MonoBehaviour
             
         }
 
+
+
+        if (recipe.needToBeCook)
+        {
+            OvenBox targetOvenBox = FindObjectsOfType<OvenBox>().Where(ovenBox => ovenBox.Stock == null).ToList()[0];
+            distance += _gridManager.GeneratePath(ActualTile, targetOvenBox.Tile).Count;
+
+        }
+    }
+
+    private void FindShortestRecipe(List<int> recipesDistance,out int shortestIndex)
+    { // Ajouter le facteur temps
         int minDistance = recipesDistance[0];
-        int minIndex = 0;
+        shortestIndex = -1;
         
         for (int i = 0;i < recipesDistance.Count;i++)
         {
@@ -148,16 +209,28 @@ public class ChiefAIController : MonoBehaviour
             if (distance < minDistance)
             {
                 minDistance = distance;
-                minIndex = i;
+                shortestIndex = i;
             }
         }
+    }
 
+    private void ManageUIRecipe()
+    {
+        GameObject targetPlayer =  _controller.teams.Where(team => team.players.Contains(transform.gameObject)).ToList()[0].players.Where(player => player.name.Equals(transform.gameObject.name.Replace("CPU",""))).ToList()[0];
+        Player player = _controller.players.Where(player => player.gameObject.name.Equals(targetPlayer.name.Replace("CPU",""))).ToList()[0];
 
-        _currentWorkRecipe = _team.recipes[minIndex];
         
-        Debug.Log("work on "+ _currentWorkRecipe.name);
-        ApplyDifficultyOffset();
+        GameObject slot = _currentWorkRecipe.recipeUI.transform.GetChild(3).gameObject;
+        
+  
+        if(slot.GetComponent<Image>().sprite != null)
+        {
+            slot = _currentWorkRecipe.recipeUI.transform.GetChild(4).gameObject;
+        }
 
+        slot.GetComponent<Image>().sprite = player.uiIcon;
+        slot.transform.GetChild(0).gameObject.SetActive(true);
+        slot.SetActive(true);
     }
 
     private void ChooseRecipeDifficulty()

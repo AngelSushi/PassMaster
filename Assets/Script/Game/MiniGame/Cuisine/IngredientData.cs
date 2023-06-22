@@ -13,4 +13,6 @@ public class IngredientData : ScriptableObject {
     
     public bool isCuttable;
     public bool isCookable;
+
+    public GameObject box;
 }
