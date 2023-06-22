@@ -828,6 +828,7 @@ MonoBehaviour:
   endCinematicCameras: []
   inputs: {fileID: -944628639613478452, guid: 9d9b96fca36421f42b9f4b6af1c6a9fe, type: 3}
   circleTransition: {fileID: 0}
+  difficulty: 0
   recipeController: {fileID: 0}
   instances:
   - instanceCamera: {fileID: 689670756}
