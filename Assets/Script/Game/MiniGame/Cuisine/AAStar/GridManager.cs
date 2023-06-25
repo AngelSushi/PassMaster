@@ -98,11 +98,10 @@ public class GridManager : MonoBehaviour
         foreach (Tile tile in _grid)
         {
             tile.GCost = int.MaxValue;
+            tile.CalculateFCost();
+            tile.CameFromTile = null;
         }
 
-        startTile = _grid[3, 5];
-        endTile = _grid[9, 10];
-        
         startTile.GCost = 0;
         startTile.HCost = CalculateDistance(startTile, endTile);
         startTile.CalculateFCost();
@@ -112,7 +111,6 @@ public class GridManager : MonoBehaviour
 
         while (searchList.Count > 0)
         {
-
             Tile currentTile = GetLowestFTile(searchList);
 
            if (currentTile == endTile)
@@ -122,9 +120,6 @@ public class GridManager : MonoBehaviour
            
            finalPath.Add(currentTile);
            searchList.Remove(currentTile);
-           searchList.Clear();
-
-           // La valeur de currenttile est bizarre ici
            
            foreach (Tile neighbourTile in GetNeighboursTile(currentTile))
            {
@@ -152,6 +147,7 @@ public class GridManager : MonoBehaviour
            }
         }
        
+        Debug.Log("path is null " + finalPath.Count);
         return null;
     }
 

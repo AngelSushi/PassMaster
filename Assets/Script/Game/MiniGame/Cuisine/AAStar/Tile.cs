@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
@@ -5,9 +6,11 @@ using UnityEngine;
 
 namespace Grid
 {
+    [Serializable]
     public class Tile 
     {
-       private int _x;
+        [SerializeField]
+        private int _x;
                
        public int X
        {
@@ -15,6 +18,7 @@ namespace Grid
            set => _x = value;
        }
 
+       [SerializeField]
        private int _y;
        
        public int Y
@@ -49,6 +53,7 @@ namespace Grid
        public int FCost
        {
            get => _fCost;
+           set => _fCost = value;
        }
 
        private bool _isObstacle;

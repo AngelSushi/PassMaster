@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class AIAction {
 
+    [Serializable]
     public class AITask
     {
-        private Grid.Tile _start;
+        [SerializeField] private Grid.Tile _start;
 
         public Grid.Tile Start
         {
@@ -14,7 +17,7 @@ public class AIAction {
             private set => _start = value;
         }
         
-        private Grid.Tile _end;
+        [SerializeField] private Grid.Tile _end;
 
         public Grid.Tile End
         {
@@ -29,7 +32,7 @@ public class AIAction {
         }
     }
 
-    private List<AITask> _tasks;
+    [SerializeField] private List<AITask> _tasks;
 
     public List<AITask> Tasks
     {
@@ -38,7 +41,7 @@ public class AIAction {
     }
     
     
-    private bool _isSucceed;
+    [SerializeField] private bool _isSucceed;
 
     public bool IsSucceed
     {
@@ -46,7 +49,7 @@ public class AIAction {
         private set => _isSucceed = value;
     }
 
-    private IngredientData _actionOn;
+    [SerializeField] private IngredientData _actionOn;
 
     public IngredientData ActionOn
     {
@@ -54,12 +57,12 @@ public class AIAction {
         private set => _actionOn = value;
     }
 
-    private float _priority;
+    [SerializeField] private int _priority;
 
-    public float Priority
+    public int Priority
     {
         get => _priority;
-        private set => _priority = value;
+        set => _priority = value;
     }
     
     

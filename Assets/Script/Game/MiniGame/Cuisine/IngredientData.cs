@@ -15,4 +15,12 @@ public class IngredientData : ScriptableObject {
     public bool isCookable;
 
     public GameObject box;
+
+    public bool IsPan
+    {
+        get
+        {
+            return cookIndex == 1;
+        }
+    }
 }
