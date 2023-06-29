@@ -5,10 +5,11 @@ using System.Linq;
 using UnityEngine;
 using Grid;
 using Microsoft.VisualStudio.OLE.Interop;
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 using UnityEngine.UI;
 
-public class ChiefAIController : MonoBehaviour
+public class ChiefAIController : ChiefController
 {
     private CookController.Team _team;
 
@@ -27,7 +28,7 @@ public class ChiefAIController : MonoBehaviour
     {
         get
         {
-            RaycastHit tileRaycast = Physics.RaycastAll(transform.position, Vector3.down, 5, LayerMask.GetMask("Grid"))[0];
+            RaycastHit tileRaycast = Physics.RaycastAll(ingredientSpawn.position, Vector3.down, 5, LayerMask.GetMask("Grid"))[0];
 
             if (tileRaycast.collider != null)
             {
@@ -57,25 +58,95 @@ public class ChiefAIController : MonoBehaviour
 
     [SerializeField] private List<AIAction> currentRecipeActions = new List<AIAction>();
 
+    [SerializeField] private int tryCount;
+
+
+    private AIAction _currentAction;
+    private AIAction.AITask _currentTask;
+    private NavMeshAgent _agent;
+    private NavMeshPath _path;
+    
     private void Start()
     {
         _gridManager = GridManager.Instance;
         _controller = (CookController)CookController.instance;
         
-        _controller.Events.OnUpdateBoxStock += OnUpdateBoxStock;
+        _controller.CookEvents.OnUpdateBoxStock += OnUpdateBoxStock;
+        _controller.CookEvents.OnFinishedCutIngredient += OnFinishedCutIngredient;
+        _controller.AiEvents.OnTaskFinished += OnTaskFinished;
+        _controller.AiEvents.OnTaskReachEnd += OnTaskReachEnd;
 
         foreach (BasicBox box in FindObjectsOfType<BasicBox>())
         {
             _emptyBoxes.Add(box);
         }
         
-      
-        ChooseRecipe(_team.recipes);
-        FindBoxForPlate();
-        DispatchTasks();
+        for (int i = 0; i < tryCount; i++)
+        {
+            ChooseRecipe(_team.recipes);
+            FindBoxForPlate();
+            DispatchTasks();
+            
+        }
+
+        _currentAction = currentRecipeActions[0];
+        _currentTask = _currentAction.Tasks.First();
+        isMoving = true;
+        canMoove = true;
+        
+        _agent = GetComponent<NavMeshAgent>();
+        _path = new NavMeshPath();
+        
+        
+        Debug.Log("plateCoords " + _plateBox.Tile.Coords);
     }
 
-    private void OnDestroy() => _controller.Events.OnUpdateBoxStock -= OnUpdateBoxStock;
+    private void Update()
+    {
+        
+        
+        if (_currentAction != null && _currentTask != null)
+        {
+            if (canMoove)
+            {
+                if (isMoving)
+                {
+                    
+                    Debug.Log("end " + _currentTask.End.Coords);
+                    
+                    _agent.CalculatePath(_gridManager.GetWorldPosition(_currentTask.End),_path);
+                    _agent.SetPath(_path);
+                    _agent.velocity = _agent.desiredVelocity;
+            
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_agent.velocity.normalized), 2f * Time.deltaTime);
+                    
+                    if (_agent.remainingDistance < 0.5f)
+                    {
+                        _controller.AiEvents.OnTaskReachEnd?.Invoke(this, new AIEvents.OnTaskReachEndArgs(_currentTask,_currentAction,transform.gameObject,_team,_currentTask.End));
+                    }
+                }
+
+                
+            }
+
+        }
+        else
+        {
+            
+        }
+        
+        
+        Debug.DrawLine(transform.position,transform.position + Vector3.down * 5,Color.magenta);
+        
+    }
+
+    private void OnDestroy()
+    {
+        _controller.CookEvents.OnUpdateBoxStock -= OnUpdateBoxStock;
+        _controller.CookEvents.OnFinishedCutIngredient -= OnFinishedCutIngredient;
+        _controller.AiEvents.OnTaskFinished -= OnTaskFinished;
+        _controller.AiEvents.OnTaskReachEnd -= OnTaskReachEnd;
+    } 
 
     #region "Events"
     
@@ -91,6 +162,53 @@ public class ChiefAIController : MonoBehaviour
         else
         {
             _emptyBoxes.Remove(e.box);
+        }
+    }
+
+    private void OnTaskReachEnd(object sender, AIEvents.OnTaskReachEndArgs e)
+    {
+        if (e.AI == transform.gameObject)
+        {
+            isMoving = false;
+            
+            RunDelayed(0.3f, () =>
+            {
+                e.Tile.AttachedBox.BoxInteract(actualIngredient != null ? actualIngredient : actualPlate != null ? actualPlate : null, this);
+
+                if (e.Tile.AttachedBox is not CutBox && e.Tile.AttachedBox is not PanBox && e.Tile.AttachedBox is not StoveBox && e.Tile.AttachedBox is not OvenBox) 
+                {
+                    _controller.AiEvents.OnTaskFinished?.Invoke(this, new AIEvents.OnTaskFinishedArgs(e.Task, e.Action, e.AI, e.Team));
+                }
+                else if (e.Tile.AttachedBox is CutBox)
+                {
+                    e.Tile.AttachedBox.BoxInteract(actualIngredient != null ? actualIngredient : actualPlate != null ? actualPlate : null, this);
+                }
+            });
+
+
+        }
+    }
+    
+    private void OnTaskFinished(object sender, AIEvents.OnTaskFinishedArgs e)
+    {
+        if (e.AI == transform.gameObject)
+        {
+            RunDelayed(0.3f, () =>
+            {
+                _currentTask.IsFinished = true;
+                
+                _currentTask = _currentAction.Tasks.FirstOrDefault(aiTask => !aiTask.IsFinished);
+                isMoving = true;
+            });
+        }
+    }
+
+    private void OnFinishedCutIngredient(object sender, CookEvents.OnFinishedCutIngredientArgs e)
+    {
+        if (e.Cutter == transform.gameObject && e.Box == ActualTile.AttachedBox)
+        {
+            e.Box.BoxInteract(actualIngredient != null ? actualIngredient : actualPlate != null ? actualPlate : null, this);
+            _controller.AiEvents.OnTaskFinished?.Invoke(this,new AIEvents.OnTaskFinishedArgs(_currentTask,_currentAction,transform.gameObject,_team));
         }
     }
     
@@ -129,24 +247,25 @@ public class ChiefAIController : MonoBehaviour
         {
             int distance;
 
-            CalculateDistance(recipe,out distance,recipesDistance);
+            CalculateDistance(recipe,out distance);
 
             recipesDistance.Add(distance);
         }
 
         int minIndex;
         FindShortestRecipe(recipesDistance,out minIndex);
+
+        minIndex = Mathf.Clamp(minIndex, 0, _team.recipes.Count);
         
         _currentWorkRecipe = _team.recipes[minIndex];    
         
-        Debug.Log("work recipe " + _currentWorkRecipe.name);
-        
-         // + Ajouter par difficulté si difficile plus de chance de prendre la bonne sinon non 
+         // + Ajouter par difficulté si difficile plus de chance de prendre la bonne sinon non + ajouter avec le temps 
         ManageUIRecipe();
+        ChooseRecipeDifficulty();
 
     }
 
-    private void CalculateDistance(RecipeController.Recipe recipe, out int distance,List<int> recipesDistance)
+    private void CalculateDistance(RecipeController.Recipe recipe, out int distance)
     {
         distance = 0;
         
@@ -185,8 +304,18 @@ public class ChiefAIController : MonoBehaviour
 
     private void FindShortestRecipe(List<int> recipesDistance,out int shortestIndex)
     { // Ajouter le facteur temps
-        int minDistance = recipesDistance[0];
+        
         shortestIndex = 0;
+        
+        if (recipesDistance.Count == 0)
+        {
+            Debug.Log("Recipe Distance Count is 0");
+            return;
+        }
+        
+        
+        int minDistance = recipesDistance[0];
+        
         
         for (int i = 0;i < recipesDistance.Count;i++)
         {
@@ -243,11 +372,16 @@ public class ChiefAIController : MonoBehaviour
 
         if (choose <= targetChoose)
         {
+            if (_team.recipes.Count == 1)
+            {
+                return;
+            }
+            
             List<RecipeController.Recipe> newTeamRecipe = _team.recipes;
             _team.recipes.Remove(_currentWorkRecipe);
+
             ChooseRecipe(newTeamRecipe);
             
-            _currentWorkRecipe = null;
         }
     }
     
@@ -361,7 +495,8 @@ public class ChiefAIController : MonoBehaviour
         int basicIndex = basicBoxes.IndexOf(basicBox);
         int newIndex = basicIndex + randomOffset;
         
-        newIndex = Mathf.Clamp(newIndex, 0, basicBoxes.Count);
+        newIndex = Mathf.Clamp(newIndex, 0, basicBoxes.Count - 1);
+
         
         return basicBoxes[newIndex];
     }
@@ -440,7 +575,6 @@ public class ChiefAIController : MonoBehaviour
         currentRecipeActions.Add(deliverAction);
 
         OrderTasks();
-        // Oven ; Deliver
     }
 
     private void OrderTasks()
@@ -455,6 +589,7 @@ public class ChiefAIController : MonoBehaviour
     private void OrderByHeuristicDistance()
     {
         List<AIAction> actionPriority = new List<AIAction>();
+        List<AIAction> correctOrder = new List<AIAction>();
         
         foreach (AIAction action in currentRecipeActions)
         {
@@ -464,43 +599,67 @@ public class ChiefAIController : MonoBehaviour
             }
 
             actionPriority = currentRecipeActions.Where(aiAction => aiAction.Priority == action.Priority).ToList();
-
+            
+            
             if (actionPriority.Count <= 1)
             {
                 continue;
             }
             
-            Debug.Log("Priority " + action.Priority);
-
-            Dictionary<AIAction,int> actionsDistance = new Dictionary<AIAction,int>();
+            correctOrder.Clear();
+            FindShortestTaskByHd(actionPriority,correctOrder);
             
-            for (int i = 0; i < actionPriority.Count; i++)
+        }
+        
+        SwitchTasks(correctOrder);
+    }
+
+    private void FindShortestTaskByHd(List<AIAction> actionsPriority,List<AIAction> correctOrder,Tile startTile = null) // HD means Heuristic Distance
+    {
+        Dictionary<AIAction,int> actionsDistance = new Dictionary<AIAction,int>();
+
+        for (int i = 0; i < actionsPriority.Count; i++)
+        {
+            AIAction aiAction = actionsPriority[i];
+            AIAction.AITask aiTask = aiAction.Tasks.First();
+            
+            int distance = _gridManager.GeneratePath(startTile != null ? startTile : aiTask.Start, aiTask.End).Count;
+            actionsDistance[aiAction] = distance;
+        }
+            
+
+        var actionsDistanceList = actionsDistance.ToList();
+        actionsDistanceList.Sort((pair1,pair2) => pair1.Value.CompareTo(pair2.Value));
+
+        Tile endTile = actionsDistanceList[0].Key.Tasks[actionsDistanceList[0].Key.Tasks.Count - 1].End;
+        
+        correctOrder.Add(actionsDistanceList[0].Key);
+        actionsPriority.Remove(actionsDistanceList[0].Key);
+        
+        if (actionsPriority.Count >= 1)
+        {
+            FindShortestTaskByHd(actionsPriority,correctOrder,endTile);
+        }
+        
+    }
+
+    private void SwitchTasks(List<AIAction> correctOrder)
+    {
+        int smallestIndex = currentRecipeActions.IndexOf(currentRecipeActions.Where(aiAction => aiAction == correctOrder[0]).ToList()[0]);
+
+        foreach (AIAction correctAction in correctOrder)
+        {
+            int newIndex = currentRecipeActions.IndexOf(correctAction);
+            
+            if (newIndex < smallestIndex)
             {
-                AIAction aiAction = actionPriority[i];
-                AIAction.AITask aiTask = aiAction.Tasks.First();
-
-                int distance = _gridManager.GeneratePath(aiTask.Start, aiTask.End).Count;
-                actionsDistance[aiAction] = distance;
-                // Distance entre mon joueur et l'ingredientbox
-                
-                Debug.Log("start " + aiTask.Start.Coords +  " value " + aiTask.End.Coords + " distance " + distance);
-                
-
-                // break;
-
+                smallestIndex = newIndex;
             }
-            Debug.Log("nearest tile " + actionsDistance.Keys.ToList()[0].Tasks[0].End.Coords);
+        }
 
-            var actionsDistanceList = actionsDistance.ToList();
-            actionsDistanceList.Sort((pair1,pair2) => pair1.Value.CompareTo(pair2.Value));
-            
-            
-            
-            Debug.Log("nearest tile 2 " + actionsDistanceList[0].Key.Tasks[0].End.Coords);
-            
-            
-
-
+        for (int i = 0; i < correctOrder.Count; i++)
+        {
+            currentRecipeActions[smallestIndex + i] = correctOrder[i];
         }
     }
 
@@ -527,18 +686,10 @@ public class ChiefAIController : MonoBehaviour
                 break;
         }
 
-        foreach (AIAction action in currentRecipeActions)
-        {
-           // Debug.Log("Priority " + action.Priority);
-        }
-        
         
         int actionDeorder = Mathf.CeilToInt(currentRecipeActions.Count * randomDeorder);
         actionDeorder = Mathf.Clamp(actionDeorder,0, currentRecipeActions.Count - 1);
-        //Debug.Log("----------------------------------------");
-        
-        
-        
+ 
         for (int i = actionDeorder; i > 0; i--)
         {
             AIAction temp = currentRecipeActions[i];
@@ -553,7 +704,6 @@ public class ChiefAIController : MonoBehaviour
             currentRecipeActions[j] = temp;
         }
 
-        //Debug.Log("------------------- FINAL VERSION ------------------------");
         ReOrderOvenAndDeliver();
     }
 
@@ -573,7 +723,7 @@ public class ChiefAIController : MonoBehaviour
         
         foreach (AIAction action in currentRecipeActions)
         {
-           // Debug.Log("Priority " + action.Priority);
+//            Debug.Log("Priority " + action.Priority + " name " + action.ActionOn?.name);
         }
     }
 

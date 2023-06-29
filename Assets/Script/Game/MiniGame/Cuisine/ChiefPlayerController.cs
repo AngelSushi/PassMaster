@@ -3,27 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class ChefController : MonoBehaviour {
+
+public class ChiefPlayerController : ChiefController {
 
     public float speed; // 15 last speed
     public Rigidbody rb;
-    
-    public GameObject actualIngredient;
-    public GameObject actualPlate;
-    
+
     private Vector2 _movement;
     [HideInInspector] public Vector3 move;
-    public bool isMoving;
-    public bool canMoove;
     private Quaternion _rotation;
 
     private CookController _cookController;
     private Animator _animator;
 
-
-    private Box _currentCollisionBox;
-
-    public Transform ingredientSpawn;
     
     void Start() {
         _cookController = (CookController)CookController.instance;

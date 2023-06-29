@@ -25,6 +25,14 @@ public class AIAction {
             private set => _end = value;
         }
 
+        private bool isFinished;
+
+        public bool IsFinished
+        {
+            get => isFinished;
+            set => isFinished = value;
+        }
+
         public AITask(Grid.Tile start, Grid.Tile end)
         {
             _start = start;
@@ -41,12 +49,12 @@ public class AIAction {
     }
     
     
-    [SerializeField] private bool _isSucceed;
+    [SerializeField] private bool isFinished;
 
-    public bool IsSucceed
+    public bool IsFinished
     {
-        get => _isSucceed;
-        private set => _isSucceed = value;
+        get => isFinished;
+        private set => isFinished = value;
     }
 
     [SerializeField] private IngredientData _actionOn;
@@ -70,6 +78,6 @@ public class AIAction {
     {
         _actionOn = actionOn;
         _tasks = new List<AITask>();
-        _isSucceed = false;
+        isFinished = false;
     }
 }

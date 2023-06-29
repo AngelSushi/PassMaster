@@ -17,7 +17,7 @@ public class IngredientBox : Box {
         Ingredient = transform.GetChild(0).gameObject;
     }
 
-    public override void BoxInteract(GameObject current,ChefController controller) {
+    public override void BoxInteract(GameObject current,ChiefController controller) {
         currentController = controller;
         Take();
     }

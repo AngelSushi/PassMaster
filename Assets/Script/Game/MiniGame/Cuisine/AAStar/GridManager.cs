@@ -250,4 +250,15 @@ public class GridManager : MonoBehaviour
             neighbours.Add(tile);
         }
     }
+
+    public Vector3 GetWorldPosition(Tile tile)
+    {
+        Vector3 worldPosition = startPosition;
+
+        worldPosition.x -= Vector3.right.magnitude * tile.X * (tilePrefab.transform.localScale.x * 10);
+        worldPosition.z -= Vector3.forward.magnitude * -1 * tile.Y * (tilePrefab.transform.localScale.y * 10);
+
+
+        return worldPosition;
+    }
 }

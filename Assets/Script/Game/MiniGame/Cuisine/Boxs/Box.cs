@@ -5,11 +5,17 @@ using Grid;
 
 public abstract class Box : MonoBehaviour {
 
-    [HideInInspector] public ChefController currentController;
+    [HideInInspector] public ChiefController currentController;
     protected CookController _cookController;
 
 
     [SerializeField] private Vector2Int _tileCoords;
+
+    public Vector2Int TileCoords
+    {
+        get => _tileCoords;
+        private set => _tileCoords = value;
+    }
     
 
     private Tile _tile;
@@ -27,7 +33,7 @@ public abstract class Box : MonoBehaviour {
        _cookController = (CookController) CookController.instance;
     }
     
-    public virtual void BoxInteract(GameObject current,ChefController controller) {
+    public virtual void BoxInteract(GameObject current,ChiefController controller) {
         currentController = controller;
         
         if (current != null)

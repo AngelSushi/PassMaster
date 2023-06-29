@@ -113,8 +113,8 @@ public class RecipeController : MonoBehaviour {
                 recipe = recipes[randomRecipe];
             }
             
-            team.recipes.Add(recipe);
-         // team.recipes.Add(((CookController)CookController.instance).recipeController.recipes.Where(recipe => recipe.name.Equals("CheeseBurger")).ToList()[0]);
+          //  team.recipes.Add(recipe);
+          team.recipes.Add(((CookController)CookController.instance).recipeController.recipes.Where(recipe => recipe.name.Equals("MaxiBurger")).ToList()[0]);
         }
         
         

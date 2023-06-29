@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DeliveryBox : Box {
 
-    public override void BoxInteract(GameObject current,ChefController controller) {
+    public override void BoxInteract(GameObject current,ChiefController controller) {
         currentController = controller;
 
         

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
@@ -71,6 +72,26 @@ namespace Grid
            get => _tileObj;
            private set => _tileObj = value;
 
+       }
+
+       private Box _attachedBox;
+
+       public Box AttachedBox
+       {
+           get
+           {
+               Box box = GameObject.FindObjectsOfType<Box>().FirstOrDefault(box => box.TileCoords == Coords);
+
+               if (box != null)
+               {
+                   _attachedBox = box;
+                   return _attachedBox;
+               }
+                
+               Debug.Log("Error when getting attached box to tile " + Coords);
+               return null;
+           }
+           
        }
 
        private Tile _cameFromTile;

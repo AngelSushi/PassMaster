@@ -88,14 +88,21 @@ public class CookController : MiniGame {
     public int maxPointPerRecipe;
 
 
-    private CookEvents _events;
+    private CookEvents _cookEvents;
 
-    public CookEvents Events
+    public CookEvents CookEvents
     {
-        get => _events;
-        private set => _events = value;
+        get => _cookEvents;
+        private set => _cookEvents = value;
     }
 
+    private AIEvents _aiEvents;
+
+    public AIEvents AiEvents
+    {
+        get => _aiEvents;
+        private set => _aiEvents = value;
+    }
     /* TODO-LIST
      *
      * Gestion de livraison des commandes - Fait 
@@ -114,8 +121,9 @@ public class CookController : MiniGame {
         base.Start();
 
         recipeController = GetComponent<RecipeController>();
-        Events = GetComponent<CookEvents>();
-        
+        CookEvents = GetComponentInChildren<CookEvents>();
+        AiEvents = GetComponentInChildren<AIEvents>();
+
         foreach (Team team in teams) {
             GameObject instanceCanvas = new GameObject("Instance Canvas");
             instanceCanvas.transform.parent = team.instance.transform;

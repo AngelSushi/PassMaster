@@ -54,11 +54,13 @@ public class CutBox : MakeBox {
         stockIngredient.isCut = true;
         stockIngredient.basic.SetActive(false);
         stockIngredient.modified.SetActive(true);
+        
+        _cookController.CookEvents.OnFinishedCutIngredient?.Invoke(this,new CookEvents.OnFinishedCutIngredientArgs(this,stockIngredient,currentController.gameObject));
     }
     #endregion
     
     #region Basic Box Functions
-    public override void BoxInteract(GameObject current, ChefController controller) {
+    public override void BoxInteract(GameObject current, ChiefController controller) {
         if (stock != null && stock.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
             if (ingredient.data.isCuttable) {
                 if (!ingredient.isCut)
