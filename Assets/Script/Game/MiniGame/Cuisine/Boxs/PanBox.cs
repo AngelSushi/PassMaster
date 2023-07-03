@@ -68,13 +68,17 @@ public class PanBox : MakeBox {
         boxSlider.gameObject.SetActive(false);
         timer = 0f;
         _stockIngredient.isCook = true;
+
+        AIAction action = currentController is ChiefAIController ? ((ChiefAIController)currentController).CurrentAction : null;
+        
+        _cookController.CookEvents.OnFinishedCookIngredient?.Invoke(this,new CookEvents.OnFinishedCookIngredientArgs(currentController.gameObject,this,_stockIngredient,action));
     }
 
     #endregion
     
     #region Basic Box Function
     protected override void Put() {
-        if (stock == null && currentController.actualIngredient != null && currentController.actualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
+        if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent(out Ingredient ingredient)) {
             if (ingredient.data.cookIndex == 1) { // detect if ingredient is cooked  on pan
                 if (ingredient.data.isCookable && !ingredient.isCook && !_isDirtyWater) 
                     base.Put();
@@ -90,7 +94,7 @@ public class PanBox : MakeBox {
                 base.Take();
             }
         }
-        else if (stock == null && currentController.actualIngredient == null) {
+        else if (stock == null && currentController.ActualIngredient == null) {
             if (_isDirtyWater) {
                 _waterMesh.material.color = mainColor;
                 _isDirtyWater = false;

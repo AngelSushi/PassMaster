@@ -20,47 +20,54 @@ public class BasicBox : Box {
 
     protected override void Put() {
         
-        if (currentController.actualIngredient != null || currentController.actualPlate != null) {
-            if (currentController.actualIngredient != null) {
+        if (currentController.ActualIngredient != null || currentController.ActualPlate != null)
+        {
+
+            if (currentController.ActualIngredient != null) {
                 if (stock != null && stock.GetComponent<Plate>() != null) {
                     Plate plate = stock.GetComponent<Plate>();
-                    plate.currentCameraInstance = _cookController.instances[currentController.GetComponent<ZoneSwapper>().areaIndex].instanceCamera;
-                    plate.AddIngredient(currentController.actualIngredient.GetComponent<Ingredient>(),this);
+                    plate.AddIngredient(currentController.ActualIngredient.GetComponent<Ingredient>(),this,currentController);
                 }
                 else {
-                    GameObject ingredient = currentController.actualIngredient;
+                    GameObject ingredient = currentController.ActualIngredient;
                     ingredient.transform.parent = transform;
                     ingredient.transform.localPosition = stockPosition;
             
-                    currentController.actualIngredient = null;
+                    currentController.ActualIngredient = null;
                     stock = ingredient;
                 }
             }
             else {
-                GameObject plate = currentController.actualPlate;
+                GameObject plate = currentController.ActualPlate;
                 plate.transform.parent = transform;
                 plate.transform.localPosition = stockPosition;
             
-                currentController.actualPlate = null;
+                currentController.ActualPlate = null;
                 stock = plate;
             }
             
-            _cookController.CookEvents.OnUpdateBoxStock?.Invoke(this, new CookEvents.OnUpdateBoxStockArgs() { stock = Stock, box = this});
+            
+            CookEvents.OnUpdateBoxStockArgs e = new CookEvents.OnUpdateBoxStockArgs(Stock, this);
+            _cookController.CookEvents.OnUpdateBoxStock?.Invoke(this, e);
         }
     }
 
     protected override void Take() {
-        if (stock != null && (currentController.actualIngredient == null && currentController.actualPlate == null)) {
+        if (stock != null && (currentController.ActualIngredient == null && currentController.ActualPlate == null))
+        {
+
             stock.transform.parent = currentController.transform;
-            stock.transform.localPosition = currentController.ingredientSpawn.localPosition;
+            stock.transform.localPosition = currentController.IngredientSpawn.localPosition;
             
             if(stock.GetComponent<Ingredient>() != null)
-                currentController.actualIngredient = stock;
+                currentController.ActualIngredient = stock;
             else if (stock.GetComponent<Plate>() != null)
-                currentController.actualPlate = stock;
+                currentController.ActualPlate = stock;
             
             stock = null;
-            _cookController.CookEvents.OnUpdateBoxStock?.Invoke(this,new CookEvents.OnUpdateBoxStockArgs() { stock = null, box = this});
+            
+            CookEvents.OnUpdateBoxStockArgs e = new CookEvents.OnUpdateBoxStockArgs(Stock, this);
+            _cookController.CookEvents.OnUpdateBoxStock?.Invoke(this,e);
         }
     }
 }

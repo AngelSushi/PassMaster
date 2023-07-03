@@ -19,14 +19,13 @@ public class PlateBox : Box {
     protected override void Put() {}
 
     protected override void Take() {
-        if (currentController.actualPlate == null) {
+        if (currentController.ActualPlate == null) {
             GameObject plate = Instantiate(_plate);
             plate.transform.parent = currentController.transform;
-            plate.transform.localPosition = currentController.ingredientSpawn.localPosition;
+            plate.transform.localPosition = currentController.IngredientSpawn.localPosition;
             plate.transform.eulerAngles = plate.GetComponent<Plate>().plateRotation;
-            plate.GetComponent<Plate>().currentCameraInstance = _cookController.instances[currentController.GetComponent<ZoneSwapper>().areaIndex].instanceCamera;
             plate.SetActive(true);
-            currentController.actualPlate = plate;
+            currentController.ActualPlate = plate;
         }
     }
 }

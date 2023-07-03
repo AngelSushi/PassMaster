@@ -13,8 +13,8 @@ public class OvenBox : MakeBox {
     }
 
     protected override void Put() {
-        if (currentController.actualPlate != null) {
-            Plate plate = currentController.actualPlate.GetComponent<Plate>();
+        if (currentController.ActualPlate != null) {
+            Plate plate = currentController.ActualPlate.GetComponent<Plate>();
             GameObject plateObj = plate.gameObject;
             if (plate.fullRecipe != null) {
                 _targetRecipe = plate.fullRecipe;
@@ -24,7 +24,7 @@ public class OvenBox : MakeBox {
                     plateObj.transform.localPosition = stockPosition;
                    // plate.plateCanvas.gameObject.SetActive(false);
                     _furnaceDoor.transform.eulerAngles = Vector3.zero; // x = 90 ; y = 0 ; z = 0
-                    currentController.actualPlate = null;
+                    currentController.ActualPlate = null;
                     stock = plateObj;
                 }
             }
@@ -34,8 +34,8 @@ public class OvenBox : MakeBox {
     protected override void Take() {
         if (_targetRecipe != null && _targetRecipe.isCooked) {
             stock.transform.parent = currentController.transform;
-            stock.transform.localPosition = currentController.ingredientSpawn.localPosition;
-            currentController.actualPlate = stock;
+            stock.transform.localPosition = currentController.IngredientSpawn.localPosition;
+            currentController.ActualPlate = stock;
             _targetRecipe = null;
             stock = null;
         }

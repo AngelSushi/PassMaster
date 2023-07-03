@@ -25,23 +25,19 @@ public class IngredientBox : Box {
     protected override void Put() {}
 
     protected override void Take() {
-        if (currentController.actualIngredient == null) {
+        if (currentController.ActualIngredient == null) {
             GameObject ingredient = Instantiate(Ingredient);
             ingredient.transform.parent = currentController.transform;
-            ingredient.transform.localPosition = currentController.ingredientSpawn.localPosition;
-            
-            Debug.Log("rotation " + Ingredient.GetComponent<Ingredient>().ingredientRotation);
-            
+            ingredient.transform.localPosition = currentController.IngredientSpawn.localPosition;
+
             Vector3 euler = Ingredient.GetComponent<Ingredient>().ingredientRotation;
             ingredient.transform.rotation = Quaternion.Euler(euler.x, euler.y, euler.z);
 
             
             
-            Debug.Log("euler " + ingredient.transform.eulerAngles);
-            Debug.Log("rotation " + ingredient.transform.rotation);
             
             ingredient.SetActive(true);
-            currentController.actualIngredient = ingredient;
+            currentController.ActualIngredient = ingredient;
         }
 
     }

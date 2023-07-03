@@ -32,7 +32,7 @@ public class ChiefPlayerController : ChiefController {
     void Update() {
         //_animator.SetBool("IsMooving",isMoving);
 
-        if(isMoving && canMoove)
+        if(IsMooving && CanMoove)
             Movement();
         else 
             transform.rotation = _rotation;
@@ -56,8 +56,8 @@ public class ChiefPlayerController : ChiefController {
     public void OnMove(InputAction.CallbackContext e) {
         _movement = e.ReadValue<Vector2>();
         
-        if(e.started) isMoving = true;
-        if(e.canceled)  isMoving = false;    
+        if(e.started) IsMooving = true;
+        if(e.canceled)  IsMooving = false;    
     }
 
 
@@ -66,7 +66,7 @@ public class ChiefPlayerController : ChiefController {
             foreach (RaycastHit hit in Physics.RaycastAll(transform.position, transform.forward,5)) {
                 if (hit.collider != null) {
                     if (hit.collider.gameObject.TryGetComponent<Box>(out Box box)) {
-                        box.BoxInteract(actualIngredient != null ? actualIngredient : actualPlate != null ? actualPlate : null,this);
+                        box.BoxInteract(ActualIngredient != null ? ActualIngredient : ActualPlate != null ? ActualPlate : null,this);
                         break;
                     }
                 }

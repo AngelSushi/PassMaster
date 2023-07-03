@@ -39,6 +39,10 @@ public class StoveBox : MakeBox {
         boxSlider.gameObject.SetActive(false);
         timer = 0f;
         _stockIngredient.isCook = true;
+
+        AIAction action = currentController is ChiefAIController ? ((ChiefAIController)currentController).CurrentAction : null;
+        
+        _cookController.CookEvents.OnFinishedCookIngredient?.Invoke(this,new CookEvents.OnFinishedCookIngredientArgs(currentController.gameObject,this,_stockIngredient,action));
     }
     
     #endregion
@@ -46,7 +50,7 @@ public class StoveBox : MakeBox {
     #region Basic Box Functions
 
     protected override void Put() {
-        if (stock == null && currentController.actualIngredient != null && currentController.actualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
+        if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
             if (ingredient.data.cookIndex == 0) { // detect if ingredient is cooked  on stove
                 if (ingredient.data.isCookable && !ingredient.isCook) 
                     base.Put();

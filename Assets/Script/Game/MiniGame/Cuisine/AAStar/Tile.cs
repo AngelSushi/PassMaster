@@ -87,8 +87,8 @@ namespace Grid
                    _attachedBox = box;
                    return _attachedBox;
                }
-                
-               Debug.Log("Error when getting attached box to tile " + Coords);
+               
+               Debug.Log("error when getting box at " + Coords);
                return null;
            }
            

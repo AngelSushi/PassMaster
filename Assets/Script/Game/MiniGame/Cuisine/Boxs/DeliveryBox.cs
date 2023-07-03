@@ -24,7 +24,7 @@ public class DeliveryBox : Box {
     }
 
     protected override void Put() {
-        RecipeController.Recipe targetRecipe = currentController.actualPlate.GetComponent<Plate>().fullRecipe;
+        RecipeController.Recipe targetRecipe = currentController.ActualPlate.GetComponent<Plate>().fullRecipe;
         CookController.Team targetTeam = _cookController.teams.Where(team => team.players.Contains(currentController.gameObject)).ToList()[0];
 
         if (targetTeam.HasRecipe(targetRecipe.name)) {
@@ -33,7 +33,7 @@ public class DeliveryBox : Box {
             _cookController.AddPoint(currentPoint,currentController.gameObject);
 
             targetTeam.DeliverRecipe(targetRecipe);
-            Destroy(currentController.actualPlate);
+            Destroy(currentController.ActualPlate);
         }
     }
 

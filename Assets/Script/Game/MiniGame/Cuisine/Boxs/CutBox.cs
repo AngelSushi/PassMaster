@@ -78,7 +78,7 @@ public class CutBox : MakeBox {
     }
 
     protected override void Put() {
-        if (stock == null && currentController.actualIngredient != null && currentController.actualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
+        if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent(out Ingredient ingredient)) {
             if (!ingredient.data.isCuttable || ingredient.isCut)
                 return;
         }

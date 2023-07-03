@@ -10,17 +10,24 @@ public class Plate : MonoBehaviour {
     private CookController _cookController;
     public List<Ingredient> ingredientsInPlate;
     private List<RecipeController.Recipe> _availableRecipes = new List<RecipeController.Recipe>();
+
+    public List<RecipeController.Recipe> AvailableRecipes
+    {
+        get => _availableRecipes;
+    }
+    
     public RecipeController.Recipe fullRecipe;
 
     private GameObject _plateUIParent;
     public Vector2 plateOffset;
 
     [HideInInspector] public Canvas plateCanvas;
-    [HideInInspector] public Camera currentCameraInstance;
 
     public Vector3 plateRotation;
 
     private Vector3[] _localIngredientsPosition;
+    
+    
     private void Start() {
         _cookController = (CookController)CookController.instance;
         SetupPlateUI();
@@ -43,24 +50,33 @@ public class Plate : MonoBehaviour {
     }
 
     public void Update() {
-        Vector3 plateUIPosition = currentCameraInstance.WorldToScreenPoint(transform.position);
+        Vector3 plateUIPosition = Camera.main.WorldToScreenPoint(transform.position);
         plateUIPosition += (Vector3)plateOffset;
         _plateUIParent.transform.position = plateUIPosition;
     }
     
-    public void AddIngredient(Ingredient newIngredient,Box box) {
+    public void AddIngredient(Ingredient newIngredient,Box box,ChiefController from) {
         if ((newIngredient.data.isCookable && !newIngredient.isCook) || (newIngredient.data.isCuttable && !newIngredient.isCut))
             return;
 
         if(!_plateUIParent.activeSelf)
             _plateUIParent.SetActive(true);
 
-        ingredientsInPlate.Add(newIngredient);
+        ingredientsInPlate.Add(newIngredient); // Vérifier si on peut mettre 2 items qui ont rien a voir 
+        
+        // Appelle de l'event 
+        
         bool drawRecipe = CheckAvailableRecipesWithIngredients(newIngredient) || _availableRecipes.Count == 1;
+        
+        
 
-        Sprite sprite = drawRecipe
-            ? fullRecipe != null ? fullRecipe.recipeSprite : _availableRecipes[0].recipeSprite
-            : newIngredient.data.sprite;
+        Debug.Log("fulLRecipe " + fullRecipe.name + " isFull " + (fullRecipe != null));
+        
+        _cookController.CookEvents.OnPutIngredientInPlate?.Invoke(this,new CookEvents.OnPutIngredientInPlateArgs((BasicBox)box,newIngredient,_availableRecipes,fullRecipe != null,from));
+        
+        
+        
+        Sprite sprite = drawRecipe ? fullRecipe != null ? fullRecipe.recipeSprite : _availableRecipes[0].recipeSprite : newIngredient.data.sprite;
         
 
         if (!ingredientsInPlate.Contains(newIngredient)) // CheckAvailableRecipesWithIngredients() can remove ingredients if its not in the current recipe ==> recheck if plate contains the newIngredient
@@ -80,7 +96,7 @@ public class Plate : MonoBehaviour {
             ingredientImage.transform.parent = _plateUIParent.transform;
         }
 
-        box.currentController.actualIngredient = null;
+        box.currentController.ActualIngredient = null;
         Destroy(box.currentController.transform.GetChild(box.currentController.transform.childCount - 1).gameObject);
        // DrawRecipeModel(drawRecipe,maxImage);
     }

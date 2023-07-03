@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5317289
 Transform:
   m_ObjectHideFlags: 0
@@ -8251,7 +8251,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &569829666
 Transform:
   m_ObjectHideFlags: 0
@@ -9207,7 +9207,7 @@ PrefabInstance:
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
@@ -14292,7 +14292,7 @@ PrefabInstance:
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
@@ -14503,7 +14503,7 @@ PrefabInstance:
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
@@ -22163,9 +22163,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1709151418}
-  - {fileID: 980713708}
   - {fileID: 987641849}
   - {fileID: 668633355}
+  - {fileID: 980713708}
   - {fileID: 1134233725}
   - {fileID: 1005294922}
   - {fileID: 1743604225}
@@ -31340,6 +31340,7 @@ GameObject:
   - component: {fileID: 1947371470}
   - component: {fileID: 1947371469}
   - component: {fileID: 1947371468}
+  - component: {fileID: 1947371474}
   - component: {fileID: 1947371473}
   m_Layer: 9
   m_Name: LinkCPU
@@ -31380,16 +31381,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60cb3701e52aaf64a948a4e316e7bcda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMooving: 0
+  canMoove: 0
   actualIngredient: {fileID: 0}
   actualPlate: {fileID: 0}
   ingredientSpawn: {fileID: 178545040}
-  isMoving: 0
-  canMoove: 0
+  plateCoords: {x: 0, y: 0}
   basicBoxes:
   - {fileID: 1709151419}
-  - {fileID: 980713709}
   - {fileID: 1837588651}
   - {fileID: 2142781502}
+  - {fileID: 980713709}
   - {fileID: 1134233726}
   - {fileID: 1120481846}
   - {fileID: 1743604226}
@@ -31401,6 +31403,7 @@ MonoBehaviour:
   - {fileID: 1823533379}
   currentRecipeActions: []
   tryCount: 1
+  saveEnd: 1
 --- !u!136 &1947371469
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -31553,6 +31556,18 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1947371474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947371466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e4b091dede4ec4f881423096b269c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1950708090
 GameObject:
   m_ObjectHideFlags: 0
@@ -42088,11 +42103,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 930d5a345c3965f409a52411c671a312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMooving: 0
+  canMoove: 1
   actualIngredient: {fileID: 0}
   actualPlate: {fileID: 0}
-  ingredientSpawn: {fileID: 28971594}
-  isMoving: 0
-  canMoove: 1
+  ingredientSpawn: {fileID: 0}
   speed: 15
   rb: {fileID: 2445903935565626066}
   move: {x: 0, y: 0, z: 0}
@@ -42896,7 +42911,6 @@ MonoBehaviour:
     recipeUI: {fileID: 0}
   plateOffset: {x: 0, y: 45}
   plateCanvas: {fileID: 0}
-  currentCameraInstance: {fileID: 0}
   plateRotation: {x: 0, y: 90, z: 180}
 --- !u!23 &3481484727237658062
 MeshRenderer:

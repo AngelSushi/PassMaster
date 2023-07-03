@@ -147,7 +147,7 @@ public class GridManager : MonoBehaviour
            }
         }
        
-        Debug.Log("path is null " + finalPath.Count);
+//        Debug.Log("path is null " + finalPath.Count);
         return null;
     }
 
@@ -260,5 +260,10 @@ public class GridManager : MonoBehaviour
 
 
         return worldPosition;
+    }
+
+    public Tile FromCoords(Vector2Int coords)
+    {
+        return _grid[coords.x, coords.y];
     }
 }
