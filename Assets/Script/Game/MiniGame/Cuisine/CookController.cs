@@ -32,7 +32,7 @@ public class CookController : MiniGame {
 
         public bool HasRecipe(string recipeName) {
             foreach (RecipeController.Recipe recipe in recipes) {
-                if (recipe.name.Equals(recipeName))
+                if (recipe.Name.Equals(recipeName))
                     return true;
             }
 
@@ -40,7 +40,7 @@ public class CookController : MiniGame {
         }
 
         public void DeliverRecipe(RecipeController.Recipe removedRecipe) {
-            removedRecipe.ticker.End();
+            removedRecipe.Ticker.End();
             recipes.Remove(removedRecipe);
             _deliveredRecipes++;
         }

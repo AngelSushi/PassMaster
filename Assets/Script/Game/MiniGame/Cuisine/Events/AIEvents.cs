@@ -226,5 +226,47 @@ public class AIEvents : MonoBehaviour
             _recipe = recipe;
         }
     }
-    
+
+
+    public EventHandler<OnChooseRecipeArgs> OnChooseRecipe;
+
+    public class OnChooseRecipeArgs : EventArgs
+    {
+        private RecipeController.Recipe _recipe;
+        private GameObject _ai;
+        private bool _isCanceled;
+        private List<AIAction> _recipeActions;
+
+        public RecipeController.Recipe Recipe
+        {
+            get => _recipe;
+            private set => _recipe = value;
+        }
+
+        public GameObject AI
+        {
+            get => _ai;
+            private set => _ai = value;
+        }
+
+        public bool IsCanceled
+        {
+            get => _isCanceled;
+            set => _isCanceled = value;
+        }
+
+        public List<AIAction> RecipeActions
+        {
+            get => _recipeActions;
+            set => _recipeActions = value;
+        }
+
+        public OnChooseRecipeArgs(RecipeController.Recipe recipe, GameObject ai,List<AIAction> recipeActions)
+        {
+            _recipe = recipe;
+            _ai = ai;
+            _isCanceled = false;
+            _recipeActions = recipeActions;
+        }
+    }
 }

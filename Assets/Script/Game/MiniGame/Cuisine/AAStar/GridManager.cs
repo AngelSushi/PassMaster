@@ -97,6 +97,7 @@ public class GridManager : MonoBehaviour
         
         foreach (Tile tile in _grid)
         {
+            tile.HCost = 0;
             tile.GCost = int.MaxValue;
             tile.CalculateFCost();
             tile.CameFromTile = null;

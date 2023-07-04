@@ -16,7 +16,7 @@ public class DeliveryBox : Box {
         if (current != null) {
             if (current.TryGetComponent<Plate>(out Plate plate)) {
                 if (plate.fullRecipe != null) {
-                    if (!plate.fullRecipe.needToBeCook || (plate.fullRecipe.needToBeCook && plate.fullRecipe.isCooked)) 
+                    if (!plate.fullRecipe.NeedToBeCook || (plate.fullRecipe.NeedToBeCook && plate.fullRecipe.IsCooked)) 
                         Put();
                 }
             }
@@ -27,9 +27,9 @@ public class DeliveryBox : Box {
         RecipeController.Recipe targetRecipe = currentController.ActualPlate.GetComponent<Plate>().fullRecipe;
         CookController.Team targetTeam = _cookController.teams.Where(team => team.players.Contains(currentController.gameObject)).ToList()[0];
 
-        if (targetTeam.HasRecipe(targetRecipe.name)) {
+        if (targetTeam.HasRecipe(targetRecipe.Name)) {
 
-            int currentPoint = (int) (_cookController.maxPointPerRecipe - _cookController.maxPointPerRecipe * (1 - (targetRecipe.ticker._currentTime / targetRecipe.recipeTime)));
+            int currentPoint = (int) (_cookController.maxPointPerRecipe - _cookController.maxPointPerRecipe * (1 - (targetRecipe.Ticker.CurrentTime / targetRecipe.RecipeTime)));
             _cookController.AddPoint(currentPoint,currentController.gameObject);
 
             targetTeam.DeliverRecipe(targetRecipe);

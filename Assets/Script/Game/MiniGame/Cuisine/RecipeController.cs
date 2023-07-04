@@ -1,32 +1,98 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class RecipeController : MonoBehaviour {
 
     [System.Serializable]
     public class Recipe {
-        public string name;
-        public List<IngredientData> allIngredients;
-        public Sprite recipeSprite;
-        public bool needToBeCook;
-        public bool isCooked;
-        public GameObject recipeMesh;
-        public RecipeTicker ticker;
-        public float recipeTime;
-        public GameObject recipeUI;
+        
+        [SerializeField] private string name;
+        [SerializeField] private List<IngredientData> allIngredients;
+        [SerializeField] private Sprite recipeSprite;
+        [SerializeField] private bool needToBeCook;
+        [SerializeField] private bool isCooked;
+        [SerializeField] private GameObject recipeMesh;
+        private RecipeTicker _ticker;
+        [SerializeField] private float recipeTime;
+        [SerializeField] private GameObject recipeUI;
+
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
+
+        public List<IngredientData> AllIngredients
+        {
+            get => allIngredients;
+            set => allIngredients = value;
+        }
+
+        public Sprite RecipeSprite
+        {
+            get => recipeSprite;
+            set => recipeSprite = value;
+        }
+
+        public bool NeedToBeCook
+        {
+            get => needToBeCook;
+            set => needToBeCook = value;
+        }
+
+        public bool IsCooked
+        {
+            get => isCooked;
+            set => isCooked = value;
+        }
+
+        public GameObject RecipeMesh
+        {
+            get => recipeMesh;
+            set => recipeMesh = value;
+        }
+
+        public RecipeTicker Ticker
+        {
+            get => _ticker;
+            set => _ticker = value;
+        }
+
+        public float RecipeTime
+        {
+            get => recipeTime;
+            set => recipeTime = value;
+        }
+
+        public GameObject RecipeUI
+        {
+            get => recipeUI;
+            set => recipeUI = value;
+        }
     }
 
     public class RecipeTicker {
 
         private CookController.Team _currentTeam;
         private Recipe _currentRecipe;
-        public GameObject _recipeUI;
+        private GameObject _recipeUI;
         private Slider _slider;
-        public float _currentTime;
-        public RecipeController _recipeController;
+        
+        private float _currentTime;
+
+        public float CurrentTime
+        {
+            get => _currentTime;
+            set => _currentTime = value;
+        }
+        
+        
+        private RecipeController _recipeController;
 
         public RecipeTicker(CookController.Team currentTeam,Recipe currentRecipe,GameObject recipeUI, RecipeController recipeController) {
             _currentTeam = currentTeam;
@@ -38,12 +104,16 @@ public class RecipeController : MonoBehaviour {
         }
         
         public void Start() {
-            _currentTime = _currentRecipe.recipeTime;
+            _currentTime = _currentRecipe.RecipeTime;
+
+            
+            _slider.value = _currentTime / _currentRecipe.RecipeTime;
+            _slider.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Image>().color = _recipeController.sliderColor.Evaluate(_slider.value);
         }
         
         public void Tick() {
             _currentTime -= Time.deltaTime;
-            _slider.value = _currentTime / _currentRecipe.recipeTime;
+            _slider.value = _currentTime / _currentRecipe.RecipeTime;
             _slider.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Image>().color = _recipeController.sliderColor.Evaluate(_slider.value);
 
             if (_currentTime < 0)
@@ -114,7 +184,16 @@ public class RecipeController : MonoBehaviour {
             }
             
           //  team.recipes.Add(recipe);
-            team.recipes.Add(((CookController)CookController.instance).recipeController.recipes.Where(recipe => recipe.name.Equals("MaxiBurger")).ToList()[0]);
+          
+         /* if (i == 0)
+          {
+              team.recipes.Add(((CookController)CookController.instance).recipeController.recipes.Where(recipe => recipe.Name.Equals("MaxiBurger")).ToList()[0]);  
+          }
+          else
+          {*/
+              team.recipes.Add(((CookController)CookController.instance).recipeController.recipes.Where(recipe => recipe.Name.Equals("MaxiSushi")).ToList()[0]);
+          //}
+           
         }
         
         
@@ -146,7 +225,8 @@ public class RecipeController : MonoBehaviour {
 
             Recipe currentRecipe = team.recipes[i];
             RecipeTicker ticker = new RecipeTicker(team,currentRecipe,recipeUI,this);
-            currentRecipe.ticker = ticker;
+            currentRecipe.Ticker = ticker;
+            currentRecipe.Ticker.CurrentTime = currentRecipe.Name.Equals("MaxiBurger") ? currentRecipe.RecipeTime / 2 : currentRecipe.RecipeTime;
             _recipeTickers.Add(ticker);
             ticker.Start();
         }
@@ -159,7 +239,7 @@ public class RecipeController : MonoBehaviour {
 
         
         RecipeTicker ticker = new RecipeTicker(team,recipe,recipeUI,this);
-        recipe.ticker = ticker;
+        recipe.Ticker = ticker;
         _recipeTickers.Add(ticker);
         ticker.Start();
     }
@@ -168,15 +248,15 @@ public class RecipeController : MonoBehaviour {
         for (int i = 0; i < maxRecipesPerTeam; i++) {
             Recipe currentRecipe = team.recipes[i];
             Transform recipe = team.canvas.transform.GetChild(0).GetChild(i);
-            currentRecipe.recipeUI = recipe.gameObject;
+            currentRecipe.RecipeUI = recipe.gameObject;
             
             Transform ingredientParent = team.canvas.transform.GetChild(0).GetChild(i).GetChild(2);
             
             Image recipeSpriteSlot = recipe.GetChild(1).GetComponent<Image>();
-            recipeSpriteSlot.sprite = currentRecipe.recipeSprite;
+            recipeSpriteSlot.sprite = currentRecipe.RecipeSprite;
 
-            for (int j = 0; j < currentRecipe.allIngredients.Count; j++) {
-                IngredientData ingredientData = currentRecipe.allIngredients[j];
+            for (int j = 0; j < currentRecipe.AllIngredients.Count; j++) {
+                IngredientData ingredientData = currentRecipe.AllIngredients[j];
 
                 GameObject ingredient = new GameObject("Ingredient");
                 ingredient.transform.parent = ingredientParent;
@@ -189,15 +269,15 @@ public class RecipeController : MonoBehaviour {
     private void DrawRecipe(CookController.Team team,Recipe currentRecipe) {
         int index = team.canvas.transform.GetChild(0).childCount - 1;
         Transform recipe = team.canvas.transform.GetChild(0).GetChild(index);
-        currentRecipe.recipeUI = recipe.gameObject;
+        currentRecipe.RecipeUI = recipe.gameObject;
         
         Transform ingredientParent = team.canvas.transform.GetChild(0).GetChild(index).GetChild(2);
         
         Image recipeSpriteSlot = recipe.GetChild(1).GetComponent<Image>();
-        recipeSpriteSlot.sprite = currentRecipe.recipeSprite;
+        recipeSpriteSlot.sprite = currentRecipe.RecipeSprite;
 
-        for (int j = 0; j < currentRecipe.allIngredients.Count; j++) {
-            IngredientData ingredientData = currentRecipe.allIngredients[j];
+        for (int j = 0; j < currentRecipe.AllIngredients.Count; j++) {
+            IngredientData ingredientData = currentRecipe.AllIngredients[j];
 
             GameObject ingredient = new GameObject("Ingredient");
             ingredient.transform.parent = ingredientParent;

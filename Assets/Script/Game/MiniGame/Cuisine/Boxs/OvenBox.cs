@@ -19,7 +19,7 @@ public class OvenBox : MakeBox {
             if (plate.fullRecipe != null) {
                 _targetRecipe = plate.fullRecipe;
                 
-                if (_targetRecipe.needToBeCook && !_targetRecipe.isCooked) {
+                if (_targetRecipe.NeedToBeCook && !_targetRecipe.IsCooked) {
                     plateObj.transform.parent = transform;
                     plateObj.transform.localPosition = stockPosition;
                    // plate.plateCanvas.gameObject.SetActive(false);
@@ -32,7 +32,7 @@ public class OvenBox : MakeBox {
     }
 
     protected override void Take() {
-        if (_targetRecipe != null && _targetRecipe.isCooked) {
+        if (_targetRecipe != null && _targetRecipe.IsCooked) {
             stock.transform.parent = currentController.transform;
             stock.transform.localPosition = currentController.IngredientSpawn.localPosition;
             currentController.ActualPlate = stock;
@@ -43,12 +43,10 @@ public class OvenBox : MakeBox {
     }
 
     protected override void StartMake() {
-        Debug.Log("enter make");
         boxSlider.gameObject.SetActive(true);
     }
 
     protected override void Make() {
-        Debug.Log("make");
         timer += Time.deltaTime;
         boxSlider.value = timer / timeToSucceed;
 
@@ -57,9 +55,8 @@ public class OvenBox : MakeBox {
     }
 
     protected override void FinishMake() {
-        Debug.Log("stop make");
         boxSlider.gameObject.SetActive(false);
-        _targetRecipe.isCooked = true;
+        _targetRecipe.IsCooked = true;
         _furnaceDoor.transform.eulerAngles = new Vector3(90, 0, 0);
     }
 }

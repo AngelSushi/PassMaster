@@ -140,7 +140,7 @@ public class ChiefAIController : ChiefController
     private CookController _controller;
     private NavMeshAgent _agent;
     private NavMeshPath _path;
-    
+
     /**
      *
      * AJouter le fait que si on a plus de task ou que si deliver on peut commencer une nouvelle recette
@@ -148,14 +148,14 @@ public class ChiefAIController : ChiefController
      *
      * Vérifier lorsqu'une tache est supprimée de force ( recette disparaiit) , bien refaire les actions autour
      *
-     *
+     * Repenser tt le systeme de cramage
      *
      * Régler les soucis de path
      * Il se peut que le joueur se retrouve sans task a faire alors que le steak est toujours en train de se cook
      *
      *
      */
-    
+
     
     private void Start()
     {
@@ -166,84 +166,81 @@ public class ChiefAIController : ChiefController
         {
             _emptyBoxes.Add(box);
         }
-        
+
         for (int i = 0; i < tryCount; i++)
         {
-            ChooseRecipe(_team.recipes);    
-            FindBoxForPlate();
-            DispatchTasks();
+            StartNewRecipe(_team.recipes);   
         }
 
-        Debug.Log("actionName " + currentRecipeActions[0].Name);
-        
-        _currentAction = currentRecipeActions[0];
-        
-        _currentTask = _currentAction.Tasks.First();
-        IsMooving = true;
-        CanMoove = true;
 
         _agent = GetComponent<NavMeshAgent>();
         _path = new NavMeshPath();
-        
+
     }
 
 
     private void Update()
     {
-        if (_currentAction != null && _currentTask != null)
-        {
-            if (CanMoove)
-            {
-                if (IsMooving)
-                {
-                    if (_goToStart)
-                    {
-                        _agent.CalculatePath(_gridManager.GetWorldPosition(_currentTask.Start), _path);
-                        _agent.SetPath(_path);
-                        _agent.velocity = _agent.desiredVelocity;
 
-                        if (_agent.velocity.normalized != Vector3.zero)
-                        {
-                            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_agent.velocity.normalized), 2f * Time.deltaTime);    
-                        }
-                    
+          if (_currentAction != null && _currentTask != null)
+          {
+              if (CanMoove)
+              {
+                  if (IsMooving)
+                  {
+                      if (_goToStart)
+                      {
+                          _agent.CalculatePath(_gridManager.GetWorldPosition(_currentTask.Start), _path);
+                          _agent.SetPath(_path);
+                          _agent.velocity = _agent.desiredVelocity;
+  
+                          if (_agent.velocity.normalized != Vector3.zero)
+                          {
+                              transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_agent.velocity.normalized), 2f * Time.deltaTime);    
+                          }
+                      
+  
+                          if (_agent.remainingDistance < 0.5f)
+                          {
+                              _controller.AiEvents.OnTaskReachStart?.Invoke(this,new AIEvents.OnTaskReachStartArgs(_currentTask,_currentAction,transform.gameObject,_team,ActualTile));
+                          }
+                      }
+                      else
+                      {
+                          _agent.CalculatePath(_gridManager.GetWorldPosition(_currentTask.End), _path);
+                          _agent.SetPath(_path);
+                          _agent.velocity = _agent.desiredVelocity;
+  
+                          if (_agent.velocity.normalized != Vector3.zero)
+                          {
+                              transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_agent.velocity.normalized), 2f * Time.deltaTime);    
+                          }
+                      
+  
+                          if (_agent.remainingDistance < 0.5f)
+                          {
+                              _controller.AiEvents.OnTaskReachEnd?.Invoke(this, new AIEvents.OnTaskReachEndArgs(_currentTask, _currentAction, transform.gameObject, _team,_currentTask.End));
+                          }
+                      }
+                      
+                      
+                      
+                  }
+              }
+  
+          }
+          else if (CurrentAction == null)
+          {
+              Debug.Log("wait action");
+              
+              CurrentAction = CurrentRecipeActions.FirstOrDefault(action => !action.IsFinished && action.Condition.All(val => val));
 
-                        if (_agent.remainingDistance < 0.5f)
-                        {
-                            _controller.AiEvents.OnTaskReachStart?.Invoke(this,new AIEvents.OnTaskReachStartArgs(_currentTask,_currentAction,transform.gameObject,_team,ActualTile));
-                        }
-                    }
-                    else
-                    {
-                        _agent.CalculatePath(_gridManager.GetWorldPosition(_currentTask.End), _path);
-                        _agent.SetPath(_path);
-                        _agent.velocity = _agent.desiredVelocity;
-
-                        if (_agent.velocity.normalized != Vector3.zero)
-                        {
-                            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_agent.velocity.normalized), 2f * Time.deltaTime);    
-                        }
-                    
-
-                        if (_agent.remainingDistance < 0.5f)
-                        {
-                            _controller.AiEvents.OnTaskReachEnd?.Invoke(this, new AIEvents.OnTaskReachEndArgs(_currentTask, _currentAction, transform.gameObject, _team,_currentTask.End));
-                        }
-                    }
-                    
-                    
-                    
-                }
-            }
-
-        }
-        else if (CurrentAction == null)
-        {
-            Debug.Log("wait action");
-            
-            CurrentAction = CurrentRecipeActions.FirstOrDefault(action => !action.IsFinished && action.Condition.All(val => val));
-            
-        }
+              if (CurrentAction != null)
+              {
+                  _controller.AiEvents.OnTaskStarted?.Invoke(this,new AIEvents.OnTaskStartedArgs(CurrentTask,CurrentAction,transform.gameObject,Team));
+              }
+          }
+          
     }
 
     #region "Utils"
@@ -326,9 +323,47 @@ public class ChiefAIController : ChiefController
             
             currentRecipeActions.Add(cookToStock);
             _controller.AiEvents.OnTaskFinished?.Invoke(this, new AIEvents.OnTaskFinishedArgs(_currentTask,_currentAction,transform.gameObject,_team));
+            
+            Debug.Log("task finished " + _controller.AiEvents.OnTaskFinished);
+            
         }
                     
      
+    }
+
+    private void StartNewRecipe(List<RecipeController.Recipe> recipes)
+    {
+        ChooseRecipe(_team.recipes);
+        FindBoxForPlate();
+        DispatchTasks();
+
+        Debug.Log("actionName " + currentRecipeActions[0].Name);
+
+        AIEvents.OnChooseRecipeArgs e = new AIEvents.OnChooseRecipeArgs(_currentWorkRecipe, transform.gameObject, currentRecipeActions);
+
+        _controller.AiEvents.OnChooseRecipe?.Invoke(this,e);
+        
+        if (e.IsCanceled && recipes.Count > 1)
+        {
+            Debug.Log("canceled choose recipe event");
+            List<RecipeController.Recipe> newRecipes = recipes;
+            
+            if (recipes.Contains(_currentWorkRecipe))
+            {
+                recipes.Remove(_currentWorkRecipe);
+            }
+            
+            currentRecipeActions.Clear();
+            StartNewRecipe(newRecipes);    
+        }
+        
+        Debug.Log("final recipe is " + _currentWorkRecipe.Name);
+
+        _currentAction = currentRecipeActions[0];
+
+        _currentTask = _currentAction.Tasks.First();
+        IsMooving = true;
+        CanMoove = true;
     }
 
     #region "Choose Recipe"
@@ -340,7 +375,7 @@ public class ChiefAIController : ChiefController
         {
             int distance;
 
-            CalculateDistance(recipe,out distance);
+            CalculateTheoricDistance(recipe,out distance);
 
             recipesDistance.Add(distance);
         }
@@ -352,35 +387,32 @@ public class ChiefAIController : ChiefController
         
         _currentWorkRecipe = _team.recipes[minIndex];    
         
-         // + Ajouter par difficulté si difficile plus de chance de prendre la bonne sinon non + ajouter avec le temps 
-        ManageUIRecipe();
         ChooseRecipeDifficulty();
-
     }
 
-    private void CalculateDistance(RecipeController.Recipe recipe, out int distance)
+    private void CalculateTheoricDistance(RecipeController.Recipe recipe, out int distance)
     {
         distance = 0;
         
-        for (int i = 0; i < recipe.allIngredients.Count; i++)
+        for (int i = 0; i < recipe.AllIngredients.Count; i++)
         {
-            IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == recipe.allIngredients[i]).ToList()[0];
+            IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == recipe.AllIngredients[i]).ToList()[0];
             distance += _gridManager.GeneratePath(ActualTile, targetIngredientBox.Tile).Count;
 
-            if (recipe.allIngredients[i].isCookable)
+            if (recipe.AllIngredients[i].isCookable)
             {
-                if (recipe.allIngredients[i].cookIndex == 0)
+                if (recipe.AllIngredients[i].cookIndex == 0)
                 {
                     distance += _gridManager.GeneratePath(targetIngredientBox.Tile, GetBoxWithType(typeof(StoveBox)).Tile).Count;
                 }
-                else if (recipe.allIngredients[i].cookIndex == 1)
+                else if (recipe.AllIngredients[i].cookIndex == 1)
                 {
                     distance += _gridManager.GeneratePath(targetIngredientBox.Tile, GetBoxWithType(typeof(PanBox)).Tile).Count;
                 }
 
             }
 
-            if (recipe.allIngredients[i].isCuttable)
+            if (recipe.AllIngredients[i].isCuttable)
             {
                 distance += _gridManager.GeneratePath(targetIngredientBox.Tile, GetBoxWithType(typeof(CutBox)).Tile).Count;
             }
@@ -388,15 +420,96 @@ public class ChiefAIController : ChiefController
 
 
 
-        if (recipe.needToBeCook)
+        if (recipe.NeedToBeCook)
         {
             distance += _gridManager.GeneratePath(ActualTile, GetBoxWithType(typeof(OvenBox)).Tile).Count;
 
         }
+        
+        // Add Time Condition
+        distance = (int)(distance * recipe.Ticker.CurrentTime / recipe.RecipeTime);
+
+    }
+
+    public int CalculateRecipeDistance(List<AIAction> actions)
+    {
+        int distance = 0;
+
+        for (int i = 0;i < actions.Count;i++)
+        {
+            AIAction action = actions[i];
+
+            Tile startTile = action.Tasks.First().Start;
+
+            if (i >= 1)
+            {
+                startTile = actions[i - 1].Tasks.Last().End;
+            }
+            
+            for(int j = 0;j < action.Tasks.Count;j++)
+            {
+                AIAction.AITask task = action.Tasks[j];
+
+                Tile startTileTask = task.Start;
+
+                if (j == 0)
+                {
+                    startTileTask = startTile;
+                }
+
+                List<Tile> path = _gridManager.GeneratePath(startTileTask, task.End);
+
+                if (path != null)
+                {   
+                    //Debug.Log("start to " + startTileTask.Coords + " end To " + task.End.Coords + " name " + action.Name);
+                    
+                    distance += path.Count;
+                }
+            }
+        }
+        
+        Debug.Log("distance for " + _currentWorkRecipe.Name + " " + distance);
+        
+        return distance;
+    }
+
+    public bool CanTakeRecipe(float distance, RecipeController.Recipe currentRecipe)
+    {
+        float targetChoose = 0;
+        
+        switch (_controller.Difficulty)
+        {
+            case GameController.Difficulty.EASY:
+                targetChoose = 0.30f;
+                break;
+            
+            case GameController.Difficulty.MEDIUM:
+                targetChoose = 0.5f;
+                break;
+            
+            case GameController.Difficulty.HARD:
+                targetChoose = 0.75f;
+                break;
+        }
+
+        float choose = Random.Range(0f, 1f);
+
+        bool succeed = choose <= targetChoose;
+        
+        Debug.Log("random " + choose);
+        Debug.Log("succeed " + succeed);
+        Debug.Log("distance " + (distance * 0.37f));
+        
+        if (succeed)
+        {
+            return currentRecipe.Ticker.CurrentTime >= (int)(distance * 0.37f); // 0.37s = 1 tile move
+        }
+        
+        return true;
     }
 
     private void FindShortestRecipe(List<int> recipesDistance,out int shortestIndex)
-    { // Ajouter le facteur temps
+    { 
         
         shortestIndex = 0;
         
@@ -420,23 +533,6 @@ public class ChiefAIController : ChiefController
                 shortestIndex = i;
             }
         }
-    }
-
-    private void ManageUIRecipe()
-    {
-        GameObject targetPlayer =  _controller.teams.Where(team => team.players.Contains(transform.gameObject)).ToList()[0].players.Where(player => player.name.Equals(transform.gameObject.name.Replace("CPU",""))).ToList()[0];
-        Player player = _controller.players.Where(player => player.gameObject.name.Equals(targetPlayer.name.Replace("CPU",""))).ToList()[0];
-        
-        GameObject slot = _currentWorkRecipe.recipeUI.transform.GetChild(3).gameObject;
-        
-        if(slot.GetComponent<Image>().sprite != null)
-        {
-            slot = _currentWorkRecipe.recipeUI.transform.GetChild(4).gameObject;
-        }
-
-        slot.GetComponent<Image>().sprite = player.uiIcon;
-        slot.transform.GetChild(0).gameObject.SetActive(true);
-        slot.SetActive(true);
     }
 
     private void ChooseRecipeDifficulty()
@@ -463,7 +559,11 @@ public class ChiefAIController : ChiefController
                 break;
         }
 
-        if (choose <= targetChoose)
+        bool succeed = choose > targetChoose;
+
+        succeed = false;
+        
+        if (succeed)
         {
             if (_team.recipes.Count == 1)
             {
@@ -486,7 +586,7 @@ public class ChiefAIController : ChiefController
         int averageX = ActualTile.X;
         int averageY = ActualTile.Y;
         
-        foreach (IngredientData ingredient in _currentWorkRecipe.allIngredients)
+        foreach (IngredientData ingredient in _currentWorkRecipe.AllIngredients)
         {
             IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == ingredient).ToList()[0];
             averageX += targetIngredientBox.Tile.X;
@@ -516,7 +616,7 @@ public class ChiefAIController : ChiefController
             }
         }
         
-        if (_currentWorkRecipe.needToBeCook)
+        if (_currentWorkRecipe.NeedToBeCook)
         {
             OvenBox targetOvenBox = (OvenBox)GetBoxWithType(typeof(OvenBox));
             averageX += targetOvenBox.Tile.X;
@@ -563,9 +663,9 @@ public class ChiefAIController : ChiefController
 
     public Box ApplyDifficultyOffset(BasicBox basicBox)
     {
-        int offset;
+        int offset = 0;
         
-        switch (_controller.Difficulty)
+       /* switch (_controller.Difficulty)
         {
             case GameController.Difficulty.EASY:
                 offset = 3;
@@ -583,7 +683,7 @@ public class ChiefAIController : ChiefController
                 offset = 3;
                  break;
         }
-
+*/
         
         int randomOffset = Random.Range(-offset, offset);
 
@@ -608,11 +708,8 @@ public class ChiefAIController : ChiefController
     
     private void DispatchTasks()
     {
-        foreach (IngredientData ingredient in _currentWorkRecipe.allIngredients)
+        foreach (IngredientData ingredient in _currentWorkRecipe.AllIngredients)
         {
-            Debug.Log("ingredient " + ingredient.name);
-            
-            
             AIAction ingredientAction = new AIAction(ingredient);
             
             IngredientBox targetIngredientBox = FindObjectsOfType<IngredientBox>().Where(ingredientBox => ingredientBox.Ingredient.GetComponent<Ingredient>().data == ingredient).ToList()[0];
@@ -665,13 +762,13 @@ public class ChiefAIController : ChiefController
         
         currentRecipeActions.Add(plateAction);
 
-        if (_currentWorkRecipe.needToBeCook)
+        if (_currentWorkRecipe.NeedToBeCook)
         {
             AIAction cookAction = new AIAction(null);
 
             AIAction.AITask movementToOven = new AIAction.AITask(ActualTile, GetBoxWithType(typeof(OvenBox)).Tile);
 
-            cookAction.Name = "Oven Recipe " + _currentWorkRecipe.name;
+            cookAction.Name = "Oven Recipe " + _currentWorkRecipe.Name;
             
             cookAction.Tasks.Add(movementToOven);
             cookAction.Priority = 0;
@@ -693,13 +790,11 @@ public class ChiefAIController : ChiefController
 
     public void OrderTasks()
     {
-        Debug.Log("begin an order ");
-        
         currentRecipeActions = currentRecipeActions.OrderBy(action => action.Priority).ToList();
         currentRecipeActions.Reverse();
 
-        OrderByHeuristicDistance();
-        DeOrderByDifficulty();
+      //  OrderByHeuristicDistance();
+      //  DeOrderByDifficulty();
     }
 
     private void OrderByHeuristicDistance()
@@ -852,7 +947,7 @@ public class ChiefAIController : ChiefController
     {
         AIAction deliverAction = currentRecipeActions.Where(action => action.Priority == -1).ToList()[0];
         
-        if (_currentWorkRecipe.needToBeCook)
+        if (_currentWorkRecipe.NeedToBeCook)
         {
             AIAction ovenAction = currentRecipeActions.Where(action => action.Priority == 0).ToList()[0];
             currentRecipeActions.Remove(ovenAction);

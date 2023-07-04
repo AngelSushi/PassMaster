@@ -67,16 +67,12 @@ public class Plate : MonoBehaviour {
         // Appelle de l'event 
         
         bool drawRecipe = CheckAvailableRecipesWithIngredients(newIngredient) || _availableRecipes.Count == 1;
-        
-        
 
-        Debug.Log("fulLRecipe " + fullRecipe.name + " isFull " + (fullRecipe != null));
-        
         _cookController.CookEvents.OnPutIngredientInPlate?.Invoke(this,new CookEvents.OnPutIngredientInPlateArgs((BasicBox)box,newIngredient,_availableRecipes,fullRecipe != null,from));
         
         
         
-        Sprite sprite = drawRecipe ? fullRecipe != null ? fullRecipe.recipeSprite : _availableRecipes[0].recipeSprite : newIngredient.data.sprite;
+        Sprite sprite = drawRecipe ? fullRecipe != null ? fullRecipe.RecipeSprite : _availableRecipes[0].RecipeSprite : newIngredient.data.sprite;
         
 
         if (!ingredientsInPlate.Contains(newIngredient)) // CheckAvailableRecipesWithIngredients() can remove ingredients if its not in the current recipe ==> recheck if plate contains the newIngredient
@@ -119,12 +115,12 @@ public class Plate : MonoBehaviour {
             for (int i = 0; i < ingredientsInPlate.Count; i++) {
                 IngredientData ingredient = ingredientsInPlate[i].data;   
                 
-                if (!recipe.allIngredients.Contains(ingredient)) { 
+                if (!recipe.AllIngredients.Contains(ingredient)) { 
                     isRecipeAvailable = false;
                     break;
                 }
 
-                if (i == recipe.allIngredients.Count - 1 && ingredientsInPlate.Count == recipe.allIngredients.Count)  // FULL RECIPE
+                if (i == recipe.AllIngredients.Count - 1 && ingredientsInPlate.Count == recipe.AllIngredients.Count)  // FULL RECIPE
                     isFull = true;
             }
 
@@ -144,7 +140,7 @@ public class Plate : MonoBehaviour {
             for (int i = 0; i < ingredientsInPlate.Count; i++) { 
                 IngredientData ingredient = ingredientsInPlate[i].data;
 
-                if (recipe.allIngredients.Contains(ingredient)) {
+                if (recipe.AllIngredients.Contains(ingredient)) {
                     containsInOne = true;
                 }
                 else {

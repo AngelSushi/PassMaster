@@ -25,6 +25,7 @@ public class AIEventListener : CoroutineSystem
         _controller.AiEvents.OnTaskReachStart += OnTaskReachStart;
         _controller.AiEvents.OnTaskReachEnd += OnTaskReachEnd;
         _controller.AiEvents.OnActionFinished += OnActionFinished;
+        _controller.AiEvents.OnChooseRecipe += OnChooseRecipe;
 
     }
 
@@ -39,8 +40,16 @@ public class AIEventListener : CoroutineSystem
         _controller.AiEvents.OnTaskReachStart -= OnTaskReachStart;
         _controller.AiEvents.OnTaskReachEnd -= OnTaskReachEnd;
         _controller.AiEvents.OnActionFinished -= OnActionFinished;
+        _controller.AiEvents.OnChooseRecipe -= OnChooseRecipe;
     }
 
+    private void OnChooseRecipe(object sender, AIEvents.OnChooseRecipeArgs e)
+    {
+        if (e.AI == transform.gameObject)
+        {
+            e.IsCanceled = !_aiController.CanTakeRecipe(_aiController.CalculateRecipeDistance(e.RecipeActions), e.Recipe);
+        }
+    }
 
     private void OnUpdateBoxStock(object sender,CookEvents.OnUpdateBoxStockArgs e)
     {
@@ -77,7 +86,7 @@ public class AIEventListener : CoroutineSystem
                     
                     if (plate != null)
                     {
-                        deliverAction.Condition[0] = plate.fullRecipe  != null && plate.fullRecipe.name.Equals(_aiController.CurrentWorkRecipe.name);
+                        deliverAction.Condition[0] = plate.fullRecipe  != null && plate.fullRecipe.Name.Equals(_aiController.CurrentWorkRecipe.Name);
                     }
                 }
             }
@@ -317,7 +326,7 @@ public class AIEventListener : CoroutineSystem
                     {
                         bool isActionExist = _aiController.CurrentRecipeActions.Where(aiAction => aiAction.Name.Equals("StockToBoxPlate") && aiAction.ActionOn == ingredient.data).FirstOrDefault() != null;
 
-                        if (_aiController.CurrentWorkRecipe.allIngredients.Contains(ingredient.data) && !plate.ingredientsInPlate.Contains(ingredient) && !isActionExist) // erreur prise de plate non finie 
+                        if (_aiController.CurrentWorkRecipe.AllIngredients.Contains(ingredient.data) && !plate.ingredientsInPlate.Contains(ingredient) && !isActionExist) // erreur prise de plate non finie 
                         {
                             AIAction stockToBoxPlate = new AIAction(ingredient.data);
                             stockToBoxPlate.Name = "StockToBoxPlate";
