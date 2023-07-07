@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using Recipes;
 
 public class OvenBox : MakeBox {
 
     private GameObject _furnaceDoor;
-    private RecipeController.Recipe _targetRecipe;
+    private Recipe _targetRecipe;
 
     protected override void Start() {
         base.Start();
@@ -58,5 +58,20 @@ public class OvenBox : MakeBox {
         boxSlider.gameObject.SetActive(false);
         _targetRecipe.IsCooked = true;
         _furnaceDoor.transform.eulerAngles = new Vector3(90, 0, 0);
+    }
+
+    protected override void BeginBurn()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void Burn()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void FinishBurn()
+    {
+        throw new System.NotImplementedException();
     }
 }

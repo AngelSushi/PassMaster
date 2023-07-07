@@ -19,6 +19,7 @@ public class PanBox : MakeBox {
     private bool _isDirtyWater;
     private Image _slot;
     
+    [SerializeField] protected float timeToBurn;
     #endregion
     
     #region Unity Functions
@@ -50,7 +51,7 @@ public class PanBox : MakeBox {
         _isDirtyWater = true;
 
         _slot.gameObject.SetActive(true);
-        _slot.sprite = _stockIngredient.data.sprite;
+        _slot.sprite = _stockIngredient.Data.Sprite;
 
         StartCoroutine(LerpColor(_waterMesh,mainColor,cookedColor));
         StartCoroutine(LerpColor(_meshIngredient, _mainIngredientColor, _mainCookedColor));
@@ -67,11 +68,26 @@ public class PanBox : MakeBox {
     protected override void FinishMake() {
         boxSlider.gameObject.SetActive(false);
         timer = 0f;
-        _stockIngredient.isCook = true;
+        _stockIngredient.IsCook = true;
 
         AIAction action = currentController is ChiefAIController ? ((ChiefAIController)currentController).CurrentAction : null;
         
         _cookController.CookEvents.OnFinishedCookIngredient?.Invoke(this,new CookEvents.OnFinishedCookIngredientArgs(currentController.gameObject,this,_stockIngredient,action));
+    }
+
+    protected override void BeginBurn()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void Burn()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void FinishBurn()
+    {
+        throw new System.NotImplementedException();
     }
 
     #endregion
@@ -79,8 +95,8 @@ public class PanBox : MakeBox {
     #region Basic Box Function
     protected override void Put() {
         if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent(out Ingredient ingredient)) {
-            if (ingredient.data.cookIndex == 1) { // detect if ingredient is cooked  on pan
-                if (ingredient.data.isCookable && !ingredient.isCook && !_isDirtyWater) 
+            if (!ingredient.Data.IsPan) { // detect if ingredient is cooked  on pan
+                if (ingredient.Data.CanBeCook && !ingredient.IsCook && !_isDirtyWater) 
                     base.Put();
             }
         }
@@ -89,7 +105,7 @@ public class PanBox : MakeBox {
 
     protected override void Take() {
         if (stock != null) {
-            if (stock.TryGetComponent<Ingredient>(out Ingredient ingredient) && ingredient.isCook) {
+            if (stock.TryGetComponent<Ingredient>(out Ingredient ingredient) && ingredient.IsCook) {
                 _slot.gameObject.SetActive(false);
                 base.Take();
             }

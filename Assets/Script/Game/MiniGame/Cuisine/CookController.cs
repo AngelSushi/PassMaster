@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Recipes;
 
 public class CookController : MiniGame {
 
@@ -12,7 +13,7 @@ public class CookController : MiniGame {
         public string name;
         public GameObject[] players;
         public int point;
-        public List<RecipeController.Recipe> recipes;
+        public List<Recipe> recipes;
         private int _deliveredRecipes;
         public GameObject instance;
         public Canvas canvas;
@@ -31,7 +32,7 @@ public class CookController : MiniGame {
         private CookController _cookController;
 
         public bool HasRecipe(string recipeName) {
-            foreach (RecipeController.Recipe recipe in recipes) {
+            foreach (Recipe recipe in recipes) {
                 if (recipe.Name.Equals(recipeName))
                     return true;
             }
@@ -39,9 +40,10 @@ public class CookController : MiniGame {
             return false;
         }
 
-        public void DeliverRecipe(RecipeController.Recipe removedRecipe) {
+        public void DeliverRecipe(Recipe removedRecipe) {
             removedRecipe.Ticker.End();
             recipes.Remove(removedRecipe);
+            Debug.Log("deliver my recipe");
             _deliveredRecipes++;
         }
 
@@ -103,6 +105,15 @@ public class CookController : MiniGame {
         get => _aiEvents;
         private set => _aiEvents = value;
     }
+
+    private RecipeEvents _recipeEvents;
+
+    public RecipeEvents RecipeEvents
+    {
+        get => _recipeEvents;
+        private set => _recipeEvents = value;
+    }
+    
     /* TODO-LIST
      *
      * Gestion de livraison des commandes - Fait 
@@ -123,6 +134,7 @@ public class CookController : MiniGame {
         recipeController = GetComponent<RecipeController>();
         CookEvents = GetComponentInChildren<CookEvents>();
         AiEvents = GetComponentInChildren<AIEvents>();
+        RecipeEvents = GetComponentInChildren<RecipeEvents>();
 
         foreach (Team team in teams) {
             GameObject instanceCanvas = new GameObject("Instance Canvas");
@@ -139,11 +151,9 @@ public class CookController : MiniGame {
         }
     }
 
-    public void AddPoint(int point, GameObject player) {
+    public void AddPoint(int point, GameObject player,Recipe deliveredRecipe) {
         Team currentTeam = teams.Where(team => team.players.Contains(player)).ToList()[0];
         currentTeam.point += point;
-        
-        Debug.Log("team " + currentTeam.name + " has " + currentTeam.point + " points ");
 
         List<int> allTeamsPoint = new List<int>();
         
@@ -171,7 +181,7 @@ public class CookController : MiniGame {
             playersUI[i].GetChild(2).gameObject.GetComponent<Text>().text = allTeamsPoint[i].ToString("D3");
             playersUI[i].GetChild(1).gameObject.GetComponent<Image>().sprite = classedPlayers[i].uiIcon;
         }
-        
+
     }
     
     public override void OnStartCinematicEnd() {}

@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using System.Linq;
 using UnityEngine;
+using Recipes;
 
 public class DeliveryBox : Box {
 
@@ -24,13 +24,13 @@ public class DeliveryBox : Box {
     }
 
     protected override void Put() {
-        RecipeController.Recipe targetRecipe = currentController.ActualPlate.GetComponent<Plate>().fullRecipe;
+        Recipe targetRecipe = currentController.ActualPlate.GetComponent<Plate>().fullRecipe;
         CookController.Team targetTeam = _cookController.teams.Where(team => team.players.Contains(currentController.gameObject)).ToList()[0];
 
         if (targetTeam.HasRecipe(targetRecipe.Name)) {
 
             int currentPoint = (int) (_cookController.maxPointPerRecipe - _cookController.maxPointPerRecipe * (1 - (targetRecipe.Ticker.CurrentTime / targetRecipe.RecipeTime)));
-            _cookController.AddPoint(currentPoint,currentController.gameObject);
+            _cookController.AddPoint(currentPoint,currentController.gameObject,targetRecipe);
 
             targetTeam.DeliverRecipe(targetRecipe);
             Destroy(currentController.ActualPlate);

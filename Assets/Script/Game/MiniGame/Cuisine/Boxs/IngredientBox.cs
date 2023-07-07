@@ -30,11 +30,11 @@ public class IngredientBox : Box {
             ingredient.transform.parent = currentController.transform;
             ingredient.transform.localPosition = currentController.IngredientSpawn.localPosition;
 
-            Vector3 euler = Ingredient.GetComponent<Ingredient>().ingredientRotation;
+            Vector3 euler = Ingredient.GetComponent<Ingredient>().IngredientRotation;
             ingredient.transform.rotation = Quaternion.Euler(euler.x, euler.y, euler.z);
 
-            
-            
+
+            audioSource.Play();
             
             ingredient.SetActive(true);
             currentController.ActualIngredient = ingredient;

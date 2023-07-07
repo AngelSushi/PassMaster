@@ -5,15 +5,46 @@ using UnityEngine;
 
 public class Ingredient : MonoBehaviour {
 
-    public IngredientData data;
+    [SerializeField] private IngredientData data;
+
+    public IngredientData Data
+    {
+        get => data;
+        private set => data = value;
+    }
     
-    public bool isCut;
-    public bool isCook;
+    [SerializeField] private bool isCut;
 
+    public bool IsCut
+    {
+        get => isCut;
+        set => isCut = value;
+    }
+    
+    [SerializeField] private bool isCook;
 
-   // [Tooltip("Vector 0 : Hold Rotation, Vector 1 : Box Rotation, Vector 2 : Plate Rotation")] public Vector3[] ingredientRotation = new Vector3[3];
-    public Vector3 ingredientRotation;
-   
+    public bool IsCook
+    {
+        get => isCook;
+        set => isCook = value;
+    }
+
+    [SerializeField] private bool isBurn;
+
+    public bool IsBurn
+    {
+        get => isBurn;
+        set => isBurn = value;
+    }
+
+    [SerializeField] private Vector3 ingredientRotation;
+
+    public Vector3 IngredientRotation
+    {
+        get => ingredientRotation;
+        private set => ingredientRotation = value;
+    }
+    
     [HideInInspector] public GameObject basic;
     [HideInInspector] public GameObject modified;
 

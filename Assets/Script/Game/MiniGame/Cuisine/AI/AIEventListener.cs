@@ -1,8 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Grid;
 using UnityEngine;
+using Recipes;
 
 public class AIEventListener : CoroutineSystem
 {
@@ -27,6 +27,9 @@ public class AIEventListener : CoroutineSystem
         _controller.AiEvents.OnActionFinished += OnActionFinished;
         _controller.AiEvents.OnChooseRecipe += OnChooseRecipe;
 
+        _controller.RecipeEvents.OnRecipeEndTimer += OnRecipeEndTimer;
+        _controller.RecipeEvents.OnRecipeDelivered += OnRecipeDelivered;
+
     }
 
     private void OnDestroy()
@@ -41,6 +44,29 @@ public class AIEventListener : CoroutineSystem
         _controller.AiEvents.OnTaskReachEnd -= OnTaskReachEnd;
         _controller.AiEvents.OnActionFinished -= OnActionFinished;
         _controller.AiEvents.OnChooseRecipe -= OnChooseRecipe;
+
+        _controller.RecipeEvents.OnRecipeEndTimer -= OnRecipeEndTimer;
+        _controller.RecipeEvents.OnRecipeDelivered -= OnRecipeDelivered;
+    }
+
+    private void OnRecipeEndTimer(object sender, RecipeEvents.OnRecipeEndTimerArgs e)
+    {
+        if (e.Team == _aiController.Team)
+        {
+            // S'il est en train de faire un truc ca doit l'arreter 
+            Debug.Log("enter " + e.Recipe.Ticker.CurrentTime);
+            
+            GenerateBinActions();
+        }
+    }
+
+    private void OnRecipeDelivered(object sender, RecipeEvents.OnRecipeDeliveredArgs e)
+    {
+        if (e.Player == transform.gameObject)
+        {
+            _aiController.CurrentRecipeActions.Clear();
+            _aiController.StartNewRecipe(_aiController.Team.recipes);
+        }
     }
 
     private void OnChooseRecipe(object sender, AIEvents.OnChooseRecipeArgs e)
@@ -134,7 +160,7 @@ public class AIEventListener : CoroutineSystem
         if (e.AI == transform.gameObject)
         {
             _aiController.IsMooving = false;
-            
+
             RunDelayed(0.3f, () =>
             {
                 e.Tile.AttachedBox.BoxInteract(_aiController.ActualIngredient != null ? _aiController.ActualIngredient : _aiController.ActualPlate != null ? _aiController.ActualPlate : null, _aiController);
@@ -181,9 +207,12 @@ public class AIEventListener : CoroutineSystem
     {
         if (e.AI == transform.gameObject)
         {
+            AIAction.AITask currentTask = _aiController.CurrentTask;
+            
+            
             RunDelayed(0.3f, () =>
             {
-                _aiController.CurrentTask.IsFinished = true;
+                currentTask.IsFinished = true;
                 _aiController.CurrentTask = _aiController.CurrentAction.Tasks.FirstOrDefault(aiTask => !aiTask.IsFinished);
                 
                 if (_aiController.CurrentTask == null)
@@ -214,24 +243,11 @@ public class AIEventListener : CoroutineSystem
     {
         if (e.Cooker == transform.gameObject)
         {
-
             AIAction cookToStock = _aiController.CurrentRecipeActions.Where(aiAction => aiAction.Tasks.Contains(aiAction.Tasks.Where(task => task.Start == e.Box.Tile).FirstOrDefault())).FirstOrDefault();
 
             if (cookToStock != null)
             {
                 cookToStock.Condition[0] = true;
-            }
-            
-            if (_aiController.IsDoingNothing)
-            {
-                _aiController.CurrentAction.Tasks.Add(new AIAction.AITask(_aiController.ActualTile,_aiController.GetPlateBoxEndTile()));
-                e.Box.BoxInteract(_aiController.ActualIngredient != null ? _aiController.ActualIngredient : _aiController.ActualPlate != null ? _aiController.ActualPlate : null,_aiController);
-                _controller.AiEvents.OnTaskFinished?.Invoke(this, new AIEvents.OnTaskFinishedArgs(_aiController.CurrentTask,_aiController.CurrentAction, transform.gameObject, _aiController.Team));
-                _aiController.IsDoingNothing = false;
-            }
-            else
-            {
-                _aiController.OrderTasks();
             }
         }
     }
@@ -245,6 +261,7 @@ public class AIEventListener : CoroutineSystem
 
             if (_aiController.CurrentAction == null)
             {
+                _controller.RecipeEvents.OnRecipeDelivered?.Invoke(this,new RecipeEvents.OnRecipeDeliveredArgs(_aiController.CurrentWorkRecipe,_aiController.Team,transform.gameObject));
                 return;
             }
             
@@ -252,25 +269,9 @@ public class AIEventListener : CoroutineSystem
             _controller.AiEvents.OnTaskStarted?.Invoke(this,new AIEvents.OnTaskStartedArgs(_aiController.CurrentTask,_aiController.CurrentAction,transform.gameObject,_aiController.Team));
 
             Debug.Log("new Action " + _aiController.CurrentAction.Name + " on " + _aiController.CurrentAction.ActionOn);
-            
 
-            BasicBox startTileBox = (BasicBox)_aiController.CurrentTask.Start.AttachedBox;
+            _aiController.CheckGoToStart();
 
-            if (startTileBox != null)
-            {
-                if (startTileBox.Stock != null)
-                {
-                    Ingredient stockIngredient = startTileBox.Stock.GetComponent<Ingredient>();
-
-                    if (stockIngredient != null && (!stockIngredient.data.isCookable && !stockIngredient.data.isCuttable) || (stockIngredient.data.isCookable && stockIngredient.isCook) || (stockIngredient.data.isCuttable && stockIngredient.isCut))
-                    {
-                        _aiController.GoToStart = true;
-                    }
-
-
-                }
-            }
-           
         }
     }
 
@@ -324,11 +325,11 @@ public class AIEventListener : CoroutineSystem
 
                     if (bBox.Stock.TryGetComponent(out Ingredient ingredient) && bBox.TileCoords != _aiController.PlateCoords)
                     {
-                        bool isActionExist = _aiController.CurrentRecipeActions.Where(aiAction => aiAction.Name.Equals("StockToBoxPlate") && aiAction.ActionOn == ingredient.data).FirstOrDefault() != null;
+                        bool isActionExist = _aiController.CurrentRecipeActions.Where(aiAction => aiAction.Name.Equals("StockToBoxPlate") && aiAction.ActionOn == ingredient.Data).FirstOrDefault() != null;
 
-                        if (_aiController.CurrentWorkRecipe.AllIngredients.Contains(ingredient.data) && !plate.ingredientsInPlate.Contains(ingredient) && !isActionExist) // erreur prise de plate non finie 
+                        if (_aiController.CurrentWorkRecipe.AllIngredients.Contains(ingredient.Data) && !plate.ingredientsInPlate.Contains(ingredient) && !isActionExist) // erreur prise de plate non finie 
                         {
-                            AIAction stockToBoxPlate = new AIAction(ingredient.data);
+                            AIAction stockToBoxPlate = new AIAction(ingredient.Data);
                             stockToBoxPlate.Name = "StockToBoxPlate";
                             stockToBoxPlate.Priority = 1;
 
@@ -337,13 +338,36 @@ public class AIEventListener : CoroutineSystem
 
                             _aiController.CurrentRecipeActions.Add(stockToBoxPlate);
                                 
-                            _aiController.OrderTasks();
+                            _aiController.OrderTasks(_aiController.CurrentRecipeActions);
                         }
                     }
                 }
 
             }
         }
+    }
+
+
+    private void GenerateBinActions()
+    {
+        List<AIAction> binActions = new List<AIAction>();
+            
+        foreach (AIAction action in _aiController.CurrentRecipeActions)
+        {
+            Tile endTask = action.Tasks.Last().End;
+            BasicBox attachedEndBox = (BasicBox)endTask.AttachedBox;
+
+            if (attachedEndBox != null)
+            {
+                AIAction boxToBin = new AIAction(action.ActionOn);
+                boxToBin.Priority = 5; // Faire en sorte que les priorités 5 ne sont pas réorganisables
+                boxToBin.Name = "BoxToBin";
+                boxToBin.Tasks.Add(new AIAction.AITask(endTask,FindObjectOfType<BinBox>().Tile));
+                binActions.Add(boxToBin);
+            }
+        } 
+
+        _aiController.CurrentRecipeActions.RemoveAll(aiAction => !binActions.Contains(aiAction));
     }
 
 }

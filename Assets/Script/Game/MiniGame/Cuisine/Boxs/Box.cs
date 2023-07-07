@@ -28,9 +28,14 @@ public abstract class Box : MonoBehaviour {
             return _tile;
         }
     }
+    
+    
+    protected AudioSource audioSource;
 
     protected virtual void Start() {
        _cookController = (CookController) CookController.instance;
+
+       audioSource = GetComponent<AudioSource>();
     }
     
     public virtual void BoxInteract(GameObject current,ChiefController controller) {

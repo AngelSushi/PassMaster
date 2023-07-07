@@ -1,22 +1,20 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
+using Recipes;
 
 public class Plate : MonoBehaviour {
 
     private CookController _cookController;
     public List<Ingredient> ingredientsInPlate;
-    private List<RecipeController.Recipe> _availableRecipes = new List<RecipeController.Recipe>();
+    private List<Recipe> _availableRecipes = new List<Recipe>();
 
-    public List<RecipeController.Recipe> AvailableRecipes
+    public List<Recipe> AvailableRecipes
     {
         get => _availableRecipes;
     }
     
-    public RecipeController.Recipe fullRecipe;
+    public Recipe fullRecipe;
 
     private GameObject _plateUIParent;
     public Vector2 plateOffset;
@@ -56,7 +54,7 @@ public class Plate : MonoBehaviour {
     }
     
     public void AddIngredient(Ingredient newIngredient,Box box,ChiefController from) {
-        if ((newIngredient.data.isCookable && !newIngredient.isCook) || (newIngredient.data.isCuttable && !newIngredient.isCut))
+        if ((newIngredient.Data.CanBeCook && !newIngredient.IsCook) || (newIngredient.Data.CanBeCut && !newIngredient.IsCut))
             return;
 
         if(!_plateUIParent.activeSelf)
@@ -72,7 +70,7 @@ public class Plate : MonoBehaviour {
         
         
         
-        Sprite sprite = drawRecipe ? fullRecipe != null ? fullRecipe.RecipeSprite : _availableRecipes[0].RecipeSprite : newIngredient.data.sprite;
+        Sprite sprite = drawRecipe ? fullRecipe != null ? fullRecipe.RecipeSprite : _availableRecipes[0].RecipeSprite : newIngredient.Data.Sprite;
         
 
         if (!ingredientsInPlate.Contains(newIngredient)) // CheckAvailableRecipesWithIngredients() can remove ingredients if its not in the current recipe ==> recheck if plate contains the newIngredient
@@ -87,7 +85,7 @@ public class Plate : MonoBehaviour {
             GameObject ingredientImage = new GameObject("Ingredient");
             Image image = ingredientImage.AddComponent<Image>();
 
-            image.sprite = drawRecipe ? sprite : ingredientsInPlate[i].data.sprite;
+            image.sprite = drawRecipe ? sprite : ingredientsInPlate[i].Data.Sprite;
             
             ingredientImage.transform.parent = _plateUIParent.transform;
         }
@@ -108,12 +106,12 @@ public class Plate : MonoBehaviour {
     }
 
     private bool CheckAvailableRecipesWithIngredients(Ingredient newIngredient) {
-        foreach (RecipeController.Recipe recipe in _cookController.recipeController.recipes) {
+        foreach (Recipe recipe in _cookController.recipeController.recipes) {
             bool isRecipeAvailable = true;
             bool isFull = false;
 
             for (int i = 0; i < ingredientsInPlate.Count; i++) {
-                IngredientData ingredient = ingredientsInPlate[i].data;   
+                IngredientData ingredient = ingredientsInPlate[i].Data;   
                 
                 if (!recipe.AllIngredients.Contains(ingredient)) { 
                     isRecipeAvailable = false;
@@ -136,9 +134,9 @@ public class Plate : MonoBehaviour {
 
         bool containsInOne = false;
         
-        foreach (RecipeController.Recipe recipe in _availableRecipes) { // Part to avoid ingredients that is not in the current recipes
+        foreach (Recipe recipe in _availableRecipes) { // Part to avoid ingredients that is not in the current recipes
             for (int i = 0; i < ingredientsInPlate.Count; i++) { 
-                IngredientData ingredient = ingredientsInPlate[i].data;
+                IngredientData ingredient = ingredientsInPlate[i].Data;
 
                 if (recipe.AllIngredients.Contains(ingredient)) {
                     containsInOne = true;

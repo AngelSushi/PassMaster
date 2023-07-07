@@ -5,6 +5,8 @@ using UnityEngine;
 public class BasicBox : Box {
 
     protected Vector3 stockPosition;
+    
+    [SerializeField]
     protected GameObject stock;
 
     public GameObject Stock
@@ -29,12 +31,12 @@ public class BasicBox : Box {
                     plate.AddIngredient(currentController.ActualIngredient.GetComponent<Ingredient>(),this,currentController);
                 }
                 else {
-                    GameObject ingredient = currentController.ActualIngredient;
-                    ingredient.transform.parent = transform;
-                    ingredient.transform.localPosition = stockPosition;
+                    GameObject ingredientObj = currentController.ActualIngredient;
+                    ingredientObj.transform.parent = transform;
+                    ingredientObj.transform.localPosition = stockPosition;
             
                     currentController.ActualIngredient = null;
-                    stock = ingredient;
+                    stock = ingredientObj;
                 }
             }
             else {
@@ -45,6 +47,9 @@ public class BasicBox : Box {
                 currentController.ActualPlate = null;
                 stock = plate;
             }
+
+            
+            audioSource.Play();
             
             
             CookEvents.OnUpdateBoxStockArgs e = new CookEvents.OnUpdateBoxStockArgs(Stock, this);
@@ -55,7 +60,6 @@ public class BasicBox : Box {
     protected override void Take() {
         if (stock != null && (currentController.ActualIngredient == null && currentController.ActualPlate == null))
         {
-
             stock.transform.parent = currentController.transform;
             stock.transform.localPosition = currentController.IngredientSpawn.localPosition;
             
@@ -65,6 +69,10 @@ public class BasicBox : Box {
                 currentController.ActualPlate = stock;
             
             stock = null;
+            
+            
+            audioSource.Play();
+            
             
             CookEvents.OnUpdateBoxStockArgs e = new CookEvents.OnUpdateBoxStockArgs(Stock, this);
             _cookController.CookEvents.OnUpdateBoxStock?.Invoke(this,e);

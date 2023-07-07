@@ -7,9 +7,13 @@ public class StoveBox : MakeBox {
     #region Variables
     
     private Color _mainColor,_cookedColor;
+
+    [SerializeField] private Color burnedColor;
+    
     private Ingredient _stockIngredient;
     private MeshRenderer _meshIngredient;
     private MeshRenderer _cookedMesh;
+    [SerializeField] private float timeToBurn;
 
     #endregion
     
@@ -24,7 +28,7 @@ public class StoveBox : MakeBox {
         _mainColor = _meshIngredient.material.color;
         _cookedColor = _cookedMesh.material.color;
         
-        StartCoroutine(LerpColor());
+        StartCoroutine(LerpColor(_mainColor,_cookedColor,timeToSucceed));
     }
 
     protected override void Make() {
@@ -38,11 +42,54 @@ public class StoveBox : MakeBox {
     protected override void FinishMake() {
         boxSlider.gameObject.SetActive(false);
         timer = 0f;
-        _stockIngredient.isCook = true;
+        _stockIngredient.IsCook = true;
 
         AIAction action = currentController is ChiefAIController ? ((ChiefAIController)currentController).CurrentAction : null;
         
         _cookController.CookEvents.OnFinishedCookIngredient?.Invoke(this,new CookEvents.OnFinishedCookIngredientArgs(currentController.gameObject,this,_stockIngredient,action));
+        
+        BeginBurn();
+    }
+
+    protected override void BeginBurn()
+    {
+        if (stock == null || _stockIngredient.IsBurn)
+        {
+            isBurning = false;
+            return;
+        }
+        
+        isBurning = true;
+        burnTimer = 0f;
+        StartCoroutine(LerpColor(_cookedColor,burnedColor,timeToBurn));
+        //Start anim 
+        // PlaySound                                                
+    }
+
+    protected override void Burn()
+    {
+        if (stock == null || _stockIngredient.IsBurn)
+        {
+            burnTimer = 0f;
+            isBurning = false;
+            return;
+        }
+        
+        
+        burnTimer += Time.deltaTime;
+        Debug.Log("is burning " + burnTimer);
+            
+        if (burnTimer >= timeToBurn)
+        {
+            FinishBurn();
+        }
+    }
+
+    protected override void FinishBurn()
+    {
+        Debug.Log("stop burn");
+        isBurning = false;
+        _stockIngredient.IsBurn = true;
     }
     
     #endregion
@@ -51,8 +98,8 @@ public class StoveBox : MakeBox {
 
     protected override void Put() {
         if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
-            if (ingredient.data.cookIndex == 0) { // detect if ingredient is cooked  on stove
-                if (ingredient.data.isCookable && !ingredient.isCook) 
+            if (!ingredient.Data.IsPan) { 
+                if (ingredient.Data.CanBeCook && !ingredient.IsCook) 
                     base.Put();
             }
         }
@@ -60,7 +107,7 @@ public class StoveBox : MakeBox {
 
     protected override void Take() {
         if (stock != null) {
-            if (stock.TryGetComponent<Ingredient>(out Ingredient ingredient) && ingredient.isCook) {
+            if (stock.TryGetComponent<Ingredient>(out Ingredient ingredient) && ingredient.IsCook) {
                 base.Take();
             }
         }
@@ -68,9 +115,9 @@ public class StoveBox : MakeBox {
     
     #endregion
 
-    private IEnumerator LerpColor() {
-        for (float f = 0; f <= timeToSucceed; f += Time.deltaTime) {
-            _meshIngredient.material.color = Color.Lerp(_mainColor,_cookedColor,f / timeToSucceed);
+    private IEnumerator LerpColor(Color mainColor,Color lerpColor,float time) {
+        for (float f = 0; f <= time; f += Time.deltaTime) {
+            _meshIngredient.material.color = Color.Lerp(mainColor,lerpColor,f / time);
             yield return null;
         }
     }

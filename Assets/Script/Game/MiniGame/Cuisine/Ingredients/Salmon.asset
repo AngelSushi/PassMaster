@@ -15,5 +15,6 @@ MonoBehaviour:
   id: 8
   sprite: {fileID: 21300000, guid: 8dfc7d15dc1ab4941a514eb249a5cceb, type: 3}
   cookIndex: -1
-  isCuttable: 1
-  isCookable: 0
+  canBeCut: 1
+  canBeCook: 0
+  canBeBurn: 0

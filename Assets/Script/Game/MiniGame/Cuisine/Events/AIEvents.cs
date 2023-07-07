@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Grid;
 using UnityEngine;
+using Recipes;
 
 public class AIEvents : MonoBehaviour
 {
@@ -199,7 +200,7 @@ public class AIEvents : MonoBehaviour
     {
         private GameObject _ai;
         private AIAction _action;
-        private RecipeController.Recipe _recipe;
+        private Recipe _recipe;
 
         public GameObject AI
         {
@@ -213,13 +214,13 @@ public class AIEvents : MonoBehaviour
             set => _action = value;
         }
 
-        public RecipeController.Recipe Recipe
+        public Recipe Recipe
         {
             get => _recipe;
             set => _recipe = value;
         }
 
-        public OnActionFinishedArgs(GameObject ai, AIAction action, RecipeController.Recipe recipe)
+        public OnActionFinishedArgs(GameObject ai, AIAction action, Recipe recipe)
         {
             _ai = ai;
             _action = action;
@@ -232,12 +233,12 @@ public class AIEvents : MonoBehaviour
 
     public class OnChooseRecipeArgs : EventArgs
     {
-        private RecipeController.Recipe _recipe;
+        private Recipe _recipe;
         private GameObject _ai;
         private bool _isCanceled;
         private List<AIAction> _recipeActions;
 
-        public RecipeController.Recipe Recipe
+        public Recipe Recipe
         {
             get => _recipe;
             private set => _recipe = value;
@@ -258,10 +259,10 @@ public class AIEvents : MonoBehaviour
         public List<AIAction> RecipeActions
         {
             get => _recipeActions;
-            set => _recipeActions = value;
+            private set => _recipeActions = value;
         }
 
-        public OnChooseRecipeArgs(RecipeController.Recipe recipe, GameObject ai,List<AIAction> recipeActions)
+        public OnChooseRecipeArgs(Recipe recipe, GameObject ai,List<AIAction> recipeActions)
         {
             _recipe = recipe;
             _ai = ai;

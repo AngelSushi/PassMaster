@@ -9,13 +9,21 @@ public abstract class MakeBox : BasicBox {
     protected float timer;
     protected Slider boxSlider;
     
-    public float timeToSucceed;
+    [SerializeField] protected float timeToSucceed;
 
-    public Vector2 sliderOffset;
+    [SerializeField] private Vector2 sliderOffset;
 
     private GameObject _lastStock;
 
     protected GameObject canvas;
+
+    protected bool isBurning;
+
+
+    [SerializeField] protected AudioClip sound;
+    protected AudioClip originSound;
+    
+    protected float burnTimer;
 
     protected virtual void Start() {
         base.Start();
@@ -46,10 +54,21 @@ public abstract class MakeBox : BasicBox {
         if (stock != null && timer < timeToSucceed) 
             Make();
 
+        if (isBurning)
+        {
+            Burn();
+
+            isBurning = stock != null;
+        }
+
         _lastStock = stock;
     }
 
     protected abstract void StartMake();
     protected abstract void Make(); // Called all the time when a player is doing an action on the box 
     protected abstract void FinishMake();
+
+    protected abstract void BeginBurn();
+    protected abstract void Burn();
+    protected abstract void FinishBurn();       
 }

@@ -34,6 +34,10 @@ public class CutBox : MakeBox {
     protected override void StartMake() {
         boxSlider.gameObject.SetActive(true);
         _effect.Play();
+
+        originSound = audioSource.clip;
+        audioSource.clip = sound;
+        audioSource.Play();
     }
     
     protected override void Make() {
@@ -51,19 +55,36 @@ public class CutBox : MakeBox {
         _startCutting = false;
         timer = 0f;
         _effect.Stop();
-        stockIngredient.isCut = true;
+        stockIngredient.IsCut = true;
         stockIngredient.basic.SetActive(false);
         stockIngredient.modified.SetActive(true);
+        audioSource.clip = originSound;
         
         _cookController.CookEvents.OnFinishedCutIngredient?.Invoke(this,new CookEvents.OnFinishedCutIngredientArgs(this,stockIngredient,currentController.gameObject));
     }
+
+    protected override void BeginBurn()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void Burn()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void FinishBurn()
+    {
+        throw new System.NotImplementedException();
+    }
+
     #endregion
     
     #region Basic Box Functions
     public override void BoxInteract(GameObject current, ChiefController controller) {
         if (stock != null && stock.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
-            if (ingredient.data.isCuttable) {
-                if (!ingredient.isCut)
+            if (ingredient.Data.CanBeCut) {
+                if (!ingredient.IsCut)
                     _startCutting = true;
                 else
                     base.BoxInteract(current, controller);
@@ -79,7 +100,7 @@ public class CutBox : MakeBox {
 
     protected override void Put() {
         if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent(out Ingredient ingredient)) {
-            if (!ingredient.data.isCuttable || ingredient.isCut)
+            if (!ingredient.Data.CanBeCut || ingredient.IsCut)
                 return;
         }
         

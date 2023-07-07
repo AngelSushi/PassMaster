@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Recipes;
 
 public class CookEvents : MonoBehaviour
 {
@@ -122,7 +123,7 @@ public class CookEvents : MonoBehaviour
         
         private BasicBox _box;
         private Ingredient _ingredient;
-        private List<RecipeController.Recipe> _allRecipes;
+        private List<Recipe> _allRecipes;
         private bool _isFull;
         private ChiefController _from;
 
@@ -138,7 +139,7 @@ public class CookEvents : MonoBehaviour
             private set => _ingredient = value;
         }
 
-        public List<RecipeController.Recipe> AllRecipes
+        public List<Recipe> AllRecipes
         {
             get => _allRecipes;
             private set => _allRecipes = value;
@@ -156,7 +157,7 @@ public class CookEvents : MonoBehaviour
             private set => _from = value;
         }
 
-        public OnPutIngredientInPlateArgs(BasicBox box, Ingredient ingredient, List<RecipeController.Recipe> allRecipes,bool isFull,ChiefController from)
+        public OnPutIngredientInPlateArgs(BasicBox box, Ingredient ingredient, List<Recipe> allRecipes,bool isFull,ChiefController from)
         {
             _box = box;
             _ingredient = ingredient;
