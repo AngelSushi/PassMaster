@@ -53,17 +53,20 @@ public class StoveBox : MakeBox {
 
     protected override void BeginBurn()
     {
-        if (stock == null || _stockIngredient.IsBurn)
+        RunDelayed(2f, () =>
         {
-            isBurning = false;
-            return;
-        }
-        
-        isBurning = true;
-        burnTimer = 0f;
-        StartCoroutine(LerpColor(_cookedColor,burnedColor,timeToBurn));
-        //Start anim 
-        // PlaySound                                                
+            if (stock == null || _stockIngredient.IsBurn)
+            {
+                isBurning = false;
+                return;
+            }
+
+            isBurning = true;
+            burnTimer = 0f;
+            StartCoroutine(LerpColor(_cookedColor, burnedColor, timeToBurn));
+            //Start anim 
+            // PlaySound  
+        });
     }
 
     protected override void Burn()

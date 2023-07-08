@@ -257,21 +257,7 @@ public class AIEventListener : CoroutineSystem
         if (e.AI == transform.gameObject)
         {
             _aiController.CurrentAction.IsFinished = true;
-            _aiController.CurrentAction = _aiController.CurrentRecipeActions.FirstOrDefault(action => !action.IsFinished && action.Condition.All(val => val));
-
-            if (_aiController.CurrentAction == null)
-            {
-                _controller.RecipeEvents.OnRecipeDelivered?.Invoke(this,new RecipeEvents.OnRecipeDeliveredArgs(_aiController.CurrentWorkRecipe,_aiController.Team,transform.gameObject));
-                return;
-            }
-            
-            _aiController.CurrentTask = _aiController.CurrentAction.Tasks.First();
-            _controller.AiEvents.OnTaskStarted?.Invoke(this,new AIEvents.OnTaskStartedArgs(_aiController.CurrentTask,_aiController.CurrentAction,transform.gameObject,_aiController.Team));
-
-            Debug.Log("new Action " + _aiController.CurrentAction.Name + " on " + _aiController.CurrentAction.ActionOn);
-
-            _aiController.CheckGoToStart();
-
+            AssignNewAction();
         }
     }
 
@@ -348,17 +334,24 @@ public class AIEventListener : CoroutineSystem
     }
 
 
-    private void GenerateBinActions()
+    public void GenerateBinActions()
     {
         List<AIAction> binActions = new List<AIAction>();
             
         foreach (AIAction action in _aiController.CurrentRecipeActions)
         {
             Tile endTask = action.Tasks.Last().End;
-            BasicBox attachedEndBox = (BasicBox)endTask.AttachedBox;
 
-            if (attachedEndBox != null)
+            if (endTask.AttachedBox is BasicBox)
             {
+                
+                BasicBox attachedEndBox = (BasicBox)endTask.AttachedBox;
+
+                if (attachedEndBox.Stock == null)
+                {
+                    continue;
+                }
+                
                 AIAction boxToBin = new AIAction(action.ActionOn);
                 boxToBin.Priority = 5; // Faire en sorte que les priorités 5 ne sont pas réorganisables
                 boxToBin.Name = "BoxToBin";
@@ -368,6 +361,26 @@ public class AIEventListener : CoroutineSystem
         } 
 
         _aiController.CurrentRecipeActions.RemoveAll(aiAction => !binActions.Contains(aiAction));
+        
+        AssignNewAction();
+    }
+
+    private void AssignNewAction()
+    {
+        _aiController.CurrentAction = _aiController.CurrentRecipeActions.FirstOrDefault(action => !action.IsFinished && action.Condition.All(val => val));
+
+        if (_aiController.CurrentAction == null)
+        {
+            _controller.RecipeEvents.OnRecipeDelivered?.Invoke(this,new RecipeEvents.OnRecipeDeliveredArgs(_aiController.CurrentWorkRecipe,_aiController.Team,transform.gameObject));
+            return;
+        }
+            
+        _aiController.CurrentTask = _aiController.CurrentAction.Tasks.First();
+        _controller.AiEvents.OnTaskStarted?.Invoke(this,new AIEvents.OnTaskStartedArgs(_aiController.CurrentTask,_aiController.CurrentAction,transform.gameObject,_aiController.Team));
+
+        Debug.Log("new Action " + _aiController.CurrentAction.Name + " on " + _aiController.CurrentAction.ActionOn);
+
+        _aiController.CheckGoToStart();
     }
 
 }

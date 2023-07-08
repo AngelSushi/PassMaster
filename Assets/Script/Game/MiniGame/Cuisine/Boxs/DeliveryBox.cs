@@ -28,9 +28,9 @@ public class DeliveryBox : Box {
         CookController.Team targetTeam = _cookController.teams.Where(team => team.players.Contains(currentController.gameObject)).ToList()[0];
 
         if (targetTeam.HasRecipe(targetRecipe.Name)) {
-
-            int currentPoint = (int) (_cookController.maxPointPerRecipe - _cookController.maxPointPerRecipe * (1 - (targetRecipe.Ticker.CurrentTime / targetRecipe.RecipeTime)));
-            _cookController.AddPoint(currentPoint,currentController.gameObject,targetRecipe);
+            
+            int currentPoint = (int) (targetRecipe.Points - targetRecipe.Points * (1 - (targetRecipe.Ticker.CurrentTime / targetRecipe.RecipeTime)));
+            _cookController.AddPoint(currentPoint,currentController.gameObject);
 
             targetTeam.DeliverRecipe(targetRecipe);
             Destroy(currentController.ActualPlate);

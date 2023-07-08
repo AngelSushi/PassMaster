@@ -7,16 +7,18 @@ public class PanBox : MakeBox {
     
     #region Variables
     
-    public Vector2 slotOffset;
-    public Color mainColor,cookedColor;
+    [SerializeField] private Vector2 slotOffset;
+    
+    
+    [SerializeField] private Color mainColor,cookedColor,burnedColor;
     private MeshRenderer _waterMesh;
 
     private Ingredient _stockIngredient;
     private Color _mainIngredientColor,_mainCookedColor;
+
     private MeshRenderer _meshIngredient;
     private MeshRenderer _cookedMesh;
 
-    private bool _isDirtyWater;
     private Image _slot;
     
     [SerializeField] protected float timeToBurn;
@@ -38,8 +40,6 @@ public class PanBox : MakeBox {
     #region Make Box Function
     
     protected override void StartMake() {
-        if (_isDirtyWater)
-            return;
         
         boxSlider.gameObject.SetActive(true);
         
@@ -48,13 +48,12 @@ public class PanBox : MakeBox {
         _cookedMesh = _stockIngredient.modified.GetComponent<MeshRenderer>();
         _mainIngredientColor = _meshIngredient.material.color;
         _mainCookedColor = _cookedMesh.material.color;
-        _isDirtyWater = true;
 
         _slot.gameObject.SetActive(true);
         _slot.sprite = _stockIngredient.Data.Sprite;
 
-        StartCoroutine(LerpColor(_waterMesh,mainColor,cookedColor));
-        StartCoroutine(LerpColor(_meshIngredient, _mainIngredientColor, _mainCookedColor));
+        StartCoroutine(LerpColor(_waterMesh,mainColor,cookedColor,timeToSucceed));
+        StartCoroutine(LerpColor(_meshIngredient, _mainIngredientColor, _mainCookedColor,timeToSucceed));
     }
 
     protected override void Make() {
@@ -73,21 +72,46 @@ public class PanBox : MakeBox {
         AIAction action = currentController is ChiefAIController ? ((ChiefAIController)currentController).CurrentAction : null;
         
         _cookController.CookEvents.OnFinishedCookIngredient?.Invoke(this,new CookEvents.OnFinishedCookIngredientArgs(currentController.gameObject,this,_stockIngredient,action));
+        
+        BeginBurn();
     }
 
     protected override void BeginBurn()
     {
-        throw new System.NotImplementedException();
+        RunDelayed(2f, () =>
+        {
+            if (stock == null || _stockIngredient.IsBurn)
+            {
+                isBurning = false;
+                return;
+            }
+
+            isBurning = true;
+            burnTimer = 0f;
+            StartCoroutine(LerpColor(_waterMesh, cookedColor, burnedColor, timeToBurn));
+        });
     }
 
     protected override void Burn()
     {
-        throw new System.NotImplementedException();
+        if (stock == null || _stockIngredient.IsBurn)
+        {
+            burnTimer = 0f;
+            isBurning = false;
+            return;
+        }
+        burnTimer += Time.deltaTime;
+            
+        if (burnTimer >= timeToBurn)
+        {
+            FinishBurn();
+        }
     }
 
     protected override void FinishBurn()
     {
-        throw new System.NotImplementedException();
+        isBurning = false;
+        _stockIngredient.IsBurn = true;
     }
 
     #endregion
@@ -95,8 +119,8 @@ public class PanBox : MakeBox {
     #region Basic Box Function
     protected override void Put() {
         if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent(out Ingredient ingredient)) {
-            if (!ingredient.Data.IsPan) { // detect if ingredient is cooked  on pan
-                if (ingredient.Data.CanBeCook && !ingredient.IsCook && !_isDirtyWater) 
+            if (ingredient.Data.IsPan) { // detect if ingredient is cooked  on pan
+                if (ingredient.Data.CanBeCook && !ingredient.IsCook) 
                     base.Put();
             }
         }
@@ -108,12 +132,6 @@ public class PanBox : MakeBox {
             if (stock.TryGetComponent<Ingredient>(out Ingredient ingredient) && ingredient.IsCook) {
                 _slot.gameObject.SetActive(false);
                 base.Take();
-            }
-        }
-        else if (stock == null && currentController.ActualIngredient == null) {
-            if (_isDirtyWater) {
-                _waterMesh.material.color = mainColor;
-                _isDirtyWater = false;
             }
         }
     }
@@ -132,9 +150,9 @@ public class PanBox : MakeBox {
         
     }
 
-    private IEnumerator LerpColor(MeshRenderer renderer,Color start,Color end) {
-        for (float f = 0; f <= timeToSucceed; f += Time.deltaTime) {
-            renderer.material.color = Color.Lerp(start,end,f / timeToSucceed);
+    private IEnumerator LerpColor(MeshRenderer renderer,Color start,Color end,float time) {
+        for (float f = 0; f <= time; f += Time.deltaTime) {
+            renderer.material.color = Color.Lerp(start,end,f / time);
             yield return null;
         }
     }

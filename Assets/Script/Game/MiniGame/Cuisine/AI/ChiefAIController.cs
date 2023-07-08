@@ -129,13 +129,11 @@ public class ChiefAIController : ChiefController
     private NavMeshPath _path;
 
     /**
-     *
-
-
+     *  
      *
      * Vérifier lorsqu'une tache est supprimée de force ( recette disparaiit) , bien refaire les actions autour ==> A TESTER
      *
-     * Repenser tt le systeme de cramage  ( a tester mais normalement fonctionnel)
+     * Repenser tt le systeme de cramage  ( a tester mais normalement fonctionnel) == a equilibrer
      *
      * Régler les soucis de path
      *
@@ -166,15 +164,18 @@ public class ChiefAIController : ChiefController
 
     private void Update()
     {
-        Debug.Log("action " + _currentAction + " task " + _currentTask);
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            GetComponent<AIEventListener>().GenerateBinActions();
+        }
+        
+        
         
         if (_currentAction != null && _currentTask != null)
         {
-            
-            Debug.Log("fact is null");
-            
-              if (CanMoove)
-              {
+            if (CanMoove)
+            {
                   if (IsMooving)
                   {
                       if (_goToStart)

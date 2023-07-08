@@ -21,7 +21,8 @@ namespace Recipes
             private RecipeController.RecipeTicker _ticker;
             [SerializeField] private float recipeTime;
             [SerializeField] private GameObject recipeUI;
-
+            [SerializeField] private int points;
+            
             public string Name
             {
                 get => name;
@@ -74,6 +75,12 @@ namespace Recipes
             {
                 get => recipeUI;
                 set => recipeUI = value;
+            }
+
+            public int Points
+            {
+                get => points;
+                set => points = value;
             }
         }
 

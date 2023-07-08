@@ -1235,6 +1235,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 20
     recipeUI: {fileID: 0}
+    points: 3
   - name: CheeseBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1247,6 +1248,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 20
     recipeUI: {fileID: 0}
+    points: 5
   - name: SaladBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1260,6 +1262,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 20
     recipeUI: {fileID: 0}
+    points: 7
   - name: MaxiBurger
     allIngredients:
     - {fileID: 11400000, guid: 188ff77bc81f9f74c867e5bd54e555c0, type: 2}
@@ -1274,6 +1277,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 90
     recipeUI: {fileID: 0}
+    points: 10
   - name: Pizza
     allIngredients:
     - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
@@ -1285,6 +1289,7 @@ MonoBehaviour:
     recipeMesh: {fileID: 0}
     recipeTime: 30
     recipeUI: {fileID: 0}
+    points: 5
   - name: CheesePizza
     allIngredients:
     - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
@@ -1297,6 +1302,7 @@ MonoBehaviour:
     recipeMesh: {fileID: 0}
     recipeTime: 30
     recipeUI: {fileID: 0}
+    points: 7
   - name: MaxiPizza
     allIngredients:
     - {fileID: 11400000, guid: e75dbe88a53cfd246957f0e0080f3a5b, type: 2}
@@ -1310,6 +1316,7 @@ MonoBehaviour:
     recipeMesh: {fileID: 0}
     recipeTime: 30
     recipeUI: {fileID: 0}
+    points: 10
   - name: SushiSalmon
     allIngredients:
     - {fileID: 11400000, guid: 7e54ccc2cdf179a43969cb2718bb78ef, type: 2}
@@ -1322,6 +1329,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 20
     recipeUI: {fileID: 0}
+    points: 5
   - name: Sushi
     allIngredients:
     - {fileID: 11400000, guid: 2a70f74c1cf4a0a428173d88dab2162b, type: 2}
@@ -1333,6 +1341,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 20
     recipeUI: {fileID: 0}
+    points: 3
   - name: SushiCucumber
     allIngredients:
     - {fileID: 11400000, guid: d467da4fe31214a4c8259e856e2da9c7, type: 2}
@@ -1345,6 +1354,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 20
     recipeUI: {fileID: 0}
+    points: 5
   - name: MaxiSushi
     allIngredients:
     - {fileID: 11400000, guid: 7e54ccc2cdf179a43969cb2718bb78ef, type: 2}
@@ -1358,6 +1368,7 @@ MonoBehaviour:
       type: 3}
     recipeTime: 20
     recipeUI: {fileID: 0}
+    points: 7
   maxRecipesPerTeam: 2
   waitNextRecipeTimer: 15
   sliderColor:
@@ -2166,6 +2177,7 @@ GameObject:
   - component: {fileID: 119143969}
   - component: {fileID: 119143971}
   - component: {fileID: 119143970}
+  - component: {fileID: 119143972}
   m_Layer: 0
   m_Name: BinBox
   m_TagString: Untagged
@@ -2240,6 +2252,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 119143968}
   m_Mesh: {fileID: -7061585933124598971, guid: e47880e0ffe8eb842b3f4f76dd0436eb, type: 3}
+--- !u!114 &119143972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 119143968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4c9c63bd3724da4fa5786da8e8214dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentController: {fileID: 0}
+  _tileCoords: {x: 5, y: 10}
 --- !u!1 &123252265
 GameObject:
   m_ObjectHideFlags: 0
@@ -5466,7 +5492,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 362813940}
   m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: -25.746094, y: 5.1820107, z: -21.341246}
+  m_LocalPosition: {x: 19.48627, y: 5.1820107, z: -21.341246}
   m_LocalScale: {x: 1.1827852, y: 1.2645255, z: 1.5926161}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5550,7 +5576,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentController: {fileID: 0}
-  _tileCoords: {x: 10, y: 3}
+  _tileCoords: {x: 1, y: 3}
 --- !u!1 &368113359
 GameObject:
   m_ObjectHideFlags: 0
@@ -7276,7 +7302,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &494638459
 Transform:
   m_ObjectHideFlags: 0
@@ -8721,7 +8747,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &563074546
 Transform:
   m_ObjectHideFlags: 0
@@ -9999,8 +10025,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 672616779}
   m_LocalRotation: {x: 0.7071068, y: 4.3297806e-17, z: 0.7071068, w: -4.3297806e-17}
-  m_LocalPosition: {x: -22.986511, y: 4.9788947, z: -21.481064}
-  m_LocalScale: {x: -126.2274, y: -100, z: -487.93427}
+  m_LocalPosition: {x: 12.183838, y: 4.9788947, z: -21.432484}
+  m_LocalScale: {x: -126.2274, y: -100, z: -548.7294}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431459858}
@@ -10070,7 +10096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentController: {fileID: 0}
-  _tileCoords: {x: 9, y: 3}
+  _tileCoords: {x: 2, y: 3}
 --- !u!65 &672616784
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15486,7 +15512,7 @@ PrefabInstance:
     - target: {fileID: 5832175086222884149, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
       propertyPath: _tileCoords.x
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5832175086222884149, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
@@ -21796,7 +21822,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1295908050
 Transform:
   m_ObjectHideFlags: 0
@@ -25505,7 +25531,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1555203349
 Transform:
   m_ObjectHideFlags: 0
@@ -26492,7 +26518,7 @@ PrefabInstance:
     - target: {fileID: 5199325407493659158, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: _tileCoords.x
-      value: 2
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659158, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
@@ -26507,17 +26533,17 @@ PrefabInstance:
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14.42865
+      value: -20.664734
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.4679163
+      value: 3.7030945
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -21.34
+      value: -20.99844
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
@@ -29206,7 +29232,7 @@ PrefabInstance:
     - target: {fileID: 5832175086222884149, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
       propertyPath: _tileCoords.x
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5832175086222884149, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
@@ -29221,7 +29247,7 @@ PrefabInstance:
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19.486267
+      value: 9.19
       objectReference: {fileID: 0}
     - target: {fileID: 5832175086222884152, guid: 734480a3148de4f46bc4fc59977d7d28,
         type: 3}
@@ -33714,18 +33740,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
+      propertyPath: timeToBurn
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: mainColor.b
+      value: 0.91171235
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: mainColor.g
+      value: 0.9616946
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: mainColor.r
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
       propertyPath: slotOffset.x
-      value: 7
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
       propertyPath: slotOffset.y
-      value: 30
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
       propertyPath: _tileCoords.x
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
@@ -33734,8 +33780,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
+      propertyPath: burnedColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: burnedColor.b
+      value: 0.43618724
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: burnedColor.g
+      value: 0.5166496
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: burnedColor.r
+      value: 0.5471698
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: cookedColor.b
+      value: 0.80989677
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: cookedColor.g
+      value: 0.93341076
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: cookedColor.r
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: sliderOffset.x
+      value: -25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
       propertyPath: sliderOffset.y
-      value: 75
+      value: 95
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b3384146cad7d24aa0281a68f56c67d, type: 3}
@@ -34295,6 +34381,7 @@ MonoBehaviour:
     recipeMesh: {fileID: 0}
     recipeTime: 0
     recipeUI: {fileID: 0}
+    points: 0
   plateCoords: {x: 0, y: 0}
   basicBoxes:
   - {fileID: 1709151419}
@@ -46245,6 +46332,7 @@ MonoBehaviour:
     recipeMesh: {fileID: 0}
     recipeTime: 0
     recipeUI: {fileID: 0}
+    points: 0
   plateOffset: {x: 0, y: 45}
   plateCanvas: {fileID: 0}
   plateRotation: {x: 0, y: 90, z: 180}
@@ -47154,13 +47242,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
+      propertyPath: timeToBurn
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: mainColor.b
+      value: 0.91171235
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: mainColor.g
+      value: 0.9616946
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: mainColor.r
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
       propertyPath: slotOffset.x
-      value: 7
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
       propertyPath: slotOffset.y
-      value: 30
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
@@ -47174,8 +47282,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
         type: 3}
+      propertyPath: burnedColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: burnedColor.b
+      value: 0.43618724
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: burnedColor.g
+      value: 0.5166496
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: burnedColor.r
+      value: 0.5471698
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: cookedColor.b
+      value: 0.80989677
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: cookedColor.g
+      value: 0.93341076
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: cookedColor.r
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
+      propertyPath: sliderOffset.x
+      value: -25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942884646095654039, guid: 9b3384146cad7d24aa0281a68f56c67d,
+        type: 3}
       propertyPath: sliderOffset.y
-      value: 75
+      value: 95
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b3384146cad7d24aa0281a68f56c67d, type: 3}
@@ -49391,7 +49539,7 @@ PrefabInstance:
     - target: {fileID: 5199325407493659158, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: _tileCoords.x
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659158, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
@@ -49406,17 +49554,17 @@ PrefabInstance:
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.1935425
+      value: -25.746094
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.4679163
+      value: 3.703094
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -21.34
+      value: -21.064587
       objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659161, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Grid;
 
-public abstract class Box : MonoBehaviour {
+public abstract class Box : CoroutineSystem {
 
     [HideInInspector] public ChiefController currentController;
     protected CookController _cookController;

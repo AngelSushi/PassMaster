@@ -151,7 +151,7 @@ public class CookController : MiniGame {
         }
     }
 
-    public void AddPoint(int point, GameObject player,Recipe deliveredRecipe) {
+    public void AddPoint(int point, GameObject player) {
         Team currentTeam = teams.Where(team => team.players.Contains(player)).ToList()[0];
         currentTeam.point += point;
 
