@@ -17,4 +17,4 @@ MonoBehaviour:
   cookIndex: 0
   canBeCut: 0
   canBeCook: 1
-  canBeBurn: 0
+  canBeBurn: 1

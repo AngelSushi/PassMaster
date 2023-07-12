@@ -122,11 +122,9 @@ namespace Recipes
             public void Start()
             {
                 _currentTime = _currentRecipe.RecipeTime;
-
-
+                
                 _slider.value = _currentTime / _currentRecipe.RecipeTime;
-                _slider.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Image>().color =
-                    _recipeController.sliderColor.Evaluate(_slider.value);
+                _slider.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Image>().color = _recipeController.sliderColor.Evaluate(_slider.value);
             }
 
             public void Tick()
@@ -189,9 +187,9 @@ namespace Recipes
 
         private void Update()
         {
-            foreach (RecipeTicker ticker in _recipeTickers)
+            foreach (RecipeTicker ticker in _recipeTickers.ToList())
                 ticker.Tick();
-            foreach (CookController.Team team in _cookController.teams)
+            foreach (CookController.Team team in _cookController.teams.ToList())
                 team.Tick();
 
         }
@@ -203,6 +201,9 @@ namespace Recipes
             {
                 Recipe lastRecipe = null;
 
+                Debug.Log("i " + (i));
+                Debug.Log("result " + (i - 1));
+                
                 if (i - 1 >= 0)
                     lastRecipe = team.recipes[i - 1];
 
@@ -215,8 +216,9 @@ namespace Recipes
                     recipe = recipes[randomRecipe];
                 }
 
-                Debug.Log("tick");
-                team.recipes.Add(recipes.Where(recipe => recipe.Name.Equals("MaxiBurger")).ToList()[0]);
+                //team.recipes.Add(recipe);
+                
+                team.recipes.Add(recipes.Where(recipe => recipe.Name.Equals("CheeseBurger")).ToList()[0]);
             }
 
 
@@ -253,9 +255,6 @@ namespace Recipes
                 Recipe currentRecipe = team.recipes[i];
                 RecipeTicker ticker = new RecipeTicker(team, currentRecipe, recipeUI, this);
                 currentRecipe.Ticker = ticker;
-                currentRecipe.Ticker.CurrentTime = currentRecipe.Name.Equals("MaxiBurger")
-                    ? currentRecipe.RecipeTime / 2
-                    : currentRecipe.RecipeTime;
                 _recipeTickers.Add(ticker);
                 ticker.Start();
             }

@@ -1233,7 +1233,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 6143800526664676774, guid: f9076dc46cf6a0743816d6c136e9e9a0,
       type: 3}
-    recipeTime: 20
+    recipeTime: 50
     recipeUI: {fileID: 0}
     points: 3
   - name: CheeseBurger
@@ -1246,7 +1246,7 @@ MonoBehaviour:
     isCooked: 0
     recipeMesh: {fileID: 1966410759660335329, guid: 48c3f080fe28f19458edbc70248d2ebb,
       type: 3}
-    recipeTime: 20
+    recipeTime: 100
     recipeUI: {fileID: 0}
     points: 5
   - name: SaladBurger
@@ -1416,6 +1416,7 @@ MonoBehaviour:
   tilePrefab: {fileID: 6945335578914176773, guid: d642ed69c22ebe244a29305a9ec9bce7,
     type: 3}
   startPosition: {x: -781.5, y: 2, z: -10}
+  activeCanvas: 0
 --- !u!1 &61747201
 GameObject:
   m_ObjectHideFlags: 0
@@ -21816,6 +21817,7 @@ GameObject:
   - component: {fileID: 1295908050}
   - component: {fileID: 1295908052}
   - component: {fileID: 1295908051}
+  - component: {fileID: 1295908053}
   m_Layer: 0
   m_Name: Box051
   m_TagString: Untagged
@@ -21889,6 +21891,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1295908049}
   m_Mesh: {fileID: 1656123235873610918, guid: e47880e0ffe8eb842b3f4f76dd0436eb, type: 3}
+--- !u!65 &1295908053
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1295908049}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 59.290554, y: 28.618864, z: 10.143395}
+  m_Center: {x: -0.000061035156, y: 0.0000009536743, z: 5.0716987}
 --- !u!1 &1302530654
 GameObject:
   m_ObjectHideFlags: 0
@@ -26515,6 +26530,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1431459858}
     m_Modifications:
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.000020100431
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00022508118
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0032551505
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.0026892608
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.99999636
+      objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659158, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: _tileCoords.x
@@ -34321,6 +34361,7 @@ GameObject:
   - component: {fileID: 1947371468}
   - component: {fileID: 1947371474}
   - component: {fileID: 1947371473}
+  - component: {fileID: 1947371475}
   m_Layer: 9
   m_Name: LinkCPU
   m_TagString: Player
@@ -34563,6 +34604,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69e4b091dede4ec4f881423096b269c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1947371475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947371466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f8e4bae190009141b40e2c88bf53c78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  filePath: D:\PassMaster\PassMaster\Assets\AIs\GourmetRush\burn_medium.csv
+  columns: name;difficulty;timer;isBurned;
 --- !u!1 &1950708090
 GameObject:
   m_ObjectHideFlags: 0
@@ -49536,6 +49591,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1431459858}
     m_Modifications:
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.000020100431
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00022506806
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.003255131
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.02063893
+      objectReference: {fileID: 0}
+    - target: {fileID: 5199325407445563685, guid: ba9b3a004ee9c6a4480185543a3b6971,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.99978703
+      objectReference: {fileID: 0}
     - target: {fileID: 5199325407493659158, guid: ba9b3a004ee9c6a4480185543a3b6971,
         type: 3}
       propertyPath: _tileCoords.x

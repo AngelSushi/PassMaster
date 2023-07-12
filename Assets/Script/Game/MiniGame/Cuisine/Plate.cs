@@ -91,6 +91,12 @@ public class Plate : MonoBehaviour {
         }
 
         box.currentController.ActualIngredient = null;
+
+        if (box is StoveBox)
+        {
+            StopCoroutine(((StoveBox)box).MainCoroutine);
+        }
+        
         Destroy(box.currentController.transform.GetChild(box.currentController.transform.childCount - 1).gameObject);
        // DrawRecipeModel(drawRecipe,maxImage);
     }

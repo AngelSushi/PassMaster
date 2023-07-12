@@ -128,12 +128,17 @@ public class ChiefAIController : ChiefController
     private NavMeshAgent _agent;
     private NavMeshPath _path;
 
+    private float _actionTimer;
+
+    public float ActionTimer
+    {
+        get => _actionTimer;
+        set => _actionTimer = value;
+    }
+    
+
     /**
      *  
-     *
-     * Vérifier lorsqu'une tache est supprimée de force ( recette disparaiit) , bien refaire les actions autour ==> A TESTER
-     *
-     * Repenser tt le systeme de cramage  ( a tester mais normalement fonctionnel) == a equilibrer
      *
      * Régler les soucis de path
      *
@@ -152,13 +157,15 @@ public class ChiefAIController : ChiefController
         }
 
         
-        StartNewRecipe(_team.recipes);  
+        StartNewRecipe(_team.recipes);      
+        
+
         
         _agent = GetComponent<NavMeshAgent>();
         _path = new NavMeshPath();
             
-            IsMooving = true;
-            CanMoove = true;
+        IsMooving = true;
+        CanMoove = true;
     }
 
 
@@ -169,9 +176,7 @@ public class ChiefAIController : ChiefController
         {
             GetComponent<AIEventListener>().GenerateBinActions();
         }
-        
-        
-        
+
         if (_currentAction != null && _currentTask != null)
         {
             if (CanMoove)
@@ -196,7 +201,6 @@ public class ChiefAIController : ChiefController
                       }
                       else
                       {
-                          Debug.Log("endCoords " + _currentTask.End.Coords);
                            _agent.CalculatePath(_gridManager.GetWorldPosition(_currentTask.End), _path);
                           _agent.SetPath(_path);
                           _agent.velocity = _agent.desiredVelocity;
@@ -209,12 +213,22 @@ public class ChiefAIController : ChiefController
   
                           if (_agent.remainingDistance < 0.5f)
                           {
-                              Debug.Log("reach my end ");
                               _controller.AiEvents.OnTaskReachEnd?.Invoke(this, new AIEvents.OnTaskReachEndArgs(_currentTask, _currentAction, transform.gameObject, _team,_currentTask.End));
                           }
                       }
                   }
-              }
+            }
+        }
+        else 
+        {
+            CurrentAction = CurrentRecipeActions.FirstOrDefault(aiAction => !aiAction.IsFinished && aiAction.Condition.All(val => val));
+
+            if (CurrentAction != null)
+            {
+                CurrentTask = CurrentAction.Tasks.First(task => !task.IsFinished);
+                _controller.AiEvents.OnTaskStarted?.Invoke(this,new AIEvents.OnTaskStartedArgs(CurrentTask,CurrentAction,transform.gameObject,Team));
+                CheckGoToStart();
+            }
         }
     }
 
@@ -256,28 +270,71 @@ public class ChiefAIController : ChiefController
 
     public void ActionDuringTimer()
     {
-        float timer;
 
+        float random = Random.Range(0f, 1f);
+        float difficultyRandom = 0f;
+        
         switch (_controller.Difficulty)
         {
             case GameController.Difficulty.EASY:
-                timer = Random.Range(0f,4f);
+                difficultyRandom = 0.60f;
                 break;
                         
             case GameController.Difficulty.MEDIUM:
-                timer = Random.Range(0, 2f);
+                difficultyRandom = 0.4f;
                 break;
                         
             case GameController.Difficulty.HARD:
-                timer = Random.Range(0, 0.75f);
+                difficultyRandom = 0.2f;
                 break;
                         
             default:
-                timer = Random.Range(0f, 4f);
+                difficultyRandom = 0.6f;
                 break;
         }
         
+        
+        
        Tile end = GetPlateBoxEndTile();
+
+       /**
+        *
+        * Le temps qu'il va mettre pour faire la prochaine action
+        *
+        *
+        * Il est cramé ou non
+        *
+        * S'il est cramé
+        * ==> Générer un temps qui va faire que
+        *
+        
+        */
+
+       AIAction nextAction = currentRecipeActions.FirstOrDefault(aiAction => !aiAction.IsFinished && aiAction.Condition.All(val => val));
+
+       AIAction nextEndToActual = new AIAction(null);
+       nextEndToActual.Tasks.Add(new AIAction.AITask(nextAction.Tasks.Last().End, ActualTile));
+       
+       float distance = CalculateRecipeDistance(new List<AIAction>() { nextAction,nextEndToActual });
+       float timeToReach =   20 / (distance / 2);
+       
+       Debug.Log("distance " + distance);
+       Debug.Log("timeToReach " + timeToReach);
+       
+       // V = d * t
+
+       if (random <= difficultyRandom && _actionTimer == 0)
+       {
+           Debug.Log("crame toi");
+           _actionTimer = Random.Range(timeToReach + 0.1f,5f);
+       }
+       else
+       {
+           Debug.Log("ne crame pas");
+           _actionTimer = Random.Range(0f, timeToReach);
+       }
+
+       _actionTimer = 0f;
        
        AIAction cookToStock = new AIAction(_currentAction.ActionOn,new bool[] {false}); 
        cookToStock.Name = "CookToStock";
@@ -288,8 +345,11 @@ public class ChiefAIController : ChiefController
        currentRecipeActions.Add(cookToStock);
        OrderTasks(CurrentRecipeActions);
 
-       RunDelayed(timer, () =>
+       Debug.Log("wait");
+       
+       RunDelayed(_actionTimer, () =>
        {
+           Debug.Log("wait22");
            _controller.AiEvents.OnTaskFinished?.Invoke(this, new AIEvents.OnTaskFinishedArgs(_currentTask,_currentAction,transform.gameObject,_team));
        });
 
@@ -305,11 +365,11 @@ public class ChiefAIController : ChiefController
         
         if (e.IsCanceled && recipes.Count > 1)
         {
-            List<Recipe> newRecipes = recipes;
+            List<Recipe> newRecipes = recipes.ToList();
             
-            if (recipes.Contains(currentWorkRecipe))
+            if (newRecipes.Contains(currentWorkRecipe))
             {
-                recipes.Remove(currentWorkRecipe);
+                newRecipes.Remove(currentWorkRecipe);
             }
             
             currentRecipeActions.Clear();
@@ -319,13 +379,14 @@ public class ChiefAIController : ChiefController
         FindBoxForPlate();
         DispatchTasks();
         
+        Debug.Log("recipe " + currentWorkRecipe.Name);
         _currentAction = CurrentRecipeActions[0];
+        _actionTimer = 0f;
 
         Debug.Log("actionName " + _currentAction.Name);
         _currentTask = _currentAction.Tasks.First();
 
         CheckGoToStart();
-        Debug.Break();
     }
 
     public void CheckGoToStart()
@@ -342,17 +403,28 @@ public class ChiefAIController : ChiefController
                 {
                     Ingredient stockIngredient = basicStartTileBox.Stock.GetComponent<Ingredient>();
 
-                    if (stockIngredient != null && (!stockIngredient.Data.CanBeCook && !stockIngredient.Data.CanBeCut) || (stockIngredient.Data.CanBeCook && stockIngredient.IsCook) || (stockIngredient.Data.CanBeCut && stockIngredient.IsCut))
+                    Debug.Log("stockIngredient " + stockIngredient);
+
+                    if (stockIngredient != null)
                     {
-                        GoToStart = true;
+                        if (stockIngredient.Data != null &&  (!stockIngredient.Data.CanBeCook && !stockIngredient.Data.CanBeCut) || (stockIngredient.Data.CanBeCook && stockIngredient.IsCook) || (stockIngredient.Data.CanBeCut && stockIngredient.IsCut))
+                        {
+                            GoToStart = true;
+                        } 
                     }
+                    else
+                    {
+                        Plate plate = basicStartTileBox.Stock.GetComponent<Plate>();
+
+                        if (plate != null)
+                        {
+                            GoToStart = true;
+                        }
+                    }
+                    
+                    
                 }
             }
-           /* else if (startTileBox is Box && startTileBox is not DeliveryBox)
-            {
-                GoToStart = true;
-            }
-            */
         }
     }
 
@@ -378,7 +450,7 @@ public class ChiefAIController : ChiefController
         int minIndex;
         FindShortestRecipe(recipesDistance,out minIndex);
 
-        minIndex = Mathf.Clamp(minIndex, 0, recipes.Count);
+        minIndex = Mathf.Clamp(minIndex, 0, recipes.Count - 1);
         
         currentWorkRecipe = recipes[minIndex];    
         
@@ -430,6 +502,7 @@ public class ChiefAIController : ChiefController
     {
         int distance = 0;
 
+        
         for (int i = 0;i < actions.Count;i++)
         {
             AIAction action = actions[i];
@@ -491,10 +564,6 @@ public class ChiefAIController : ChiefController
 
         bool succeed = choose <= targetChoose;
         
-        Debug.Log("random " + choose);
-        Debug.Log("succeed " + succeed);
-        Debug.Log("distance " + (distance * 0.37f));
-        
         if (succeed)
         {
             return currentRecipe.Ticker.CurrentTime >= (int)(distance * 0.37f); // 0.37s = 1 tile move
@@ -504,8 +573,7 @@ public class ChiefAIController : ChiefController
     }
 
     private void FindShortestRecipe(List<int> recipesDistance,out int shortestIndex)
-    { 
-        
+    {
         shortestIndex = 0;
         
         if (recipesDistance.Count == 0)
@@ -538,23 +606,23 @@ public class ChiefAIController : ChiefController
         switch (_controller.Difficulty)
         {
             case GameController.Difficulty.EASY:
-                targetChoose = 25;
+                targetChoose = 75; 
                 break;
             
             case GameController.Difficulty.MEDIUM:
-                targetChoose = 55;
+                targetChoose = 45;
                 break;
             
             case GameController.Difficulty.HARD:
-                targetChoose = 80;
+                targetChoose = 20;
                 break;
             
             default:
-                targetChoose = 25;
+                targetChoose = 75;
                 break;
         }
 
-        bool succeed = choose > targetChoose;
+        bool succeed = choose <= targetChoose;
 
        // succeed = false;
         
@@ -564,18 +632,12 @@ public class ChiefAIController : ChiefController
             {
                 return;
             }
-
+            
+            Debug.Log("choose no the shortest recipe");
             List<Recipe> newTeamRecipe = _team.recipes.ToList();
-            
-            Debug.Log("count " + newTeamRecipe.Count + " " + _team.recipes.Count);
-            
             newTeamRecipe.Remove(currentWorkRecipe);
             
-            Debug.Log("count2 " + newTeamRecipe.Count + " " + _team.recipes.Count);
-            
-
             ChooseRecipe(newTeamRecipe);
-            
         }
     }
     

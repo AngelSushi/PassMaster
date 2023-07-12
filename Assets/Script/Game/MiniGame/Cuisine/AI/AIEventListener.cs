@@ -53,9 +53,6 @@ public class AIEventListener : CoroutineSystem
     {
         if (e.Team == _aiController.Team)
         {
-            // S'il est en train de faire un truc ca doit l'arreter 
-            Debug.Log("enter " + e.Recipe.Ticker.CurrentTime);
-            
             GenerateBinActions();
         }
     }
@@ -87,6 +84,28 @@ public class AIEventListener : CoroutineSystem
                 if (!_aiController.EmptyBoxes.Contains(e.Box))
                 {
                     _aiController.EmptyBoxes.Add(e.Box);
+                }
+
+                if (e.Box is StoveBox || e.Box is PanBox)
+                {
+                    if (_aiController.ActualIngredient != null)
+                    {
+                        Ingredient ingredient = _aiController.ActualIngredient.GetComponent<Ingredient>();
+
+                        if (ingredient.Data.CanBeBurn && ingredient.IsBurn)
+                        {
+                            _aiController.CurrentAction.Tasks.First(task => !task.IsFinished).End = FindObjectOfType<BinBox>().Tile;
+
+                            Debug.Log("change is Finished ");
+                            
+                            foreach (AIAction action in _aiController.CurrentRecipeActions.Where(aiAction => aiAction.ActionOn == ingredient.Data))
+                            {
+                                action.IsFinished = false;
+                                action.Tasks.ForEach(task => task.IsFinished = false);
+                            }
+                            
+                        }
+                    }
                 }
 
             }
@@ -135,7 +154,7 @@ public class AIEventListener : CoroutineSystem
             {
                 if (_aiController.PlateBox.Stock.GetComponent<Plate>() != null)
                 {
-                    if (_aiController.CurrentTask.End.Coords != _aiController.PlateCoords)
+                    if (_aiController.CurrentTask.End.Coords != _aiController.PlateCoords && _aiController.CurrentTask.End.Coords != FindObjectOfType<BinBox>().Tile.Coords)
                     {
                         _aiController.CurrentTask.End = _aiController.PlateBox.Tile;
                     } 
@@ -359,9 +378,15 @@ public class AIEventListener : CoroutineSystem
                 binActions.Add(boxToBin);
             }
         } 
+        
+        Debug.Log("add bin actions " + _aiController.CurrentRecipeActions.Count);
 
         _aiController.CurrentRecipeActions.RemoveAll(aiAction => !binActions.Contains(aiAction));
+        _aiController.CurrentRecipeActions.AddRange(binActions);
         
+        Debug.Log("new length " + _aiController.CurrentRecipeActions.Count);
+        
+        _aiController.OrderTasks(_aiController.CurrentRecipeActions);
         AssignNewAction();
     }
 
@@ -371,7 +396,8 @@ public class AIEventListener : CoroutineSystem
 
         if (_aiController.CurrentAction == null)
         {
-            _controller.RecipeEvents.OnRecipeDelivered?.Invoke(this,new RecipeEvents.OnRecipeDeliveredArgs(_aiController.CurrentWorkRecipe,_aiController.Team,transform.gameObject));
+            //Debug.Log("recipe delivered");
+            //_controller.RecipeEvents.OnRecipeDelivered?.Invoke(this,new RecipeEvents.OnRecipeDeliveredArgs(_aiController.CurrentWorkRecipe,_aiController.Team,transform.gameObject));
             return;
         }
             

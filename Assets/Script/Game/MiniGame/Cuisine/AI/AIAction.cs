@@ -23,6 +23,7 @@ public class AIAction {
         {
             get => end;
             set => end = value;
+            
         }
 
         [SerializeField] private bool isFinished;

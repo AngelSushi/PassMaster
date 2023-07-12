@@ -88,7 +88,6 @@ namespace Grid
                    return _attachedBox;
                }
                
-               Debug.Log("error when getting box at " + Coords);
                return null;
            }
            

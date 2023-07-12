@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,11 +16,22 @@ public class StoveBox : MakeBox {
     private MeshRenderer _cookedMesh;
     [SerializeField] private float timeToBurn;
 
+    private Coroutine _mainCoroutine;
+
+    public Coroutine MainCoroutine
+    {
+        get => _mainCoroutine;
+    }
+    
     #endregion
     
+
     #region Make Box Functions
     
-    protected override void StartMake() {
+    protected override void StartMake()
+    {
+        timer = 0f;
+        
         boxSlider.gameObject.SetActive(true);
         _stockIngredient = stock.GetComponent<Ingredient>();
         
@@ -28,7 +40,7 @@ public class StoveBox : MakeBox {
         _mainColor = _meshIngredient.material.color;
         _cookedColor = _cookedMesh.material.color;
         
-        StartCoroutine(LerpColor(_mainColor,_cookedColor,timeToSucceed));
+        _mainCoroutine = StartCoroutine(LerpColor(_mainColor,_cookedColor,timeToSucceed));
     }
 
     protected override void Make() {
@@ -63,7 +75,8 @@ public class StoveBox : MakeBox {
 
             isBurning = true;
             burnTimer = 0f;
-            StartCoroutine(LerpColor(_cookedColor, burnedColor, timeToBurn));
+            _mainCoroutine = StartCoroutine(LerpColor(_cookedColor, burnedColor, timeToBurn));
+
             //Start anim 
             // PlaySound  
         });
@@ -78,9 +91,7 @@ public class StoveBox : MakeBox {
             return;
         }
         
-        
         burnTimer += Time.deltaTime;
-        Debug.Log("is burning " + burnTimer);
             
         if (burnTimer >= timeToBurn)
         {
@@ -101,9 +112,15 @@ public class StoveBox : MakeBox {
 
     protected override void Put() {
         if (stock == null && currentController.ActualIngredient != null && currentController.ActualIngredient.TryGetComponent<Ingredient>(out Ingredient ingredient)) {
-            if (!ingredient.Data.IsPan) { 
-                if (ingredient.Data.CanBeCook && !ingredient.IsCook) 
+            if (!ingredient.Data.IsPan) {
+                if (ingredient.Data.CanBeCook && !ingredient.IsCook)
+                {
+                    timer = 0f;
+                    burnTimer = 0f;
+                    isBurning = false;
+                    
                     base.Put();
+                }
             }
         }
     }
@@ -118,8 +135,10 @@ public class StoveBox : MakeBox {
     
     #endregion
 
-    private IEnumerator LerpColor(Color mainColor,Color lerpColor,float time) {
+    private IEnumerator LerpColor(Color mainColor,Color lerpColor,float time)
+    {
         for (float f = 0; f <= time; f += Time.deltaTime) {
+
             _meshIngredient.material.color = Color.Lerp(mainColor,lerpColor,f / time);
             yield return null;
         }

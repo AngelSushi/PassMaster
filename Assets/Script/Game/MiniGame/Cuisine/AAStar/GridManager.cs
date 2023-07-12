@@ -12,6 +12,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private Texture2D model;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private Vector3 startPosition;
+    [SerializeField] private bool activeCanvas;
 
     private Tile[,] _grid;
 
@@ -84,7 +85,7 @@ public class GridManager : MonoBehaviour
     {
         instance.transform.GetChild(0).GetChild(0).position = Camera.main.WorldToScreenPoint(instance.transform.position);
         instance.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = "[ " + tile.X + "," + tile.Y + "]"; //tile.FCost.ToString();
-        instance.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
+        instance.transform.GetChild(0).GetChild(0).gameObject.SetActive(activeCanvas);
                 
         instance.transform.GetChild(0).GetChild(1).position = Camera.main.WorldToScreenPoint(instance.transform.position + new Vector3(0,3,0));
         instance.transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = tile.GCost.ToString();
