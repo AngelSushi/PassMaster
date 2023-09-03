@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ public class CustomSlider : MonoBehaviour {
     public int actualElement;
     private int listSize;
 
-    public Text elementName;
+    public TextMeshProUGUI elementName;
 
     private void Awake() => listSize = listParent.childCount;
 
@@ -27,6 +28,7 @@ public class CustomSlider : MonoBehaviour {
     }
 
     public void OnPrevious() {
+        
         if (actualElement > 0)
             actualElement--;
         

@@ -270,70 +270,8 @@ public class ChiefAIController : ChiefController
 
     public void ActionDuringTimer()
     {
-
-        float random = Random.Range(0f, 1f);
-        float difficultyRandom = 0f;
+        Tile end = GetPlateBoxEndTile();
         
-        switch (_controller.Difficulty)
-        {
-            case GameController.Difficulty.EASY:
-                difficultyRandom = 0.60f;
-                break;
-                        
-            case GameController.Difficulty.MEDIUM:
-                difficultyRandom = 0.4f;
-                break;
-                        
-            case GameController.Difficulty.HARD:
-                difficultyRandom = 0.2f;
-                break;
-                        
-            default:
-                difficultyRandom = 0.6f;
-                break;
-        }
-        
-        
-        
-       Tile end = GetPlateBoxEndTile();
-
-       /**
-        *
-        * Le temps qu'il va mettre pour faire la prochaine action
-        *
-        *
-        * Il est cramé ou non
-        *
-        * S'il est cramé
-        * ==> Générer un temps qui va faire que
-        *
-        
-        */
-
-       AIAction nextAction = currentRecipeActions.FirstOrDefault(aiAction => !aiAction.IsFinished && aiAction.Condition.All(val => val));
-
-       AIAction nextEndToActual = new AIAction(null);
-       nextEndToActual.Tasks.Add(new AIAction.AITask(nextAction.Tasks.Last().End, ActualTile));
-       
-       float distance = CalculateRecipeDistance(new List<AIAction>() { nextAction,nextEndToActual });
-       float timeToReach =   20 / (distance / 2);
-       
-       Debug.Log("distance " + distance);
-       Debug.Log("timeToReach " + timeToReach);
-       
-       // V = d * t
-
-       if (random <= difficultyRandom && _actionTimer == 0)
-       {
-           Debug.Log("crame toi");
-           _actionTimer = Random.Range(timeToReach + 0.1f,5f);
-       }
-       else
-       {
-           Debug.Log("ne crame pas");
-           _actionTimer = Random.Range(0f, timeToReach);
-       }
-
        _actionTimer = 0f;
        
        AIAction cookToStock = new AIAction(_currentAction.ActionOn,new bool[] {false}); 
@@ -855,10 +793,10 @@ public class ChiefAIController : ChiefController
         targetRecipeActions = targetRecipeActions.OrderBy(action => action.Priority).ToList();
         targetRecipeActions.Reverse();
 
-      //  OrderByHeuristicDistance();
-      //  DeOrderByDifficulty();
+        OrderByHeuristicDistance(targetRecipeActions);
+        DeOrderByDifficulty(targetRecipeActions);
 
-      currentRecipeActions = targetRecipeActions;
+        currentRecipeActions = targetRecipeActions;
     }
 
     private void OrderByHeuristicDistance(List<AIAction> targetRecipeActions)

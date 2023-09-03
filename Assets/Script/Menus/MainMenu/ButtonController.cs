@@ -1,187 +1,258 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
-public class ButtonController : MonoBehaviour {
+public class ButtonController : CoroutineSystem {
+    
+    [Serializable]
+    public class Menu
+    {
+        [SerializeField] private float id;
+        [SerializeField] private GameObject menu;
+        [SerializeField] private List<Button> buttons;
+        [SerializeField] private List<GameObject> uiElements;
 
-    public int menu;
+        public float Id
+        {
+            get => id;
+        }
 
-    public GameObject[] buttons = new GameObject[3];
+        public List<Button> Buttons
+        {
+            get => buttons;
+        }
+
+        public List<GameObject> UiElements
+        {
+            get => uiElements;
+        }
+
+        public void SetVisible(bool visible)
+        {
+            menu.SetActive(visible);
+            
+            foreach (Button btn in buttons)
+            {
+                btn.ButtonObj.SetActive(visible);
+
+                if (!btn.IsActive)
+                {
+                    btn.ButtonObj.GetComponent<Image>().color = Color.gray;
+                }
+            }
+            
+            uiElements.ForEach(uiElement => uiElement.SetActive(visible));
+        }
+    }
+    
+    [Serializable]
+    public class Button
+    {
+        [SerializeField] private GameObject buttonObj;
+        [SerializeField] private bool isActive;
+        [SerializeField] private Sprite font;
+
+        public GameObject ButtonObj
+        {
+            get => buttonObj;
+        }
+
+        public bool IsActive
+        {
+            get => isActive;
+        }
+
+        public Sprite Font
+        {
+            get => font;
+        }
+    }
+    
+    [SerializeField] private float menuId;
+
+    public float MenuId
+    {
+        get => menuId;
+        set
+        {
+            TargetMenu.SetVisible(false);
+            TargetMenu.Buttons[_index].ButtonObj.GetComponent<Image>().sprite = _normal;
+            menuId = value;
+            TargetMenu.SetVisible(true);
+            _index = -1;
+        }
+    }
+
+    [SerializeField] private List<Menu> menus;
+
+    private Menu TargetMenu
+    {
+        get => menus.First(menu => menu.Id == menuId);
+    }
+
     public GameObject minigame;
 
-    private string menuName;
+    private string _menuName;
 
     public static bool relaunch;
     public GameObject relaunchObj;
     public AudioSource start;
 
-    private bool hasShowMenu;
+    private bool _hasShowMenu;
 
     public GameObject champSelect;
 
+    [SerializeField] private GameObject logo;
+    [SerializeField] private GameObject interactText;
+    [SerializeField] private GameObject buttonBackground;
+
+
+    private int _index = -1;
+    
+    [SerializeField] private Sprite hover;
+    private Sprite _normal;
+
+
+    [SerializeField] private PlayerInputManager inputManager;
+    
     private void Start() {
-        Debug.Log(FindObjectOfType<PlayerInput>());
+        _normal = TargetMenu.Buttons.FirstOrDefault()?.ButtonObj.GetComponent<Image>().sprite;
     }
 
-    void Update() {
-        if(hasShowMenu) 
-            ManageMenu();
+    public void OnNext(InputAction.CallbackContext e)
+    {
+        if (e.started && _hasShowMenu)
+        {
+            if (_index < TargetMenu.Buttons.Count - 1)
+            {
+                if (_index >= 0)
+                {
+                    TargetMenu.Buttons[_index].ButtonObj.GetComponent<Image>().sprite = _normal;
+                }
+                
+                _index = TargetMenu.Buttons.FindIndex(btn => TargetMenu.Buttons.IndexOf(btn) > _index && btn.IsActive);
+                TargetMenu.Buttons[_index].ButtonObj.GetComponent<Image>().sprite = hover;
+
+                if (!buttonBackground.activeSelf)
+                {
+                    buttonBackground.SetActive(true);
+                }
+
+                buttonBackground.GetComponent<Image>().sprite = TargetMenu.Buttons[_index].Font;
+            }
+        }
     }
 
-    public void OnClickButton(int button) {
-        switch(menu) {
-            case 0: // Premier Menu
-                if(button == 0)  {// A cliquer sur le bouton jeu de plateau
-                    menu = 1;
-                    menuName = "JDP";
-                }
-            
-                if(button == 1) { // A cliquer sur le bouton Mini-Jeux
-                    menu = 1;
-                    menuName = "MJ";
-                }
+    public void OnPrevious(InputAction.CallbackContext e)
+    {
+        if (e.started && _hasShowMenu)
+        {
+            if (_index > 0)
+            {
+                TargetMenu.Buttons[_index].ButtonObj.GetComponent<Image>().sprite = _normal;
 
-                if(button == 2)  // A cliquer sur le bouton Boutique
-                    menu = 2;
-                
-                break;
+                _index = TargetMenu.Buttons.FindLastIndex(TargetMenu.Buttons.Count - 1,btn => TargetMenu.Buttons.IndexOf(btn) < _index && btn.IsActive);
 
-            case 1: // Menu Difficulté
-                
-                GameController.Instance.difficulty = button == 0 ? GameController.Difficulty.EASY : button == 1 ? GameController.Difficulty.MEDIUM : button == 2 ? GameController.Difficulty.HARD : GameController.Difficulty.EASY;
 
-                if(menuName == "JDP") 
-                    menu = 3;
-                   // SceneManager.LoadScene("Main",LoadSceneMode.Single);
-
-                if(menuName == "MJ") {
-                    foreach(GameObject btn in buttons) 
-                        btn.SetActive(false);
-                        
-                    minigame.SetActive(true);
-                }
-
-                break;
-
-            case 3:  // Choix des personnages
-                SceneManager.LoadScene("Main",LoadSceneMode.Single);
-                break;    
-   
+                TargetMenu.Buttons[_index].ButtonObj.GetComponent<Image>().sprite = hover;
+                buttonBackground.GetComponent<Image>().sprite = TargetMenu.Buttons[_index].Font;
+            }
         }
     }
     
-    private void ManageMenu() {
-        if(menu == 0) {
-            SetButtonVisible(true);
-            
-            
-            if(relaunch) 
-                relaunchObj.SetActive(true);
-        }
-
-        if(menu == 1) {
-            SetButtonVisible(false);
-            
-            champSelect.SetActive(true);
-        }
-
-        if(menu == 2) {
-            SetButtonVisible(false);
-            
-        }
-
-        if(menu == 3) {
-            SetButtonVisible(false);
-        }  
-    }
-
-    private void SetButtonVisible(bool visible) {
-        foreach(GameObject btn in buttons) 
-            btn.SetActive(visible);
-    }
-
-    public void LaunchMiniGame(int minigame) {
-        switch(minigame) {
-            case 0: // Archery
-                StartCoroutine(LoadMiniGame("Archery"));
-                break;
-
-            case 1: // findPath
-                StartCoroutine(LoadMiniGame("FindPath"));
-                break;
-
-            case 2: // KeyBall
-                StartCoroutine(LoadMiniGame("KeyBall"));
-                break;
-
-            case 3: // HideAndSeek
-                StartCoroutine(LoadMiniGame("HideAndSeek"));
-                break;
-        }
-    }
-
-    private IEnumerator LoadMiniGame(string sceneName) {
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName,LoadSceneMode.Additive);
-
-        while(!operation.isDone) {
-            yield return null;
-        }
-        
-        switch(sceneName) {
-            case "FindPath":
-                GameObject.FindGameObjectsWithTag("ControllerMG")[0].GetComponent<FP_Controller>().runSinceMenu = true;
-                break;
-
-            case "Archery":
-                GameObject.FindGameObjectsWithTag("ControllerMG")[0].GetComponent<ArcheryController>().runSinceMenu = true;
-                break;
-
-            case "KeyBall":
-                GameObject.FindGameObjectsWithTag("ControllerMG")[0].GetComponent<KBController>().runSinceMenu = true;
-                break;
-                
-            case "HideAndSeek":
-                GameObject.FindGameObjectsWithTag("ControllerMG")[0].GetComponent<HSController>().runSinceMenu = true;
-                break;
-        }
-
-        
-        ChangeStateScene("MainMenu",false);
-            
-    }
     public void BackButton() {
-        switch(menu) {
+        switch(menuId) {
             case 1:
                 minigame.SetActive(false);
-                menu = 0;
+                menuId = 0;
                 break;
             case 2:
-                menu = 0;
+                menuId = 0;
                 break;
             case 3:
                 minigame.SetActive(false);
-                menu = 0;
+                menuId = 0;
                 break;        
         }
     }
 
-    public void ChangeStateScene(string sceneName,bool state) {
-        GameObject[] objects = SceneManager.GetSceneByName(sceneName).GetRootGameObjects();
+    public void OnShowMenu(InputAction.CallbackContext e) { // Called when player hit E or "X" 
+        if(e.started) {
+            if (!_hasShowMenu)
+            {
+                _hasShowMenu = true;
+                start.Play();
+                logo.SetActive(false);
+                interactText.SetActive(false);   
+                buttonBackground.SetActive(false);
+                TargetMenu.SetVisible(true);
+            }
+            else
+            {
+                
+                Debug.Log("menuID " + MenuId);
+                SwitchMenu(); 
+                if (MenuId != 1.1f)
+                {   
+                }
+                else
+                {
 
-        foreach(GameObject obj in objects) {       
-            obj.SetActive(state);
+                  /*  GameObject newUIPlayer = Instantiate(LocalMultiSetup.Instance.LocalPrefab);
+
+                    PlayerInput input = newUIPlayer.GetComponent<PlayerInput>();
+                    inputManager.JoinPlayer(input.playerIndex, input.playerIndex,input.currentControlScheme, input.devices[0]);
+                    LocalMultiSetup.PlayerCount++;
+                */
+                }
+                
+            }
         }
     }
 
-    public void OnShowMenu(InputAction.CallbackContext e) {
-        if(e.started && !hasShowMenu) {
-            hasShowMenu = true;
-            start.Play();
-        }   
+    private void SwitchMenu()
+    {
+        switch (menuId)
+        {
+            case 0:
+                switch (_index)
+                {
+
+                    case 0: // Button Board
+                        MenuId = 1f;
+                        break;
+                    case 6: // Button Quit
+                        Application.Quit();
+                        break;
+                }
+                break;
+            
+            case 1:
+                switch (_index)
+                {
+                    case 0: // Local
+                        MenuId = 1.1f;
+                        FindObjectsOfType<PlayerInput>().ToList().ForEach(input => input.enabled = false);
+                        
+                        RunDelayed(0.3f, () =>
+                        {
+                            inputManager.enabled = true;
+                        });
+                        
+                        break;
+                    case 1: // Multi
+                        break;
+                    case 2: // Return
+                        MenuId = 0f;
+                        break;
+                }
+                break;
+        }
     }
 
     public void RelaunchGame() {
