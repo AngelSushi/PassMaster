@@ -24,7 +24,11 @@ public class LocalInstantiate : MonoBehaviour
         _refLocal.GetComponent<RectTransform>().localPosition = Vector3.zero;
         _refLocal.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         _refLocal.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
-       
+
+        _refLocal.name = "Instance " + LocalMultiSetup.PlayerCount;
+
+        LocalMultiSetup.PlayerCount++;
+
     }
 
     private void Update()

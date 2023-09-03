@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class CustomSlider : MonoBehaviour {
@@ -13,7 +14,7 @@ public class CustomSlider : MonoBehaviour {
     private int listSize;
 
     public TextMeshProUGUI elementName;
-
+    
     private void Awake() => listSize = listParent.childCount;
 
     public void OnNext() {
@@ -36,5 +37,10 @@ public class CustomSlider : MonoBehaviour {
         listParent.GetChild(actualElement).gameObject.SetActive(true);
         
         elementName.text = listParent.GetChild(actualElement).gameObject.name;
+    }
+
+    private void OnInteract(InputAction.CallbackContext e)
+    {
+        Debug.Log("interact");
     }
 }
