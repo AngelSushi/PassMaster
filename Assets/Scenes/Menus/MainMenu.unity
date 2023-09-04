@@ -5897,7 +5897,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 230
     m_Right: 0
-    m_Top: 80
+    m_Top: 95
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 80
@@ -43835,7 +43835,19 @@ MonoBehaviour:
         m_CallState: 2
   m_PlayerLeftEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 725088960}
+        m_TargetAssemblyTypeName: LocalMultiSetup, Assembly-CSharp
+        m_MethodName: OnPlayerLeave
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_JoinAction:
     m_UseReference: 0
     m_Action:
@@ -43904,6 +43916,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   localPrefab: {fileID: 7392947569833675434, guid: 92bbf99b138591b4f806df88f69cafbc,
     type: 3}
+  players: []
 --- !u!1 &725362052
 GameObject:
   m_ObjectHideFlags: 0
@@ -75260,6 +75273,7 @@ GameObject:
   - component: {fileID: 1230015330}
   - component: {fileID: 1230015332}
   - component: {fileID: 1230015333}
+  - component: {fileID: 1230015334}
   m_Layer: 5
   m_Name: Menu
   m_TagString: Untagged
@@ -75560,11 +75574,69 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 73e3c63d-757c-4615-a7eb-b3a6b794c594
     m_ActionName: Cuisine/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 95907ff3-518e-4465-8735-282e3ce3d42b
+    m_ActionName: Menus/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: d5034905-7366-4a2c-950e-84e931408e8c
+    m_ActionName: Menus/TrackedDevicePosition
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b2f3a585-7167-49d0-9824-03aec970837c
+    m_ActionName: Menus/RightClick[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e9cfa72e-7d8e-4e39-87da-bb5c72dcfcfd
+    m_ActionName: Menus/MiddleClick[/Mouse/middleButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e2ad4a2b-d20d-4e2e-a5ee-ea3bc3033aef
+    m_ActionName: Menus/ScrollWheel[/Mouse/scroll]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e2a9215b-23fc-4270-bcda-3ad124ba555a
+    m_ActionName: Menus/Click[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8a0185f8-9cea-4994-8c23-63ee8423790e
+    m_ActionName: Menus/Point[/Mouse/position]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e23819ce-aede-4056-9733-d272e19d91c9
+    m_ActionName: Menus/Cancel[/Keyboard/escape,/DualSenseGamepadHID/buttonEast]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7f94bbd3-6b6c-4188-8c6f-b6b141f79a74
+    m_ActionName: Menus/Submit[/Keyboard/enter,/DualSenseGamepadHID/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f5d36e1c-bd40-4dcc-997f-f18c786ba473
+    m_ActionName: Menus/Navigate[/DualSenseGamepadHID/leftStick/up,/DualSenseGamepadHID/rightStick/up,/DualSenseGamepadHID/leftStick/down,/DualSenseGamepadHID/rightStick/down,/DualSenseGamepadHID/leftStick/left,/DualSenseGamepadHID/rightStick/left,/DualSenseGamepadHID/leftStick/right,/DualSenseGamepadHID/rightStick/right,/DualSenseGamepadHID/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 70e03482-e8c6-4e28-a2bf-fb29d42627fe
+    m_ActionName: Menus/Quit[/DualSenseGamepadHID/start]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Menus
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1230015334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230015328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f5a5088b3ec5741b0c232a39b520d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyboardIcons: []
+  gamepadIcons: []
 --- !u!1 &1230059917
 GameObject:
   m_ObjectHideFlags: 0

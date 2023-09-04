@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
@@ -194,23 +195,8 @@ public class ButtonController : CoroutineSystem {
             }
             else
             {
-                
                 Debug.Log("menuID " + MenuId);
-                SwitchMenu(); 
-                if (MenuId != 1.1f)
-                {   
-                }
-                else
-                {
-
-                  /*  GameObject newUIPlayer = Instantiate(LocalMultiSetup.Instance.LocalPrefab);
-
-                    PlayerInput input = newUIPlayer.GetComponent<PlayerInput>();
-                    inputManager.JoinPlayer(input.playerIndex, input.playerIndex,input.currentControlScheme, input.devices[0]);
-                    LocalMultiSetup.PlayerCount++;
-                */
-                }
-                
+                SwitchMenu();
             }
         }
     }
@@ -238,6 +224,7 @@ public class ButtonController : CoroutineSystem {
                     case 0: // Local
                         MenuId = 1.1f;
                         FindObjectsOfType<PlayerInput>().ToList().ForEach(input => input.enabled = false);
+                        FindObjectOfType<EventSystem>().enabled = false;
                         
                         RunDelayed(0.3f, () =>
                         {

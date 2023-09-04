@@ -14,8 +14,27 @@ public class CustomSlider : MonoBehaviour {
     private int listSize;
 
     public TextMeshProUGUI elementName;
+
+    private PlayerInput _input;
+
+    public PlayerInput Input
+    {
+        get => _input;
+        set
+        {
+            _input = value;
+            _input.actions.FindAction("Menus/Left").started += OnPrevious;
+            _input.actions.FindAction("Menus/Right").started += OnNext;
+        }
+    }
     
-    private void Awake() => listSize = listParent.childCount;
+    private void Awake()
+    {
+        listSize = listParent.childCount;
+    }
+    
+
+    private void OnNext(InputAction.CallbackContext e) => OnNext();
 
     public void OnNext() {
 
@@ -28,6 +47,8 @@ public class CustomSlider : MonoBehaviour {
         elementName.text = listParent.GetChild(actualElement).gameObject.name;
     }
 
+    private void OnPrevious(InputAction.CallbackContext e) => OnPrevious();
+    
     public void OnPrevious() {
         
         if (actualElement > 0)
@@ -37,10 +58,5 @@ public class CustomSlider : MonoBehaviour {
         listParent.GetChild(actualElement).gameObject.SetActive(true);
         
         elementName.text = listParent.GetChild(actualElement).gameObject.name;
-    }
-
-    private void OnInteract(InputAction.CallbackContext e)
-    {
-        Debug.Log("interact");
     }
 }
