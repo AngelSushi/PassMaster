@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.AI;
 using System.Linq;
 using UnityEditor;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Random=UnityEngine.Random;
 
@@ -214,6 +215,7 @@ public class GameController : CoroutineSystem {
         
 
     }
+    
 
     public void ManageTurn() {
         players[actualPlayer].GetComponent<UserUI>().ChangeTurnValue(turn,nightIndex);
@@ -715,4 +717,82 @@ public class GameController : CoroutineSystem {
             }
         }
     }
+    
+    
+    #region Button's Action
+    
+    // Functions below are called in OnClick button action -- DONT DELETE
+    
+    public void OpenInventory() => players[actualPlayer].GetComponent<UserUI>().ManageInventory(true);
+    public void CloseInventory() => players[actualPlayer].GetComponent<UserUI>().ManageInventory(false);
+
+    public void UseDoubleDice()
+    {
+        GameObject targetPlayer = players[actualPlayer];
+        if (targetPlayer.GetComponent<UserInventory>().doubleDiceItem > 0)
+        {
+            targetPlayer.GetComponent<UserMovement>().doubleDice = true;
+            targetPlayer.GetComponent<UserUI>().CloseActionHUD(true);
+        }
+        else
+        {
+            targetPlayer.GetComponent<UserUI>().audio.Error();
+        }
+    }
+
+    public void UseTripleDice()
+    {
+        GameObject targetPlayer = players[actualPlayer];
+        if (targetPlayer.GetComponent<UserInventory>().tripleDiceItem > 0)
+        {
+            targetPlayer.GetComponent<UserMovement>().tripleDice = true;
+            targetPlayer.GetComponent<UserUI>().CloseActionHUD(true);
+        }
+        else
+        {
+            targetPlayer.GetComponent<UserUI>().audio.Error();
+        }
+    }
+
+    public void UseReverseDice()
+    {
+        GameObject targetPlayer = players[actualPlayer];
+        if (targetPlayer.GetComponent<UserInventory>().reverseDiceItem > 0)
+        {
+            targetPlayer.GetComponent<UserMovement>().reverseDice = true;
+            targetPlayer.GetComponent<UserUI>().CloseActionHUD(true);
+        }
+        else
+        {
+            targetPlayer.GetComponent<UserUI>().audio.Error();
+        }
+    }
+
+    public void UseHourglass()
+    {
+        GameObject targetPlayer = players[actualPlayer];
+        if (targetPlayer.GetComponent<UserInventory>().hourglassItem > 0)
+        {
+            targetPlayer.GetComponent<UserMovement>().useHourglass = true;
+            blackScreenAnim.Play();
+        }
+        else
+        {
+            targetPlayer.GetComponent<UserUI>().audio.Error();
+        }
+    }
+
+    public void RefreshSelected()
+    {
+        EventSystem eventSystem = FindObjectOfType<EventSystem>();
+        eventSystem.gameObject.SetActive(false);
+
+        RunDelayed(0.1f, () =>
+        {
+            eventSystem.gameObject.SetActive(true);
+        });
+
+    }
+
+    #endregion
 }

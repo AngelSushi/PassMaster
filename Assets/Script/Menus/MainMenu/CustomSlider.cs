@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,12 +28,22 @@ public class CustomSlider : MonoBehaviour {
             _input.actions.FindAction("Menus/Right").started += OnNext;
         }
     }
+
+    private LocalMultiSetup.Player _targetPlayer;
     
     private void Awake()
     {
         listSize = listParent.childCount;
+        
+        DontDestroyOnLoad(transform.parent.gameObject);
     }
-    
+
+    private void Start()
+    {
+        _targetPlayer = LocalMultiSetup.Instance.Players.First(player => player.Input == Input);
+        _targetPlayer.Skin = listParent.GetChild(0).gameObject;
+    }
+
 
     private void OnNext(InputAction.CallbackContext e) => OnNext();
 
@@ -44,6 +55,9 @@ public class CustomSlider : MonoBehaviour {
         listParent.GetChild(actualElement - 1).gameObject.SetActive(false);
         listParent.GetChild(actualElement).gameObject.SetActive(true);
 
+        
+        _targetPlayer.Skin = listParent.GetChild(actualElement).gameObject;
+        
         elementName.text = listParent.GetChild(actualElement).gameObject.name;
     }
 

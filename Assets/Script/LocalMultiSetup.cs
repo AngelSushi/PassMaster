@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LocalMultiSetup : MonoBehaviour
@@ -19,6 +20,8 @@ public class LocalMultiSetup : MonoBehaviour
 
         [SerializeField] private bool isReady;
 
+        [SerializeField] private GameObject skin;
+        
         private InputAction _ready;
 
         public int PlayerIndex
@@ -43,6 +46,12 @@ public class LocalMultiSetup : MonoBehaviour
         {
             get => _ready;
             set => _ready = value;
+        }
+
+        public GameObject Skin
+        {
+            get => skin;
+            set => skin = value;
         }
 
         public Player(PlayerInput pi,int playerIndex,InputAction ready)
@@ -74,7 +83,14 @@ public class LocalMultiSetup : MonoBehaviour
         private set => _instance = value;
     }
 
-    [SerializeField] private List<Player> players = new List<Player>();
+    [SerializeField] public List<Player> players = new List<Player>();
+    
+    [SerializeField] private List<GameObject> waitingScreens;
+
+    private bool _launchGame;
+    private float _launchTimer;
+
+    [SerializeField] private Text launchText;
 
     public List<Player> Players
     {
@@ -87,20 +103,43 @@ public class LocalMultiSetup : MonoBehaviour
         {
             _instance = this;
         }
+
+        _launchTimer = 4f;
+    }
+
+    private void Update()
+    {
+        if (_launchGame)
+        {
+            _launchTimer -= Time.deltaTime;
+            launchText.text = "Lancement dans " + (int)_launchTimer + " seconde(s)";
+
+            if (_launchTimer <= 0)
+            {
+                _launchGame = false;
+                SceneManager.LoadScene("NewMain",LoadSceneMode.Additive);
+            }
+        }
     }
 
     public void OnPlayerJoin(PlayerInput input)
     {
-        InputAction readyAction = input.actions.FindAction("Menus/Quit");
-        readyAction.started += OnReady;
-
-        Players.Add(new Player(input,PlayerCount,readyAction));
+        if (players.Where(player => player.Input == input).ToList().Count == 0)
+        {
+            InputAction readyAction = input.actions.FindAction("Menus/Quit");
+            readyAction.started += OnReady;
+            Debug.Log("player join");
+            waitingScreens[PlayerCount].SetActive(false);
+            Players.Add(new Player(input,PlayerCount,readyAction));
+        }
     }
 
     public void OnPlayerLeave(PlayerInput input)
     {
         Player targetPlayer = Players.FirstOrDefault(player => player.Input == input);
-
+        
+        waitingScreens[PlayerCount - 1].SetActive(true);
+        
         if (targetPlayer != null)
         {
             Players.Remove(targetPlayer);
@@ -112,7 +151,7 @@ public class LocalMultiSetup : MonoBehaviour
     private void OnReady(InputAction.CallbackContext e)
     {
         Player player = players.First(player => player.Ready == e.action);
-        player.Input.uiInputModule.GetComponent<MultiplayerEventSystem>().playerRoot.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = "<color=green>Pret";
+        player.Input.uiInputModule.GetComponent<MultiplayerEventSystem>().playerRoot.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = "<color=green> Pret";
         OnReady(player);
         
     } 
@@ -122,9 +161,14 @@ public class LocalMultiSetup : MonoBehaviour
     {
         targetPlayer.IsReady = true;
         Debug.Log("player " + targetPlayer.PlayerIndex + " is ready");
+        
+        
         if (players.All(player => player.IsReady))
         {
-            Debug.Log("tout les joueurs sont prêts");
+            Debug.Log("tout les joueurs sont prêts ( size of players : " + players.Count);
+            _launchGame = true;
+            launchText.gameObject.SetActive(true);
+            FindObjectOfType<PlayerInputManager>().enabled = false;
         }
     }
 }

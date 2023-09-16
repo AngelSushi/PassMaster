@@ -21,7 +21,12 @@ public class UserUI : User {
     public GameObject coinIconReward;
     public GameObject camera;
     public Transform[] directions; // les parents des directions
+    
     public Transform[] actions; // buttons d'actions sur le menu principale du jeu
+    
+    
+    
+    
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
     public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
@@ -67,6 +72,8 @@ public class UserUI : User {
 
         cameraView.switchValuePositive += SwitchValuePositive;
         cameraView.switchValueNegative += SwitchValueNegative;
+        
+        // Se désinscire
     }
 
     public override void Update() {  
@@ -124,7 +131,7 @@ public class UserUI : User {
     }
 
     public void OnRight(InputAction.CallbackContext e) {
-        if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
+       /* if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index < 2) 
                 index++;
 
@@ -152,6 +159,7 @@ public class UserUI : User {
             audio.ButtonHover();
             return;
         }
+        */
 
         if(e.started && !cameraView && !showHUD & showDirection && !gameController.freeze) {
             int max = -1;
@@ -222,7 +230,7 @@ public class UserUI : User {
     }
 
     public void OnLeft(InputAction.CallbackContext e) {
-        if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
+     /*   if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
             if(index > 0) 
                 index--;
 
@@ -250,6 +258,7 @@ public class UserUI : User {
             
             audio.ButtonHover();
         }
+        */
 
         if(e.started && !cameraView && !showHUD & showDirection && !gameController.freeze) {
             int min = -1;
@@ -334,7 +343,7 @@ public class UserUI : User {
         }
 
         if(e.started & showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
-            if(index == 0) {
+          /*  if(index == 0) {
                 ManageInventory(true);
             }
             else if(index == 1) {
@@ -359,6 +368,7 @@ public class UserUI : User {
             }
 
             return;
+            */
         }
 
         if(e.started && movement.useLightning & cameraView && !gameController.freeze) {
@@ -408,7 +418,7 @@ public class UserUI : User {
             if(index < inventoryItems.Length && index > -1) {
         
                 if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
-                    switch(index) {
+                /*    switch(index) {
                         case 0: // Double dice
                             movement.doubleDice = true;
                             CloseActionHUD(true);
@@ -452,6 +462,7 @@ public class UserUI : User {
                             CloseActionHUD(true);
                             break;
                     }
+                    */
 
                     
 
@@ -510,7 +521,7 @@ public class UserUI : User {
         }
     }
 
-    private void ManageInventory(bool active) {
+    public void ManageInventory(bool active) {
         hoverInventoryItem.transform.parent.gameObject.SetActive(active);
         isInInventory = active;
 
@@ -526,15 +537,13 @@ public class UserUI : User {
                         return;
                     
                     inventoryItems[i].GetChild(0).gameObject.SetActive(true);
-                    inventoryItems[i].GetChild(1).gameObject.SetActive(true);
-                    inventoryItems[i].GetChild(1).gameObject.GetComponent<Text>().text = "" + items[i];
+                    inventoryItems[i].GetChild(0).gameObject.GetComponent<Text>().text = "" + items[i];
                 }
                 else {
                     if (i >= inventoryItems.Length)
                         return;
                     
                     inventoryItems[i].GetChild(0).gameObject.SetActive(false);
-                    inventoryItems[i].GetChild(1).gameObject.SetActive(false);
                 }
                 
             }
@@ -595,11 +604,8 @@ public class UserUI : User {
     private void ManageActionButtonState(bool active) {
         for(int i = 0;i<3;i++) {
             actions[i].gameObject.SetActive(active);
-            actions[i].GetChild(0).gameObject.SetActive(active);
+        }
             
-            if(!active) 
-                actions[i].GetChild(1).gameObject.SetActive(active);
-        }    
         
     }
 

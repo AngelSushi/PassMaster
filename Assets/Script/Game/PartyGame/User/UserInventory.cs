@@ -7,6 +7,8 @@ using System.Linq;
 using VSLangProj80;
 
 public class UserInventory : CoroutineSystem {
+    
+    
     public int doubleDiceItem; 
     public int tripleDiceItem;
     public int reverseDiceItem; 
