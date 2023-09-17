@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 public class UserUI : User {
 
@@ -25,20 +27,14 @@ public class UserUI : User {
     public Transform[] actions; // buttons d'actions sur le menu principale du jeu
     
     
-    
-    
     public Transform[] playersPanels; // UI de chaque joueur avec ses pieces etc
     public Transform[] inventoryItems;
-    public Transform hoverInventoryItem; // L'ui du hover sur les items dans l'inventaire
     public Text coinTextReward;
-    public Text itemDescription; // texte de la description d'un iutem dans le shop
     public Text turnText,nightText; // texte pour afficher les tours et la nuit
     public GameObject shopParent;
     public Direction direction;
     public Sprite userSprite;
 
-    private bool isInInventory;
-    private int nextShopId = -1;
     private int index = -1;
     private float cameraSpeed = 90f;
     private Vector2 vecMove;
@@ -49,9 +45,6 @@ public class UserUI : User {
 
     public override void Start() {
         base.Start();
-
-        
-        //showActionButton = new BVar();
 
         gameController.inputs.FindAction("Menus/Right").started += OnRight;
         gameController.inputs.FindAction("Menus/Left").started += OnLeft;
@@ -74,6 +67,21 @@ public class UserUI : User {
         cameraView.switchValueNegative += SwitchValueNegative;
         
         // Se désinscire
+    }
+
+    private void OnDestroy()
+    {
+        showDirection.switchValuePositive -= SwitchValuePositive;
+        showDirection.switchValueNegative -= SwitchValueNegative;
+        
+        showActionButton.switchValuePositive -= SwitchValuePositive;
+        showActionButton.switchValueNegative -= SwitchValueNegative;
+        
+        showShop.switchValuePositive -= SwitchValuePositive;
+        showShop.switchValueNegative -= SwitchValueNegative;
+
+        cameraView.switchValuePositive -= SwitchValuePositive;
+        cameraView.switchValueNegative -= SwitchValueNegative;
     }
 
     public override void Update() {  
@@ -131,36 +139,6 @@ public class UserUI : User {
     }
 
     public void OnRight(InputAction.CallbackContext e) {
-       /* if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
-            if(index < 2) 
-                index++;
-
-            switch(index) {
-                case 0:
-                    actions[0].GetChild(0).gameObject.SetActive(false);
-                    actions[0].GetChild(1).gameObject.SetActive(true);
-                    break;
-                case 1:
-                    actions[0].GetChild(0).gameObject.SetActive(true);
-                    actions[0].GetChild(1).gameObject.SetActive(false);
-
-                    actions[1].GetChild(0).gameObject.SetActive(false);
-                    actions[1].GetChild(1).gameObject.SetActive(true);
-                    break;
-                case 2:
-                    actions[1].GetChild(0).gameObject.SetActive(true);
-                    actions[1].GetChild(1).gameObject.SetActive(false);
-
-                    actions[2].GetChild(0).gameObject.SetActive(false);
-                    actions[2].GetChild(1).gameObject.SetActive(true);
-                    break;        
-            }
-
-            audio.ButtonHover();
-            return;
-        }
-        */
-
         if(e.started && !cameraView && !showHUD & showDirection && !gameController.freeze) {
             int max = -1;
 
@@ -211,55 +189,9 @@ public class UserUI : User {
             
             audio.ButtonHover();
         }
-
-        if (e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !gameController.freeze) {
-            if (index < inventoryItems.Length)
-                index++;
-
-            hoverInventoryItem.gameObject.SetActive(true);
-
-            Vector3 hoverPos = index < inventoryItems.Length - 1
-                ? hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition
-                : hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition +
-                  new Vector3(0, 10f, 0);
-
-            hoverInventoryItem.localPosition = hoverPos;
-            
-            audio.ButtonHover();
-        }
     }
 
     public void OnLeft(InputAction.CallbackContext e) {
-     /*   if(e.started && !cameraView && showHUD && !hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
-            if(index > 0) 
-                index--;
-
-            switch(index) {
-                case 0:
-                    actions[1].GetChild(0).gameObject.SetActive(true);
-                    actions[1].GetChild(1).gameObject.SetActive(false);
-
-                    actions[0].GetChild(0).gameObject.SetActive(false);
-                    actions[0].GetChild(1).gameObject.SetActive(true);
-                    break;
-                case 1:
-                    actions[2].GetChild(0).gameObject.SetActive(true);
-                    actions[2].GetChild(1).gameObject.SetActive(false);
-
-                    actions[1].GetChild(0).gameObject.SetActive(false);
-                    actions[1].GetChild(1).gameObject.SetActive(true);
-                    break;
-                case 2:
-                    actions[2].GetChild(0).gameObject.SetActive(false);
-                    actions[2].GetChild(1).gameObject.SetActive(true);
-                    break;        
-            }
-            
-            
-            audio.ButtonHover();
-        }
-        */
-
         if(e.started && !cameraView && !showHUD & showDirection && !gameController.freeze) {
             int min = -1;
 
@@ -296,23 +228,6 @@ public class UserUI : User {
             
             
             audio.ButtonHover();
-        }      
-
-        if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && !gameController.freeze) {
-            if(index > 0) 
-                index--;
-
-            hoverInventoryItem.gameObject.SetActive(true);
-
-            Vector3 hoverPos = index < inventoryItems.Length - 1
-                ? hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition
-                : hoverInventoryItem.transform.parent.GetChild(1 + index).transform.localPosition +
-                  new Vector3(0, 10f, 0);
-            
-            hoverInventoryItem.localPosition = hoverPos;
-            
-            
-            audio.ButtonHover();
         }
     }
 
@@ -341,143 +256,6 @@ public class UserUI : User {
             showDirection.value = false;
             index = -1;
         }
-
-        if(e.started & showActionButton && !isInInventory && !cameraView && !gameController.freeze) {
-          /*  if(index == 0) {
-                ManageInventory(true);
-            }
-            else if(index == 1) {
-                showHUD = false;
-                showActionButton.value = false;
-                infoLabel.SetActive(false);
-                if(isPlayer) 
-                    isTurn = true;
-                
-                movement.waitDiceResult = true;
-                index = -1;
-            }
-
-            else if(index == 2) {
-                cameraView.value = true;
-                camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-
-                camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
-                camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
-
-                DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur ECHAP pour quitter le mode");
-            }
-
-            return;
-            */
-        }
-
-        if(e.started && movement.useLightning & cameraView && !gameController.freeze) {
-            Vector2 cursorPos = new Vector2(cursor.transform.position.x,cursor.transform.position.z);
-
-            GameObject targetStep = null;
-
-            for(int x = -7;x <7;x++) { // Range : 7
-                for(int z = -7;z<7;z++) {
-                    Vector2 calculatePos = new Vector2(cursorPos.x + x,cursorPos.y + z);
-
-                    foreach(Step step in FindObjectsOfType(typeof(Step))) {
-                        Vector2 stepPos = new Vector2(step.gameObject.transform.position.x,step.gameObject.transform.position.z);
-
-                        if((int)calculatePos.x == (int)stepPos.x && (int)calculatePos.y == (int)stepPos.y) {
-                            targetStep = step.gameObject;
-                            break;
-                        }
-                    }
-
-                    if(targetStep != null)
-                        break;
-
-                }
-
-                if(targetStep != null)
-                    break;
-            }
-
-            if(targetStep != null) {
-                gameController.blackScreenAnim.Play();
-                cameraView.value = false;
-                movement.targetLightningStep = targetStep;
-            }
-            else {
-                 DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,0.0f,0.0f),"Merci de choisir une meilleure position","");
-                 
-                 RunDelayed(3.5f,() => {
-                      DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur E pour choisir où l'éclair va tomber","Echap pour quitter le mode");
-                 });               
-            }
-           
-        }
-
-
-        if(e.started && hoverInventoryItem.transform.parent.gameObject.activeSelf && isInInventory && !cameraView && !gameController.freeze) {
-            if(index < inventoryItems.Length && index > -1) {
-        
-                if(hoverInventoryItem.transform.parent.gameObject.transform.childCount > (1+index) && inventoryItems[index].childCount > 0 && inventoryItems[index].GetChild(0).gameObject.activeSelf) { // Le joueur a l'objet 
-                /*    switch(index) {
-                        case 0: // Double dice
-                            movement.doubleDice = true;
-                            CloseActionHUD(true);
-                            break;
-
-                        case 1: // Triple Dice
-                            movement.tripleDice = true;
-                            CloseActionHUD(true);
-                            break;
-
-                        case 2: // Reverse Dice
-                            movement.reverseDice = true;
-                            CloseActionHUD(true);
-                            break;
-
-                        case 3: // Hourglass
-                            movement.useHourglass = true;
-                            gameController.blackScreenAnim.Play();
-                            // ANIM OU IL MET AU DESSUS DE SA TETE LE SALIER A LA ZELDA
-                            //CloseActionHUD(true);
-                            break;
-
-                        case 4:  // Lightning
-                            movement.useLightning = true;
-                            cameraView.value = true;
-                            showCursor = true;
-                            camera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-
-                            camera.transform.position = new Vector3(transform.position.x,5479f,transform.position.z);
-                            camera.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
-
-                            cursor.transform.position = new Vector3(camera.transform.position.x,cursor.transform.position.y,camera.transform.position.z);
-                            CloseActionHUD(false);
-
-                            DisplayInfoTextWithSub(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur E pour choisir où l'éclair va tomber","Echap pour quitter le mode");
-                            
-                            break;
-
-                        case 5: // Shell   
-                            inventory.UseShell();
-                            CloseActionHUD(true);
-                            break;
-                    }
-                    */
-
-                    
-
-                }
-                else { // Le joueur n'a pas l'objet
-                    if(index >= 0 && hoverInventoryItem.transform.parent.gameObject.activeSelf) {
-                        audio.Error();
-                    }
-                }
-            }
-            else {
-                index = 0;
-                ManageInventory(false);
-            }
-        }
     }
 
 
@@ -505,7 +283,9 @@ public class UserUI : User {
     public void OnQuit(InputAction.CallbackContext e) {
         if(e.started & cameraView && !gameController.freeze) {
             cameraView.value = false;
-
+            actions[2].GetComponent<Button>().enabled = true;
+            FindObjectOfType<EventSystem>().firstSelectedGameObject = actions[2].gameObject; // A CHANGER
+            gameController.RefreshSelected();
             gameController.ManageCameraPosition();
             infoLabel.SetActive(false);
             index = 2;
@@ -522,33 +302,27 @@ public class UserUI : User {
     }
 
     public void ManageInventory(bool active) {
-        hoverInventoryItem.transform.parent.gameObject.SetActive(active);
-        isInInventory = active;
+        inventoryItems[0].transform.parent.gameObject.SetActive(active);
 
         if(active)
             index = -1;
+        
+        int[] items = {inventory.doubleDiceItem,inventory.tripleDiceItem,inventory.reverseDiceItem,inventory.hourglassItem,inventory.lightningItem,inventory.shellItem};
 
-        if(hoverInventoryItem.transform.parent.gameObject.activeSelf) {    
-            int[] items = {inventory.doubleDiceItem,inventory.tripleDiceItem,inventory.reverseDiceItem,inventory.hourglassItem,inventory.lightningItem,inventory.shellItem};
-
-            for(int i = 0;i<items.Length;i++) {
-                if(items[i] > 0) {
-                    if (i >= inventoryItems.Length)
-                        return;
-                    
-                    inventoryItems[i].GetChild(0).gameObject.SetActive(true);
-                    inventoryItems[i].GetChild(0).gameObject.GetComponent<Text>().text = "" + items[i];
-                }
-                else {
-                    if (i >= inventoryItems.Length)
-                        return;
-                    
-                    inventoryItems[i].GetChild(0).gameObject.SetActive(false);
-                }
+        for(int i = 0;i<items.Length;i++) {
+            if(items[i] > 0) {
+                if (i >= inventoryItems.Length)
+                    return;
                 
+                inventoryItems[i].GetChild(0).gameObject.SetActive(true);
+                inventoryItems[i].GetChild(0).gameObject.GetComponent<Text>().text = "" + items[i];
             }
-
-            hoverInventoryItem.gameObject.SetActive(false);
+            else {
+                if (i >= inventoryItems.Length)
+                    return;
+                
+                inventoryItems[i].GetChild(0).gameObject.SetActive(false);
+            }
         }
     }
 
@@ -557,48 +331,42 @@ public class UserUI : User {
             int actualPlayer = gameController.actualPlayer;
             int hudIndex = 0;
 
-           // for(int i = 0;i<4;i++) {
-              //  playersPanels[i].gameObject.SetActive(active);
+            for(int j = actualPlayer;j<actualPlayer + 4;j++) {
+            
+                int playerIndex = j;
+                if(j > 3) 
+                    playerIndex -= 4;
 
-                for(int j = actualPlayer;j<actualPlayer + 4;j++) {
-                
-                    int playerIndex = j;
-                    if(j > 3) 
-                        playerIndex -= 4;
+                UserMovement targetUser = gameController.players[playerIndex].GetComponent<UserMovement>();
 
-                    UserMovement targetUser = gameController.players[playerIndex].GetComponent<UserMovement>();
-
-                    int rank = 0;
-                    for (int k = 0;k < gameController.classedPlayers.Keys.Count;k++) {
-                        GameObject player = gameController.classedPlayers.Keys.ToArray()[k];
-                        
-                        if (player.GetComponent<UserMovement>() == targetUser) {
-                            rank = k;
-                            break;
-                        }
-                    }
+                int rank = 0;
+                for (int k = 0;k < gameController.classedPlayers.Keys.Count;k++) {
+                    GameObject player = gameController.classedPlayers.Keys.ToArray()[k];
                     
-                    //gameController.ChangeHUDSpritePlayer(playersPanels,hudIndex,targetUser.userType);
-
-                    Player playerData = gameController.playersData.Where(playerData => playerData.name == targetUser.name).ToList()[0];
-                    
-                    playersPanels[hudIndex].GetChild(0).gameObject.GetComponent<Image>().sprite = playerData.uiIcon;
-                    playersPanels[hudIndex].gameObject.SetActive(active);
-                    playersPanels[hudIndex].GetChild(2).GetComponent<Text>().text = (rank + 1) + "";
-                    playersPanels[hudIndex].GetChild(2).GetComponent<Text>().color = gameController.classedColors[rank];
-                    
-                    playersPanels[hudIndex].GetChild(4).GetComponent<Text>().text = targetUser.inventory.coins.ToString();
-                    playersPanels[hudIndex].GetChild(6).GetComponent<Text>().text = targetUser.inventory.cards.ToString();
-                    playersPanels[hudIndex].GetChild(1).GetComponent<Text>().text = targetUser.name;
-
-
-
-                    hudIndex += 1;
-                    if (hudIndex == 4) 
+                    if (player.GetComponent<UserMovement>() == targetUser) {
+                        rank = k;
                         break;
-                }            
-            }
-      //  }
+                    }
+                }
+
+                Player playerData = gameController.playersData.Where(playerData => playerData.name == targetUser.name).ToList()[0];
+                
+                playersPanels[hudIndex].GetChild(0).gameObject.GetComponent<Image>().sprite = playerData.uiIcon;
+                playersPanels[hudIndex].gameObject.SetActive(active);
+                playersPanels[hudIndex].GetChild(2).GetComponent<Text>().text = (rank + 1) + "";
+                playersPanels[hudIndex].GetChild(2).GetComponent<Text>().color = gameController.classedColors[rank];
+                
+                playersPanels[hudIndex].GetChild(4).GetComponent<Text>().text = targetUser.inventory.coins.ToString();
+                playersPanels[hudIndex].GetChild(6).GetComponent<Text>().text = targetUser.inventory.cards.ToString();
+                playersPanels[hudIndex].GetChild(1).GetComponent<Text>().text = targetUser.name;
+
+
+
+                hudIndex += 1;
+                if (hudIndex == 4) 
+                    break;
+            }            
+        }
     }
 
     private void ManageActionButtonState(bool active) {
@@ -678,7 +446,7 @@ public class UserUI : User {
         nightText.text = night > 1 ? "Nuit dans " + night + " tours" : "Nuit dans 1 tour";
     }
 
-    private void DisplayInfoText(Vector2 pos,Color color,string text) {
+    public void DisplayInfoText(Vector2 pos,Color color,string text) {
         infoLabel.transform.position = pos;
         infoLabel.GetComponent<Text>().color = color;
         infoLabel.GetComponent<Text>().text = text;

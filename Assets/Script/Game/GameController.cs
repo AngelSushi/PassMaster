@@ -722,6 +722,20 @@ public class GameController : CoroutineSystem {
     #region Button's Action
     
     // Functions below are called in OnClick button action -- DONT DELETE
+
+    public void EnableCameraView()
+    {
+        players[actualPlayer].GetComponent<UserUI>().cameraView.value = true;
+        Vector3 position = players[actualPlayer].transform.position;
+        
+        Camera.main.transform.position = new Vector3(position.x,5479f,position.z);
+        Camera.main.transform.rotation = Quaternion.Euler(90f,265.791f,0f); 
+
+        players[actualPlayer].GetComponent<UserUI>().DisplayInfoText(new Vector2(971,164),new Color(1.0f,1.0f,1.0f),"Appuyez sur ECHAP pour quitter le mode");
+    }
+
+    public void DisableCameraView() => players[actualPlayer].GetComponent<UserUI>().cameraView.value = false;
+    
     
     public void OpenInventory() => players[actualPlayer].GetComponent<UserUI>().ManageInventory(true);
     public void CloseInventory() => players[actualPlayer].GetComponent<UserUI>().ManageInventory(false);
@@ -787,7 +801,7 @@ public class GameController : CoroutineSystem {
         EventSystem eventSystem = FindObjectOfType<EventSystem>();
         eventSystem.gameObject.SetActive(false);
 
-        RunDelayed(0.1f, () =>
+        RunDelayed(0.01f, () =>
         {
             eventSystem.gameObject.SetActive(true);
         });
