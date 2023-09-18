@@ -65,8 +65,6 @@ public class UserUI : User {
 
         cameraView.switchValuePositive += SwitchValuePositive;
         cameraView.switchValueNegative += SwitchValueNegative;
-        
-        // Se désinscire
     }
 
     private void OnDestroy()
@@ -106,6 +104,16 @@ public class UserUI : User {
 
     public void SwitchValuePositive() {
         if (showShop | showDirection | showActionButton) {
+            if (showActionButton)
+            {
+                gameController.EventSystem.SetSelectedGameObject(actions[0].gameObject);
+            }
+            
+            if (showDirection)
+            {
+                gameController.EventSystem.SetSelectedGameObject(directions[direction.directions.ToList().IndexOf(direction.directions.First(val => val))].gameObject);
+            }
+
             gameController.playerInput.SwitchCurrentActionMap("Menus");
         }
         
@@ -284,8 +292,7 @@ public class UserUI : User {
         if(e.started & cameraView && !gameController.freeze) {
             cameraView.value = false;
             actions[2].GetComponent<Button>().enabled = true;
-            FindObjectOfType<EventSystem>().firstSelectedGameObject = actions[2].gameObject; // A CHANGER
-            gameController.RefreshSelected();
+            gameController.EventSystem.SetSelectedGameObject(actions[2].gameObject);
             gameController.ManageCameraPosition();
             infoLabel.SetActive(false);
             index = 2;
@@ -383,6 +390,8 @@ public class UserUI : User {
     }
 
     private void ManageHudDirection(bool active) { // front ou interior
+        
+        
         if(direction != null) {
             for (int i = 0; i < direction.directions.Length; i++) {
                 

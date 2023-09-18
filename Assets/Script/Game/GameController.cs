@@ -119,6 +119,13 @@ public class GameController : CoroutineSystem {
 
     public Vector3 beginCamPos, beginCamRot;
 
+    private EventSystem _eventSystem;
+
+    public EventSystem EventSystem
+    {
+        get => _eventSystem;
+    }
+    
     private void OnEnable() => Instance = this;
     
 
@@ -126,6 +133,8 @@ public class GameController : CoroutineSystem {
         Instance = this;
         mainCamera = Camera.main.gameObject;
         playerInput = GetComponent<PlayerInput>();
+
+        _eventSystem = FindObjectOfType<EventSystem>();
     }
 
     void Start() {
@@ -740,6 +749,21 @@ public class GameController : CoroutineSystem {
     public void OpenInventory() => players[actualPlayer].GetComponent<UserUI>().ManageInventory(true);
     public void CloseInventory() => players[actualPlayer].GetComponent<UserUI>().ManageInventory(false);
 
+    public void SpawnDice()
+    {
+        UserUI ui = players[actualPlayer].GetComponent<UserUI>();
+        
+        ui.showHUD = false;
+        ui.showActionButton.value = false;
+        ui.infoLabel.SetActive(false);
+        if(ui.isPlayer) 
+            ui.isTurn = true;
+                
+        ui.movement.waitDiceResult = true;
+
+        Debug.Log("spawn dice");
+    }
+
     public void UseDoubleDice()
     {
         GameObject targetPlayer = players[actualPlayer];
@@ -796,16 +820,22 @@ public class GameController : CoroutineSystem {
         }
     }
 
-    public void RefreshSelected()
+    public void MoveLeft()
     {
-        EventSystem eventSystem = FindObjectOfType<EventSystem>();
-        eventSystem.gameObject.SetActive(false);
+        players[actualPlayer].GetComponent<UserUI>().showDirection.value = false;
+        players[actualPlayer].GetComponent<UserMovement>().left = true;
+    }
 
-        RunDelayed(0.01f, () =>
-        {
-            eventSystem.gameObject.SetActive(true);
-        });
+    public void MoveFront()
+    {
+        players[actualPlayer].GetComponent<UserUI>().showDirection.value = false;
+        players[actualPlayer].GetComponent<UserMovement>().front = true;
+    }
 
+    public void MoveBack()
+    {
+        players[actualPlayer].GetComponent<UserUI>().showDirection.value = false;
+        players[actualPlayer].GetComponent<UserMovement>().right = true;
     }
 
     #endregion

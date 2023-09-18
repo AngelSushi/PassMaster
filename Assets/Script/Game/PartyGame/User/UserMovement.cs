@@ -305,8 +305,10 @@ public class UserMovement : User {
                
                beginResult = diceResult; 
                stepPaths = new GameObject[beginResult]; 
-               hasCollideDice = true;  
-                
+               hasCollideDice = true;
+
+               diceResult = 50;
+
                actualColor = tripleDice ? new Color(1f,0.74f,0f) : doubleDice ? new Color(0.32f,0.74f,0.08f,1.0f) : reverseDice ? new Color(0.41f,0.13f,0.78f,1.0f) : new Color(0f,0.35f,1f,1.0f);
                ui.RefreshDiceResult(diceResult, actualColor);
 
