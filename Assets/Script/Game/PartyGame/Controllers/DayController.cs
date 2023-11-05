@@ -51,7 +51,7 @@ public class DayController : MonoBehaviour {
             case DayPeriod.DAY: // Day
                 RenderSettings.skybox = dayMat;
                 RenderSettings.ambientLight = dayAmbient;
-                mainAudio.clip = AudioController.Instance.mainAudioClip;
+              //  mainAudio.clip = AudioController.Instance.mainAudioClip;
                 if(!mainAudio.isPlaying) 
                     mainAudio.Play();
                 break;

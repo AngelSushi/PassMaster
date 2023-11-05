@@ -12,19 +12,14 @@ public class UserMovement : User {
     public bool waitDiceResult;
     public bool finishMovement;
     public bool startCoroutine;
-    public bool finishTurn;
     public bool left;
     public bool front;
     public bool right;
     public bool stop;
-    public bool waitChest;
     public bool reverseCount;
     public bool doubleDice;
     public bool tripleDice;
     public bool useHourglass;
-    public bool useLightning;
-    public bool useShell;
-    public GameObject targetLightningStep;
     public bool reverseDice;    
     public GameObject lastStep;
     public bool isMooving;
@@ -52,8 +47,6 @@ public class UserMovement : User {
     private bool hasJump;
     public Rigidbody rb;
     private Color actualColor;
-    public bool isParachuting;
-    private Vector3 parachuteMovement;
     public bool bypassDirection;
     public bool canMoove;
     private bool hasFindChest;
@@ -67,7 +60,6 @@ public class UserMovement : User {
     public bool checkObjectToUse;
     public Animator animatorController;
 
-    public bool isElectrocuted;
     private Vector3 lastPosition;
 
     public bool bypassReverse;
@@ -122,7 +114,6 @@ public class UserMovement : User {
         userCam.SetActive(false);
         hasShowChestHUD = false;
         canMooveToChest = true;
-        waitChest = false;
         hasCollideDice = false;
         waitDiceResult = true;
         hasJump = false;
@@ -634,10 +625,6 @@ public class UserMovement : User {
             Jump();       
     } 
 
-    public void OnMove(InputAction.CallbackContext e) {
-        if(isParachuting && !gameController.freeze) 
-            parachuteMovement = e.ReadValue<Vector2>();   
-    } 
 
     public void OnGive(InputAction.CallbackContext e) {
         if(e.started && isTurn) {

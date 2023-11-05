@@ -11,7 +11,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
     
     
     // General
-    private SerializedProperty firstStep,actualPlayer,players,_playersData,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,nightIndex,hasChangeState,blackScreenAnim,_circleTransitionAnim,shellPrefab,mainPath,inputs,_mainAudio,_beginCamPos,_beginCamRot;
+    private SerializedProperty allPlayers,firstStep,actualPlayer,players,_playersData,part,posBegin,smallSprites,classedColors,turn,difficulty,freeze,nightIndex,hasChangeState,blackScreenAnim,_circleTransitionAnim,shellPrefab,mainPath,inputs,_mainAudio,_beginCamPos,_beginCamRot;
     
     // Controllers
     private SerializedProperty day, dialog, mg, order, shop, chest, item, endAnimation, debug,loadingScene;
@@ -30,6 +30,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
         
         firstStep = serializedClass.FindProperty("firstStep");
         actualPlayer = serializedClass.FindProperty("actualPlayer");
+        allPlayers = serializedClass.FindProperty("allPlayers");
         players = serializedClass.FindProperty("players");
         _playersData = serializedClass.FindProperty("playersData");
         part = serializedClass.FindProperty("part");
@@ -90,6 +91,7 @@ public class GameControllerEditor : CustomFieldInspector<GameController> {
             case 0:
                 EditorGUILayout.PropertyField(firstStep);
                 EditorGUILayout.PropertyField(actualPlayer);
+                EditorGUILayout.PropertyField(allPlayers);
                 EditorGUILayout.PropertyField(players);
                 EditorGUILayout.PropertyField(_playersData);
                 EditorGUILayout.PropertyField(part);

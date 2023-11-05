@@ -25,6 +25,9 @@ public class AudioController : MonoBehaviour {
 
 
     void Awake() {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
     }
 }

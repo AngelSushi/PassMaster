@@ -24,8 +24,6 @@ public class CustomSlider : MonoBehaviour {
         set
         {
             _input = value;
-            _input.actions.FindAction("Menus/Left").started += OnPrevious;
-            _input.actions.FindAction("Menus/Right").started += OnNext;
         }
     }
 
@@ -34,6 +32,12 @@ public class CustomSlider : MonoBehaviour {
     private void Awake()
     {
         listSize = listParent.childCount;
+
+        if (_input != null)
+        {
+            _input.actions.FindAction("Menus/Left").started += OnPrevious;
+            _input.actions.FindAction("Menus/Right").started += OnNext;
+        }
         
         DontDestroyOnLoad(transform.parent.gameObject);
     }
@@ -42,6 +46,15 @@ public class CustomSlider : MonoBehaviour {
     {
         _targetPlayer = LocalMultiSetup.Instance.Players.First(player => player.Input == Input);
         _targetPlayer.Skin = listParent.GetChild(0).gameObject;
+    }
+
+    private void OnDestroy()
+    {  
+        if (_input != null)
+        {
+            _input.actions.FindAction("Menus/Left").started -= OnPrevious;
+            _input.actions.FindAction("Menus/Right").started -= OnNext;
+        }
     }
 
 

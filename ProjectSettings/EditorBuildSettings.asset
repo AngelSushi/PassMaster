@@ -32,6 +32,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MiniGames/PerfectNote/PerfectNote.unity
     guid: 18d8cb4c6e88e9f4c812fb22bb7ae158
+  - enabled: 1
+    path: Assets/Scenes/TestScene.unity
+    guid: 59788cfa25e4c97469cb38760447b1c8
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 49c00185dcba8594081eed5a674a603d,
       type: 2}

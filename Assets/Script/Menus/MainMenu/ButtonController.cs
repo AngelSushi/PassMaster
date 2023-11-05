@@ -17,9 +17,6 @@ public class ButtonController : CoroutineSystem {
         get => menuId;
         set
         {
-            
-            Debug.Log("change value");
-            
             menus[menuId].SetActive(false);
             menuId = value;
             menus[menuId].SetActive(true);
@@ -44,16 +41,18 @@ public class ButtonController : CoroutineSystem {
     
 
     [SerializeField] private PlayerInputManager inputManager;
-
+    [SerializeField] private PlayerInput _input;
 
     public void SetupLocal()
     {
-        FindObjectsOfType<PlayerInput>().ToList().ForEach(input => input.enabled = false);
+        _input.enabled = false;
+       
         FindObjectOfType<EventSystem>().enabled = false;
-                        
+        inputManager.enabled = false;
+        
         RunDelayed(0.3f, () =>
-        {
-            inputManager.enabled = true;
+        { 
+           inputManager.enabled = true;
         });
     }
 

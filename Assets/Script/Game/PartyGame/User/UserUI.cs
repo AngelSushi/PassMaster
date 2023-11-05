@@ -41,12 +41,34 @@ public class UserUI : User {
 
     public ParticleSystem smokeEffect;
 
+    private MenuNavigationSystem _currentNavigationSystem;
+
+    public MenuNavigationSystem CurrentNavigationSystem
+    {
+        get => _currentNavigationSystem;
+        set
+        {
+            if (_currentNavigationSystem != null)
+            {
+                _currentNavigationSystem.enabled = false;
+            }
+            
+            _currentNavigationSystem = value;
+
+            _currentNavigationSystem.enabled = true;
+        }
+    }
+    
+    [SerializeField] private MenuNavigationSystem actionNavigationSystem;
+    [SerializeField] private MenuNavigationSystem directionNavigationSystem;
+    [SerializeField] private MenuNavigationSystem inventoryNavigationSystem;
+
 // Check que quand c'est pas le tour d'un joueur tt soit désactiver
 
     public override void Start() {
         base.Start();
 
-        gameController.inputs.FindAction("Menus/Right").started += OnRight;
+       /* gameController.inputs.FindAction("Menus/Right").started += OnRight;
         gameController.inputs.FindAction("Menus/Left").started += OnLeft;
         gameController.inputs.FindAction("Menus/Interact").started += OnInteract;
         gameController.inputs.FindAction("Player/Movement").performed += OnMove;
@@ -54,6 +76,8 @@ public class UserUI : User {
         
         gameController.inputs.FindAction("Player/Quit").started += OnQuit;
 
+*/
+       
         showDirection.switchValuePositive += SwitchValuePositive;
         showDirection.switchValueNegative += SwitchValueNegative;
         
@@ -65,6 +89,8 @@ public class UserUI : User {
 
         cameraView.switchValuePositive += SwitchValuePositive;
         cameraView.switchValueNegative += SwitchValueNegative;
+
+        CurrentNavigationSystem = actionNavigationSystem;   
     }
 
     private void OnDestroy()
@@ -103,30 +129,33 @@ public class UserUI : User {
     }
 
     public void SwitchValuePositive() {
-        if (showShop | showDirection | showActionButton) {
+        if (showShop | showDirection | showActionButton)
+        {
+            movement.currentAction = UserAction.MENU;
+            
             if (showActionButton)
             {
-                gameController.EventSystem.SetSelectedGameObject(actions[0].gameObject);
+                CurrentNavigationSystem = actionNavigationSystem;
             }
             
             if (showDirection)
             {
-                gameController.EventSystem.SetSelectedGameObject(directions[direction.directions.ToList().IndexOf(direction.directions.First(val => val))].gameObject);
+                CurrentNavigationSystem = directionNavigationSystem;
             }
 
-            gameController.playerInput.SwitchCurrentActionMap("Menus");
+//            gameController.playerInput.SwitchCurrentActionMap("Menus");
         }
         
-        if(cameraView)
-            gameController.playerInput.SwitchCurrentActionMap("Player");
+        //if(cameraView)
+  //          gameController.playerInput.SwitchCurrentActionMap("Player");
     }
 
     public void SwitchValueNegative() {
-        if(!cameraView)
-            gameController.playerInput.SwitchCurrentActionMap("Menus");
+      //  if(!cameraView)
+    //        gameController.playerInput.SwitchCurrentActionMap("Menus");
         
         if (!showShop & !showDirection & !showActionButton) {
-            gameController.playerInput.SwitchCurrentActionMap("Player");
+          //  gameController.playerInput.SwitchCurrentActionMap("Player");
         }
         
     }
@@ -308,7 +337,10 @@ public class UserUI : User {
         }
     }
 
-    public void ManageInventory(bool active) {
+    public void ManageInventory(bool active)
+    {
+        CurrentNavigationSystem = active ? inventoryNavigationSystem : actionNavigationSystem;
+        
         inventoryItems[0].transform.parent.gameObject.SetActive(active);
 
         if(active)

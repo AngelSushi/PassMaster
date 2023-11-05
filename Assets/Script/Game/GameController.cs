@@ -37,6 +37,10 @@ public class GameController : CoroutineSystem {
     public GameObject firstStep;
     
     public int actualPlayer;
+
+
+    public List<GameObject> allPlayers = new List<GameObject>();
+
     public GameObject[] players = new GameObject[4];
     public Player[] playersData;
     
@@ -131,7 +135,6 @@ public class GameController : CoroutineSystem {
 
     void Awake() {
         Instance = this;
-        mainCamera = Camera.main.gameObject;
         playerInput = GetComponent<PlayerInput>();
 
         _eventSystem = FindObjectOfType<EventSystem>();
@@ -144,6 +147,9 @@ public class GameController : CoroutineSystem {
         classedPlayers.Add(players[1],2);
         classedPlayers.Add(players[2],3);
         classedPlayers.Add(players[3],4);
+
+        mainCamera = Camera.main.gameObject;
+
 
         dialog.dialogArray = JsonUtility.FromJson<DialogArray>(dialogsFile.text);
 
@@ -163,7 +169,6 @@ public class GameController : CoroutineSystem {
             difficulty == Difficulty.EASY ? 4 :
             difficulty == Difficulty.MEDIUM ? 3 :
             difficulty == Difficulty.HARD ? 2 : 4;
-        
     }
     
     void Update() {
@@ -176,7 +181,9 @@ public class GameController : CoroutineSystem {
         
         if (lastAction != null && playerInput != null && playerInput.currentActionMap != null && lastAction.name != playerInput.currentActionMap.name)
             Debug.Log("current action map " + playerInput.currentActionMap);
-            
+
+
+        playerInput = LocalMultiSetup.Instance.Players[actualPlayer].Input;
         lastAction = playerInput.currentActionMap;
         
         lastPart = part;
@@ -505,7 +512,6 @@ public class GameController : CoroutineSystem {
             UnityEditorInternal.ComponentUtility.CopyComponent(players[actualPlayer].transform.parent.gameObject.GetComponent<UserUI>());
             UnityEditorInternal.ComponentUtility.PasteComponentAsNew(players[actualPlayer]);
             
-            players[actualPlayer].GetComponent<UserMovement>().useShell = false;
             players[actualPlayer].GetComponent<UserMovement>().agent.radius = 0.5f;
             players[actualPlayer].GetComponent<UserMovement>().agent.height = 1.57f;
 
@@ -522,7 +528,6 @@ public class GameController : CoroutineSystem {
             Destroy(shell);
         }
 
-        players[actualPlayer].GetComponent<UserMovement>().finishTurn = false;
         players[actualPlayer].GetComponent<UserMovement>().isTurn = false;
 
         if(!mainCamera.activeSelf) {
@@ -608,6 +613,13 @@ public class GameController : CoroutineSystem {
 
     public void ManageCameraPosition() {
         GameObject actualStep = players[actualPlayer].GetComponent<UserMovement>().actualStep != null ? players[actualPlayer].GetComponent<UserMovement>().actualStep : firstStep;
+
+        Debug.Log("actual " + actualStep);
+        Debug.Log("mainCamera " + mainCamera);
+
+        if (mainCamera == null)
+            mainCamera = Camera.main.gameObject;
+        
         mainCamera.transform.position = new Vector3(actualStep.transform.position.x,actualStep.transform.position.y + 15,actualStep.transform.position.z) - (GetDirection(actualStep,actualStep.GetComponent<Step>(),25f) * 2.25f);
 
         Vector3 playerPosition = players[actualPlayer].transform.position;

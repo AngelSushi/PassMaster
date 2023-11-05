@@ -50,12 +50,6 @@ public class LocalInstantiate : MonoBehaviour
         input.uiInputModule = _refLocal.GetComponentInChildren<InputSystemUIInputModule>();
         _refLocal.GetComponentInChildren<CustomSlider>().Input = input;
 
-        
-    }
-    
-
-    private void Update()
-    {
-        _refLocal.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+        DontDestroyOnLoad(transform.gameObject);
     }
 }
